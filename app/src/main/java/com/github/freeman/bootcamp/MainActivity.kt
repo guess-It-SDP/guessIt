@@ -1,21 +1,88 @@
 package com.github.freeman.bootcamp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
+import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContent {
+            BootcampComposeTheme {
+                MainScreen()
+            }
+        }
     }
+}
 
-    fun greet(view: View) {
-        val myIntent = Intent(this, GreetingActivity::class.java)
-        val name = findViewById<EditText>(R.id.mainName).text.toString()
-        myIntent.putExtra("name", name) //Optional parameters
-        startActivity(myIntent)
+// this class is to store the value of the text field
+// in order to use it in other Composable
+class TextFieldState{
+    var text: String by mutableStateOf("")
+}
+
+fun greet(context: Context, name: String) {
+    context.startActivity(Intent(context, GreetingActivity::class.java).apply {
+        putExtra("name", name)
+    })
+}
+
+@Composable
+fun GreetingInput(msg : TextFieldState = remember { TextFieldState() }) {
+    var text by remember { mutableStateOf(TextFieldValue("")) }
+    OutlinedTextField(
+        value = text,
+        label = {
+            Text(text = "Enter Your Name")
+        },
+        onValueChange = {
+            text = it
+            msg.text = it.text
+        }
+    )
+}
+
+@Composable
+fun GreetingButton(msg : TextFieldState = remember { TextFieldState() }) {
+    val context = LocalContext.current
+    ElevatedButton(
+        onClick = {
+            greet(context, msg.text)
+
+        }
+    ) {
+        Text("Greet me!")
     }
+}
+
+@Composable
+fun MainScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val textState = remember { TextFieldState() }
+        GreetingInput(textState)
+        GreetingButton(textState)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MainScreenPreview() {
+    MainScreen()
 }

@@ -1,3 +1,0 @@
-# guessIt
-a drawing game 
-
