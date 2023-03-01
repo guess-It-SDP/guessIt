@@ -5,28 +5,12 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-dependencyResolutionManagement {
+/*dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
     }
-}
-rootProject.name = "bootcamp"
+}*/
+rootProject.name = "FirebaseAuthDemo"
 include ':app'
-
-ext.isCiServer = System.getenv().containsKey("CIRRUS_CI")
-ext.isMasterBranch = System.getenv()["CIRRUS_BRANCH"] == "main"
-ext.buildCacheHost = System.getenv().getOrDefault("CIRRUS_HTTP_CACHE_HOST", "localhost:12321")
-
-buildCache {
-  local {
-    enabled = !isCiServer
-  }
-  remote(HttpBuildCache) {
-    url = "http://${buildCacheHost}/"
-    enabled = isCiServer
-    push = isMasterBranch
-  }
-}
-
