@@ -66,7 +66,7 @@ class GreetingAppTest {
         intent.putExtra("name", "Bob")
 
         // Launch the activity using the intent
-        val scenario = launchActivity<GreetingActivity>(intent)
+        launchActivity<GreetingActivity>(intent)
 
         // Perform actions on the UI using Espresso
         //onView(withId(R.id.greetingMessage)).check(matches(withText("Hello Bob!")))
