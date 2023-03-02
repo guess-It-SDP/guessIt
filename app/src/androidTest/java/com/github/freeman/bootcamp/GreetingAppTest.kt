@@ -23,6 +23,20 @@ class GreetingAppTest {
     // use createAndroidComposeRule<YourActivity>() if you need access to
     // an activity
 
+
+    @Test
+    fun mainScreenIsDisplayed() {
+        composeRule.setContent {
+            BootcampComposeTheme {
+                MainScreen()
+            }
+        }
+
+        composeRule.onNode(hasTestTag("mainScreen")).assertIsDisplayed()
+
+    }
+
+
     @Test
     fun intentIsSent() {
         Intents.init()
@@ -110,6 +124,9 @@ class GreetingAppTest {
         // Release Intents
         Intents.release()
     }
+
+
+
 
 
 }
