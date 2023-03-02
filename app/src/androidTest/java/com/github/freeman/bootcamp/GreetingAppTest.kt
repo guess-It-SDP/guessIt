@@ -56,6 +56,41 @@ class GreetingAppTest {
     }
 
     @Test
+    fun buttonIsDisplayed() {
+        composeRule.setContent {
+            BootcampComposeTheme {
+                MainScreen()
+            }
+        }
+
+        composeRule.onNodeWithText("Greet me!").assertIsDisplayed()
+    }
+    @Test
+    fun textFieldLabelIsCorrect() {
+        composeRule.setContent {
+            BootcampComposeTheme {
+                MainScreen()
+            }
+        }
+
+        composeRule.onNode(hasSetTextAction()).assertTextContains("Enter Your Name")
+    }
+
+
+
+
+    @Test
+    fun textFieldIsDisplayed() {
+        composeRule.setContent {
+            BootcampComposeTheme {
+                MainScreen()
+            }
+        }
+
+        composeRule.onNode(hasSetTextAction()).assertIsDisplayed()
+    }
+
+    @Test
     fun intentIsReceivedWithRightExtra() {
         // Initialize Intents
         Intents.init()
