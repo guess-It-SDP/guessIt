@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "580629798084",
+    "project_id": "sdp-firebase-bootcamp-89ce8",
+    "storage_bucket": "sdp-firebase-bootcamp-89ce8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:580629798084:android:b644050f24bcc1eea0bd91",
+        "android_client_info": {
+          "package_name": "bootcamp.fireapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "580629798084-929i1b9kqbb2m48uvgvtu42s091jna6k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXZRJFhH58_-eiIBOf_zpN7Re0uRnBic0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "580629798084-929i1b9kqbb2m48uvgvtu42s091jna6k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
