@@ -36,15 +36,19 @@ class TextFieldState{
 }
 
 fun greet(context: Context, name: String) {
-    context.startActivity(Intent(context, GreetingActivity::class.java).apply {
-        putExtra("name", name)
-    })
+    if (!name.isEmpty()) {
+        context.startActivity(Intent(context, GreetingActivity::class.java).apply {
+            putExtra("name", name)
+        })
+    }
+
 }
 
 @Composable
 fun GreetingInput(msg : TextFieldState = remember { TextFieldState() }) {
     var text by remember { mutableStateOf(TextFieldValue("")) }
     OutlinedTextField(
+        modifier = Modifier.testTag("greetingInput"),
         value = text,
         label = {
             Text(text = "Enter Your Name")
@@ -60,6 +64,7 @@ fun GreetingInput(msg : TextFieldState = remember { TextFieldState() }) {
 fun GreetingButton(msg : TextFieldState = remember { TextFieldState() }) {
     val context = LocalContext.current
     ElevatedButton(
+        modifier = Modifier.testTag("greetingButton"),
         onClick = {
             greet(context, msg.text)
 
@@ -72,7 +77,9 @@ fun GreetingButton(msg : TextFieldState = remember { TextFieldState() }) {
 @Composable
 fun MainScreen() {
     Column(
-        modifier = Modifier.fillMaxSize().testTag("mainScreen"),
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("mainScreen"),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -86,4 +93,16 @@ fun MainScreen() {
 @Composable
 fun MainScreenPreview() {
     MainScreen()
+}
+
+@Preview
+@Composable
+fun GreetingButtonPreview() {
+    GreetingButton()
+}
+
+@Preview
+@Composable
+fun GreetingInputPreview() {
+    GreetingInput()
 }

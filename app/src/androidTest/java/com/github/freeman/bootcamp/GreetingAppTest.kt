@@ -36,6 +36,84 @@ class GreetingAppTest {
 
     }
 
+    @Test
+    fun buttonTextIsCorrect() {
+        composeRule.setContent {
+            BootcampComposeTheme {
+                MainScreen()
+            }
+        }
+
+        composeRule.onNode(hasTestTag("greetingButton")).assertTextContains("Greet me!")
+
+    }
+
+    @Test
+    fun buttonHasClickAction() {
+        composeRule.setContent {
+            BootcampComposeTheme {
+                MainScreen()
+            }
+        }
+
+        composeRule.onNode(hasTestTag("greetingButton")).assertHasClickAction()
+    }
+
+
+    @Test
+    fun mainScreenPreviewTest() {
+        composeRule.setContent {
+            BootcampComposeTheme {
+                MainScreenPreview()
+            }
+        }
+
+        composeRule.onRoot().apply {
+            assertIsDisplayed()
+
+            val textNode = composeRule.onNode(hasTestTag("greetingButton"))
+            textNode.assertIsDisplayed()
+
+            composeRule.onNode(hasTestTag("greetingInput")).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun greetingButtonPreviewTest() {
+        composeRule.setContent {
+            BootcampComposeTheme {
+                GreetingButtonPreview()
+            }
+        }
+
+        composeRule.onRoot().apply {
+            assertIsDisplayed()
+
+            val textNode = composeRule.onNode(hasTestTag("greetingButton"))
+            textNode.assertIsDisplayed()
+
+        }
+
+    }
+
+    @Test
+    fun greetingInputPreviewTest() {
+        composeRule.setContent {
+            BootcampComposeTheme {
+                GreetingInputPreview()
+            }
+        }
+
+        composeRule.onRoot().apply {
+            assertIsDisplayed()
+
+            composeRule.onNode(hasTestTag("greetingInput")).assertIsDisplayed()
+
+
+        }
+
+    }
+
 
     @Test
     fun intentIsSent() {
@@ -56,7 +134,6 @@ class GreetingAppTest {
 
     @Test
     fun greetingIsDisplayed() {
-        // Start the app
         composeRule.setContent {
             BootcampComposeTheme {
                 MainScreen()
@@ -66,7 +143,20 @@ class GreetingAppTest {
         composeRule.onNode(hasSetTextAction()).performTextInput("boby")
         composeRule.onNodeWithText("Greet me!").performClick()
 
-        composeRule.onNodeWithText("Hello, boby!").assertIsDisplayed()
+        composeRule.onNode(hasTestTag("greeting")).assertIsDisplayed()
+    }
+
+    @Test
+    fun greetingIsNotDisplayedWhenNameIsEmpty() {
+        composeRule.setContent {
+            BootcampComposeTheme {
+                MainScreen()
+            }
+        }
+
+        composeRule.onNodeWithText("Greet me!").performClick()
+
+        composeRule.onNode(hasTestTag("greeting")).assertDoesNotExist()
     }
 
     @Test
@@ -79,6 +169,7 @@ class GreetingAppTest {
 
         composeRule.onNodeWithText("Greet me!").assertIsDisplayed()
     }
+
     @Test
     fun textFieldLabelIsCorrect() {
         composeRule.setContent {
@@ -87,7 +178,7 @@ class GreetingAppTest {
             }
         }
 
-        composeRule.onNode(hasSetTextAction()).assertTextContains("Enter Your Name")
+        composeRule.onNode(hasTestTag("greetingInput")).assertTextContains("Enter Your Name")
     }
 
 

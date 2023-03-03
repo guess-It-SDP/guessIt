@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 class GreetingActivity : ComponentActivity() {
@@ -29,7 +30,9 @@ class GreetingActivity : ComponentActivity() {
 fun Greeting(name: String){
     Surface {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .testTag("greeting"),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -38,4 +41,3 @@ fun Greeting(name: String){
     }
 
 }
-
