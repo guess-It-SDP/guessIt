@@ -7,9 +7,12 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val i = Intent(this, BackgroundMusicService::class.java)
+        startService(i)
     }
 
     fun greet(view: View) {
