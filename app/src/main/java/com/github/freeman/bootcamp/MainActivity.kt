@@ -18,4 +18,10 @@ class MainActivity : AppCompatActivity() {
         myIntent.putExtra("name", name) //Optional parameters
         startActivity(myIntent)
     }
+
+    fun testBackgroundMusic(view: View) {
+        val myIntent = Intent(this, BackgroundMusicExampleActivity::class.java)
+        startActivity(myIntent)
+    }
+
 }
