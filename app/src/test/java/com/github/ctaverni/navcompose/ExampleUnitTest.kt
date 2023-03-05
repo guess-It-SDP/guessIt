@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp
+package com.github.ctaverni.navcompose
 
 import org.junit.Test
 
