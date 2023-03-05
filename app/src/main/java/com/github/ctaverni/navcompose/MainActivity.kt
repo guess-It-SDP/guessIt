@@ -35,6 +35,10 @@ fun settings(context: Context) {
     context.startActivity(Intent(context, SettingsActivity::class.java))
 }
 
+/**
+ * Main (Home) Screen which contains the Navigation Drawer (slide from top left corner
+ * to make it appears)
+ */
 @Composable
 fun MainScreen() {
     NavigationDrawer()
@@ -52,7 +56,9 @@ fun MainScreen() {
     }
 }
 
-
+/**
+ * The Navigation Drawer which can lead to others activities
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationDrawer() {
