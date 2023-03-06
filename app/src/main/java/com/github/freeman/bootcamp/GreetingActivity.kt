@@ -3,9 +3,11 @@ package com.github.freeman.bootcamp
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 
 
 class GreetingActivity : AppCompatActivity() {
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

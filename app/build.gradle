@@ -45,6 +45,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.firebase:firebase-database-ktx:20.1.0'
+    implementation 'com.google.firebase:firebase-auth-ktx:21.1.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -54,6 +55,7 @@ dependencies {
     androidTestImplementation('com.adevinta.android:barista:4.2.0') {
         //exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
     }
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
 }
 
 
