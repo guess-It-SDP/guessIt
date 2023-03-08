@@ -11,11 +11,9 @@ class BackgroundMusicService : Service() {
 
     private val tag = "BackgroundMusicServiceLog"
     private lateinit var mediaPlayer: MediaPlayer
-//    private lateinit var binder: MusicBinder
 
     override fun onBind(intent: Intent): IBinder {
         TODO("Return the communication channel to the service.")
-//        return binder;
     }
 
     override fun onCreate() {
@@ -36,9 +34,4 @@ class BackgroundMusicService : Service() {
         Log.i(tag, "Executing onDestroy")
         mediaPlayer.stop()
     }
-
-//    inner class MusicBinder : Binder() {
-//        val service: BackgroundMusicService
-//            get() = this@BackgroundMusicService
-//    }
 }
