@@ -2,6 +2,7 @@ package com.github.freeman.bootcamp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -28,21 +29,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val epfl = LatLng(46.520536, 6.568318)
+        val sat = LatLng(46.520544, 6.567825)
+        val marker = mMap.addMarker(MarkerOptions().position(sat).title("Satellite"))
+        if (marker != null) {
+            marker.tag = getString(R.string.satellite_marker_tag)
+        }
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(epfl, 14f))
+        mMap.setMaxZoomPreference(15f)
+        mMap.setOnMarkerClickListener { clickedMarker ->
+            if (clickedMarker == marker) {
+                Toast.makeText(applicationContext, "Coordinates: " + marker.position.toString(), Toast.LENGTH_LONG).show()
+            }
+            false
+        }
     }
 }

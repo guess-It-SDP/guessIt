@@ -30,7 +30,7 @@ public class MainActivityTest {
         Intents.init();
         onView(ViewMatchers.withId(R.id.mainName)).perform(click(), clearText(),typeText("bob"), closeSoftKeyboard());
         onView(ViewMatchers.withId(R.id.mainSubmitButton)).perform(click());
-        intended(allOf(IntentMatchers.hasComponent(GreetingActivity.class.getName())));
+        intended(allOf(IntentMatchers.hasComponent(MapsActivity.class.getName())));
         Intents.release();
     }
 }

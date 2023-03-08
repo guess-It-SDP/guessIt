@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun greet(view: View) {
-        val myIntent = Intent(this, GreetingActivity::class.java)
+        val myIntent = Intent(this, MapsActivity::class.java)
         val name = findViewById<EditText>(R.id.mainName).text.toString()
         myIntent.putExtra("name", name) //Optional parameters
         startActivity(myIntent)
