@@ -1,7 +1,5 @@
 env:
   CC_TEST_REPORTER_ID: ENCRYPTED[3da6ce5ea02856f01fcc049302eeae0c2e96f038d40cd5c29693749709260b362c7376f4000237dc9bf2e2dff30b8f86]
-  MAPS_API_KEY: ENCRYPTED[!9eb91028ea082e43817b510410850d40e0f1adf3a3924818a4f1f53a54b4b6f8e24cae0c4f14c4dd44bd276d3fe279f6!]
-  
 
 container:
   image: cirrusci/android-sdk:30
@@ -27,6 +25,7 @@ check_android_task:
       -no-window
       -camera-back none
   assemble_instrumented_tests_script: |
+    echo MAPS_API_KEY=ENCRYPTED[!9eb91028ea082e43817b510410850d40e0f1adf3a3924818a4f1f53a54b4b6f8e24cae0c4f14c4dd44bd276d3fe279f6!] >> local.properties
     chmod +x gradlew
     ./gradlew assembleDebugAndroidTest
   wait_for_avd_script:
