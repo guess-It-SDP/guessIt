@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BootcampCompose</string>
+    <string name="title_activity_audio_recording">AudioRecordingActivity</string>
 </resources>
