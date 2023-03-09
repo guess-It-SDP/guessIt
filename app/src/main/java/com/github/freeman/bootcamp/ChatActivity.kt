@@ -1,6 +1,10 @@
 package com.github.freeman.bootcamp
 
+import android.os.Bundle
+import android.os.Debug
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +18,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.freeman.bootcamp.database.Database
+import com.github.freeman.bootcamp.database.FirebaseDataBase
+import com.github.freeman.bootcamp.database.MockDataBase
+import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import java.util.concurrent.CompletableFuture
+
+// This is an example of an activity class. Any activities should work with the following code
+class ExampleActivity : ComponentActivity() {
+    private val debug = false
+    private val db: Database = if (debug) MockDataBase() else FirebaseDataBase()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            BootcampComposeTheme {
+                Main()
+            }
+        }
+    }
+
+
+}
+
 
 
 @Composable
@@ -66,8 +97,6 @@ fun ChatScreen(
 }
 
 
-
-
 @Composable
 fun BottomBar(
     message: String,
@@ -103,9 +132,8 @@ fun BottomBar(
     }
 }
 
-@Preview
 @Composable
-fun MainPreview() {
+fun Main() {
     val chatMessages = remember { mutableStateListOf<ChatMessage>() }
     val message = remember { mutableStateOf("") }
     val chatActive = remember { mutableStateOf(false) }
@@ -113,7 +141,8 @@ fun MainPreview() {
     MaterialTheme {
         Box(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.fillMaxSize()) {
-                // your other task goes here
+                // your main task goes here
+                BackGroundComposable()
             }
             if (chatActive.value) {
                 Box(
@@ -148,6 +177,17 @@ fun MainPreview() {
     BackHandler(enabled = chatActive.value) {
         chatActive.value = false
     }
+}
+
+@Preview
+@Composable
+fun MainPreview() {
+    Main()
+}
+
+@Composable
+fun BackGroundComposable() {
+    Text(text = "Hello world!")
 }
 
 
