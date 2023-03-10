@@ -75,6 +75,21 @@ fun GreetingButton(msg : TextFieldState = remember { TextFieldState() }) {
 }
 
 @Composable
+fun LoginButton() {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("LoginButton"),
+        onClick = {
+            context.startActivity(Intent(context, LoginActivity::class.java))
+        }
+    ) {
+        Text("Login")
+    }
+}
+
+
+
+@Composable
 fun MainScreen() {
     Column(
         modifier = Modifier
@@ -86,6 +101,7 @@ fun MainScreen() {
         val textState = remember { TextFieldState() }
         GreetingInput(textState)
         GreetingButton(textState)
+        LoginButton()
     }
 }
 

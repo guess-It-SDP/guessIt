@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">BootcampCompose</string>
+    <string name="title_activity_login2">LoginActivity2</string>
+    <string name="title_activity_login">LoginActivity</string>
 </resources>
