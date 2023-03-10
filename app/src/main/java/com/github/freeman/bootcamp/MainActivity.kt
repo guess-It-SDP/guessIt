@@ -41,7 +41,6 @@ fun greet(context: Context, name: String) {
             putExtra("name", name)
         })
     }
-
 }
 
 @Composable
@@ -67,11 +66,27 @@ fun GreetingButton(msg : TextFieldState = remember { TextFieldState() }) {
         modifier = Modifier.testTag("greetingButton"),
         onClick = {
             greet(context, msg.text)
-
         }
     ) {
         Text("Greet me!")
     }
+}
+
+@Composable
+fun SettingsButton() {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("settingsButton"),
+        onClick = {
+            settings(context)
+        }
+    ) {
+        Text(SettingsActivity.SETTINGS_TITLE)
+    }
+}
+
+fun settings(context: Context) {
+    context.startActivity(Intent(context, SettingsActivity::class.java))
 }
 
 @Composable
@@ -86,6 +101,7 @@ fun MainScreen() {
         val textState = remember { TextFieldState() }
         GreetingInput(textState)
         GreetingButton(textState)
+        SettingsButton()
     }
 }
 
@@ -105,4 +121,10 @@ fun GreetingButtonPreview() {
 @Composable
 fun GreetingInputPreview() {
     GreetingInput()
+}
+
+@Preview
+@Composable
+fun SettingsButtonPreview() {
+    SettingsButton()
 }
