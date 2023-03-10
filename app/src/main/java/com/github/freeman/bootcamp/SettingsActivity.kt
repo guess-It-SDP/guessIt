@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.SettingsActivity.Companion.BACK
+import com.github.freeman.bootcamp.SettingsActivity.Companion.MUSIC_VOLUME
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 class SettingsActivity : ComponentActivity() {
@@ -32,24 +35,9 @@ class SettingsActivity : ComponentActivity() {
     companion object {
         const val SETTINGS_TITLE = "Settings"
         const val BACK = "Back"
+        const val MUSIC_VOLUME = "Music Volume"
     }
 }
-
-@Composable
-fun Settings(){
-    Surface {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .testTag("settings"),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("This is the settings menu! (work in progress)")
-        }
-    }
-}
-
 
 @Composable
 fun BackButton() {
@@ -79,21 +67,13 @@ fun Display() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Settings()
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .testTag("displaySettings2"),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+            Text(text = MUSIC_VOLUME)
             MusicSlider()
         }
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .testTag("displaySettings3"),
+                .testTag("displaySettings2"),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.Start
         ) {
@@ -114,6 +94,7 @@ private fun MusicSlider() {
         onValueChange = { sliderValue_ ->
             sliderValue = sliderValue_
         },
+        modifier = Modifier.padding(50.dp),
         valueRange = 0.01f..1f
     )
 
