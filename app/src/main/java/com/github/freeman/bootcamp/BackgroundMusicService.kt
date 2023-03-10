@@ -10,6 +10,7 @@ class BackgroundMusicService : Service() {
 
     private val tag = "BackgroundMusicServiceLog"
     private lateinit var mediaPlayer: MediaPlayer
+    private var currentVolume = 1f
 
     override fun onBind(intent: Intent): IBinder {
         TODO("Return the communication channel to the service.")
@@ -18,7 +19,7 @@ class BackgroundMusicService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.i(tag, "Executing onCreate")
-        bs = this
+        BGMService = this
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -36,10 +37,18 @@ class BackgroundMusicService : Service() {
     }
 
     companion object {
-        lateinit var bs: BackgroundMusicService
+        lateinit var BGMService: BackgroundMusicService
     }
 
     fun changeVolume(leftVolume: Float, rightVolume: Float) {
         mediaPlayer.setVolume(leftVolume, rightVolume)
+    }
+
+    fun saveVolume(volume: Float) {
+        currentVolume = volume
+    }
+
+    fun getCurrentVolume(): Float {
+        return currentVolume
     }
 }

@@ -3,7 +3,6 @@ package com.github.freeman.bootcamp
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -72,7 +71,7 @@ fun back(context: Context) {
 
 @Composable
 fun Display() {
-    MaterialTheme() {
+    MaterialTheme {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -89,7 +88,7 @@ fun Display() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            slider()
+            MusicSlider()
         }
         Column(
             modifier = Modifier
@@ -104,27 +103,22 @@ fun Display() {
 }
 
 @Composable
-private fun slider() {
+private fun MusicSlider() {
+    val backgroundMusicService = BackgroundMusicService.BGMService
     var sliderValue by remember {
-        mutableStateOf(0f) // pass the initial value
+        mutableStateOf(backgroundMusicService.getCurrentVolume()) // pass the initial value
     }
-
-    val backgroundMusicService = BackgroundMusicService.bs
-    backgroundMusicService.changeVolume(sliderValue, sliderValue)
 
     Slider(
         value = sliderValue,
         onValueChange = { sliderValue_ ->
             sliderValue = sliderValue_
         },
-        onValueChangeFinished = {
-            // this is called when the user completed selecting the value
-            Log.d("SettingsActivity", "sliderValue = $sliderValue")
-        },
-        valueRange = 0f..10f
+        valueRange = 0.01f..1f
     )
 
-    Text(text = sliderValue.toString())
+    backgroundMusicService.changeVolume(sliderValue, sliderValue)
+    backgroundMusicService.saveVolume(sliderValue)
 }
 
 @Preview(showBackground = true)
