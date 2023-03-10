@@ -8,7 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,10 +53,11 @@ fun Settings(){
     }
 }
 
+
 @Composable
 fun BackButton() {
     val context = LocalContext.current
-    FilledTonalButton(
+    Button(
         modifier = Modifier.testTag("backButton"),
         onClick = {
             back(context)
@@ -72,23 +74,25 @@ fun back(context: Context) {
 
 @Composable
 fun Display() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .testTag("displaySettings1"),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Settings()
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .testTag("displaySettings2"),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.Start
-    ) {
-        BackButton()
+    MaterialTheme() {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .testTag("displaySettings1"),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Settings()
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .testTag("displaySettings2"),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.Start
+        ) {
+            BackButton()
+        }
     }
 }
 
