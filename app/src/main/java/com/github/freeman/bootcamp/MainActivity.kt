@@ -21,6 +21,8 @@ import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val i = Intent(this, BackgroundMusicService::class.java)
+        startService(i)
         setContent {
             BootcampComposeTheme {
                 MainScreen()
