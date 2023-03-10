@@ -3,16 +3,14 @@ package com.github.freeman.bootcamp
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -88,12 +86,45 @@ fun Display() {
             modifier = Modifier
                 .fillMaxSize()
                 .testTag("displaySettings2"),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            slider()
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .testTag("displaySettings3"),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.Start
         ) {
             BackButton()
         }
     }
+}
+
+@Composable
+private fun slider() {
+    var sliderValue by remember {
+        mutableStateOf(0f) // pass the initial value
+    }
+
+    val backgroundMusicService = BackgroundMusicService.bs
+    backgroundMusicService.changeVolume(sliderValue, sliderValue)
+
+    Slider(
+        value = sliderValue,
+        onValueChange = { sliderValue_ ->
+            sliderValue = sliderValue_
+        },
+        onValueChangeFinished = {
+            // this is called when the user completed selecting the value
+            Log.d("SettingsActivity", "sliderValue = $sliderValue")
+        },
+        valueRange = 0f..10f
+    )
+
+    Text(text = sliderValue.toString())
 }
 
 @Preview(showBackground = true)

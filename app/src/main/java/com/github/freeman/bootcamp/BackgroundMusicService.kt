@@ -18,12 +18,13 @@ class BackgroundMusicService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.i(tag, "Executing onCreate")
+        bs = this
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i(tag, "Executing onStartCommand")
         mediaPlayer = MediaPlayer.create(applicationContext, R.raw.waterfall)
-        mediaPlayer.isLooping = true;
+        mediaPlayer.isLooping = true
         mediaPlayer.start()
         return super.onStartCommand(intent, flags, startId)
     }
@@ -32,5 +33,13 @@ class BackgroundMusicService : Service() {
         super.onDestroy()
         Log.i(tag, "Executing onDestroy")
         mediaPlayer.stop()
+    }
+
+    companion object {
+        lateinit var bs: BackgroundMusicService
+    }
+
+    fun changeVolume(leftVolume: Float, rightVolume: Float) {
+        mediaPlayer.setVolume(leftVolume, rightVolume)
     }
 }

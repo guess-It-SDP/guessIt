@@ -19,9 +19,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 class MainActivity : ComponentActivity() {
+    private val backgroundMusicService = BackgroundMusicService()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val i = Intent(this, BackgroundMusicService::class.java)
+        val i = Intent(this, backgroundMusicService::class.java)
         startService(i)
         setContent {
             BootcampComposeTheme {
