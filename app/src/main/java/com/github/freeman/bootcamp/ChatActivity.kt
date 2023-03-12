@@ -2,6 +2,7 @@ package com.github.freeman.bootcamp
 
 import android.os.Bundle
 import android.os.Debug
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -14,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,7 +25,9 @@ import com.github.freeman.bootcamp.database.FirebaseDataBase
 import com.github.freeman.bootcamp.database.MockDataBase
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.util.concurrent.CompletableFuture
@@ -32,11 +36,17 @@ import java.util.concurrent.CompletableFuture
 class ExampleActivity : ComponentActivity() {
     private val debug = false
     private val db: Database = if (debug) MockDataBase() else FirebaseDataBase()
+    private val fireDb = Firebase.database.reference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
         setContent {
             BootcampComposeTheme {
+
+
                 Main()
             }
         }
@@ -135,8 +145,40 @@ fun BottomBar(
 @Composable
 fun Main() {
     val chatMessages = remember { mutableStateListOf<ChatMessage>() }
-    val message = remember { mutableStateOf("") }
+    var message by remember { mutableStateOf("") }
     val chatActive = remember { mutableStateOf(false) }
+
+
+
+
+    val databaseReference = Firebase.database.getReference("Chat/TestChatId01")
+    var msg by remember { mutableStateOf("Hello World!") }
+
+
+    databaseReference.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            // this method is call to get the realtime
+            // updates in the data.
+            // this method is called when the data is
+            // changed in our Firebase console.
+            // below line is for getting the data from
+            // snapshot of our database.
+            val value = snapshot.value
+
+            // after getting the value we are setting
+            // our value to message.
+            message = value.toString()
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            // calling on cancelled method when we receive
+            // any error or we are not able to get the data.
+            message = "fail"
+        }
+    })
+
+
+
 
     MaterialTheme {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -153,11 +195,11 @@ fun Main() {
                 ) {
                     ChatScreen(
                         chatMessages = chatMessages,
-                        message = message.value,
-                        onMessageChange = { message.value = it },
+                        message = message,
+                        onMessageChange = { message = it },
                         onSendClick = {
-                            chatMessages.add(ChatMessage(message = message.value, sender = "me"))
-                            message.value = ""
+                            chatMessages.add(ChatMessage(message = message, sender = "me"))
+                            message = ""
                         }
                     )
                 }
@@ -187,7 +229,9 @@ fun MainPreview() {
 
 @Composable
 fun BackGroundComposable() {
-    Text(text = "Hello world!")
+
+
+    Text(text = "Hello World!")
 }
 
 
