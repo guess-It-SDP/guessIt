@@ -23,9 +23,15 @@ class MainMenuTest {
     }
 
     @Test
+    fun mainMenuScreenHasGameName() {
+        setMainMenuScreen()
+        composeRule.onNode(hasTestTag("gameName")).assertTextContains("Guess It!")
+    }
+
+    @Test
     fun playButtonTextIsCorrect() {
         setMainMenuScreen()
-        composeRule.onNode(hasTestTag("playButton")).assertTextContains("Play Game")
+        composeRule.onNode(hasTestTag("playButton")).assertTextContains("Play game")
     }
 
     @Test
@@ -91,7 +97,7 @@ class MainMenuTest {
         Intents.release()
     }
 
-    fun setMainMenuScreen() {
+    private fun setMainMenuScreen() {
         composeRule.setContent {
             BootcampComposeTheme {
                 MainMenuScreen()

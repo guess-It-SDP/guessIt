@@ -119,7 +119,8 @@ fun MainMenuScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Guess It !",
+            modifier = Modifier.testTag("gameName"),
+            text = "Guess It!",
             fontSize = 40.sp
         )
         Spacer(modifier = Modifier.size(50.dp))
