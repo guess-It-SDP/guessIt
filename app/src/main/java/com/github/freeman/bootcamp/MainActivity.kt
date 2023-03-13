@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import com.github.freeman.bootcamp.record.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 class MainActivity : ComponentActivity() {
@@ -75,6 +76,19 @@ fun GreetingButton(msg : TextFieldState = remember { TextFieldState() }) {
 }
 
 @Composable
+fun AudioRecorderButton() {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("AudioRecorderButton"),
+        onClick = {
+            context.startActivity(Intent(context, AudioRecordingActivity::class.java))
+        }
+    ) {
+        Text("Login")
+    }
+}
+
+@Composable
 fun MainScreen() {
     Column(
         modifier = Modifier
@@ -86,6 +100,7 @@ fun MainScreen() {
         val textState = remember { TextFieldState() }
         GreetingInput(textState)
         GreetingButton(textState)
+        AudioRecorderButton()
     }
 }
 
