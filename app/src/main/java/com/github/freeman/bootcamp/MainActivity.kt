@@ -120,6 +120,6 @@ fun authButton() {
             context.startActivity(Intent(context, AuthenticationActivity::class.java))
         }
     ) {
-        androidx.compose.material.Text("Sign in")
+        androidx.compose.material.Text("Login")
     }
 }
