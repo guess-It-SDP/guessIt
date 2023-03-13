@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,16 +37,17 @@ import java.util.concurrent.CompletableFuture
 
 // This is an example of an activity class. Any activities should work with the following code
 class ExampleActivity : ComponentActivity() {
-    private val debug = false
+    private val debug = true
     //private val db: Database = if (debug) MockDataBase() else FirebaseDataBase()
     //private val fireDb = Firebase.database.reference
     private val chatId = "TestChatId01" // TODO: will be set when a game is created (with intent for example)
+    private val db = Firebase.database
     private val dbref = Firebase.database.getReference("Chat/$chatId")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        if (debug) db.useEmulator("10.0.2.2", 9000)
 
 
         setContent {
@@ -62,14 +64,14 @@ class ExampleActivity : ComponentActivity() {
 
 @Composable
 fun ChatMessageItem(chatMessage: ChatMessage) {
-    Row(modifier = Modifier.padding(8.dp)) {
+    Row(modifier = Modifier.padding(8.dp).testTag("chatMessageItem")) {
         Text(text = "${chatMessage.sender}: ${chatMessage.message}")
     }
 }
 
 @Composable
 fun ChatMessageList(chatMessages: Array<ChatMessage>) {
-    LazyColumn (modifier = Modifier.fillMaxWidth()) {
+    LazyColumn (modifier = Modifier.fillMaxWidth().testTag("chatMessageList")) {
         items(chatMessages) { chatMessage ->
             ChatMessageItem(chatMessage = chatMessage)
         }
@@ -84,16 +86,10 @@ fun ChatScreen(
     onSendClick: () -> Unit
 ) {
     Column {
-        Text(
-            text = "Chat App",
-            modifier = Modifier
-                .padding(8.dp)
-                .align(Alignment.CenterHorizontally),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
+
         Box(
             modifier = Modifier
+                .testTag("chatScreen")
                 .weight(1f)
                 .background(Color.Gray)
         ) {
@@ -118,7 +114,9 @@ fun BottomBar(
 ) {
     Surface(
         color = Color.White,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("bottomBar")
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -127,7 +125,9 @@ fun BottomBar(
             TextField(
                 value = message,
                 onValueChange = onMessageChange,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.
+                    weight(1f)
+                    .testTag("textField"),
                 placeholder = { Text("Type a message...") },
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Color.Transparent,
@@ -136,6 +136,8 @@ fun BottomBar(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Button(
+                modifier = Modifier
+                    .testTag("sendButton"),
                 onClick = onSendClick,
                 colors = ButtonDefaults.buttonColors()
             ) {
@@ -218,10 +220,12 @@ fun Main(dbref: DatabaseReference) {
                     )
                 }
             } else {
+                // Button to activate chat
                 Button(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(10.dp),
+                        .padding(10.dp)
+                        .testTag("activateChatButton"),
                     onClick = { chatActive = true }
                 ) {
                     Text(text = "chat")
@@ -239,6 +243,8 @@ fun Main(dbref: DatabaseReference) {
 @Composable
 fun MainPreview() {
     val chatId = "TestChatId01"
+    val db = Firebase.database
+    db.useEmulator("10.0.2.2", 9000)
     val dbref = Firebase.database.getReference("Chat/$chatId")
     Main(dbref)
 }
@@ -247,7 +253,7 @@ fun MainPreview() {
 fun BackGroundComposable() {
 
 
-    Text(text = "Hello World!")
+    Text(text = "Hello World!", modifier = Modifier.testTag("backGroundComposable"))
 }
 
 
