@@ -24,19 +24,24 @@ import com.github.freeman.bootcamp.database.Database
 import com.github.freeman.bootcamp.database.FirebaseDataBase
 import com.github.freeman.bootcamp.database.MockDataBase
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.Timestamp
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.util.concurrent.CompletableFuture
 
 // This is an example of an activity class. Any activities should work with the following code
 class ExampleActivity : ComponentActivity() {
     private val debug = false
-    private val db: Database = if (debug) MockDataBase() else FirebaseDataBase()
-    private val fireDb = Firebase.database.reference
+    //private val db: Database = if (debug) MockDataBase() else FirebaseDataBase()
+    //private val fireDb = Firebase.database.reference
+    private val chatId = "TestChatId01" // TODO: will be set when a game is created (with intent for example)
+    private val dbref = Firebase.database.getReference("Chat/$chatId")
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,9 +50,7 @@ class ExampleActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-
-
-                Main()
+                Main(dbref)
             }
         }
     }
@@ -65,7 +68,7 @@ fun ChatMessageItem(chatMessage: ChatMessage) {
 }
 
 @Composable
-fun ChatMessageList(chatMessages: List<ChatMessage>) {
+fun ChatMessageList(chatMessages: Array<ChatMessage>) {
     LazyColumn (modifier = Modifier.fillMaxWidth()) {
         items(chatMessages) { chatMessage ->
             ChatMessageItem(chatMessage = chatMessage)
@@ -75,7 +78,7 @@ fun ChatMessageList(chatMessages: List<ChatMessage>) {
 
 @Composable
 fun ChatScreen(
-    chatMessages: List<ChatMessage>,
+    chatMessages: Array<ChatMessage>,
     message: String,
     onMessageChange: (String) -> Unit,
     onSendClick: () -> Unit
@@ -143,19 +146,16 @@ fun BottomBar(
 }
 
 @Composable
-fun Main() {
-    val chatMessages = remember { mutableStateListOf<ChatMessage>() }
+fun Main(dbref: DatabaseReference) {
+    var chatMessages by remember { mutableStateOf(arrayOf<ChatMessage>()) }
     var message by remember { mutableStateOf("") }
-    val chatActive = remember { mutableStateOf(false) }
+    var chatActive by remember { mutableStateOf(false) }
 
 
 
 
-    val databaseReference = Firebase.database.getReference("Chat/TestChatId01")
-    var msg by remember { mutableStateOf("Hello World!") }
 
-
-    databaseReference.addValueEventListener(object : ValueEventListener {
+    dbref.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             // this method is call to get the realtime
             // updates in the data.
@@ -163,11 +163,23 @@ fun Main() {
             // changed in our Firebase console.
             // below line is for getting the data from
             // snapshot of our database.
-            val value = snapshot.value
+            //val value = snapshot.value
+            if (snapshot.exists()) {
+                val chatMessageList = snapshot.getValue<ArrayList<ChatMessage>>()!!
 
-            // after getting the value we are setting
-            // our value to message.
-            message = value.toString()
+                // after getting the value we are setting
+                // our value to message.
+                //message = value.toString()
+
+                chatMessages = chatMessageList.toTypedArray()
+
+//            for (item in chatMessageMap!!.values) {
+//                chatMessages.(item)
+//            }
+            }
+
+
+
         }
 
         override fun onCancelled(error: DatabaseError) {
@@ -186,7 +198,7 @@ fun Main() {
                 // your main task goes here
                 BackGroundComposable()
             }
-            if (chatActive.value) {
+            if (chatActive) {
                 Box(
                     modifier = Modifier
                         .height(300.dp)
@@ -198,7 +210,9 @@ fun Main() {
                         message = message,
                         onMessageChange = { message = it },
                         onSendClick = {
-                            chatMessages.add(ChatMessage(message = message, sender = "me"))
+                            val chtMsg = ChatMessage(message = message, sender = "me")
+                            val msgId = chatMessages.size.toString()
+                            dbref.child(msgId).setValue(chtMsg)
                             message = ""
                         }
                     )
@@ -208,7 +222,7 @@ fun Main() {
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(10.dp),
-                    onClick = { chatActive.value = true }
+                    onClick = { chatActive = true }
                 ) {
                     Text(text = "chat")
                 }
@@ -216,15 +230,17 @@ fun Main() {
         }
     }
 
-    BackHandler(enabled = chatActive.value) {
-        chatActive.value = false
+    BackHandler(enabled = chatActive) {
+        chatActive = false
     }
 }
 
 @Preview
 @Composable
 fun MainPreview() {
-    Main()
+    val chatId = "TestChatId01"
+    val dbref = Firebase.database.getReference("Chat/$chatId")
+    Main(dbref)
 }
 
 @Composable
@@ -233,6 +249,7 @@ fun BackGroundComposable() {
 
     Text(text = "Hello World!")
 }
+
 
 
 
