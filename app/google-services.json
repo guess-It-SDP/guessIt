@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "690006943045",
+    "firebase_url": "https://sdp-guess-it-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "sdp-guess-it",
+    "storage_bucket": "sdp-guess-it.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:690006943045:android:68322f6de6d3c7fbb40a2c",
+        "android_client_info": {
+          "package_name": "com.github.freeman.bootcamp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "690006943045-qccs8s58p6ck2r3llb7e7kv6najg8485.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0d467kiABLNfv1W5584DwNWG9rOQyCx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "690006943045-qccs8s58p6ck2r3llb7e7kv6najg8485.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
