@@ -16,7 +16,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import com.github.freeman.bootcamp.auth.AuthenticationActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.api.Authentication
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +45,7 @@ fun greet(context: Context, name: String) {
     }
 
 }
+
 
 @Composable
 fun GreetingInput(msg : TextFieldState = remember { TextFieldState() }) {
@@ -86,6 +89,7 @@ fun MainScreen() {
         val textState = remember { TextFieldState() }
         GreetingInput(textState)
         GreetingButton(textState)
+        authButton()
     }
 }
 
@@ -105,4 +109,17 @@ fun GreetingButtonPreview() {
 @Composable
 fun GreetingInputPreview() {
     GreetingInput()
+}
+
+@Composable
+fun authButton() {
+    val context = LocalContext.current
+    Button(
+        modifier = Modifier.testTag("auth_button"),
+        onClick = {
+            context.startActivity(Intent(context, AuthenticationActivity::class.java))
+        }
+    ) {
+        androidx.compose.material.Text("Sign in")
+    }
 }
