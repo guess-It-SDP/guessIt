@@ -1,13 +1,21 @@
 {
   "project_info": {
+<<<<<<< HEAD
     "project_number": "580629798084",
     "firebase_url": "https://sdp-firebase-bootcamp-89ce8-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "sdp-firebase-bootcamp-89ce8",
     "storage_bucket": "sdp-firebase-bootcamp-89ce8.appspot.com"
+=======
+    "project_number": "690006943045",
+    "firebase_url": "https://sdp-guess-it-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "sdp-guess-it",
+    "storage_bucket": "sdp-guess-it.appspot.com"
+>>>>>>> d4d9d1fc8240ca56414164d8936bc0108fc4f7e6
   },
   "client": [
     {
       "client_info": {
+<<<<<<< HEAD
         "mobilesdk_app_id": "1:580629798084:android:b644050f24bcc1eea0bd91",
         "android_client_info": {
           "package_name": "bootcamp.fireapp"
@@ -46,26 +54,41 @@
     {
       "client_info": {
         "mobilesdk_app_id": "1:580629798084:android:301962e02b011a7ba0bd91",
+=======
+        "mobilesdk_app_id": "1:690006943045:android:68322f6de6d3c7fbb40a2c",
+>>>>>>> d4d9d1fc8240ca56414164d8936bc0108fc4f7e6
         "android_client_info": {
           "package_name": "com.github.freeman.bootcamp"
         }
       },
       "oauth_client": [
         {
+<<<<<<< HEAD
           "client_id": "580629798084-5hocioq5limg59o6d3i6tkromhjcpjsb.apps.googleusercontent.com",
+=======
+          "client_id": "690006943045-qccs8s58p6ck2r3llb7e7kv6najg8485.apps.googleusercontent.com",
+>>>>>>> d4d9d1fc8240ca56414164d8936bc0108fc4f7e6
           "client_type": 3
         }
       ],
       "api_key": [
         {
+<<<<<<< HEAD
           "current_key": "AIzaSyBXZRJFhH58_-eiIBOf_zpN7Re0uRnBic0"
+=======
+          "current_key": "AIzaSyB0d467kiABLNfv1W5584DwNWG9rOQyCx8"
+>>>>>>> d4d9d1fc8240ca56414164d8936bc0108fc4f7e6
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
+<<<<<<< HEAD
               "client_id": "580629798084-5hocioq5limg59o6d3i6tkromhjcpjsb.apps.googleusercontent.com",
+=======
+              "client_id": "690006943045-qccs8s58p6ck2r3llb7e7kv6najg8485.apps.googleusercontent.com",
+>>>>>>> d4d9d1fc8240ca56414164d8936bc0108fc4f7e6
               "client_type": 3
             }
           ]
