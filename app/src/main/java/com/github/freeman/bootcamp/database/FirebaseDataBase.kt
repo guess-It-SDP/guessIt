@@ -8,6 +8,10 @@ import java.util.concurrent.CompletableFuture
 class FirebaseDataBase: Database {
     private val db: DatabaseReference = Firebase.database.reference
 
+
+
+
+
     override fun set(key: String, value: String) {
         db.child(key).setValue(value)
     }
