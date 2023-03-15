@@ -20,6 +20,7 @@ class BackgroundMusicService : Service() {
         super.onCreate()
         Log.i(tag, "Executing onCreate")
         BGMService = this
+//        mediaPlayer = MediaPlayer.create(this.applicationContext, R.raw.waterfall)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -41,7 +42,14 @@ class BackgroundMusicService : Service() {
     }
 
     fun changeVolume(leftVolume: Float, rightVolume: Float) {
+        // Removing the else loop stops the app from crashing but still no sound is heard
+//        if (::mediaPlayer.isInitialized) {
         mediaPlayer.setVolume(leftVolume, rightVolume)
+//        }
+//        else {
+//            onCreate()
+//            mediaPlayer.setVolume(leftVolume, rightVolume)
+//        }
     }
 
     fun saveVolume(volume: Float) {
