@@ -1,66 +1,54 @@
 package com.github.freeman.bootcamp
 
+import android.graphics.Bitmap
 import android.os.Bundle
-import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-
-private val action: MutableState<Any?> = mutableStateOf(null)
-private val path = Path()
+import io.ak1.drawbox.DrawBox
+import io.ak1.drawbox.rememberDrawController
 
 class DrawingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
             BootcampComposeTheme {
-                CreateCanvas()
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
+                ) {
+                    DrawingScreen{}
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun CreateCanvas() {
-    Canvas(modifier = Modifier
-        .fillMaxSize()
-        .pointerInteropFilter {
-            when (it.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    action.value = it
-                    path.moveTo(it.x, it.y)
+fun DrawingScreen(save: (Bitmap) -> Unit) {
+    Box {
+        Column {
+            val controller = rememberDrawController()
+            DrawBox(
+                drawController = controller,
+                bitmapCallback = { imageBitmap, error ->
+                    imageBitmap?.let {
+                        save(it.asAndroidBitmap())
+                    }
                 }
-                MotionEvent.ACTION_MOVE -> {
-                    action.value = it
-                    path.lineTo(it.x, it.y)
-                }
-                MotionEvent.ACTION_UP -> { }
-                else -> false
-            }
-            true
-        }
-    ) {
-        action.value?.let {
-            drawPath(
-                path = path,
-                color = Color.Green,
-                alpha = 1f,
-                style = Stroke(10f))
+            )
+            controller.changeColor(Color.Black)
         }
     }
 }
@@ -69,6 +57,6 @@ fun CreateCanvas() {
 @Composable
 fun DefaultPreview() {
     BootcampComposeTheme {
-        CreateCanvas()
+        DrawingScreen{}
     }
 }
