@@ -20,6 +20,7 @@ class BackgroundMusicService : Service() {
         super.onCreate()
         Log.i(tag, "Executing onCreate")
         BGMService = this
+        isRunning = true
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -34,10 +35,12 @@ class BackgroundMusicService : Service() {
         super.onDestroy()
         Log.i(tag, "Executing onDestroy")
         mediaPlayer.stop()
+        isRunning = false
     }
 
     companion object {
         lateinit var BGMService: BackgroundMusicService
+        var isRunning = false
     }
 
     fun changeVolume(leftVolume: Float, rightVolume: Float) {

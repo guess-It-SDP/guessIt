@@ -10,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.SettingsActivity.Companion.MUSIC_VOLUME
 import com.github.freeman.bootcamp.SettingsActivity.Companion.SETTINGS_TITLE
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,10 +49,28 @@ class SettingsActivityTest {
         composeRule.onNode(hasTestTag(MUSIC_VOLUME)).assertTextContains(MUSIC_VOLUME)
     }
 
+    @Test
+    fun backButtonClosesActivity() {
+        startBackgroundMusicService()
+        setDisplay()
+        composeRule.onNode(hasTestTag("settingsBackButton")).performClick()
+        assertEquals(false, SettingsActivity.isRunning)
+    }
+
+    @Test
+    fun backgroundMusicServiceClosesOnStop() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val intent = Intent(context, BackgroundMusicService::class.java)
+        context.startService(intent)
+        context.stopService(intent)
+        assertEquals(false, BackgroundMusicService.isRunning)
+    }
+
     private fun startBackgroundMusicService() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         context.startService(Intent(context, BackgroundMusicService::class.java))
     }
+
 
     private fun setDisplay() {
         composeRule.setContent {

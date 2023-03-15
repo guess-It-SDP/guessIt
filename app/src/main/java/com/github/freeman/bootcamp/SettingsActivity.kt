@@ -14,16 +14,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.SettingsActivity.Companion.MUSIC_VOLUME
 import com.github.freeman.bootcamp.SettingsActivity.Companion.SETTINGS_TITLE
+import com.github.freeman.bootcamp.SettingsActivity.Companion.isRunning
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 class SettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isRunning = true
         setContent {
             BootcampComposeTheme {
                 SettingsScreen()
@@ -34,6 +35,7 @@ class SettingsActivity : ComponentActivity() {
     companion object {
         const val SETTINGS_TITLE = "Settings"
         const val MUSIC_VOLUME = "Music Volume"
+        var isRunning = false
     }
 }
 
@@ -54,6 +56,7 @@ fun SettingsBackButton() {
 }
 
 fun back(context: Context) {
+    isRunning = false
     val activity = (context as? Activity)
     activity?.finish()
 }
@@ -107,10 +110,4 @@ private fun MusicSlider() {
 
     backgroundMusicService.changeVolume(sliderValue, sliderValue)
     backgroundMusicService.saveVolume(sliderValue)
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SettingsScreenPreview() {
-    SettingsScreen()
 }
