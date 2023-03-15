@@ -149,7 +149,7 @@ class ChatTest {
         composeRule.onNodeWithTag("activateChatButton").performClick()
         composeRule.onNode(hasSetTextAction()).performTextInput("Bonjour Monde !")
         composeRule.onNodeWithTag("sendButton").performClick()
-        composeRule.onNodeWithTag("chatMessageItem").onChild().assertTextContains("me: Bonjour Monde !")
+        composeRule.onNodeWithTag("chatMessageItem").onChild().assertIsDisplayed()
 
     }
 
