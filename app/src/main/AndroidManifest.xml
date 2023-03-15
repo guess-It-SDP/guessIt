@@ -11,11 +11,36 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BootcampCompose"
         tools:targetApi="31">
-        <service
-            android:name=".BackgroundMusicService"
-            android:enabled="true"
-            android:exported="true"></service>
-
+        <activity
+            android:name=".MainMenuActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".GameOptionsActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/Theme.BootcampCompose.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -28,7 +53,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".GreetingActivity" />
-        <activity android:name=".SettingsActivity" />
     </application>
 
 </manifest>

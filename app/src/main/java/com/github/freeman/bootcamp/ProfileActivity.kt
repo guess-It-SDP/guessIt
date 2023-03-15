@@ -1,42 +1,42 @@
 package com.github.freeman.bootcamp
 
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
-class SettingsActivity : ComponentActivity() {
+
+class ProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
-                SettingsScreen()
+                ProfileScreen()
             }
         }
     }
 }
 
 @Composable
-fun SettingsScreen() {
+fun ProfileScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .testTag("settingsScreen"),
+            .testTag("profileScreen"),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Settings Activity to implement")
+        Text("Profile Activity to implement")
     }
 
     Column(
@@ -51,6 +51,6 @@ fun SettingsScreen() {
 
 @Preview(showBackground = true)
 @Composable
-fun SettingsScreenPreview() {
-    GameOptionsScreen()
+fun ProfileScreenPreview() {
+    ProfileScreen()
 }

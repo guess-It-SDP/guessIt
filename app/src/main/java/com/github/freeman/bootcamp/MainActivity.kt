@@ -8,6 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +19,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.android.material.R
 
 class MainActivity : ComponentActivity() {
     private val backgroundMusicService = BackgroundMusicService()
@@ -27,7 +30,7 @@ class MainActivity : ComponentActivity() {
         startService(i)
         setContent {
             BootcampComposeTheme {
-                MainScreen()
+                MainMenuScreen()
             }
         }
     }

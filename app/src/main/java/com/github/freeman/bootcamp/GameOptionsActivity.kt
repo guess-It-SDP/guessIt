@@ -6,37 +6,35 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
-class SettingsActivity : ComponentActivity() {
+class GameOptionsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
-                SettingsScreen()
+                GameOptionsScreen()
             }
         }
     }
 }
 
 @Composable
-fun SettingsScreen() {
+fun GameOptionsScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .testTag("settingsScreen"),
+            .testTag("gameOptionsScreen"),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Settings Activity to implement")
+        Text("Game Options Activity to implement")
     }
 
     Column(
@@ -51,6 +49,6 @@ fun SettingsScreen() {
 
 @Preview(showBackground = true)
 @Composable
-fun SettingsScreenPreview() {
+fun GameOptionsScreenPreview() {
     GameOptionsScreen()
 }
