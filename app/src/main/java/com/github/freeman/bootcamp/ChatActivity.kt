@@ -24,6 +24,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import kotlin.random.Random
 
 // Any activities should work with the following code for chat
 class ChatActivity : ComponentActivity() {
@@ -139,6 +140,8 @@ fun Main(dbref: DatabaseReference) {
     var chatMessages by remember { mutableStateOf(arrayOf<ChatMessage>()) }
     var message by remember { mutableStateOf("") }
     var chatActive by remember { mutableStateOf(false) }
+    // For testing purpose. Real name would be assigned with google account for example
+    val randomName by remember { mutableStateOf(Random.nextInt(100, 1000)) }
 
     // Listens for change in the database
     dbref.addValueEventListener(object : ValueEventListener {
@@ -174,7 +177,7 @@ fun Main(dbref: DatabaseReference) {
                         onMessageChange = { message = it },
                         onSendClick = {
                             // Currently the Id of each msg is simply the order on which they appeared
-                            val chtMsg = ChatMessage(message = message, sender = "me")
+                            val chtMsg = ChatMessage(message = message, sender = randomName.toString())
                             val msgId = chatMessages.size.toString()
                             dbref.child(msgId).setValue(chtMsg)
                             message = ""
