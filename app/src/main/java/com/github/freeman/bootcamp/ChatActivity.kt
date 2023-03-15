@@ -26,7 +26,7 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 // Any activities should work with the following code for chat
-class ExampleActivity : ComponentActivity() {
+class ChatActivity : ComponentActivity() {
     private val chatId = "TestChatId01" // TODO: will be set when a game is created (with intent for example)
     private val dbref = Firebase.database.getReference("Chat/$chatId")
 
