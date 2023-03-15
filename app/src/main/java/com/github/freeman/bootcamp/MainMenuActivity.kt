@@ -12,14 +12,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PROFILE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
@@ -39,6 +37,7 @@ class MainMenuActivity : ComponentActivity() {
         const val SETTINGS = "Settings"
         const val PLAY = "Play game"
         const val PROFILE = "Profile"
+        const val CHAT = "Chat"
     }
 }
 
@@ -87,6 +86,21 @@ fun ProfileButton() {
     }
 }
 
+fun chatTest(context: Context) {
+    context.startActivity(Intent(context, ChatActivity::class.java))
+}
+
+@Composable
+fun ChatTestButton() {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("chatTestButton"),
+        onClick = { chatTest(context) }
+    ) {
+        Text(CHAT)
+    }
+}
+
 @Composable
 fun BackButton() {
     val context = LocalContext.current
@@ -102,6 +116,8 @@ fun BackButton() {
         )
     }
 }
+
+
 
 @Preview
 @Composable
@@ -129,6 +145,8 @@ fun MainMenuScreen() {
         SettingsButton()
         Spacer(modifier = Modifier.size(24.dp))
         ProfileButton()
+        Spacer(modifier = Modifier.size(24.dp))
+        ChatTestButton()
     }
 }
 
