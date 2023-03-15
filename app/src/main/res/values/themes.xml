@@ -2,4 +2,11 @@
 <resources>
 
     <style name="Theme.BootcampCompose" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.BootcampCompose.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.BootcampCompose.AppBarOverlay"
+        parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.BootcampCompose.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
