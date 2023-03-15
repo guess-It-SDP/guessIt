@@ -14,6 +14,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.lang.Thread.sleep
 
 @RunWith(AndroidJUnit4::class)
 class SettingsActivityTest {
@@ -54,6 +55,7 @@ class SettingsActivityTest {
         startBackgroundMusicService()
         setDisplay()
         composeRule.onNode(hasTestTag("settingsBackButton")).performClick()
+        sleep(5000)
         assertEquals(false, SettingsActivity.isRunning)
     }
 
@@ -63,6 +65,7 @@ class SettingsActivityTest {
         val intent = Intent(context, BackgroundMusicService::class.java)
         context.startService(intent)
         context.stopService(intent)
+        sleep(5000)
         assertEquals(false, BackgroundMusicService.isRunning)
     }
 
