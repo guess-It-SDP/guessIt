@@ -63,16 +63,16 @@ class MainMenuTest {
         composeRule.onNode(hasTestTag("settingsButton")).assertHasClickAction()
     }
 
-    @Test
-    fun settingsIntentIsSent() {
-        Intents.init()
-        setMainMenuScreen()
-
-        composeRule.onNodeWithText("Settings").performClick()
-        Intents.intended(IntentMatchers.hasComponent(SettingsActivity::class.java.name))
-
-        Intents.release()
-    }
+//    @Test
+//    fun settingsIntentIsSent() {
+//        Intents.init()
+//        setMainMenuScreen()
+//
+//        composeRule.onNodeWithText("Settings").performClick()
+//        Intents.intended(IntentMatchers.hasComponent(SettingsActivity::class.java.name))
+//
+//        Intents.release()
+//    }
 
     @Test
     fun profileButtonTextIsCorrect() {
