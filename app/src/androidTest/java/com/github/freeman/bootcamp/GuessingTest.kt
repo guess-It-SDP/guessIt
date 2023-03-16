@@ -59,9 +59,9 @@ class GuessingTest {
     }
 
 
-    private fun initDataBase(): DatabaseReference {
-        val guessGameId = "GameTestGuessesId"
+    private fun initGuessingDataBase(): DatabaseReference {
         val db = Firebase.database
+        val guessGameId = "GameTestGuessesId"
         db.useEmulator("10.0.2.2", 9000)
         return Firebase.database.getReference("Guesses/$guessGameId")
     }
