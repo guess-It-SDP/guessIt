@@ -60,10 +60,10 @@ class GuessingTest {
 
 
     private fun initDataBase(): DatabaseReference {
-        val chatId = "TestChatId01"
+        val guessGameId = "GameTestGuessesId"
         val db = Firebase.database
         db.useEmulator("10.0.2.2", 9000)
-        return Firebase.database.getReference("Chat/$chatId")
+        return Firebase.database.getReference("Guesses/$guessGameId")
     }
 
     private fun initScreenWithoutDatabase() {

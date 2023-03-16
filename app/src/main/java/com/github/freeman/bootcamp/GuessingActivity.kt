@@ -163,15 +163,15 @@ fun GuessingScreen(dbref: DatabaseReference) {
             }
 
             GuessingBar(
-                    guess = guess,
-                    onGuessChange = { guess = it },
-                    onSendClick = {
-                        val gs = Guess(guesser = "MyUsername", guess = guess) //TODO: Change the guesser name with my name in the database
-                        val guessId = guesses.size.toString()
-                        dbref.child(guessId).setValue(gs)
+                guess = guess,
+                onGuessChange = { guess = it },
+                onSendClick = {
+                    val gs = Guess(guesser = "MyUsername", guess = guess) //TODO: Change the guesser name with my name in the database
+                    val guessId = guesses.size.toString() //TODO: Change for a more accurate id
+                    dbref.child(guessId).setValue(gs)
 
-                        guess = ""
-                    }
+                    guess = ""
+                }
             )
         }
     }
@@ -180,10 +180,10 @@ fun GuessingScreen(dbref: DatabaseReference) {
 @Preview
 @Composable
 fun GuessingPreview() {
-    val chatId = "GameTestGuessesId"
+    val guessGameId = "GameTestGuessesId"
     val db = Firebase.database
     db.useEmulator("10.0.2.2", 9000)
-    val dbref = Firebase.database.getReference("Guess/$chatId")
+    val dbref = Firebase.database.getReference("Guesses/$guessGameId")
     BootcampComposeTheme {
         GuessingScreen(dbref)
     }
