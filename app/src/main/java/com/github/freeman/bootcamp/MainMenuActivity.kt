@@ -24,8 +24,12 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 class MainMenuActivity : ComponentActivity() {
+    private val backgroundMusicService = BackgroundMusicService()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val i = Intent(this, backgroundMusicService::class.java)
+        startService(i)
         setContent {
             BootcampComposeTheme {
                 MainMenuScreen()
