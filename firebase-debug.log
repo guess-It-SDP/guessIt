@@ -1,0 +1,29 @@
+[debug] [2023-03-16T13:48:06.419Z] ----------------------------------------------------------------------
+[debug] [2023-03-16T13:48:06.422Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Utilisateur\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2023-03-16T13:48:06.423Z] CLI Version:   11.24.1
+[debug] [2023-03-16T13:48:06.424Z] Platform:      win32
+[debug] [2023-03-16T13:48:06.424Z] Node Version:  v18.15.0
+[debug] [2023-03-16T13:48:06.444Z] Time:          Thu Mar 16 2023 14:48:06 GMT+0100 (heure normale d’Europe centrale)
+[debug] [2023-03-16T13:48:06.444Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-03-16T13:48:06.468Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-03-16T13:48:06.470Z] > authorizing via signed-in user (clara.tavernier@epfl.ch)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\Utilisateur\AndroidStudioProjects\guessIt
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[info] i  If you want to create a project in a Google Cloud organization or folder, please use "firebase projects:create" instead, and return to this command when you've created the project. 

@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,9 +42,13 @@ class GuessingActivity : ComponentActivity() {
 
 @Composable
 fun GuessItem(guess: Guess) {
-    Row(modifier = Modifier.padding(8.dp)) {
+    Row(
+        modifier = Modifier
+            .padding(8.dp)
+            .testTag("guessItem")
+    ) {
         //if guess.guesser.equals(MYNAME) {
-        //    Text(text = "$I try \"${guess.guess}\"")
+        //    Text(text = "$You try \"${guess.guess}\"")
         //} else {
         Text(text = "${guess.guesser} tries \"${guess.guess}\"")
     }
@@ -51,7 +56,10 @@ fun GuessItem(guess: Guess) {
 
 @Composable
 fun GuessesList(guesses: Array<Guess>) {
-    LazyColumn (modifier = Modifier.fillMaxWidth()) {
+    LazyColumn (
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
         items(guesses) { guess ->
             GuessItem(guess = guess)
         }
@@ -66,7 +74,9 @@ fun GuessingBar(
 ) {
     Surface(
         color = Color.White,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("guessingBar")
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -84,6 +94,7 @@ fun GuessingBar(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Button(
+                modifier = Modifier.testTag("guessButton"),
                 onClick = onSendClick,
                 colors = ButtonDefaults.buttonColors()
             ) {
@@ -114,13 +125,16 @@ fun GuessingScreen(dbref: DatabaseReference) {
 
     MaterialTheme {
         Column(
-            modifier = Modifier.background(Color.White)
+            modifier = Modifier
+                .background(Color.White)
+                .testTag("guessingScreen")
         ) {
             Text(
                     text = "Your turn to guess!",
                     modifier = Modifier
                             .padding(8.dp)
-                            .align(Alignment.CenterHorizontally),
+                            .align(Alignment.CenterHorizontally)
+                        .testTag("guessText"),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
             )
@@ -129,18 +143,21 @@ fun GuessingScreen(dbref: DatabaseReference) {
                     modifier = Modifier
                             .height(300.dp)
                             .fillMaxWidth()
+                            .background(Color.DarkGray)
             ) {
                 Text(
                     text = "Something need to be drawn",
-                    modifier = Modifier.align(Alignment.Center))
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color.White)
                 //TODO: Display the drawing here
             }
 
             Box(
                 modifier = Modifier
-                        .weight(1f)
-                        .background(Color.Gray)
-                        .align(Alignment.End)
+                    .weight(1f)
+                    .background(Color.White)
+                    .align(Alignment.End)
+                    .testTag("guessesList")
             ) {
                 GuessesList(guesses = guesses)
             }
@@ -149,7 +166,7 @@ fun GuessingScreen(dbref: DatabaseReference) {
                     guess = guess,
                     onGuessChange = { guess = it },
                     onSendClick = {
-                        val gs = Guess(guesser = "I", guess = guess) //TODO: Change the guesser name with my name in the database
+                        val gs = Guess(guesser = "MyUsername", guess = guess) //TODO: Change the guesser name with my name in the database
                         val guessId = guesses.size.toString()
                         dbref.child(guessId).setValue(gs)
 
@@ -163,7 +180,7 @@ fun GuessingScreen(dbref: DatabaseReference) {
 @Preview
 @Composable
 fun GuessingPreview() {
-    val chatId = "TestChatId01"
+    val chatId = "GameTestGuessesId"
     val db = Firebase.database
     db.useEmulator("10.0.2.2", 9000)
     val dbref = Firebase.database.getReference("Guess/$chatId")
