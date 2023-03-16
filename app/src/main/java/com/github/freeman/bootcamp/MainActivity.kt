@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.NonNull
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,14 +20,36 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.github.freeman.bootcamp.auth.AuthenticationActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.api.Authentication
-
+import com.google.firebase.auth.FirebaseAuth
+import android.widget.Toast
 class MainActivity : ComponentActivity() {
+    var firebaseAuth: FirebaseAuth? = null
+    var mAuthListener: FirebaseAuth.AuthStateListener? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
                 MainScreen()
             }
+            //in onCreate function
+            firebaseAuth = FirebaseAuth.getInstance()
+            mAuthListener = FirebaseAuth.AuthStateListener() {
+                fun onAuthStateChanged(@NonNull firebaseAuth:FirebaseAuth) {
+                    val user = FirebaseAuth.getInstance().getCurrentUser()
+
+                    if (user != null)
+                    {
+                        Toast.makeText(  this@MainActivity ,user.toString(),
+                            Toast.LENGTH_SHORT)
+                        val intent = Intent(this, AuthenticationActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+            }
+
         }
     }
 }

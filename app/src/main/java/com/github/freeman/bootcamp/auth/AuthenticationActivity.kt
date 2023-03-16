@@ -9,15 +9,21 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.github.freeman.bootcamp.auth.ui.theme.BootcampComposeTheme
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInApi
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+
 
 class AuthenticationActivity : ComponentActivity() {
     private lateinit var authenticator: Authenticator
@@ -56,6 +62,7 @@ class AuthenticationActivity : ComponentActivity() {
                         signInButton()
                         signOutButton()
                         deleteButton()
+                        seeUser()
                     }
             }
         }
@@ -106,5 +113,16 @@ class AuthenticationActivity : ComponentActivity() {
         }
     }
 
+    @Composable
+    fun seeUser() {
+        Button(
+            modifier = Modifier.testTag(" seeUser"),
+            onClick = {
+                toast(FirebaseAuth.getInstance().currentUser.toString())
+            }
+        ) {
+            Text("seeUser")
+        }
+    }
 
 }

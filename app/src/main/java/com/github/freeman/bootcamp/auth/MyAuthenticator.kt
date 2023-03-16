@@ -16,6 +16,7 @@ class MyAuthenticator : Authenticator {
     private fun signInIntent(signInLauncher: ActivityResultLauncher<Intent>) {
         val providers = listOf(
             AuthUI.IdpConfig.GoogleBuilder().build()
+
         )
         val signInIntent = AuthUI.getInstance()
             .createSignInIntentBuilder()
@@ -27,7 +28,7 @@ class MyAuthenticator : Authenticator {
 
 
     override fun signIn(signInLauncher: ActivityResultLauncher<Intent>) {
-        signInIntent(signInLauncher)
+       signInIntent(signInLauncher)
     }
 
     override fun delete(context: Context?, onComplete: Runnable?) {
