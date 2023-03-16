@@ -1,7 +1,6 @@
 package com.github.freeman.bootcamp
 
 import android.os.Bundle
-import android.os.Debug
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -14,80 +13,77 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.github.freeman.bootcamp.database.Database
-import com.github.freeman.bootcamp.database.FirebaseDataBase
-import com.github.freeman.bootcamp.database.MockDataBase
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import java.util.concurrent.CompletableFuture
+import kotlin.random.Random
 
-// This is an example of an activity class. Any activities should work with the following code
-class ExampleActivity : ComponentActivity() {
-    private val debug = false
-    private val db: Database = if (debug) MockDataBase() else FirebaseDataBase()
+// Any activities should work with the following code for chat
+class ChatActivity : ComponentActivity() {
+    private val chatId = "TestChatId01" // TODO: will be set when a game is created (with intent for example)
+    private val dbref = Firebase.database.getReference("Chat/$chatId")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             BootcampComposeTheme {
-                Main()
+                Main(dbref)
             }
         }
     }
 
-
 }
 
-
-
+// Respresents how the chat message is displayed
 @Composable
 fun ChatMessageItem(chatMessage: ChatMessage) {
-    Row(modifier = Modifier.padding(8.dp)) {
+    Row(modifier = Modifier
+        .padding(8.dp)
+        .testTag("chatMessageItem")) {
         Text(text = "${chatMessage.sender}: ${chatMessage.message}")
     }
 }
 
+// Scrollable layout of all messages
 @Composable
-fun ChatMessageList(chatMessages: List<ChatMessage>) {
-    LazyColumn (modifier = Modifier.fillMaxWidth()) {
+fun ChatMessageList(chatMessages: Array<ChatMessage>) {
+    LazyColumn (modifier = Modifier
+        .fillMaxWidth()
+        .testTag("chatMessageList")) {
         items(chatMessages) { chatMessage ->
             ChatMessageItem(chatMessage = chatMessage)
         }
     }
 }
 
+// The full chat layout
 @Composable
 fun ChatScreen(
-    chatMessages: List<ChatMessage>,
+    chatMessages: Array<ChatMessage>,
     message: String,
     onMessageChange: (String) -> Unit,
     onSendClick: () -> Unit
 ) {
     Column {
-        Text(
-            text = "Chat App",
-            modifier = Modifier
-                .padding(8.dp)
-                .align(Alignment.CenterHorizontally),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
+
         Box(
             modifier = Modifier
+                .testTag("chatScreen")
                 .weight(1f)
                 .background(Color.Gray)
         ) {
             ChatMessageList(chatMessages = chatMessages)
 
         }
-        //Spacer(modifier = Modifier.weight(1f))
         BottomBar(
             message = message,
             onMessageChange = onMessageChange,
@@ -96,7 +92,7 @@ fun ChatScreen(
     }
 }
 
-
+// Where you write your message
 @Composable
 fun BottomBar(
     message: String,
@@ -105,7 +101,9 @@ fun BottomBar(
 ) {
     Surface(
         color = Color.White,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("bottomBar")
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -114,7 +112,9 @@ fun BottomBar(
             TextField(
                 value = message,
                 onValueChange = onMessageChange,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("textField"),
                 placeholder = { Text("Type a message...") },
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Color.Transparent,
@@ -123,6 +123,8 @@ fun BottomBar(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Button(
+                modifier = Modifier
+                    .testTag("sendButton"),
                 onClick = onSendClick,
                 colors = ButtonDefaults.buttonColors()
             ) {
@@ -132,11 +134,29 @@ fun BottomBar(
     }
 }
 
+// All chat layout including activating button
 @Composable
-fun Main() {
-    val chatMessages = remember { mutableStateListOf<ChatMessage>() }
-    val message = remember { mutableStateOf("") }
-    val chatActive = remember { mutableStateOf(false) }
+fun Main(dbref: DatabaseReference) {
+    var chatMessages by remember { mutableStateOf(arrayOf<ChatMessage>()) }
+    var message by remember { mutableStateOf("") }
+    var chatActive by remember { mutableStateOf(false) }
+    // For testing purpose. Real name would be assigned with google account for example
+    val randomName by remember { mutableStateOf(Random.nextInt(100, 1000)) }
+
+    // Listens for change in the database
+    dbref.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                val chatMessageList = snapshot.getValue<ArrayList<ChatMessage>>()!!
+
+                chatMessages = chatMessageList.toTypedArray()
+            }
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            // do nothing
+        }
+    })
 
     MaterialTheme {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -144,7 +164,7 @@ fun Main() {
                 // your main task goes here
                 BackGroundComposable()
             }
-            if (chatActive.value) {
+            if (chatActive) {
                 Box(
                     modifier = Modifier
                         .height(300.dp)
@@ -153,20 +173,25 @@ fun Main() {
                 ) {
                     ChatScreen(
                         chatMessages = chatMessages,
-                        message = message.value,
-                        onMessageChange = { message.value = it },
+                        message = message,
+                        onMessageChange = { message = it },
                         onSendClick = {
-                            chatMessages.add(ChatMessage(message = message.value, sender = "me"))
-                            message.value = ""
+                            // Currently the Id of each msg is simply the order on which they appeared
+                            val chtMsg = ChatMessage(message = message, sender = randomName.toString())
+                            val msgId = chatMessages.size.toString()
+                            dbref.child(msgId).setValue(chtMsg)
+                            message = ""
                         }
                     )
                 }
             } else {
+                // Button to activate chat
                 Button(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(10.dp),
-                    onClick = { chatActive.value = true }
+                        .padding(10.dp)
+                        .testTag("activateChatButton"),
+                    onClick = { chatActive = true }
                 ) {
                     Text(text = "chat")
                 }
@@ -174,21 +199,31 @@ fun Main() {
         }
     }
 
-    BackHandler(enabled = chatActive.value) {
-        chatActive.value = false
+    // Disable chat by pressing back
+    BackHandler(enabled = chatActive) {
+        chatActive = false
     }
 }
 
+// For testing and visualization purpose
 @Preview
 @Composable
 fun MainPreview() {
-    Main()
+    val chatId = "TestChatId01"
+    val db = Firebase.database
+    db.useEmulator("10.0.2.2", 9000)
+    val dbref = Firebase.database.getReference("Chat/$chatId")
+    BootcampComposeTheme {
+        Main(dbref)
+    }
 }
 
+// Example composable that can be run in parallel with the chat
 @Composable
 fun BackGroundComposable() {
-    Text(text = "Hello world!")
+    Text(text = "Hello World!", modifier = Modifier.testTag("backGroundComposable"))
 }
+
 
 
 
