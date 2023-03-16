@@ -32,6 +32,13 @@
                 android:value="" />
         </activity>
         <activity
+            android:name=".DrawingActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".GameOptionsActivity"
             android:exported="false">
             <meta-data
@@ -63,6 +70,4 @@
 
 
     </application>
-
-
 </manifest>
