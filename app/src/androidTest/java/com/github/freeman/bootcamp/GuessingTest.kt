@@ -75,7 +75,7 @@ class GuessingTest {
     }
 
     private fun initScreenWithDatabase() {
-        val database = initDataBase()
+        val database = initGuessingDataBase()
 
         composeRule.setContent {
             BootcampComposeTheme {
