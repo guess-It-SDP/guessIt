@@ -1,18 +1,14 @@
 package com.github.freeman.bootcamp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.compose.BackHandler
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,13 +17,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
 
-class GuessingActivity : AppCompatActivity() {
+class GuessingActivity : ComponentActivity() {
+    private val gameGuessesId = "GameTestGuessesId" //TODO: set when a game is starting
+    private val dbref = Firebase.database.getReference("Guesses/$gameGuessesId")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
-                Guessing()
+                GuessingScreen(dbref)
             }
         }
     }
@@ -36,64 +42,21 @@ class GuessingActivity : AppCompatActivity() {
 @Composable
 fun GuessItem(guess: Guess) {
     Row(modifier = Modifier.padding(8.dp)) {
-        Text(text = "${guess.guesser}: ${guess.guess}")
+        //if guess.guesser.equals(MYNAME) {
+        //    Text(text = "$I try \"${guess.guess}\"")
+        //} else {
+        Text(text = "${guess.guesser} tries \"${guess.guess}\"")
     }
 }
 
 @Composable
-fun GuessesList(guesses: List<Guess>) {
+fun GuessesList(guesses: Array<Guess>) {
     LazyColumn (modifier = Modifier.fillMaxWidth()) {
         items(guesses) { guess ->
             GuessItem(guess = guess)
         }
     }
 }
-
-@Preview
-@Composable
-fun GuessesListPreview() {
-    val guesses = remember { mutableStateListOf<Guess>() }
-    guesses.add(Guess(guesser = "Alban", guess = "Coucou"))
-    guesses.add(Guess(guesser = "Clara", guess = "Salut"))
-    guesses.add(Guess(guesser = "Alban", guess = "blablabla"))
-    guesses.add(Guess(guesser = "Clara", guess = "bloubloublou"))
-
-    GuessesList(guesses)
-}
-
-@Composable
-fun GuessingScreen(
-    guesses: List<Guess>,
-    guess: String,
-    onGuessChange: (String) -> Unit,
-    onSendClick: () -> Unit
-) {
-    Column {
-        Text(
-            text = "Make a guess !",
-            modifier = Modifier
-                .padding(8.dp)
-                .align(Alignment.CenterHorizontally),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .background(Color.Gray)
-        ) {
-            GuessesList(guesses = guesses)
-
-        }
-        //Spacer(modifier = Modifier.weight(1f))
-        GuessingBar(
-            guess = guess,
-            onGuessChange = onGuessChange,
-            onSendClick = onSendClick
-        )
-    }
-}
-
 
 @Composable
 fun GuessingBar(
@@ -131,26 +94,67 @@ fun GuessingBar(
 }
 
 @Composable
-fun Guessing() {
-    val guesses = remember { mutableStateListOf<Guess>() }
-    val guess = remember { mutableStateOf("") }
+fun GuessingScreen(dbref: DatabaseReference) {
+    var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
+    var guess by remember { mutableStateOf("") }
+
+    dbref.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                val guessesList = snapshot.getValue<ArrayList<Guess>>()!!
+
+                guesses = guessesList.toTypedArray()
+            }
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            // do nothing
+        }
+    })
 
     MaterialTheme {
         Column(
-            modifier = Modifier
-                .height(300.dp)
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.background(Color.White)
         ) {
-            GuessingScreen(
-                guesses = guesses,
-                guess = guess.value,
-                onGuessChange = { guess.value = it },
-                onSendClick = {
-                    guesses.add(Guess(guesser = guess.value, guess = "me"))
-                    guess.value = ""
-                }
+            Text(
+                    text = "Your turn to guess!",
+                    modifier = Modifier
+                            .padding(8.dp)
+                            .align(Alignment.CenterHorizontally),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+            )
+
+            Box(
+                    modifier = Modifier
+                            .height(300.dp)
+                            .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Something need to be drawn",
+                    modifier = Modifier.align(Alignment.Center))
+                //TODO: Display the drawing here
+            }
+
+            Box(
+                modifier = Modifier
+                        .weight(1f)
+                        .background(Color.Gray)
+                        .align(Alignment.End)
+            ) {
+                GuessesList(guesses = guesses)
+            }
+
+            GuessingBar(
+                    guess = guess,
+                    onGuessChange = { guess = it },
+                    onSendClick = {
+                        val gs = Guess(guesser = "I", guess = guess) //TODO: Change the guesser name with my name in the database
+                        val guessId = guesses.size.toString()
+                        dbref.child(guessId).setValue(gs)
+
+                        guess = ""
+                    }
             )
         }
     }
@@ -159,7 +163,13 @@ fun Guessing() {
 @Preview
 @Composable
 fun GuessingPreview() {
-    Guessing()
+    val chatId = "TestChatId01"
+    val db = Firebase.database
+    db.useEmulator("10.0.2.2", 9000)
+    val dbref = Firebase.database.getReference("Guess/$chatId")
+    BootcampComposeTheme {
+        GuessingScreen(dbref)
+    }
 }
 
 
