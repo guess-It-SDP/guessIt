@@ -59,11 +59,10 @@
             android:exported="true"
             android:theme="@style/Theme.BootcampCompose"/>
         <activity android:name=".ChatActivity" />
-
+        <activity android:name=".GuessingActivity" />
 
 
     </application>
-
 
 
 </manifest>
