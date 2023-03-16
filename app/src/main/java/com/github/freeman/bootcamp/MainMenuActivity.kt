@@ -129,6 +129,10 @@ fun BackButtonPreview() {
     BackButton()
 }
 
+/**
+ * This class will be the main screen of the app
+ * This class is not debugging
+ */
 @Composable
 fun MainMenuScreen() {
     Column(

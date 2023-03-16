@@ -33,7 +33,7 @@
         </activity>
         <activity
             android:name=".DrawingActivity"
-            android:exported="false">
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -65,8 +65,8 @@
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.BootcampCompose"/>
-        <activity android:name=".ChatActivity" />
-        <activity android:name=".GuessingActivity" />
+        <activity android:name=".ChatActivity" android:exported="true" />
+        <activity android:name=".GuessingActivity" android:exported="true" />
 
 
     </application>
