@@ -97,6 +97,23 @@ class MainMenuTest {
         Intents.release()
     }
 
+    @Test
+    fun chatTestButtonIsDisplayed() {
+        setMainMenuScreen()
+        composeRule.onNodeWithTag("chatTestButton").assertHasClickAction()
+    }
+
+    @Test
+    fun chatTestIntentIsSent() {
+        Intents.init()
+        setMainMenuScreen()
+
+        composeRule.onNodeWithText("Chat").performClick()
+        Intents.intended(IntentMatchers.hasComponent(ChatActivity::class.java.name))
+
+        Intents.release()
+    }
+
     private fun setMainMenuScreen() {
         composeRule.setContent {
             BootcampComposeTheme {

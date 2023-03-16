@@ -1,5 +1,6 @@
 env:
   CC_TEST_REPORTER_ID: ENCRYPTED[!0ba144f632c9075a8e56e45e61b33629f9b79381146f8a974d7a204202808b382e270c5b1a1b5ea61a008c2fc1b4486b!]
+  FIREBASE_TOKEN: ENCRYPTED[3a878eba1b0934e1a4b42f01016027da09652a735c3706754e3ee1db32cc4f550ea4187397fff1513ecfbc53c67726d2]
   
 
 container:
@@ -25,6 +26,8 @@ check_android_task:
       -no-snapshot
       -no-window
       -camera-back none
+  download_firebase_emulator_script: |
+    curl -Lo ./firebase_bin https://firebase.tools/bin/linux/latest
   assemble_instrumented_tests_script: |
     chmod +x gradlew
     ./gradlew assembleDebugAndroidTest
@@ -42,8 +45,9 @@ check_android_task:
   
   screen_record_background_script:
     for n in $(seq 1 20); do adb exec-out screenrecord --time-limit=180 --output-format=h264 - > $n.h264; done
-  check_script:
-    ./gradlew check connectedCheck
+  check_script: |
+    chmod +x firebase_bin
+    ./firebase_bin emulators:exec --project sdp-guess-it './gradlew check connectedCheck'
     
   report_codeclimate_script: |
     export JACOCO_SOURCE_PATH=app/src/main/java/
