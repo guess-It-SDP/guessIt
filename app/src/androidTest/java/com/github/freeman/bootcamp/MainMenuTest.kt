@@ -1,7 +1,10 @@
 package com.github.freeman.bootcamp
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -67,6 +70,8 @@ class MainMenuTest {
     fun settingsIntentIsSent() {
         Intents.init()
         setMainMenuScreen()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        context.startService(Intent(context, BackgroundMusicService::class.java))
 
         composeRule.onNodeWithText("Settings").performClick()
         Intents.intended(IntentMatchers.hasComponent(SettingsActivity::class.java.name))
