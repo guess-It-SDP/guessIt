@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 /**
@@ -49,6 +50,8 @@ class MainActivity : ComponentActivity() {
             DrawingActivity()
             Spacer(modifier = Modifier.size(8.dp))
             GuessingActivity()
+            Spacer(modifier = Modifier.size(8.dp))
+            AudioRecordingActivity()
             Spacer(modifier = Modifier.size(8.dp))
             MainMenuActivity()
         }
@@ -85,6 +88,17 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
+    fun AudioRecordingActivity() {
+        ElevatedButton(
+            modifier = Modifier.testTag("audio_recording_activity_button"),
+            onClick = { startActivity(Intent(this, AudioRecordingActivity::class.java)) }
+        ) {
+            Text("Record Audio from microphone")
+        }
+    }
+
+    @Composable
+
     fun MainMenuActivity() {
         ElevatedButton(
             modifier = Modifier.testTag("main_menu_activity_button"),
