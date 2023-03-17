@@ -21,6 +21,7 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PROFILE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
+import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 class MainMenuActivity : ComponentActivity() {
@@ -155,8 +156,20 @@ fun MainMenuScreen() {
         ProfileButton()
         Spacer(modifier = Modifier.size(24.dp))
         ChatTestButton()
+        Spacer(modifier = Modifier.size(24.dp))
+        Spacer(modifier = Modifier.size(8.dp))
+        DrawingActivity()
+        Spacer(modifier = Modifier.size(8.dp))
+        GuessingActivity()
+        Spacer(modifier = Modifier.size(8.dp))
+        AudioRecordingActivity()
+        Spacer(modifier = Modifier.size(8.dp))
+        MainMenuActivity()
+
     }
 }
+
+
 
 @Preview(showBackground = true)
 @Composable
