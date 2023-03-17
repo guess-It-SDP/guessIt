@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
@@ -27,86 +28,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
-                MainScreen()
+
             }
         }
     }
-    @Composable
-    fun MainScreen() {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .testTag("mainMenuScreen"),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                modifier = Modifier.testTag("gameName"),
-                text = "Guess It!",
-                fontSize = 40.sp
-            )
-            Spacer(modifier = Modifier.size(50.dp))
-            ChatButton()
-            Spacer(modifier = Modifier.size(8.dp))
-            DrawingActivity()
-            Spacer(modifier = Modifier.size(8.dp))
-            GuessingActivity()
-            Spacer(modifier = Modifier.size(8.dp))
-            AudioRecordingActivity()
-            Spacer(modifier = Modifier.size(8.dp))
-            MainMenuActivity()
-        }
-    }
-
-    @Composable
-    fun ChatButton() {
-        ElevatedButton(
-            modifier = Modifier.testTag("chat_activity_button"),
-            onClick = { startActivity(Intent(this, ChatActivity::class.java)) }
-        ) {
-            Text("Chat")
-        }
-    }
-
-    @Composable
-    fun DrawingActivity() {
-        ElevatedButton(
-            modifier = Modifier.testTag("drawing_activity_button"),
-            onClick = { startActivity(Intent(this, DrawingActivity::class.java)) }
-        ) {
-            Text("Draw")
-        }
-    }
-
-    @Composable
-    fun GuessingActivity() {
-        ElevatedButton(
-            modifier = Modifier.testTag("guessing_activity_button"),
-            onClick = { startActivity(Intent(this, GuessingActivity::class.java)) }
-        ) {
-            Text("Guess")
-        }
-    }
-
-    @Composable
-    fun AudioRecordingActivity() {
-        ElevatedButton(
-            modifier = Modifier.testTag("audio_recording_activity_button"),
-            onClick = { startActivity(Intent(this, AudioRecordingActivity::class.java)) }
-        ) {
-            Text("Record Audio from microphone")
-        }
-    }
-
-    @Composable
-
-    fun MainMenuActivity() {
-        ElevatedButton(
-            modifier = Modifier.testTag("main_menu_activity_button"),
-            onClick = { startActivity(Intent(this, MainMenuActivity::class.java)) }
-        ) {
-            Text("Main menu and music")
-        }
-    }
-
 }
 

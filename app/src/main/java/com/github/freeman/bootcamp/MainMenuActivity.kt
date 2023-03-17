@@ -12,12 +12,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key.Companion.D
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.AUDIO_REC
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PROFILE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
@@ -43,6 +48,9 @@ class MainMenuActivity : ComponentActivity() {
         const val PLAY = "Play game"
         const val PROFILE = "Profile"
         const val CHAT = "Chat"
+        const val GUESSING = "Guessing"
+        const val AUDIO_REC = "Audio Recording"
+        const val DRAWING = "Drawing"
     }
 }
 
@@ -106,6 +114,51 @@ fun ChatTestButton() {
     }
 }
 
+fun guessing(context: Context) {
+    context.startActivity(Intent(context, GuessingActivity::class.java))
+}
+
+@Composable
+fun GuessingButton() {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("guessingButton"),
+        onClick = { guessing(context) }
+    ) {
+        Text(GUESSING)
+    }
+}
+
+fun audioRec(context: Context) {
+    context.startActivity(Intent(context, AudioRecordingActivity::class.java))
+}
+
+@Composable
+fun AudioRecordingButton() {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("audioRecordingButton"),
+        onClick = { audioRec(context) }
+    ) {
+        Text(AUDIO_REC)
+    }
+}
+
+fun drawing(context: Context) {
+    context.startActivity(Intent(context, DrawingActivity::class.java))
+}
+
+@Composable
+fun DrawingButton() {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("drawingButton"),
+        onClick = { drawing(context) }
+    ) {
+        Text(DRAWING)
+    }
+}
+
 @Composable
 fun BackButton() {
     val context = LocalContext.current
@@ -157,14 +210,11 @@ fun MainMenuScreen() {
         Spacer(modifier = Modifier.size(24.dp))
         ChatTestButton()
         Spacer(modifier = Modifier.size(24.dp))
+        AudioRecordingButton()
         Spacer(modifier = Modifier.size(8.dp))
-        DrawingActivity()
+        GuessingButton()
         Spacer(modifier = Modifier.size(8.dp))
-        GuessingActivity()
-        Spacer(modifier = Modifier.size(8.dp))
-        AudioRecordingActivity()
-        Spacer(modifier = Modifier.size(8.dp))
-        MainMenuActivity()
+        DrawingButton()
 
     }
 }
