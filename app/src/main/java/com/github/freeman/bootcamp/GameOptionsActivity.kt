@@ -41,7 +41,7 @@ class GameOptionsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
-                GameOptionsScreen(dbref)
+                GameOptionsScreen(dbref, gameId)
             }
         }
     }
@@ -92,23 +92,25 @@ fun RadioButtons(mItems: List<String>, selected: String, setSelected: (selected:
 }
 
 @Composable
-fun NextButton(dbref: DatabaseReference) {
+fun NextButton(dbref: DatabaseReference, gameId: String) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("nextButton"),
-        onClick = { next(context, dbref) }
+        onClick = { next(context, dbref, gameId) }
     ) {
         Text(NEXT)
     }
 }
 
-fun next(context: Context, dbref: DatabaseReference) {
+fun next(context: Context, dbref: DatabaseReference, gameId: String) {
     dbref.child("nb_rounds").setValue(selection)
-    context.startActivity(Intent(context, TopicSelectionActivity::class.java))
+    context.startActivity(Intent(context, TopicSelectionActivity::class.java).apply {
+        putExtra("name", gameId)
+    })
 }
 
 @Composable
-fun GameOptionsScreen(dbref: DatabaseReference) {
+fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -118,7 +120,7 @@ fun GameOptionsScreen(dbref: DatabaseReference) {
     ) {
         Text(ROUNDS_SELECTION)
         RadioButtonsDisplay()
-        NextButton(dbref)
+        NextButton(dbref, gameId)
     }
 
     Column(
@@ -138,5 +140,5 @@ fun GameOptionsScreenPreview() {
     val db = Firebase.database
     db.useEmulator("10.0.2.2", 9000)
     val dbref =  Firebase.database.getReference("Games/$gameId")
-    GameOptionsScreen(dbref)
+    GameOptionsScreen(dbref, gameId)
 }

@@ -1,11 +1,11 @@
 package com.github.freeman.bootcamp
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ElevatedButton
@@ -17,16 +17,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.TopicSelectionActivity.Companion.SELECT_TOPIC
+import com.github.freeman.bootcamp.TopicSelectionActivity.Companion.TOPIC1
+import com.github.freeman.bootcamp.TopicSelectionActivity.Companion.TOPIC2
+import com.github.freeman.bootcamp.TopicSelectionActivity.Companion.TOPIC3
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class TopicSelectionActivity : ComponentActivity() {
+    private lateinit var dbref: DatabaseReference
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val gameId = intent.getStringExtra("name").toString()
+        dbref = Firebase.database.getReference("Games/$gameId")
         setContent {
             BootcampComposeTheme {
-                TopicSelectionScreen()
+                TopicSelectionScreen(dbref)
             }
         }
+    }
+
+    // TODO: Delete all topic constants and instead fetch random topics from the firebase
+    companion object {
+        const val SELECT_TOPIC = "Select the topic you wish to draw"
+        const val TOPIC1 = "Apple Syrup"
+        const val TOPIC2 = "Banana Syrup"
+        const val TOPIC3 = "Tomato Syrup – told you it's not a fruit!"
     }
 }
 
@@ -47,7 +67,23 @@ fun TopicSelectionBackButton() {
 }
 
 @Composable
-fun TopicSelectionScreen() {
+fun TopicButton(dbref: DatabaseReference, topic: String) {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("topicButton"),
+        onClick = { selectTopic(context, dbref, topic) }
+    ) {
+        Text(topic)
+    }
+}
+
+fun selectTopic(context: Context, dbref: DatabaseReference, topic: String) {
+    dbref.child("topic").setValue(topic)
+    context.startActivity(Intent(context, DrawingActivity::class.java))
+}
+
+@Composable
+fun TopicSelectionScreen(dbref: DatabaseReference) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -55,7 +91,13 @@ fun TopicSelectionScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Topic Selection Activity to implement")
+        Text(SELECT_TOPIC)
+        Spacer(modifier = Modifier.size(40.dp))
+        TopicButton(dbref, TOPIC1)
+        Spacer(modifier = Modifier.size(20.dp))
+        TopicButton(dbref, TOPIC2)
+        Spacer(modifier = Modifier.size(20.dp))
+        TopicButton(dbref, TOPIC3)
     }
 
     Column(
@@ -71,5 +113,9 @@ fun TopicSelectionScreen() {
 @Preview(showBackground = true)
 @Composable
 fun TopicSelectionScreenPreview() {
-    TopicSelectionScreen()
+    val gameId = "TestGameId01"
+    val db = Firebase.database
+    db.useEmulator("10.0.2.2", 9000)
+    val dbref =  Firebase.database.getReference("Games/$gameId")
+    TopicSelectionScreen(dbref)
 }
