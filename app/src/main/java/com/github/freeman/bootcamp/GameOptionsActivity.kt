@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NB_ROUNDS
@@ -31,10 +30,11 @@ import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.util.*
 
 class GameOptionsActivity : ComponentActivity() {
 
-    private val gameId = "TestGameId01" // TODO: Create an id rng or some other way of creating unique ids
+    private val gameId = UUID.randomUUID().toString()
     private val dbref = Firebase.database.getReference("Games/$gameId")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,16 +50,16 @@ class GameOptionsActivity : ComponentActivity() {
         const val ROUNDS_SELECTION = "Select the number of rounds"
         const val NEXT = "Next"
         val NB_ROUNDS = listOf("1", "3", "5", "7", "9")
-        var selection: String = "5"
+        var selection: Int = 5
     }
 }
 
 @Composable
 fun RadioButtonsDisplay() {
     val kinds = NB_ROUNDS
-    val (selected, setSelected) = remember { mutableStateOf("") }
+    val (selected, setSelected) = remember { mutableStateOf("5") }
     RadioButtons(mItems = kinds, selected, setSelected)
-    selection = selected
+    selection = Integer.parseInt(selected)
 }
 
 @Composable
@@ -84,7 +84,9 @@ fun RadioButtons(mItems: List<String>, selected: String, setSelected: (selected:
                             selectedColor = Color.Blue
                         )
                     )
-                    Text(text = item, modifier = Modifier.padding(start = 8.dp))
+                    Text(
+                        text = item,
+                        modifier = Modifier.padding(start = 8.dp).testTag("radioButtonText$item"),)
                 }
             }
         }
@@ -118,7 +120,10 @@ fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(ROUNDS_SELECTION)
+        Text(
+            modifier = Modifier.testTag("roundsSelection"),
+            text = ROUNDS_SELECTION
+        )
         RadioButtonsDisplay()
         NextButton(dbref, gameId)
     }
@@ -131,14 +136,4 @@ fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
     ) {
         BackButton()
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GameOptionsScreenPreview() {
-    val gameId = "TestGameId01"
-    val db = Firebase.database
-    db.useEmulator("10.0.2.2", 9000)
-    val dbref =  Firebase.database.getReference("Games/$gameId")
-    GameOptionsScreen(dbref, gameId)
 }
