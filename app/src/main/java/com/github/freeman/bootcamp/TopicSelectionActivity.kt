@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.TopicSelectionActivity.Companion.SELECT_TOPIC
 import com.github.freeman.bootcamp.TopicSelectionActivity.Companion.TOPIC1
@@ -67,10 +66,10 @@ fun TopicSelectionBackButton() {
 }
 
 @Composable
-fun TopicButton(dbref: DatabaseReference, topic: String) {
+fun TopicButton(dbref: DatabaseReference, topic: String, id: Int) {
     val context = LocalContext.current
     ElevatedButton(
-        modifier = Modifier.testTag("topicButton"),
+        modifier = Modifier.testTag("topicButton$id"),
         onClick = { selectTopic(context, dbref, topic) }
     ) {
         Text(topic)
@@ -87,17 +86,20 @@ fun TopicSelectionScreen(dbref: DatabaseReference) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .testTag("TopicSelectionScreen"),
+            .testTag("topicSelectionScreen"),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(SELECT_TOPIC)
+        Text(
+            modifier = Modifier.testTag("topicSelection"),
+            text = SELECT_TOPIC
+        )
         Spacer(modifier = Modifier.size(40.dp))
-        TopicButton(dbref, TOPIC1)
+        TopicButton(dbref, TOPIC1, 1)
         Spacer(modifier = Modifier.size(20.dp))
-        TopicButton(dbref, TOPIC2)
+        TopicButton(dbref, TOPIC2, 2)
         Spacer(modifier = Modifier.size(20.dp))
-        TopicButton(dbref, TOPIC3)
+        TopicButton(dbref, TOPIC3, 3)
     }
 
     Column(
@@ -108,14 +110,4 @@ fun TopicSelectionScreen(dbref: DatabaseReference) {
     ) {
         TopicSelectionBackButton()
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TopicSelectionScreenPreview() {
-    val gameId = "TestGameId01"
-    val db = Firebase.database
-    db.useEmulator("10.0.2.2", 9000)
-    val dbref =  Firebase.database.getReference("Games/$gameId")
-    TopicSelectionScreen(dbref)
 }

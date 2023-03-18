@@ -15,7 +15,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
 @RunWith(AndroidJUnit4::class)
 class GameOptionsActivityTest {
     private val gameId = "TestGameId"
@@ -37,18 +36,18 @@ class GameOptionsActivityTest {
     }
 
     @Test
-    fun nextButtonTextIsCorrect() {
-        setGameOptionsScreen()
-        composeRule.onNode(hasTestTag("nextButton")).assertTextContains(NEXT)
-    }
-
-    @Test
     fun roundNumbersAreCorrect() {
         setGameOptionsScreen()
         for (nb in NB_ROUNDS) {
             composeRule.onNode(hasTestTag("radioButtonText$nb"))
             composeRule.onNode(hasTestTag("radioButtonText$nb")).assertTextContains(nb)
         }
+    }
+
+    @Test
+    fun nextButtonTextIsCorrect() {
+        setGameOptionsScreen()
+        composeRule.onNode(hasTestTag("nextButton")).assertTextContains(NEXT)
     }
 
     @Test
