@@ -62,10 +62,11 @@ fun Timer(
     totalTime: Long,
     inactiveBarColor: Color,
     activeBarColor: Color,
-    modifier: Modifier = Modifier,
-    initialValue: Float = 1f,
-    strokeWidth: Dp = 5.dp
+    modifier: Modifier = Modifier
 ) {
+    val initialValue = 1f
+    val strokeWidth = 5.dp
+
     var size by remember { mutableStateOf(IntSize.Zero) }
     var value by remember { mutableStateOf(initialValue) }
     var currentTime by remember { mutableStateOf(totalTime) }
@@ -83,34 +84,45 @@ fun Timer(
         modifier = modifier
             .onSizeChanged { size = it }
     ) {
-        Canvas(modifier = modifier.testTag("timerCanvas")) {
+        TimerCercles(modifier, inactiveBarColor, activeBarColor, strokeWidth, value)
 
-            drawArc(
-                color = inactiveBarColor,
-                startAngle = 90f,
-                sweepAngle = 360f,
-                useCenter = false,
-                size = Size(size.width.toFloat(), size.height.toFloat()),
-                style = Stroke(strokeWidth.toPx(), cap = StrokeCap.Round)
-            )
+        TimerText(currentTime)
+    }
+}
 
-            drawArc(
-                color = activeBarColor,
-                startAngle = 90f,
-                sweepAngle = 360f * value,
-                useCenter = false,
-                size = Size(size.width.toFloat(), size.height.toFloat()),
-                style = Stroke(strokeWidth.toPx(), cap = StrokeCap.Round)
-            )
+@Composable
+fun TimerText(currentTime: Long) {
+    Text(
+        text = (currentTime / 1000L).toString(),
+        fontSize = 44.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.DarkGray
+    )
+}
 
-        }
+@Composable
+fun TimerCercles(modifier: Modifier, inactiveBarColor: Color, activeBarColor: Color, strokeWidth: Dp, value: Float) {
+    Canvas(
+        modifier = modifier.testTag("timerCanvas")) {
 
-        Text(
-            text = (currentTime / 1000L).toString(),
-            fontSize = 44.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.DarkGray
+        drawArc(
+            color = inactiveBarColor,
+            startAngle = 90f,
+            sweepAngle = 360f,
+            useCenter = false,
+            size = Size(size.width.toFloat(), size.height.toFloat()),
+            style = Stroke(strokeWidth.toPx(), cap = StrokeCap.Round)
         )
+
+        drawArc(
+            color = activeBarColor,
+            startAngle = 90f,
+            sweepAngle = 360f * value,
+            useCenter = false,
+            size = Size(size.width.toFloat(), size.height.toFloat()),
+            style = Stroke(strokeWidth.toPx(), cap = StrokeCap.Round)
+        )
+
     }
 }
 
