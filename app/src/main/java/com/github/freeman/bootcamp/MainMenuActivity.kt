@@ -24,6 +24,7 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PROFILE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
@@ -48,7 +49,9 @@ class MainMenuActivity : ComponentActivity() {
         const val CHAT = "Chat"
         const val GUESSING = "Guessing"
         const val AUDIO_REC = "Audio Recording"
+        const val SIGN_IN = "Sign in"
         const val DRAWING = "Drawing"
+
     }
 }
 
@@ -157,6 +160,21 @@ fun DrawingButton() {
     }
 }
 
+fun signIn(context: Context) {
+    context.startActivity(Intent(context, SignInActivity::class.java))
+}
+
+@Composable
+fun SignInButton() {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("SignInButton"),
+        onClick = { signIn(context) }
+    ) {
+        Text(SIGN_IN)
+    }
+}
+
 @Composable
 fun BackButton() {
     val context = LocalContext.current
@@ -213,6 +231,8 @@ fun MainMenuScreen() {
         GuessingButton()
         Spacer(modifier = Modifier.size(8.dp))
         DrawingButton()
+        Spacer(modifier = Modifier.size(8.dp))
+        SignInButton()
 
     }
 }

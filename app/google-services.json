@@ -15,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "690006943045-qccs8s58p6ck2r3llb7e7kv6najg8485.apps.googleusercontent.com",
+          "client_id": "690006943045-0p4epoqbfifeof270diueuuj41ajlcqp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.freeman.bootcamp",
+            "certificate_hash": "25e07bc685c720cfbd7d7edba15a77a9995b7b80"
+          }
+        },
+        {
+          "client_id": "690006943045-ngpc6rvnp9l6e9q2l0b42v49j2gvgit0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -28,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "690006943045-qccs8s58p6ck2r3llb7e7kv6najg8485.apps.googleusercontent.com",
+              "client_id": "690006943045-ngpc6rvnp9l6e9q2l0b42v49j2gvgit0.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
