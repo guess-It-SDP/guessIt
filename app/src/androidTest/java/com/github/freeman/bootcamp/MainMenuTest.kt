@@ -20,9 +20,9 @@ class MainMenuTest {
     val composeRule = createComposeRule()
 
     @Test
-    fun timerScreenIsDisplayed() {
+    fun mainMenuScreenIsDisplayed() {
         setMainMenuScreen()
-        composeRule.onNode(hasTestTag("timerScreen")).assertIsDisplayed()
+        composeRule.onNode(hasTestTag("mainMenuScreen")).assertIsDisplayed()
     }
 
     @Test
