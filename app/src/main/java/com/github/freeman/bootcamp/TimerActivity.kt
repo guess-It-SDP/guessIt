@@ -48,7 +48,6 @@ fun TimerScreen(size: Int, time: Long, color: Color= Purple80) {
     ) {
         Timer(
             totalTime = time * 1000L,
-            inactiveBarColor = Color.DarkGray,
             activeBarColor = color,
             modifier = Modifier
                 .size((0.8*size).dp)
@@ -60,7 +59,6 @@ fun TimerScreen(size: Int, time: Long, color: Color= Purple80) {
 @Composable
 fun Timer(
     totalTime: Long,
-    inactiveBarColor: Color,
     activeBarColor: Color,
     modifier: Modifier = Modifier
 ) {
@@ -84,7 +82,7 @@ fun Timer(
         modifier = modifier
             .onSizeChanged { size = it }
     ) {
-        TimerCercles(modifier, inactiveBarColor, activeBarColor, strokeWidth, value)
+        TimerCircles(modifier, activeBarColor, strokeWidth, value)
 
         TimerText(currentTime)
     }
@@ -101,12 +99,12 @@ fun TimerText(currentTime: Long) {
 }
 
 @Composable
-fun TimerCercles(modifier: Modifier, inactiveBarColor: Color, activeBarColor: Color, strokeWidth: Dp, value: Float) {
+fun TimerCircles(modifier: Modifier, activeBarColor: Color, strokeWidth: Dp, value: Float) {
     Canvas(
         modifier = modifier.testTag("timerCanvas")) {
 
         drawArc(
-            color = inactiveBarColor,
+            color = Color.DarkGray,
             startAngle = 90f,
             sweepAngle = 360f,
             useCenter = false,
