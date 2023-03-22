@@ -1,0 +1,8 @@
+18:42:28.602 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+18:42:28.935 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
+18:43:02.291 [NamespaceSystem-akka.actor.default-dispatcher-6] INFO com.firebase.core.namespace.NamespaceActor - sdp-guess-it-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 408ms, init: 0ms
+18:46:51.898 [FirebaseWorkerPool-1-4] WARN com.firebase.core.persistence.backend.dummy.EmulatorMetadataPersistence - Multiple projectIds are not recommended in single project mode. Requested 
+namespace sdp-guess-it, but the emulator is configured for sdp-guess-it-default-rtdb. To 
+opt-out of single project mode add/set the single_project_mode: false property in 
+the firebase.json emulators config. 
+18:46:51.909 [NamespaceSystem-akka.actor.default-dispatcher-21] INFO com.firebase.core.namespace.NamespaceActor - sdp-guess-it successfully activated FBKV (SurveyIdle(0)) wait: 4ms, init: 0ms

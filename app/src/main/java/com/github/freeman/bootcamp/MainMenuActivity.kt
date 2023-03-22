@@ -25,6 +25,7 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PROFILE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
@@ -161,7 +162,7 @@ fun DrawingButton() {
 }
 
 fun signIn(context: Context) {
-    context.startActivity(Intent(context, SignInActivity::class.java))
+    context.startActivity(Intent(context, FirebaseAuthActivity::class.java))
 }
 
 @Composable
