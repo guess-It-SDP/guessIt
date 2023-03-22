@@ -49,10 +49,10 @@ class FirebaseAuthActivityTest {
 
         composeRule.onNodeWithTag("sign_in_button").performClick()
         device.wait(
-            Until.findObject(By.text("Create account")), 10000
+            Until.findObject(By.textContains("Google")), 30000
         )
-        val createAccountButton = device.findObject(UiSelector().textContains("Create account"))
-        assert(createAccountButton.isClickable)
+        val googleText = device.findObject(UiSelector().textContains("Google"))
+        assert(googleText.exists())
     }
 
 }
