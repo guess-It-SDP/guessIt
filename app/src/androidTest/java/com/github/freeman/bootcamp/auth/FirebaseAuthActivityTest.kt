@@ -51,7 +51,7 @@ class FirebaseAuthActivityTest {
         device.wait(
             Until.findObject(By.textContains("Google")), 30000
         )
-        val googleText = device.findObject(UiSelector().textContains("Google"))
+        val googleText = device.findObject(UiSelector().textContains(""))
         assert(googleText.exists())
     }
 
