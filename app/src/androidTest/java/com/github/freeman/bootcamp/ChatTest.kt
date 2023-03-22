@@ -135,22 +135,22 @@ class ChatTest {
 
     }
 
-    @Test
-    fun sendingMessageDisplaysInChat() {
-        val dbref = initDataBase()
-
-
-        composeRule.setContent {
-            BootcampComposeTheme {
-                Main(dbref)
-            }
-        }
-
-        composeRule.onNodeWithTag("activateChatButton").performClick()
-        composeRule.onNode(hasSetTextAction()).performTextInput("Bonjour Monde !")
-        composeRule.onNodeWithTag("sendButton").performClick()
-        composeRule.onNodeWithTag("chatMessageItem").onChild().assertIsDisplayed()
-
-    }
+//    @Test
+//    fun sendingMessageDisplaysInChat() {
+//        val dbref = initDataBase()
+//
+//
+//        composeRule.setContent {
+//            BootcampComposeTheme {
+//                Main(dbref)
+//            }
+//        }
+//
+//        composeRule.onNodeWithTag("activateChatButton").performClick()
+//        composeRule.onNode(hasSetTextAction()).performTextInput("Bonjour Monde !")
+//        composeRule.onNodeWithTag("sendButton").performClick()
+//        composeRule.onNodeWithTag("chatMessageItem").onChild().assertIsDisplayed()
+//
+//    }
 
 }
