@@ -1,13 +1,14 @@
 package com.github.freeman.bootcamp.auth
 
-import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.*
 
 import com.github.freeman.bootcamp.MainMenuScreen
+import com.github.freeman.bootcamp.TopicSelectionActivity
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -36,4 +37,22 @@ class FirebaseAuthActivityTest {
         composeRule.onNodeWithTag("delete_button").performClick()
         composeRule.onNodeWithTag("sign_in_info").assertTextContains("Account deleted")
     }
+
+    @Test
+    fun signOutResultsInCorrectMessage() {
+        composeRule.onNodeWithTag("sign_out_button").performClick()
+        composeRule.onNodeWithTag("sign_in_info").assert(hasText("Signed out") or hasText("Not signed in"))
+    }
+
+    @Test
+    fun signInResultsInCorrectLayout() {
+
+        composeRule.onNodeWithTag("sign_in_button").performClick()
+        device.wait(
+            Until.findObject(By.text("Create account")), 10000
+        )
+        val createAccountButton = device.findObject(UiSelector().textContains("Create account"))
+        assert(createAccountButton.isClickable)
+    }
+
 }
