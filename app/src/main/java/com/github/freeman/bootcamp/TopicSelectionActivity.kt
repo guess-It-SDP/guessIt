@@ -79,7 +79,9 @@ fun TopicButton(dbref: DatabaseReference, topic: String, id: Int) {
 
 fun selectTopic(context: Context, dbref: DatabaseReference, topic: String) {
     dbref.child("topic").setValue(topic)
-    context.startActivity(Intent(context, DrawingActivity::class.java))
+    context.startActivity(Intent(context, DrawingActivity::class.java).apply {
+        putExtra("topic", topic)
+    })
 }
 
 @Composable

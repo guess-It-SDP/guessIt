@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.GameOptionsActivity.Companion.DEFAULT_CATEGORY_SIZE
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NB_ROUNDS
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NEXT
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.ROUNDS_SELECTION
@@ -31,6 +32,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.util.*
+
 
 class GameOptionsActivity : ComponentActivity() {
 
@@ -50,6 +52,7 @@ class GameOptionsActivity : ComponentActivity() {
         const val ROUNDS_SELECTION = "Select the number of rounds"
         const val NEXT = "Next"
         const val NB_TOPICS = 3
+        const val DEFAULT_CATEGORY_SIZE = 100
         val NB_ROUNDS = listOf("1", "3", "5", "7", "9")
         var selection: Int = 5
         var selectedTopics = mutableListOf<String?>()
@@ -105,7 +108,6 @@ fun NextButton(dbref: DatabaseReference, gameId: String) {
         modifier = Modifier.testTag("nextButton"),
         onClick = {
             next(context, dbref, gameId)
-//            Toast.makeText(context, "Selected topics: $selectedTopics", Toast.LENGTH_LONG).show()
         }
     ) {
         Text(NEXT)
@@ -123,26 +125,42 @@ fun next(context: Context, dbref: DatabaseReference, gameId: String) {
 }
 
 @Composable
-fun GetFromDBButton() {
+fun FetchFromDB() {
     val dbrefTopics = Firebase.database.getReference("Topics/Animals")
     val context = LocalContext.current
-
     var topics by remember { mutableStateOf(arrayOf<String>()) }
+    var size = DEFAULT_CATEGORY_SIZE
+
+    // Fetch the number of topics present in the given category
+    dbrefTopics.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            size = dataSnapshot.childrenCount.toInt()
+            Toast.makeText(context, "Size: $size", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onCancelled(databaseError: DatabaseError) {
+            throw databaseError.toException()
+        }
+    })
 
     // Fetches topics from the database
     dbrefTopics.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 val fetchedTopics = snapshot.getValue<ArrayList<String>>()!!
-
                 topics = fetchedTopics.toTypedArray()
-                selectedTopics.addAll(listOf(topics[0], topics[1], topics[2]))
-                Toast.makeText(context, "Fetched topics: $selectedTopics", Toast.LENGTH_SHORT).show()
+
+                val indices = mutableListOf<Int>()
+                for (i in 1..3) {
+                    val randomNb = (0..size).random()
+                    indices.add(randomNb)
+                }
+                selectedTopics.addAll(listOf(topics[indices[0]], topics[indices[1]], topics[indices[2]]))
             }
         }
 
-        override fun onCancelled(error: DatabaseError) {
-            Toast.makeText(context, "Error: Couldn't fetch the topics", Toast.LENGTH_LONG).show()
+        override fun onCancelled(databaseError: DatabaseError) {
+            throw databaseError.toException()
         }
     })
 }
@@ -160,9 +178,9 @@ fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
             modifier = Modifier.testTag("roundsSelection"),
             text = ROUNDS_SELECTION
         )
-        GetFromDBButton()
         RadioButtonsDisplay()
         NextButton(dbref, gameId)
+        FetchFromDB()
     }
 
     Column(
