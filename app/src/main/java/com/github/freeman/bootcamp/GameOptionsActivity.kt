@@ -31,7 +31,6 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.util.*
-import kotlin.random.Random
 
 class GameOptionsActivity : ComponentActivity() {
 
@@ -50,6 +49,7 @@ class GameOptionsActivity : ComponentActivity() {
     companion object {
         const val ROUNDS_SELECTION = "Select the number of rounds"
         const val NEXT = "Next"
+        const val NB_TOPICS = 3
         val NB_ROUNDS = listOf("1", "3", "5", "7", "9")
         var selection: Int = 5
         var selectedTopics = mutableListOf<String?>()
@@ -105,7 +105,7 @@ fun NextButton(dbref: DatabaseReference, gameId: String) {
         modifier = Modifier.testTag("nextButton"),
         onClick = {
             next(context, dbref, gameId)
-            Toast.makeText(context, "Selected topics: $selectedTopics", Toast.LENGTH_LONG).show()
+//            Toast.makeText(context, "Selected topics: $selectedTopics", Toast.LENGTH_LONG).show()
         }
     ) {
         Text(NEXT)
@@ -116,6 +116,9 @@ fun next(context: Context, dbref: DatabaseReference, gameId: String) {
     dbref.child("nb_rounds").setValue(selection)
     context.startActivity(Intent(context, TopicSelectionActivity::class.java).apply {
         putExtra("gameId", gameId)
+        for (i in 0 until selectedTopics.size) {
+            putExtra("topic$i", selectedTopics[i])
+        }
     })
 }
 
@@ -134,7 +137,7 @@ fun GetFromDBButton() {
 
                 topics = fetchedTopics.toTypedArray()
                 selectedTopics.addAll(listOf(topics[0], topics[1], topics[2]))
-                Toast.makeText(context, "Fetched topics: $selectedTopics", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Fetched topics: $selectedTopics", Toast.LENGTH_SHORT).show()
             }
         }
 
