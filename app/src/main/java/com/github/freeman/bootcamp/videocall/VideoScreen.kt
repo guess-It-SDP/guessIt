@@ -8,12 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.viewinterop.AndroidView
 import io.agora.agorauikit_android.AgoraConnectionData
 import io.agora.agorauikit_android.AgoraVideoViewer
 
 /**
- * screen of the video call
+ * screen of the video call, use agora.io
  */
 @ExperimentalUnsignedTypes
 @Composable
@@ -56,7 +57,7 @@ fun VideoScreen(
                     agoraView = it
                 }
             },
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().testTag("agora_video_view")
         )
     }
 }

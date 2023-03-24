@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 /**
- *  view model for RoomScreen
+ *  view model for RoomScreen display an error if no room is selected when trying to enter a video call lobby
  */
 class RoomViewModel: ViewModel() {
 

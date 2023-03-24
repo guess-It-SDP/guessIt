@@ -120,6 +120,8 @@ dependencies {
 
     // Coroutine Lifecycle Scopes
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
+
+    androidTestImplementation "androidx.navigation:navigation-testing:2.5.3"
 }
 
 tasks.withType(Test) {

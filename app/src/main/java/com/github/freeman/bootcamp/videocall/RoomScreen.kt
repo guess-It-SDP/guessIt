@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.collectLatest
 
@@ -32,17 +33,19 @@ fun RoomScreen(
         TextField(
             value = viewModel.roomName.value.text,
             onValueChange = viewModel::onRoomEnter,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag("room_screen_text_field"),
             isError = viewModel.roomName.value.error != null,
             placeholder = {
                 Text(text = "Enter a room name")
             }
         )
         viewModel.roomName.value.error?.let {
-            Text(text = it, color = MaterialTheme.colors.error)
+            Text(text = it, color = MaterialTheme.colors.error,
+                modifier = Modifier.testTag("room_screen_error_field"))
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = viewModel::onJoinRoom) {
+        Button(onClick = viewModel::onJoinRoom,
+            modifier = Modifier.fillMaxWidth().testTag("room_screen_button")) {
             Text(text = "Join")
         }
     }
