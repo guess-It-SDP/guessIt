@@ -197,36 +197,27 @@ fun NextButton(dbref: DatabaseReference, gameId: String) {
 
 
 @Composable
-fun SizeOKButton() {
+fun FetchDataButton() {
     val (size, setSize) = remember { mutableStateOf(DEFAULT_CATEGORY_SIZE) }
+    val (topics, setTopics) = remember { mutableStateOf(arrayOf<String>()) }
     ElevatedButton(
         modifier = Modifier.testTag("OKButton"),
         onClick = {
-            FetchFromDB1(size, setSize)
+            fetchFromDB(size, setSize, topics, setTopics)
         }
     ) {
         Text("OK")
     }
     category_size = size
-}
-
-@Composable
-fun TopicsOKButton() {
-    val (topics, setTopics) = remember { mutableStateOf(arrayOf<String>()) }
-    ElevatedButton(
-        modifier = Modifier.testTag("OKButton"),
-        onClick = {
-            FetchFromDB2(topics, setTopics)
-        }
-    ) {
-        Text("OK")
-    }
 
     if (topics.isNotEmpty() && category_size > 0) {
         val allTopics = topics.toMutableList()
         val indices = mutableListOf<Int>()
         for (i in 1..category_size) {
-            val randomNb = (0..category_size).random()
+            var randomNb = (0..category_size).random()
+            while (indices.contains(randomNb)) {
+                randomNb = (0..category_size).random()
+            }
             indices.add(randomNb)
         }
         selectedTopics.addAll(listOf(allTopics[indices[0]], allTopics[indices[1]], allTopics[indices[2]]))
@@ -243,7 +234,7 @@ fun next(context: Context, dbref: DatabaseReference, gameId: String) {
     })
 }
 
-fun FetchFromDB1(size: Int, setSize: (topics: Int) -> Unit) {
+fun fetchFromDB(size: Int, setSize: (topics: Int) -> Unit, topics: Array<String>, setTopics: (topics: Array<String>) -> Unit) {
     val dbrefTopics = Firebase.database.getReference("Topics/$selectedCategory")
 
     // Fetch the number of topics present in the given category
@@ -257,9 +248,10 @@ fun FetchFromDB1(size: Int, setSize: (topics: Int) -> Unit) {
             throw databaseError.toException()
         }
     })
+    fetchTopics(topics, setTopics)
 }
 
-fun FetchFromDB2(topics: Array<String>, setTopics: (topics: Array<String>) -> Unit) {
+fun fetchTopics(topics: Array<String>, setTopics: (topics: Array<String>) -> Unit) {
     val dbrefTopics = Firebase.database.getReference("Topics/$selectedCategory")
 
     // Fetches topics from the database
@@ -298,8 +290,7 @@ fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
             text = ROUNDS_SELECTION
         )
         RoundsDisplay()
-        SizeOKButton()
-        TopicsOKButton()
+        FetchDataButton()
         NextButton(dbref, gameId)
     }
 
