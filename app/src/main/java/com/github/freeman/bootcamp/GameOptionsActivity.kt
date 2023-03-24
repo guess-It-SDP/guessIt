@@ -3,15 +3,21 @@ package com.github.freeman.bootcamp
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,14 +26,21 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.GameOptionsActivity.Companion.CATEGORIES_SELECTION
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.DEFAULT_CATEGORY_SIZE
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NB_ROUNDS
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NEXT
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.ROUNDS_SELECTION
+import com.github.freeman.bootcamp.GameOptionsActivity.Companion.categories
+import com.github.freeman.bootcamp.GameOptionsActivity.Companion.category_size
+import com.github.freeman.bootcamp.GameOptionsActivity.Companion.selectedCategory
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.selectedTopics
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.selection
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
@@ -49,26 +62,30 @@ class GameOptionsActivity : ComponentActivity() {
     }
 
     companion object {
+        const val CATEGORIES_SELECTION = "Select a category"
         const val ROUNDS_SELECTION = "Select the number of rounds"
         const val NEXT = "Next"
         const val NB_TOPICS = 3
-        const val DEFAULT_CATEGORY_SIZE = 100
+        const val DEFAULT_CATEGORY_SIZE = 0
+        val categories = listOf("Animals", "Test")
+        var selectedCategory = categories[0]
         val NB_ROUNDS = listOf("1", "3", "5", "7", "9")
         var selection: Int = 5
         var selectedTopics = mutableListOf<String?>()
+        var category_size = DEFAULT_CATEGORY_SIZE
     }
 }
 
 @Composable
-fun RadioButtonsDisplay() {
+fun RoundsDisplay() {
     val kinds = NB_ROUNDS
     val (selected, setSelected) = remember { mutableStateOf("5") }
-    RadioButtons(mItems = kinds, selected, setSelected)
+    RoundsRadioButtons(mItems = kinds, selected, setSelected)
     selection = Integer.parseInt(selected)
 }
 
 @Composable
-fun RadioButtons(mItems: List<String>, selected: String, setSelected: (selected: String) -> Unit) {
+fun RoundsRadioButtons(mItems: List<String>, selected: String, setSelected: (selected: String) -> Unit) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -102,6 +119,70 @@ fun RadioButtons(mItems: List<String>, selected: String, setSelected: (selected:
 }
 
 @Composable
+fun CategoriesDisplay() {
+    val (selectedIndex, setSelected) = remember { mutableStateOf(0) }
+    CategoriesRadioButtons(selectedIndex, setSelected)
+    selectedCategory = categories[selectedIndex]
+//    Toast.makeText(LocalContext.current, "selectedCategory: $selectedCategory", Toast.LENGTH_SHORT).show()
+}
+
+@Composable
+fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        val cornerRadius = 16.dp
+
+        categories.forEachIndexed { index, item ->
+            OutlinedButton(
+                onClick = { setSelected(index) },
+                shape = when (index) {
+                    0 -> RoundedCornerShape(
+                        topStart = cornerRadius,
+                        topEnd = 0.dp,
+                        bottomStart = cornerRadius,
+                        bottomEnd = 0.dp
+                    )
+                    categories.size - 1 -> RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = cornerRadius,
+                        bottomStart = 0.dp,
+                        bottomEnd = cornerRadius
+                    )
+                    else -> RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomStart = 0.dp,
+                        bottomEnd = 0.dp
+                    )
+                },
+                border = BorderStroke(
+                    1.dp, if (selectedIndex == index) {
+                        Color.Blue
+                    } else {
+                        Color.Blue.copy(alpha = 0.75f)
+                    }
+                ),
+                colors = if (selectedIndex == index) {
+                    ButtonDefaults.outlinedButtonColors(
+                        containerColor = Color.Blue.copy(alpha = 0.15f),
+                        contentColor = Color.Blue
+                    )
+                } else {
+                    ButtonDefaults.outlinedButtonColors(
+                        containerColor = Color.Blue.copy(alpha = 0.01f),
+                        contentColor = Color.Blue
+                    )
+                }
+            ) {
+                Text(item)
+            }
+        }
+    }
+}
+
+@Composable
 fun NextButton(dbref: DatabaseReference, gameId: String) {
     val context = LocalContext.current
     ElevatedButton(
@@ -111,6 +192,44 @@ fun NextButton(dbref: DatabaseReference, gameId: String) {
         }
     ) {
         Text(NEXT)
+    }
+}
+
+
+@Composable
+fun SizeOKButton() {
+    val (size, setSize) = remember { mutableStateOf(DEFAULT_CATEGORY_SIZE) }
+    ElevatedButton(
+        modifier = Modifier.testTag("OKButton"),
+        onClick = {
+            FetchFromDB1(size, setSize)
+        }
+    ) {
+        Text("OK")
+    }
+    category_size = size
+}
+
+@Composable
+fun TopicsOKButton() {
+    val (topics, setTopics) = remember { mutableStateOf(arrayOf<String>()) }
+    ElevatedButton(
+        modifier = Modifier.testTag("OKButton"),
+        onClick = {
+            FetchFromDB2(topics, setTopics)
+        }
+    ) {
+        Text("OK")
+    }
+
+    if (topics.isNotEmpty() && category_size > 0) {
+        val allTopics = topics.toMutableList()
+        val indices = mutableListOf<Int>()
+        for (i in 1..category_size) {
+            val randomNb = (0..category_size).random()
+            indices.add(randomNb)
+        }
+        selectedTopics.addAll(listOf(allTopics[indices[0]], allTopics[indices[1]], allTopics[indices[2]]))
     }
 }
 
@@ -124,38 +243,31 @@ fun next(context: Context, dbref: DatabaseReference, gameId: String) {
     })
 }
 
-@Composable
-fun FetchFromDB() {
-    val dbrefTopics = Firebase.database.getReference("Topics/Animals")
-    val context = LocalContext.current
-    var topics by remember { mutableStateOf(arrayOf<String>()) }
-    var size = DEFAULT_CATEGORY_SIZE
+fun FetchFromDB1(size: Int, setSize: (topics: Int) -> Unit) {
+    val dbrefTopics = Firebase.database.getReference("Topics/$selectedCategory")
 
     // Fetch the number of topics present in the given category
     dbrefTopics.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
-            size = dataSnapshot.childrenCount.toInt()
-            Toast.makeText(context, "Size: $size", Toast.LENGTH_SHORT).show()
+            val fetchedSize = dataSnapshot.childrenCount.toInt() - 1
+            setSize(fetchedSize)
         }
 
         override fun onCancelled(databaseError: DatabaseError) {
             throw databaseError.toException()
         }
     })
+}
+
+fun FetchFromDB2(topics: Array<String>, setTopics: (topics: Array<String>) -> Unit) {
+    val dbrefTopics = Firebase.database.getReference("Topics/$selectedCategory")
 
     // Fetches topics from the database
     dbrefTopics.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 val fetchedTopics = snapshot.getValue<ArrayList<String>>()!!
-                topics = fetchedTopics.toTypedArray()
-
-                val indices = mutableListOf<Int>()
-                for (i in 1..3) {
-                    val randomNb = (0..size).random()
-                    indices.add(randomNb)
-                }
-                selectedTopics.addAll(listOf(topics[indices[0]], topics[indices[1]], topics[indices[2]]))
+                setTopics(fetchedTopics.toTypedArray())
             }
         }
 
@@ -175,12 +287,20 @@ fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
+            modifier = Modifier.testTag("categoriesSelection"),
+            text = CATEGORIES_SELECTION
+        )
+        Spacer(modifier = Modifier.size(10.dp))
+        CategoriesDisplay()
+        Spacer(modifier = Modifier.size(50.dp))
+        Text(
             modifier = Modifier.testTag("roundsSelection"),
             text = ROUNDS_SELECTION
         )
-        RadioButtonsDisplay()
+        RoundsDisplay()
+        SizeOKButton()
+        TopicsOKButton()
         NextButton(dbref, gameId)
-        FetchFromDB()
     }
 
     Column(
