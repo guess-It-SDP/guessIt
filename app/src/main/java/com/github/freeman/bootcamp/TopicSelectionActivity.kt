@@ -31,7 +31,7 @@ class TopicSelectionActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val gameId = intent.getStringExtra("name").toString()
+        val gameId = intent.getStringExtra("gameId").toString()
         dbref = Firebase.database.getReference("Games/$gameId")
         setContent {
             BootcampComposeTheme {

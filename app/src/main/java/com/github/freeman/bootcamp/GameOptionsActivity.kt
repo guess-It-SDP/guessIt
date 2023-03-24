@@ -3,6 +3,7 @@ package com.github.freeman.bootcamp
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -10,10 +11,7 @@ import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,12 +23,15 @@ import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NB_ROUNDS
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NEXT
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.ROUNDS_SELECTION
+import com.github.freeman.bootcamp.GameOptionsActivity.Companion.selectedTopics
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.selection
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.util.*
+import kotlin.random.Random
 
 class GameOptionsActivity : ComponentActivity() {
 
@@ -51,6 +52,7 @@ class GameOptionsActivity : ComponentActivity() {
         const val NEXT = "Next"
         val NB_ROUNDS = listOf("1", "3", "5", "7", "9")
         var selection: Int = 5
+        var selectedTopics = mutableListOf<String?>()
     }
 }
 
@@ -86,7 +88,10 @@ fun RadioButtons(mItems: List<String>, selected: String, setSelected: (selected:
                     )
                     Text(
                         text = item,
-                        modifier = Modifier.padding(start = 8.dp).testTag("radioButtonText$item"),)
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .testTag("radioButtonText$item"),
+                    )
                 }
             }
         }
@@ -98,7 +103,10 @@ fun NextButton(dbref: DatabaseReference, gameId: String) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("nextButton"),
-        onClick = { next(context, dbref, gameId) }
+        onClick = {
+            next(context, dbref, gameId)
+            Toast.makeText(context, "Selected topics: $selectedTopics", Toast.LENGTH_LONG).show()
+        }
     ) {
         Text(NEXT)
     }
@@ -107,7 +115,32 @@ fun NextButton(dbref: DatabaseReference, gameId: String) {
 fun next(context: Context, dbref: DatabaseReference, gameId: String) {
     dbref.child("nb_rounds").setValue(selection)
     context.startActivity(Intent(context, TopicSelectionActivity::class.java).apply {
-        putExtra("name", gameId)
+        putExtra("gameId", gameId)
+    })
+}
+
+@Composable
+fun GetFromDBButton() {
+    val dbrefTopics = Firebase.database.getReference("Topics/Animals")
+    val context = LocalContext.current
+
+    var topics by remember { mutableStateOf(arrayOf<String>()) }
+
+    // Fetches topics from the database
+    dbrefTopics.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                val fetchedTopics = snapshot.getValue<ArrayList<String>>()!!
+
+                topics = fetchedTopics.toTypedArray()
+                selectedTopics.addAll(listOf(topics[0], topics[1], topics[2]))
+                Toast.makeText(context, "Fetched topics: $selectedTopics", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            Toast.makeText(context, "Error: Couldn't fetch the topics", Toast.LENGTH_LONG).show()
+        }
     })
 }
 
@@ -124,6 +157,7 @@ fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
             modifier = Modifier.testTag("roundsSelection"),
             text = ROUNDS_SELECTION
         )
+        GetFromDBButton()
         RadioButtonsDisplay()
         NextButton(dbref, gameId)
     }
