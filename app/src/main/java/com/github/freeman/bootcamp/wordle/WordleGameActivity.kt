@@ -47,7 +47,7 @@ class WordleGameActivity : ComponentActivity() {
         solutions = solutionsData.split("\n").map { it.trim() }
         validWords = validWordsData.split("\n").map { it.trim() }
         wordle = WordleGameState(false, solutions, validWords)
-        var tiles = getTiles(wordle.getGrid())
+        var tiles = wordle.getTiles()
         setContent {
             Column() {
                 BootcampComposeTheme {
@@ -62,25 +62,23 @@ class WordleGameActivity : ComponentActivity() {
 
     @Composable
     fun SimpleText() {
-        Text("Hello")
-        Button(onClick = {}) {
-            wordle = wordle.submitWord("")
-            var tiles = getTiles(wordle.getGrid())
+        Button(onClick = {wordle = wordle.submitWord("hello")
+            var tiles = wordle.getTiles()
             setContent {
-                BootcampComposeTheme {
-                    TileRoof(
-                        tiles
-                    )
+                Column() {
+                    BootcampComposeTheme {
+                        TileRoof(
+                            tiles
+                        )
+                        SimpleText()
+                    }
                 }
             }
-        }
+        }) { Text(text = "Click ", color = Color.Magenta) }
     }
 
-    private fun getTiles(grid: Array<Array<WordleGameState.Tile>>): MutableList<WordleGameState.Tile> {
-        val tiles: MutableList<WordleGameState.Tile> = ArrayList()
-        grid.forEach { row -> tiles.addAll(row.toList()) }
-        return tiles
-    }
+
+
 
     @Composable
     fun TileRoof(tiles: MutableList<WordleGameState.Tile>) {

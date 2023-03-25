@@ -1,6 +1,8 @@
 package com.github.freeman.bootcamp.wordle
 
 import java.io.File
+import java.io.UncheckedIOException
+import java.security.InvalidParameterException
 import kotlin.random.Random
 import java.lang.Character.MIN_VALUE as nullChar
 
@@ -31,18 +33,22 @@ class WordleGameState private constructor(
         // accept only existing words if random letters mode is not activated
         if (wordOnly) {
             if (!validWords.contains(word)) {
-                return this;
+                throw InvalidParameterException()
             }
         }
-
+        // the game is over if we can not go after the grid is full
+        if (current_line < grid.size) {
+            // initiate row
+            for (i in 0..grid[0].size-1) {
+                grid[current_line][i].letter = word[i]
+            }
         // We need a way to be able to count letter only once
         // remaining is used address letter in wrong spot correctly
         // For a specific letter we don't want to assign more wrong spot
         // that the word contains this letter
         var remaining = wordToGuess
-
         val row = grid[current_line]
-        for (i in 0..grid[0].size) {
+        for (i in 0..grid[0].size-1) {
             val tile = row[i]
             if (tile.letter == word[i]) {
                 remaining = remaining.replaceFirst(tile.letter, ' ', true)
@@ -51,7 +57,7 @@ class WordleGameState private constructor(
                 tile.state = TileState.INCORRECT
             }
 
-            for (i in 0..grid[0].size) {
+            for (i in 0..grid[0].size-1) {
                 if (tile.state != TileState.CORRECT && tile.state != TileState.INCORRECT) {
                     if (remaining.contains(tile.letter)) {
                         tile.state = TileState.WRONG_SPOT
@@ -62,12 +68,15 @@ class WordleGameState private constructor(
                 }
             }
         }
-        // the game is over if we can not go after the grid is full
-        if (current_line + 1 < grid.size) {
-            return WordleGameState(current_line + 1, grid, wordOnly, wordToGuess, validWords)
+            return WordleGameState(current_line+1, grid, wordOnly, wordToGuess, validWords)
         } else {
             return this;
         }
+    }
+    public fun getTiles(): MutableList<WordleGameState.Tile> {
+        val tiles: MutableList<WordleGameState.Tile> = ArrayList()
+        grid.forEach { row -> tiles.addAll(row.toList()) }
+        return tiles
     }
 
     companion object {
