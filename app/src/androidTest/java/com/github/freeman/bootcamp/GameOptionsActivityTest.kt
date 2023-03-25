@@ -8,10 +8,15 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NB_ROUNDS
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NEXT
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.ROUNDS_SELECTION
+import com.github.freeman.bootcamp.GameOptionsActivity.Companion.categories
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.categorySize
+import com.github.freeman.bootcamp.GameOptionsActivity.Companion.selectedTopics
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertTrue
+import org.awaitility.Awaitility.await
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,9 +57,11 @@ class GameOptionsActivityTest {
     }
 
     @Test
-    fun nextButtonHasClickAction() {
+    fun categoriesTextIsCorrect() {
         setGameOptionsScreen()
-        composeRule.onNode(hasTestTag("nextButton")).assertHasClickAction()
+        for (category in categories) {
+            composeRule.onNode(hasTestTag("categoryButtonText$category"), useUnmergedTree = true).assertTextContains(category)
+        }
     }
 
     @Test
@@ -65,6 +72,32 @@ class GameOptionsActivityTest {
         composeRule.onNode(hasTestTag("nextButton")).performClick()
         Intents.intended(IntentMatchers.hasComponent(TopicSelectionActivity::class.java.name))
         Intents.release()
+    }
+
+    @Test
+    fun nextButtonHasClickAction() {
+        setGameOptionsScreen()
+        composeRule.onNode(hasTestTag("nextButton")).assertHasClickAction()
+    }
+
+    @Test
+    fun categoryButtonsHaveClickAction() {
+        setGameOptionsScreen()
+        for (category in categories) {
+            composeRule.onNodeWithText(category).assertHasClickAction()
+        }
+    }
+
+    @Test
+    fun animalTopicsFetchedUponClick() {
+        setGameOptionsScreen()
+        assertTrue(selectedTopics.isEmpty())
+        composeRule.onNodeWithText(categories[0]).performClick()
+
+        // This step is necessary for the app to have enough time to fill the topics list
+        composeRule.onNode(hasTestTag("nextButton")).performClick()
+        await().until { selectedTopics.isNotEmpty() }
+        assertFalse(selectedTopics.isEmpty())
     }
 
     private fun setGameOptionsScreen() {

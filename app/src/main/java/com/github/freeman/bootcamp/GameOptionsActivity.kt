@@ -197,7 +197,9 @@ fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> U
                     )
                 }
             ) {
-                Text(item)
+                Text(
+                    text = item,
+                    modifier = Modifier.testTag("categoryButtonText$item"))
             }
         }
     }
