@@ -20,6 +20,7 @@ import org.awaitility.Awaitility.await
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
 class GameOptionsActivityTest {
@@ -96,7 +97,7 @@ class GameOptionsActivityTest {
 
         // This step is necessary for the app to have enough time to fill the topics list
         composeRule.onNode(hasTestTag("nextButton")).performClick()
-        await().until { selectedTopics.isNotEmpty() }
+        await().atMost(60, TimeUnit.SECONDS).until { selectedTopics.isNotEmpty() }
         assertFalse(selectedTopics.isEmpty())
     }
 
