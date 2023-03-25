@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.collectLatest
 
 /**
  * allows to enter a video call room by entering a number in a textField and by clicking on a button
+ *
+ * @param onNavigate the navigation flow controller
+ * @param viewModel view model for RoomScreen display
  */
 @Composable
 fun RoomScreen(

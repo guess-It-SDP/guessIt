@@ -21,6 +21,11 @@ import io.agora.agorauikit_android.AgoraVideoViewer
 
 /**
  * screen of the video call, use agora.io
+ *
+ * @param roomName the number of the lobby that will be entered
+ * @param onNavigateUp navigation controller
+ * @param viewModel the view model of the video screen
+ * @param testing false = normal mode, true = tests are running
  */
 @ExperimentalUnsignedTypes
 @Composable
