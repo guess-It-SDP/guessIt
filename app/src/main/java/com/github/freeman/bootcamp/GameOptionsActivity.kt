@@ -46,7 +46,6 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.util.*
 
-
 class GameOptionsActivity : ComponentActivity() {
 
     private val gameId = UUID.randomUUID().toString()
@@ -120,14 +119,31 @@ fun RoundsRadioButtons(mItems: List<String>, selected: String, setSelected: (sel
 
 @Composable
 fun CategoriesDisplay() {
-    val (selectedIndex, setSelected) = remember { mutableStateOf(0) }
-    CategoriesRadioButtons(selectedIndex, setSelected)
-    selectedCategory = categories[selectedIndex]
-//    Toast.makeText(LocalContext.current, "selectedCategory: $selectedCategory", Toast.LENGTH_SHORT).show()
+    val (selectedIndex, setSelected) = remember { mutableStateOf(-1) }
+    val (size, setSize) = remember { mutableStateOf(DEFAULT_CATEGORY_SIZE) }
+    val (topics, setTopics) = remember { mutableStateOf(arrayOf<String>()) }
+    CategoriesRadioButtons(selectedIndex, setSelected, setSize, setTopics)
+
+    category_size = size
+
+    if (topics.isNotEmpty() && category_size > 0) {
+      selectedTopics.clear()
+        val allTopics = topics.toMutableList()
+        val indices = mutableListOf<Int>()
+        for (i in 1..category_size) {
+            var randomNb = (0..category_size).random()
+            while (indices.contains(randomNb)) {
+                randomNb = (0..category_size).random()
+            }
+            indices.add(randomNb)
+        }
+        selectedTopics.addAll(listOf(allTopics[indices[0]], allTopics[indices[1]], allTopics[indices[2]]))
+    }
 }
 
 @Composable
-fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> Unit) {
+fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> Unit,
+                           setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
@@ -136,7 +152,11 @@ fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> U
 
         categories.forEachIndexed { index, item ->
             OutlinedButton(
-                onClick = { setSelected(index) },
+                onClick = {
+                    selectedCategory = categories[index]
+                    setSelected(index)
+                    fetchFromDB(setSize, setTopics)
+                },
                 shape = when (index) {
                     0 -> RoundedCornerShape(
                         topStart = cornerRadius,
@@ -171,7 +191,7 @@ fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> U
                     )
                 } else {
                     ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color.Blue.copy(alpha = 0.01f),
+                        containerColor = Color.Blue.copy(alpha = 0.02f),
                         contentColor = Color.Blue
                     )
                 }
@@ -180,6 +200,7 @@ fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> U
             }
         }
     }
+
 }
 
 @Composable
@@ -195,35 +216,6 @@ fun NextButton(dbref: DatabaseReference, gameId: String) {
     }
 }
 
-
-@Composable
-fun FetchDataButton() {
-    val (size, setSize) = remember { mutableStateOf(DEFAULT_CATEGORY_SIZE) }
-    val (topics, setTopics) = remember { mutableStateOf(arrayOf<String>()) }
-    ElevatedButton(
-        modifier = Modifier.testTag("OKButton"),
-        onClick = {
-            fetchFromDB(size, setSize, topics, setTopics)
-        }
-    ) {
-        Text("OK")
-    }
-    category_size = size
-
-    if (topics.isNotEmpty() && category_size > 0) {
-        val allTopics = topics.toMutableList()
-        val indices = mutableListOf<Int>()
-        for (i in 1..category_size) {
-            var randomNb = (0..category_size).random()
-            while (indices.contains(randomNb)) {
-                randomNb = (0..category_size).random()
-            }
-            indices.add(randomNb)
-        }
-        selectedTopics.addAll(listOf(allTopics[indices[0]], allTopics[indices[1]], allTopics[indices[2]]))
-    }
-}
-
 fun next(context: Context, dbref: DatabaseReference, gameId: String) {
     dbref.child("nb_rounds").setValue(selection)
     context.startActivity(Intent(context, TopicSelectionActivity::class.java).apply {
@@ -234,7 +226,7 @@ fun next(context: Context, dbref: DatabaseReference, gameId: String) {
     })
 }
 
-fun fetchFromDB(size: Int, setSize: (topics: Int) -> Unit, topics: Array<String>, setTopics: (topics: Array<String>) -> Unit) {
+fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
     val dbrefTopics = Firebase.database.getReference("Topics/$selectedCategory")
 
     // Fetch the number of topics present in the given category
@@ -248,10 +240,11 @@ fun fetchFromDB(size: Int, setSize: (topics: Int) -> Unit, topics: Array<String>
             throw databaseError.toException()
         }
     })
-    fetchTopics(topics, setTopics)
+
+    fetchTopics(setTopics)
 }
 
-fun fetchTopics(topics: Array<String>, setTopics: (topics: Array<String>) -> Unit) {
+fun fetchTopics(setTopics: (topics: Array<String>) -> Unit) {
     val dbrefTopics = Firebase.database.getReference("Topics/$selectedCategory")
 
     // Fetches topics from the database
@@ -290,7 +283,6 @@ fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
             text = ROUNDS_SELECTION
         )
         RoundsDisplay()
-        FetchDataButton()
         NextButton(dbref, gameId)
     }
 
@@ -303,3 +295,4 @@ fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
         BackButton()
     }
 }
+
