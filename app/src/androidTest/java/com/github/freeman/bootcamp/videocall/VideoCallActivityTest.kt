@@ -12,8 +12,9 @@ import androidx.test.rule.GrantPermissionRule
 import junit.framework.TestCase.assertEquals
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.Test
+
 
 @RunWith(AndroidJUnit4::class)
 class VideoCallActivityTest {
