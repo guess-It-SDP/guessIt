@@ -10,7 +10,7 @@ class WordleGameState private constructor(
     private val current_line: Int,
     private val grid: Array<Array<Tile>>,
     private val wordOnly: Boolean,
-    private val wordToGuess: String,
+    private var wordToGuess: String,
     private val validWords: List<String>
 ) {
     // private var wordToGuess = solutions[Random.nextInt(0, solutions.size)]
@@ -23,7 +23,7 @@ class WordleGameState private constructor(
     )
 
     enum class TileState(val rgb: Long) {
-        EMPTY(0xFF000000), CORRECT(0xFF00FF00), WRONG_SPOT(0xFF0000FF), INCORRECT(0xFFFF0000)
+        EMPTY(0xFF000000), CORRECT(0xFF00FF00), WRONG_SPOT(0xFFFFFF00), INCORRECT(0xFFFF0000)
     }
 
     class Tile(var letter: Char, var state: TileState)
@@ -50,10 +50,10 @@ class WordleGameState private constructor(
         val row = grid[current_line]
         for (i in 0..grid[0].size-1) {
             val tile = row[i]
-            if (tile.letter == word[i]) {
+            if (tile.letter == remaining[i]) {
                 remaining = remaining.replaceFirst(tile.letter, ' ', true)
                 tile.state = TileState.CORRECT
-            } else if (!word.contains(tile.letter)) {
+            } else if (!remaining.contains(tile.letter)) {
                 tile.state = TileState.INCORRECT
             }
 
@@ -98,6 +98,9 @@ class WordleGameState private constructor(
 
     fun getGrid(): Array<Array<Tile>> {
         return grid.clone()
+    }
+    fun setWordToGuess(word: String){
+        wordToGuess=word
     }
 
 }

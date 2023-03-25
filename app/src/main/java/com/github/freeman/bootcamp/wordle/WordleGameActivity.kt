@@ -48,6 +48,7 @@ class WordleGameActivity : ComponentActivity() {
         validWords = validWordsData.split("\n").map { it.trim() }
         wordle = WordleGameState(false, solutions, validWords)
         var tiles = wordle.getTiles()
+        wordle.setWordToGuess("hello")
         setContent {
             Column() {
                 BootcampComposeTheme {
@@ -62,7 +63,7 @@ class WordleGameActivity : ComponentActivity() {
 
     @Composable
     fun SimpleText() {
-        Button(onClick = {wordle = wordle.submitWord("hello")
+        Button(onClick = {wordle = wordle.submitWord("hgpll")
             var tiles = wordle.getTiles()
             setContent {
                 Column() {
