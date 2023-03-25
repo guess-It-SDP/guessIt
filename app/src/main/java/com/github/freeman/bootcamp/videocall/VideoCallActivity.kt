@@ -51,7 +51,8 @@ class VideoCallActivity : ComponentActivity() {
 fun  VideoCallNavHost(
     modifier: Modifier = Modifier.testTag("video_call_nav_host"),
     navController: NavHostController = rememberNavController(),
-    startDestination: String = "room_screen"
+    startDestination: String = "room_screen",
+    testing: Boolean = false
 ) {
     NavHost(
         modifier = modifier,
@@ -72,7 +73,8 @@ fun  VideoCallNavHost(
             val roomName = it.arguments?.getString("roomName") ?: return@composable
             VideoScreen(
                 roomName = roomName,
-                onNavigateUp = navController::navigateUp
+                onNavigateUp = navController::navigateUp,
+                testing = testing
             )
         }
     }

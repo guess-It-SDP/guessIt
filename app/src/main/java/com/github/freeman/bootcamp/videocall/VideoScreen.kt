@@ -10,6 +10,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import io.agora.agorauikit_android.AgoraConnectionData
 import io.agora.agorauikit_android.AgoraVideoViewer
 
@@ -21,7 +27,8 @@ import io.agora.agorauikit_android.AgoraVideoViewer
 fun VideoScreen(
     roomName: String,
     onNavigateUp: () -> Unit = {},
-    viewModel: VideoViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: VideoViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    testing: Boolean
 ) {
     var agoraView: AgoraVideoViewer? = null // used to leave the video call when calling on return
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -45,7 +52,7 @@ fun VideoScreen(
         agoraView?.leaveChannel()
         onNavigateUp()
     }
-    if(viewModel.hasAudioPermission.value && viewModel.hasCameraPermission.value) {
+    if(viewModel.hasAudioPermission.value && viewModel.hasCameraPermission.value && !testing) {
         AndroidView(
             factory = {
                 AgoraVideoViewer(
@@ -61,4 +68,3 @@ fun VideoScreen(
         )
     }
 }
-
