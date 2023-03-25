@@ -67,7 +67,7 @@ class GameOptionsActivity : ComponentActivity() {
         const val NEXT = "Next"
         const val NB_TOPICS = 3
         const val DEFAULT_CATEGORY_SIZE = 0
-        val categories = listOf("Animals", "Test")
+        val categories = listOf("Animals", "People", "Objects")
         var selectedCategory = categories[0]
         val NB_ROUNDS = listOf("1", "3", "5", "7", "9")
         var selection: Int = 5
