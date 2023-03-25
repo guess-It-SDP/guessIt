@@ -17,4 +17,9 @@ class DrawingActivityTest {
     fun drawingScreenIsDisplayed() {
         composeRule.onNode(hasTestTag("drawingScreen")).assertIsDisplayed()
     }
+
+    @Test
+    fun drawingScreenContainsTimer() {
+        composeRule.onNode(hasTestTag("timerScreen")).assertIsDisplayed()
+    }
 }
