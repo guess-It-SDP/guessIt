@@ -89,6 +89,9 @@
         <activity
             android:name=".recorder.AudioRecordingActivity"
             android:exported="true" />
-    </application>
+        <activity
+            android:name=".wordle.WordleGameActivity"
+            android:exported="true" />
+</application>
 
 </manifest>
