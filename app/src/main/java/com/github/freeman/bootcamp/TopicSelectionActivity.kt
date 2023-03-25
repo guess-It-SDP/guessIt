@@ -33,6 +33,7 @@ class TopicSelectionActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra("gameId").toString()
         dbref = Firebase.database.getReference("Games/$gameId")
+        topics.clear()
         for (i in 0 until NB_TOPICS) {
             topics.add(intent.getStringExtra("topic$i").toString())
         }
@@ -45,7 +46,7 @@ class TopicSelectionActivity : ComponentActivity() {
 
     companion object {
         const val SELECT_TOPIC = "Select the topic you wish to draw"
-        var topics = mutableListOf<String>()
+        var topics = mutableListOf<String>("Topic1", "Topic2", "Topic3")
     }
 }
 

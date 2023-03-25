@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NB_ROUNDS
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NEXT
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.ROUNDS_SELECTION
+import com.github.freeman.bootcamp.GameOptionsActivity.Companion.categorySize
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -60,6 +61,7 @@ class GameOptionsActivityTest {
     fun nextButtonsIntentIsSent() {
         Intents.init()
         setGameOptionsScreen()
+        categorySize = 10
         composeRule.onNode(hasTestTag("nextButton")).performClick()
         Intents.intended(IntentMatchers.hasComponent(TopicSelectionActivity::class.java.name))
         Intents.release()

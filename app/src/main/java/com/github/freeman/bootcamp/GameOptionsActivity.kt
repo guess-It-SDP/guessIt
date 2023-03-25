@@ -1,8 +1,10 @@
 package com.github.freeman.bootcamp
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -10,10 +12,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +33,7 @@ import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NB_ROUNDS
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NEXT
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.ROUNDS_SELECTION
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.categories
-import com.github.freeman.bootcamp.GameOptionsActivity.Companion.category_size
+import com.github.freeman.bootcamp.GameOptionsActivity.Companion.categorySize
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.selectedCategory
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.selectedTopics
 import com.github.freeman.bootcamp.GameOptionsActivity.Companion.selection
@@ -71,7 +72,7 @@ class GameOptionsActivity : ComponentActivity() {
         val NB_ROUNDS = listOf("1", "3", "5", "7", "9")
         var selection: Int = 5
         var selectedTopics = mutableListOf<String?>()
-        var category_size = DEFAULT_CATEGORY_SIZE
+        var categorySize = DEFAULT_CATEGORY_SIZE
     }
 }
 
@@ -124,16 +125,16 @@ fun CategoriesDisplay() {
     val (topics, setTopics) = remember { mutableStateOf(arrayOf<String>()) }
     CategoriesRadioButtons(selectedIndex, setSelected, setSize, setTopics)
 
-    category_size = size
+    categorySize = size
 
-    if (topics.isNotEmpty() && category_size > 0) {
+    if (topics.isNotEmpty() && categorySize > 0) {
       selectedTopics.clear()
         val allTopics = topics.toMutableList()
         val indices = mutableListOf<Int>()
-        for (i in 1..category_size) {
-            var randomNb = (0..category_size).random()
+        for (i in 1..categorySize) {
+            var randomNb = (0..categorySize).random()
             while (indices.contains(randomNb)) {
-                randomNb = (0..category_size).random()
+                randomNb = (0..categorySize).random()
             }
             indices.add(randomNb)
         }
@@ -217,13 +218,19 @@ fun NextButton(dbref: DatabaseReference, gameId: String) {
 }
 
 fun next(context: Context, dbref: DatabaseReference, gameId: String) {
-    dbref.child("nb_rounds").setValue(selection)
-    context.startActivity(Intent(context, TopicSelectionActivity::class.java).apply {
-        putExtra("gameId", gameId)
-        for (i in 0 until selectedTopics.size) {
-            putExtra("topic$i", selectedTopics[i])
-        }
-    })
+    if (categorySize <= 0) {
+        Toast.makeText(context, "Please first select a category", Toast.LENGTH_SHORT).show()
+    } else {
+        dbref.child("nb_rounds").setValue(selection)
+        context.startActivity(Intent(context, TopicSelectionActivity::class.java).apply {
+            putExtra("gameId", gameId)
+            for (i in 0 until selectedTopics.size) {
+                putExtra("topic$i", selectedTopics[i])
+            }
+        })
+        val activity = (context as? Activity)
+        activity?.finish()
+    }
 }
 
 fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
@@ -263,6 +270,27 @@ fun fetchTopics(setTopics: (topics: Array<String>) -> Unit) {
 }
 
 @Composable
+fun GameOptionsBackButton() {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("gameOptionsBackButton"),
+        onClick = {
+            backToMainMenu(context)
+        }
+    ) {
+        Icon(
+            imageVector = Icons.Default.ArrowBack,
+            contentDescription = "Back arrow icon"
+        )
+    }
+}
+
+fun backToMainMenu(context: Context) {
+    val activity = (context as? Activity)
+    activity?.finish()
+}
+
+@Composable
 fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
     Column(
         modifier = Modifier
@@ -292,7 +320,6 @@ fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        BackButton()
+        GameOptionsBackButton()
     }
 }
-
