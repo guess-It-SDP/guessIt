@@ -23,6 +23,7 @@ class DrawingActivity : ComponentActivity() {
         setContent {
             BootcampComposeTheme {
                 DrawingScreen{}
+                TimerScreen(100, 100L)
             }
         }
     }
