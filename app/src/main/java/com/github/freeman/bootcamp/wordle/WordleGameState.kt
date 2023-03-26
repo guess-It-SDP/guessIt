@@ -67,7 +67,7 @@ class WordleGameState private constructor(
         // accept only existing words if random letters mode is not activated
         if (wordOnly) {
             if (!validWords.contains(word)) {
-               return this
+                return this
             }
         }
         // the game is over if the grid is full, starts a new game
@@ -122,10 +122,7 @@ class WordleGameState private constructor(
      * return a list containing all tile in the right order going from left to right then up to down
      */
     fun getTiles(): MutableList<WordleGameState.Tile> {
-        val tiles: MutableList<WordleGameState.Tile> = ArrayList()
-        grid.forEach { row -> tiles.addAll(row.toList()) }
-        return tiles
-        // return grid.flatten().toMutableList()
+        return grid.flatten().toMutableList()
     }
 
     /**

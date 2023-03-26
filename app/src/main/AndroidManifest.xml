@@ -92,6 +92,9 @@
         <activity
             android:name=".wordle.WordleGameActivity"
             android:exported="true" />
+        <activity
+            android:name="OtherGamesMenuActivity"
+            android:exported="true" />
 </application>
 
 </manifest>

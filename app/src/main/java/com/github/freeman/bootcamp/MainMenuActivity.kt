@@ -23,6 +23,7 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.AUDIO_REC
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.OTHER_GAMES
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PROFILE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
@@ -51,6 +52,7 @@ class MainMenuActivity : ComponentActivity() {
         const val GUESSING = "Guessing"
         const val AUDIO_REC = "Audio Recording"
         const val DRAWING = "Drawing"
+        const val OTHER_GAMES = "Other games"
     }
 }
 
@@ -159,6 +161,22 @@ fun DrawingButton() {
     }
 }
 
+
+fun otherGames(context: Context) {
+    context.startActivity(Intent(context, OtherGamesMenuActivity::class.java))
+}
+
+@Composable
+fun OtherGamesButton() {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("other_games_button"),
+        onClick = { otherGames(context) }
+    ) {
+        Text(OTHER_GAMES)
+    }
+}
+
 @Composable
 fun BackButton() {
     val context = LocalContext.current
@@ -215,6 +233,8 @@ fun MainMenuScreen() {
         GuessingButton()
         Spacer(modifier = Modifier.size(8.dp))
         DrawingButton()
+        Spacer(modifier = Modifier.size(8.dp))
+        OtherGamesButton()
 
     }
 }

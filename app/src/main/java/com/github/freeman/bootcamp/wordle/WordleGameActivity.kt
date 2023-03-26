@@ -34,15 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 
 import androidx.compose.ui.text.input.TextFieldValue
 
-class WordleGameActivity(val intentFactory:IntentFactory = IntentFactory()) : ComponentActivity() {
-    fun openOtherActivityWithExtras() { // I'm trying to use mockk for depencies testing but it doesn't work #mockk
-        val intent = intentFactory.create(this,  WordleGameActivity::class.java)
-        println(intent)
-        intent.putExtra("testing", "false")
-        startActivity(intent)
-    }
-
-
+class WordleGameActivity() : ComponentActivity() {
     private lateinit var wordle: WordleGameState
     private lateinit var solutionsData: String
     private lateinit var validWordsData: String
@@ -60,13 +52,10 @@ class WordleGameActivity(val intentFactory:IntentFactory = IntentFactory()) : Co
         validWords = validWordsData.split("\n").map { it.trim() }
         wordle = WordleGameState(false, solutions, validWords)
         var tiles = wordle.getTiles()
-
-        var testing =  intent.getStringExtra("testing").toString()
-        if(!testing.isNullOrBlank()) {
-            if(testing.equals("true")) {
-                //#### for testing #test
-                wordle = wordle.withSetWordToGuess("hello")
-           }
+        var testing = getIntent().getBooleanExtra("testing", false)
+        if (testing == true) {
+            //#### for testing #test
+            wordle = wordle.withSetWordToGuess("hello")
         }
         setContent {
             Column() {
@@ -112,11 +101,16 @@ class WordleGameActivity(val intentFactory:IntentFactory = IntentFactory()) : Co
             columns = GridCells.Fixed(5),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.padding(50.dp).testTag("wordle_tile_grid")
+            modifier = Modifier
+                .padding(50.dp)
+                .testTag("wordle_tile_grid")
         ) {
             items(tiles.size) { i ->
 
-                TileContainer(Modifier.testTag("wordle_tile_id_"+ id.toString()), tile = tiles.get(i))
+                TileContainer(
+                    Modifier.testTag("wordle_tile_id_" + id.toString()),
+                    tile = tiles.get(i)
+                )
                 ++id
             }
         }
