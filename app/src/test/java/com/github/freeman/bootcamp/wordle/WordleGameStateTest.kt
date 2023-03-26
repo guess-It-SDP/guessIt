@@ -121,9 +121,9 @@ class WordleGameStateTest {
 
     }
     @Test
-    fun wordlsOnlyRefusesRandomLetter(){
+    fun wordsOnlyRefusesRandomLetter(){
         var wordle = WordleGameState(true,listOf("hello"),listOf("hello") )
-        wordle = wordle.submitWord("abcde")
+        wordle = wordle.submitWord("ebcde")
         assertEquals('\u0000',wordle.getTiles().get(0).letter)
     }
 

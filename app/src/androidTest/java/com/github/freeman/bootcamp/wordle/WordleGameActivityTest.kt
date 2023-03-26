@@ -1,20 +1,9 @@
 package com.github.freeman.bootcamp.wordle
 
-import android.content.Context
-import android.content.Intent
-import android.text.style.BackgroundColorSpan
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
+
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.core.content.ContextCompat.startActivity
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.spyk
-import junit.framework.TestCase.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

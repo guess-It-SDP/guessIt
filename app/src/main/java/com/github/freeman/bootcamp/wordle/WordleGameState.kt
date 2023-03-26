@@ -67,7 +67,7 @@ class WordleGameState private constructor(
         // accept only existing words if random letters mode is not activated
         if (wordOnly) {
             if (!validWords.contains(word)) {
-                this
+               return this
             }
         }
         // the game is over if the grid is full, starts a new game

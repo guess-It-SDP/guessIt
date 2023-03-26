@@ -10,6 +10,7 @@ android {
     namespace 'com.github.freeman.bootcamp'
     compileSdk 33
 
+
     defaultConfig {
         applicationId "com.github.freeman.bootcamp"
         minSdk 29
@@ -21,6 +22,7 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
     }
 
     buildTypes {
@@ -50,6 +52,7 @@ android {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
+        exclude 'META-INF/DEPENDENCIES'
     }
 }
 
