@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp.wordle
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,9 +11,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,13 +25,27 @@ import com.touchlane.gridpad.GridPadCells
 import androidx.compose.runtime.remember as remember1
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.Button
+import androidx.compose.material.*
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.runtime.*
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 
 
-class WordleGameActivity : ComponentActivity() {
-    lateinit var wordle: WordleGameState
-    lateinit var solutionsData: String
-    lateinit var validWordsData: String
+import androidx.compose.ui.text.input.TextFieldValue
+
+class WordleGameActivity(val intentFactory:IntentFactory = IntentFactory()) : ComponentActivity() {
+    fun openOtherActivityWithExtras() {
+        val intent = intentFactory.create(this,  WordleGameActivity::class.java)
+        println(intent)
+        intent.putExtra("testing", "false")
+        startActivity(intent)
+    }
+
+
+    private lateinit var wordle: WordleGameState
+    private lateinit var solutionsData: String
+    private lateinit var validWordsData: String
     lateinit var solutions: List<String>
     lateinit var validWords: List<String>
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,37 +60,49 @@ class WordleGameActivity : ComponentActivity() {
         validWords = validWordsData.split("\n").map { it.trim() }
         wordle = WordleGameState(false, solutions, validWords)
         var tiles = wordle.getTiles()
-        wordle.setWordToGuess("hello")
+
+        var testing =  intent.getStringExtra("testing").toString()
+        if(!testing.isNullOrBlank()) {
+            if(testing.equals("true")) {
+                //#### for testing #test
+                wordle = wordle.withSetWordToGuess("hello")
+           }
+        }
         setContent {
             Column() {
                 BootcampComposeTheme {
                     TileRoof(
                         tiles
                     )
-                       SimpleText()
+                    wordleButton()
                 }
             }
         }
     }
 
     @Composable
-    fun SimpleText() {
-        Button(onClick = {wordle = wordle.submitWord("hgpll")
-            var tiles = wordle.getTiles()
-            setContent {
-                Column() {
-                    BootcampComposeTheme {
-                        TileRoof(
-                            tiles
-                        )
-                        SimpleText()
+    fun wordleButton() {
+        var msg: TextFieldState = remember { TextFieldState() }
+        GreetingInput(msg)
+        Button(onClick = {
+            if (msg.text.length == 5) {
+                wordle = wordle.submitWord(
+                    msg.text
+                )
+                var tiles = wordle.getTiles()
+                setContent {
+                    Column() {
+                        BootcampComposeTheme {
+                            TileRoof(
+                                tiles
+                            )
+                            wordleButton()
+                        }
                     }
                 }
             }
-        }) { Text(text = "Click ", color = Color.Magenta) }
+        }) { Text(text = "Submit word", color = Color.Magenta) }
     }
-
-
 
 
     @Composable
@@ -88,13 +112,16 @@ class WordleGameActivity : ComponentActivity() {
             columns = GridCells.Fixed(5),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.padding(50.dp)
+            modifier = Modifier.padding(50.dp).testTag("wordle_tile_grid")
         ) {
             items(tiles.size) { i ->
-                TileContainer(Modifier, tile = tiles.get(i))
+
+                TileContainer(Modifier.testTag("wordle_tile_id_"+ id.toString()), tile = tiles.get(i))
+                ++id
             }
         }
     }
+
 
     @Composable
     private fun TileContainer(
@@ -109,7 +136,7 @@ class WordleGameActivity : ComponentActivity() {
                     height = 40.dp,
                 )
                 .background(
-                    color = Color(tile.state.rgb),
+                    color = Color(tile.state.argb),
                     shape = shape,
                 )
                 .run {
@@ -123,3 +150,25 @@ class WordleGameActivity : ComponentActivity() {
         }
     }
 }
+
+// this class is to store the value of the text field
+// in order to use it in other Composable
+class TextFieldState {
+    var text: String by mutableStateOf("")
+}
+
+@Composable
+fun GreetingInput(msg: TextFieldState = remember { TextFieldState() }) {
+    var text by remember { mutableStateOf(TextFieldValue("")) }
+    OutlinedTextField(
+        value = text,
+        label = {
+            Text(text = "Enter a 5 letters word to submit")
+        },
+        onValueChange = {
+            text = it
+            msg.text = it.text
+        }
+    )
+}
+

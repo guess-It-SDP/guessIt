@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "com.github.freeman.bootcamp"
-        minSdk 28
+        minSdk 29
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -106,6 +106,8 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-auth:20.4.1'
     implementation "com.touchlane:gridpad:0.0.4"
+    androidTestImplementation "io.mockk:mockk-android:1.13.4"
+    androidTestImplementation "io.mockk:mockk-agent:1.13.4"
 }
 
 tasks.withType(Test) {
