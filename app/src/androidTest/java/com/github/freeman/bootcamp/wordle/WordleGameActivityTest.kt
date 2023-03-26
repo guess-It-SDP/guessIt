@@ -1,9 +1,12 @@
 package com.github.freeman.bootcamp.wordle
 
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import junit.framework.TestCase.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,8 +33,28 @@ class WordleGameActivityTest {
             composeRule.onNode(hasTestTag("wordle_tile_id_" + i.toString())).assertIsDisplayed()
         }
     }
+    @Test
+    fun addingHelloDoesntCrash() {
+        composeRule.onNode(hasText("Enter a 5 letters word to submit")).performTextInput("hello")
+        Espresso.closeSoftKeyboard();
+        composeRule.onNode(hasText("Submit word")).performClick()
+        for (i in 0 until 40) {
+            composeRule.onNode(hasTestTag("wordle_tile_id_" + i.toString())).assertIsDisplayed()
+        }
+    }
 
-    /*
+    @Test
+    fun adding6LettersDoesntCrash() {
+        composeRule.onNode(hasText("Enter a 5 letters word to submit")).performTextInput("helloo")
+        Espresso.closeSoftKeyboard();
+        composeRule.onNode(hasText("Submit word")).performClick()
+        for (i in 0 until 40) {
+            composeRule.onNode(hasTestTag("wordle_tile_id_" + i.toString())).assertIsDisplayed()
+        }
+    }
+
+
+
     @Test
     fun gridColorisBlackAtStartOfTheGame() {
         composeRule.onNode(hasTestTag("wordle_tile_grid")).assertIsDisplayed()
@@ -48,8 +71,7 @@ class WordleGameActivityTest {
     }
 
 
-
-     */
+    // I'm trying to use mockk for depencies testing but it doesn't work #mockk
     /*
     @Test
     fun breaksAgain() {

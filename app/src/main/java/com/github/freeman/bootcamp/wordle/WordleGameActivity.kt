@@ -35,7 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 
 class WordleGameActivity(val intentFactory:IntentFactory = IntentFactory()) : ComponentActivity() {
-    fun openOtherActivityWithExtras() {
+    fun openOtherActivityWithExtras() { // I'm trying to use mockk for depencies testing but it doesn't work #mockk
         val intent = intentFactory.create(this,  WordleGameActivity::class.java)
         println(intent)
         intent.putExtra("testing", "false")
