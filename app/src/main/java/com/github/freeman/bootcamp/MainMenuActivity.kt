@@ -23,12 +23,13 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.AUDIO_REC
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.OTHER_GAMES
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PROFILE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.wordle.WordleGameActivity
 
 class MainMenuActivity : ComponentActivity() {
     private val backgroundMusicService = BackgroundMusicService()
@@ -52,7 +53,7 @@ class MainMenuActivity : ComponentActivity() {
         const val GUESSING = "Guessing"
         const val AUDIO_REC = "Audio Recording"
         const val DRAWING = "Drawing"
-        const val OTHER_GAMES = "Other games"
+        const val WORDLE = "Play Wordle"
     }
 }
 
@@ -162,21 +163,23 @@ fun DrawingButton() {
 }
 
 
-fun otherGames(context: Context) {
-    context.startActivity(Intent(context, OtherGamesMenuActivity::class.java))
+
+
+fun wordle(context: Context) {
+    context.startActivity(Intent(context, WordleGameActivity::class.java))
+
 }
 
 @Composable
-fun OtherGamesButton() {
+fun WordleButton() {
     val context = LocalContext.current
     ElevatedButton(
-        modifier = Modifier.testTag("other_games_button"),
-        onClick = { otherGames(context) }
+        modifier = Modifier.testTag("wordleButton"),
+        onClick = { wordle(context) }
     ) {
-        Text(OTHER_GAMES)
+        Text(WORDLE)
     }
 }
-
 @Composable
 fun BackButton() {
     val context = LocalContext.current
@@ -192,8 +195,6 @@ fun BackButton() {
         )
     }
 }
-
-
 
 @Preview
 @Composable
@@ -234,12 +235,9 @@ fun MainMenuScreen() {
         Spacer(modifier = Modifier.size(8.dp))
         DrawingButton()
         Spacer(modifier = Modifier.size(8.dp))
-        OtherGamesButton()
-
+        WordleButton()
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable

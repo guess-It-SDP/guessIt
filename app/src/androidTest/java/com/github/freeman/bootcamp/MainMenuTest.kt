@@ -9,6 +9,7 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.wordle.WordleGameActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -117,6 +118,27 @@ class MainMenuTest {
 
         Intents.release()
     }
+
+    @Test
+    fun wordleButtonIsDisplayedClickable() {
+        setMainMenuScreen()
+        composeRule.onNodeWithTag("wordleButton").assertHasClickAction()
+    }
+
+
+
+    @Test
+    fun wordleIntentIsSent() {
+        Intents.init()
+        setMainMenuScreen()
+
+        composeRule.onNode(hasTestTag("wordleButton")).performClick()
+        Intents.intended(IntentMatchers.hasComponent(WordleGameActivity::class.java.name))
+
+        Intents.release()
+    }
+
+
 
     private fun setMainMenuScreen() {
         composeRule.setContent {
