@@ -3,6 +3,8 @@ package com.github.freeman.bootcamp
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.Settings.Global.getString
 import android.provider.Settings.Secure.getString
@@ -31,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -40,10 +43,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.TypedArrayUtils.getString
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.common.io.Resources.getResource
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import io.grpc.internal.JsonUtil.getString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -153,6 +159,8 @@ fun Profile(context: Context = LocalContext.current, displayName: MutableState<S
 // This composable displays user's image, name, email and edit button
 @Composable
 private fun UserDetails(context: Context, displayName: MutableState<String>) {
+    val storageRef = Firebase.storage.reference
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -162,13 +170,52 @@ private fun UserDetails(context: Context, displayName: MutableState<String>) {
     ) {
 
         // User's image
-        Image(
-            modifier = Modifier
-                .size(72.dp)
-                .clip(shape = CircleShape),
-            painter = painterResource(id = R.drawable.ic_launcher_background),
-            contentDescription = "Your Image"
-        )
+
+        //TODO modularize + adapt picture path
+        val userRef = storageRef.child("images/cat.jpg")
+
+        var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+        LaunchedEffect(Unit) {
+            val ONE_MEGABYTE: Long = 1024 * 1024
+            userRef.getBytes(ONE_MEGABYTE).addOnSuccessListener {
+                bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+            }
+        }
+
+        if (bitmap != null) {
+            Image(
+                painter = rememberAsyncImagePainter(bitmap),
+                contentScale = ContentScale.Crop,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(CircleShape)
+            )
+        }
+
+
+//        Image(
+//            modifier = Modifier
+//                .size(72.dp)
+//                .clip(shape = CircleShape),
+//            painter =
+//            rememberAsyncImagePainter(
+//                ImageRequest.Builder(LocalContext.current)
+//                    .data(data = "https://firebasestorage.googleapis.com/v0/b/sdp-guess-it.appspot.com/o/cat.jpg")
+//                    .crossfade(true)
+//                    .build()
+//            ),
+//            contentDescription = null // Add content description if applicable
+//        )
+
+//        Image(
+//            modifier = Modifier
+//                .size(72.dp)
+//                .clip(shape = CircleShape),
+//            painter = painterResource(id = R.drawable.ic_launcher_background),
+//            contentDescription = "Your Image"
+//        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),

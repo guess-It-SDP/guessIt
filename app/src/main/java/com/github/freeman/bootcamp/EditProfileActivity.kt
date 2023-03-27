@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,28 +30,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
-import coil.imageLoader
 import coil.request.ImageRequest
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FileDownloadTask
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.IOException
 
 class EditProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -139,40 +130,29 @@ fun EditUserDetails(context: Context, displayName: MutableState<String>) {
         ) {
 
             item {
-                val request = ImageRequest.Builder(context)
-                    .data(storageRef.child("cat.jpg")) //"gs://sdp-guess-it.appspot.com/images/cat.jpg"
-                    .crossfade(true)
-                    .build()
-                AsyncImage(
-                    modifier = Modifier
-                        .size(200.dp)
-                        .clip(shape = CircleShape)
-                        .clickable {
-                            launcher.launch("image/*")
-                        },
-                    model = request,
-                    contentDescription = "test",
-                    contentScale = ContentScale.Crop
-                )
 
+                //TODO modularize + adapt picture path
+                val userRef = storageRef.child("images/cat.jpg")
 
-                // User's image
-//                Image(
-//                    modifier = Modifier
-//                        .size(200.dp)
-//                        .clip(shape = CircleShape)
-//                        .clickable {
-//                            launcher.launch("image/*")
-//                        },
-////                    model = "https://example.com/image.jpg",
-//                    painter = rememberAsyncImagePainter(
-//                        ImageRequest.Builder(LocalContext.current)
-////                            .data(data = storageRef.child("images/cat.jpg").getBytes(1024 * 1024))
-//                            .data(data = "https://thumbs.dreamstime.com/b/example-red-tag-example-red-square-price-tag-117502755.jpg")
-//                            .build()
-//                    ),
-//                    contentDescription = "Your Image"
-//                )
+                var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+                LaunchedEffect(Unit) {
+                    val ONE_MEGABYTE: Long = 1024 * 1024
+                    userRef.getBytes(ONE_MEGABYTE).addOnSuccessListener {
+                        bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    }
+                }
+
+                if (bitmap != null) {
+                    Image(
+                        painter = rememberAsyncImagePainter(bitmap),
+                        contentScale = ContentScale.Crop,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clip(CircleShape)
+                    )
+                }
             }
 
             // Show the options

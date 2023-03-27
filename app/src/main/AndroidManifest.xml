@@ -68,7 +68,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".auth.FirebaseAuthActivity"
             android:exported="true"
             android:theme="@style/Theme.BootcampCompose" />
         <activity
