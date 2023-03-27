@@ -138,4 +138,6 @@ class WordleGameState private constructor(
     fun withSetWordToGuess(word: String): WordleGameState {
         return WordleGameState(current_line, grid, wordOnly, word, validWords, solutions)
     }
+
+
 }

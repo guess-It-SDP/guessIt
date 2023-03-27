@@ -45,7 +45,7 @@ class WordleGameActivity() : ComponentActivity() {
         validWordsData = application.assets.open("wordle_all.txt").bufferedReader().use {
             it.readText()
         }
-        solutionsData = application.assets.open("wordle_all.txt").bufferedReader().use {
+        solutionsData = application.assets.open("wordle_common.txt").bufferedReader().use {
             it.readText()
         }
         solutions = solutionsData.split("\n").map { it.trim() }
@@ -157,7 +157,7 @@ fun GreetingInput(msg: TextFieldState = remember { TextFieldState() }) {
     OutlinedTextField(
         value = text,
         label = {
-            Text(text = "Enter a 5 letters word to submit")
+            Text(text = "Enter a 5 letters word to submit" )
         },
         onValueChange = {
             text = it

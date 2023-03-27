@@ -5,6 +5,7 @@ import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.*
 import org.junit.Before
 import org.junit.Test
+import java.security.InvalidParameterException
 
 
 class WordleGameStateTest {
@@ -127,5 +128,9 @@ class WordleGameStateTest {
         assertEquals('\u0000',wordle.getTiles().get(0).letter)
     }
 
+    @Test(expected = InvalidParameterException::class)
+    fun submit6LettersThrowIllegalArgumentEx(){
+        var wordle = WordleGameState(true,listOf("hello"),listOf("hello") ).submitWord("abcdef")
+    }
 
 }
