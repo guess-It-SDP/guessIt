@@ -1,6 +1,8 @@
 package com.github.freeman.bootcamp
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -24,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
@@ -34,9 +38,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
+import coil.imageLoader
+import coil.request.ImageRequest
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FileDownloadTask
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.IOException
 
 class EditProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +79,7 @@ private val optionsList: ArrayList<OptionsData> = ArrayList()
 
 @Composable
 fun EditUserDetails(context: Context, displayName: MutableState<String>) {
+    val storageRef = Firebase.storage.reference
     val showDialog =  remember { mutableStateOf(false) }
     val fieldToChange = remember { mutableStateOf("") }
     val imageUri = remember { mutableStateOf("") }
@@ -122,17 +139,40 @@ fun EditUserDetails(context: Context, displayName: MutableState<String>) {
         ) {
 
             item {
-                // User's image
-                Image(
+                val request = ImageRequest.Builder(context)
+                    .data(storageRef.child("cat.jpg")) //"gs://sdp-guess-it.appspot.com/images/cat.jpg"
+                    .crossfade(true)
+                    .build()
+                AsyncImage(
                     modifier = Modifier
                         .size(200.dp)
                         .clip(shape = CircleShape)
                         .clickable {
                             launcher.launch("image/*")
                         },
-                    painter = painterResource(id = R.drawable.ic_launcher_background),
-                    contentDescription = "Your Image"
+                    model = request,
+                    contentDescription = "test",
+                    contentScale = ContentScale.Crop
                 )
+
+
+                // User's image
+//                Image(
+//                    modifier = Modifier
+//                        .size(200.dp)
+//                        .clip(shape = CircleShape)
+//                        .clickable {
+//                            launcher.launch("image/*")
+//                        },
+////                    model = "https://example.com/image.jpg",
+//                    painter = rememberAsyncImagePainter(
+//                        ImageRequest.Builder(LocalContext.current)
+////                            .data(data = storageRef.child("images/cat.jpg").getBytes(1024 * 1024))
+//                            .data(data = "https://thumbs.dreamstime.com/b/example-red-tag-example-red-square-price-tag-117502755.jpg")
+//                            .build()
+//                    ),
+//                    contentDescription = "Your Image"
+//                )
             }
 
             // Show the options
