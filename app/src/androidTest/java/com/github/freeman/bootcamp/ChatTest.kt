@@ -4,10 +4,9 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.freeman.bootcamp.FirebaseSingletons.database
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,9 +18,8 @@ class ChatTest {
 
     private fun initDataBase(): DatabaseReference {
         val chatId = "TestChatId01"
-        val db = Firebase.database
-        db.useEmulator("10.0.2.2", 9000)
-        return Firebase.database.getReference("Chat/$chatId")
+        FirebaseEmulator.init()
+        return database.get().database.getReference("Chat/$chatId")
     }
 
     @Test
@@ -135,22 +133,22 @@ class ChatTest {
 
     }
 
-//    @Test
-//    fun sendingMessageDisplaysInChat() {
-//        val dbref = initDataBase()
-//
-//
-//        composeRule.setContent {
-//            BootcampComposeTheme {
-//                Main(dbref)
-//            }
-//        }
-//
-//        composeRule.onNodeWithTag("activateChatButton").performClick()
-//        composeRule.onNode(hasSetTextAction()).performTextInput("Bonjour Monde !")
-//        composeRule.onNodeWithTag("sendButton").performClick()
-//        composeRule.onNodeWithTag("chatMessageItem").onChild().assertIsDisplayed()
-//
-//    }
+    @Test
+    fun sendingMessageDisplaysInChat() {
+        val dbref = initDataBase()
+
+
+        composeRule.setContent {
+            BootcampComposeTheme {
+                Main(dbref)
+            }
+        }
+
+        composeRule.onNodeWithTag("activateChatButton").performClick()
+        composeRule.onNode(hasSetTextAction()).performTextInput("Bonjour Monde !")
+        composeRule.onNodeWithTag("sendButton").performClick()
+        composeRule.onNodeWithTag("chatMessageItem").onChild().assertIsDisplayed()
+
+    }
 
 }

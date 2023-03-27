@@ -51,6 +51,11 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    signingConfigs {
+        debug {
+            storeFile file("external/debug.keystore")
+        }
+    }
 }
 
 dependencies {
@@ -98,13 +103,16 @@ dependencies {
     // See https://firebase.google.com/docs/android/setup#available-libraries
     // For example, add the dependencies for Firebase Authentication and Cloud Firestore
     implementation 'com.google.firebase:firebase-database-ktx'
-    implementation 'com.google.firebase:firebase-auth-ktx'
+    implementation 'com.google.firebase:firebase-auth-ktx:21.1.0'
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
     implementation 'com.firebaseui:firebase-ui-auth:8.0.1'
     implementation 'com.firebaseui:firebase-ui-database:8.0.1'
 
     implementation 'com.google.android.gms:play-services-auth:20.4.1'
+
+    // UI Automator
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 
     implementation("io.coil-kt:coil-compose:2.3.0")
 }

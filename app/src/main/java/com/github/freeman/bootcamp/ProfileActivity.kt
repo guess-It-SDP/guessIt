@@ -346,4 +346,3 @@ data class OptionsData(val icon: ImageVector, val title: String, val subTitle: S
 fun TopAppBarPreview() {
     TopAppbarProfile(LocalContext.current)
 }
-
