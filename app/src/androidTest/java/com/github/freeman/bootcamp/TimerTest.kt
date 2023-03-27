@@ -1,10 +1,8 @@
 package com.github.freeman.bootcamp
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import org.junit.Rule
