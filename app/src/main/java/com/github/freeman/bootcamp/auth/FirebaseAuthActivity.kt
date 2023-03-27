@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.auth.FirebaseAuth
 
 
 /**
@@ -24,14 +25,19 @@ import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
  */
 class FirebaseAuthActivity : ComponentActivity() {
 
-    private var signInInfo: String by mutableStateOf("Not signed in")
+    private var signInInfo: String by mutableStateOf("")
     private lateinit var authenticator: Authenticator
     private lateinit var signInLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         authenticator = GoogleAuthenticator()
-
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        signInInfo = if (currentUser == null) {
+            "Not signed in"
+        } else {
+            "Signed in as : " + currentUser.email
+        }
         signInLauncher = registerForActivityResult (
             FirebaseAuthUIActivityResultContract()
         ) { res ->
