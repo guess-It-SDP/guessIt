@@ -57,11 +57,11 @@ import java.util.concurrent.CompletableFuture
 
 class ProfileActivity : ComponentActivity() {
 
-//    override fun onRestart() {
-//        super.onRestart()
-//        finish()
-//        startActivity(intent)
-//    }
+    override fun onRestart() {
+        super.onRestart()
+        finish()
+        startActivity(intent)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,13 +93,14 @@ class ProfileActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     // Top appbar
-                    TopAppbarProfile(context = context)
+                    TopAppbarSettings(context = context)
                     //TODO get info from database before creating profile
                     Profile(displayName = displayName)
                 }
             }
 
         }
+
     }
 
 }
@@ -108,13 +109,13 @@ private val optionsList: ArrayList<OptionsData> = ArrayList()
 
 
 @Composable
-fun TopAppbarProfile(context: Context) {
+fun TopAppbarSettings(context: Context) {
 
     TopAppBar(
         modifier = Modifier.testTag("topAppbarProfile"),
         title = {
             Text(
-                text = "Profile",
+                text = "Settings",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -424,5 +425,5 @@ data class OptionsData(val icon: ImageVector, val title: String, val subTitle: S
 @Preview
 @Composable
 fun TopAppBarPreview() {
-    TopAppbarProfile(LocalContext.current)
+    TopAppbarSettings(LocalContext.current)
 }

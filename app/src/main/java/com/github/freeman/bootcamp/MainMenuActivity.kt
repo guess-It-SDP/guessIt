@@ -22,7 +22,6 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.PROFILE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
@@ -46,7 +45,6 @@ class MainMenuActivity : ComponentActivity() {
     companion object {
         const val SETTINGS = "Settings"
         const val PLAY = "Play game"
-        const val PROFILE = "Profile"
         const val CHAT = "Chat"
         const val GUESSING = "Guessing"
         const val AUDIO_REC = "Audio Recording"
@@ -72,7 +70,7 @@ fun PlayButton() {
 }
 
 fun settings(context: Context) {
-    context.startActivity(Intent(context, SettingsActivity::class.java))
+    context.startActivity(Intent(context, ProfileActivity::class.java))
 }
 
 @Composable
@@ -83,21 +81,6 @@ fun SettingsButton() {
         onClick = { settings(context) }
     ) {
         Text(SETTINGS)
-    }
-}
-
-fun profile(context: Context) {
-    context.startActivity(Intent(context, ProfileActivity::class.java))
-}
-
-@Composable
-fun ProfileButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("profileButton"),
-        onClick = { profile(context) }
-    ) {
-        Text(PROFILE)
     }
 }
 
@@ -222,8 +205,6 @@ fun MainMenuScreen() {
         PlayButton()
         Spacer(modifier = Modifier.size(24.dp))
         SettingsButton()
-        Spacer(modifier = Modifier.size(24.dp))
-        ProfileButton()
         Spacer(modifier = Modifier.size(24.dp))
         ChatTestButton()
         Spacer(modifier = Modifier.size(24.dp))
