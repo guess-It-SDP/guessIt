@@ -67,15 +67,6 @@ fun TopicSelectionBackButton() {
 }
 
 fun backToGameOptions(context: Context) {
-//    context.startActivity(Intent(context, GameOptionsActivity::class.java))
-
-//    val gotoScreenVar = Intent(context, MainMenuActivity::class.java);
-//
-//    gotoScreenVar.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-//    gotoScreenVar.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//
-//    context.startActivity(gotoScreenVar);
-
     val intent = Intent(context, GameOptionsActivity::class.java)
     context.startActivity(intent)
     val activity = (context as? Activity)
