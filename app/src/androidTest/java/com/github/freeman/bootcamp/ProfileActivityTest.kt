@@ -34,7 +34,7 @@ class ProfileActivityTest {
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TopAppbarProfile(context = context)
+                    TopAppbarSettings(context = context)
                     Profile(displayName = displayName)
                 }
             }

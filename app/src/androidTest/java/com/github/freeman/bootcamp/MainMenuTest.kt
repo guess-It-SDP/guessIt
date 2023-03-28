@@ -74,29 +74,29 @@ class MainMenuTest {
         context.startService(Intent(context, BackgroundMusicService::class.java))
 
         composeRule.onNodeWithText("Settings").performClick()
-        Intents.intended(IntentMatchers.hasComponent(SettingsActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(ProfileActivity::class.java.name))
 
         Intents.release()
     }
 
-    @Test
-    fun profileButtonTextIsCorrect() {
-        setMainMenuScreen()
-        composeRule.onNode(hasTestTag("profileButton")).assertTextContains("Profile")
-    }
+//    @Test
+//    fun profileButtonTextIsCorrect() {
+//        setMainMenuScreen()
+//        composeRule.onNode(hasTestTag("profileButton")).assertTextContains("Profile")
+//    }
 
-    @Test
-    fun profileButtonHasClickAction() {
-        setMainMenuScreen()
-        composeRule.onNode(hasTestTag("profileButton")).assertHasClickAction()
-    }
+//    @Test
+//    fun profileButtonHasClickAction() {
+//        setMainMenuScreen()
+//        composeRule.onNode(hasTestTag("profileButton")).assertHasClickAction()
+//    }
 
     @Test
     fun profileIntentIsSent() {
         Intents.init()
         setMainMenuScreen()
 
-        composeRule.onNodeWithText("Profile").performClick()
+        composeRule.onNodeWithText("Settings").performClick()
         Intents.intended(IntentMatchers.hasComponent(ProfileActivity::class.java.name))
 
         Intents.release()

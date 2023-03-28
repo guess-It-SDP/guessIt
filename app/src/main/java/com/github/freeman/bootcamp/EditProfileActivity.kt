@@ -63,7 +63,7 @@ class EditProfileActivity : ComponentActivity() {
             val context = LocalContext.current
             val dbRef = Firebase.database.reference
             val displayName = remember { mutableStateOf("wow") }
-            val profilePicBitmap = remember { mutableStateOf<Bitmap?>(null) }
+            //val profilePicBitmap = remember { mutableStateOf<Bitmap?>(null) }
 
 
             val future = CompletableFuture<String>()
@@ -85,7 +85,7 @@ class EditProfileActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     TopAppbarEditProfile(context = context)
-                    EditUserDetails(displayName = displayName, profilePic = profilePicBitmap)
+                    EditUserDetails(displayName = displayName)
                 }
 
             }
@@ -98,7 +98,7 @@ class EditProfileActivity : ComponentActivity() {
 private val editablesList: ArrayList<EditableData> = ArrayList()
 
 @Composable
-fun EditUserDetails(displayName: MutableState<String>, profilePic: MutableState<Bitmap?>) {
+fun EditUserDetails(displayName: MutableState<String>) {
     val storageRef = Firebase.storage.reference
     val dbRef = Firebase.database.reference
     val showNameDialog = remember { mutableStateOf(false) }

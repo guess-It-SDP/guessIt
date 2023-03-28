@@ -32,8 +32,8 @@ class EditProfileActivityTest {
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TopAppbarProfile(context = LocalContext.current)
-                    EditUserDetails(context = LocalContext.current, displayName = displayName)
+                    TopAppbarSettings(context = LocalContext.current)
+                    EditUserDetails(displayName = displayName, )
                 }
             }
         }
