@@ -1,6 +1,5 @@
 package com.github.freeman.bootcamp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
