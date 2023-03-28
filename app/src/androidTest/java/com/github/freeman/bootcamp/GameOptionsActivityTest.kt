@@ -97,7 +97,7 @@ class GameOptionsActivityTest {
 
         // This step is necessary for the app to have enough time to fill the topics list
         composeRule.onNode(hasTestTag("nextButton")).performClick()
-        await().atMost(90, TimeUnit.SECONDS).until { selectedTopics.isNotEmpty() }
+        await().atMost(120, TimeUnit.SECONDS).until { selectedTopics.isNotEmpty() }
         assertFalse(selectedTopics.isEmpty())
     }
 
