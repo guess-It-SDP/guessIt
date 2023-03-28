@@ -6,9 +6,10 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.provider.Settings.Global.getString
-import android.provider.Settings.Secure.getString
-import android.provider.Settings.System.getString
+import android.os.PersistableBundle
+import android.util.Log
+import android.view.KeyEvent
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,7 +25,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.*
@@ -36,36 +36,56 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.res.TypedArrayUtils.getString
 import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.google.common.io.Resources.getResource
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import io.grpc.internal.JsonUtil.getString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.concurrent.CompletableFuture
 
 
 class ProfileActivity : ComponentActivity() {
+
+//    override fun onRestart() {
+//        super.onRestart()
+//        finish()
+//        startActivity(intent)
+//    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val user = Firebase.auth.currentUser
-
 
         setContent {
             val context = LocalContext.current
-
+            val dbRef = Firebase.database.reference
 
             val displayName = remember { mutableStateOf("Chris P. Bacon") }
+//            var profilePicBitmap = remember { mutableStateOf<Bitmap?>(null) }
+
+
+            val future = CompletableFuture<String>()
+            //TODO get name from real database location
+            dbRef.child("displayName").get().addOnSuccessListener {
+                if (it.value == null) future.completeExceptionally(NoSuchFieldException())
+                else future.complete(it.value as String)
+            }.addOnFailureListener {
+                future.completeExceptionally(it)
+            }
+
+            future.thenAccept {
+                displayName.value = it
+            }
 
             BootcampComposeTheme(darkTheme = false) {
                 Column(
@@ -81,6 +101,7 @@ class ProfileActivity : ComponentActivity() {
 
         }
     }
+
 }
 
 private val optionsList: ArrayList<OptionsData> = ArrayList()
@@ -129,7 +150,7 @@ fun Profile(context: Context = LocalContext.current, displayName: MutableState<S
             optionsList.clear()
 
             // Add the data to optionsList
-            prepareOptionsData()
+            prepareOptionsData(context)
 
             listPrepared = true
         }
@@ -150,7 +171,7 @@ fun Profile(context: Context = LocalContext.current, displayName: MutableState<S
 
             // Show the options
             items(optionsList) { item ->
-                OptionsItemStyle(item = item, context = context)
+                OptionsItemStyle(item = item)
             }
         }
     }
@@ -160,6 +181,8 @@ fun Profile(context: Context = LocalContext.current, displayName: MutableState<S
 @Composable
 private fun UserDetails(context: Context, displayName: MutableState<String>) {
     val storageRef = Firebase.storage.reference
+    var bitmap by remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
+
 
     Row(
         modifier = Modifier
@@ -174,7 +197,7 @@ private fun UserDetails(context: Context, displayName: MutableState<String>) {
         //TODO modularize + adapt picture path
         val userRef = storageRef.child("images/cat.jpg")
 
-        var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+        //var bitmap by remember { mutableStateOf<Bitmap?>(null) }
 
         LaunchedEffect(Unit) {
             val ONE_MEGABYTE: Long = 1024 * 1024
@@ -277,14 +300,12 @@ private fun UserDetails(context: Context, displayName: MutableState<String>) {
 
 // Row style for options
 @Composable
-private fun OptionsItemStyle(item: OptionsData, context: Context) {
+private fun OptionsItemStyle(item: OptionsData) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(enabled = true) {
-                Toast
-                    .makeText(context, item.title, Toast.LENGTH_SHORT)
-                    .show()
+                item.clickAction()
             }
             .padding(all = 16.dp)
             .testTag("optionsItemStyle"),
@@ -349,7 +370,7 @@ private fun OptionsItemStyle(item: OptionsData, context: Context) {
     }
 }
 
-private fun prepareOptionsData() {
+private fun prepareOptionsData(context: Context) {
 
     val appIcons = Icons.Rounded
 
@@ -358,7 +379,8 @@ private fun prepareOptionsData() {
         OptionsData(
             icon = appIcons.PlayArrow,
             title = "Game Stats",
-            subTitle = "Check your Game statistics"
+            subTitle = "Check your Game statistics",
+            clickAction = {  } //TODO
         )
     )
 
@@ -366,7 +388,15 @@ private fun prepareOptionsData() {
         OptionsData(
             icon = appIcons.Settings,
             title = "Parameters",
-            subTitle = "App parameters"
+            subTitle = "App parameters",
+            clickAction = {
+                context.startActivity(
+                    Intent(
+                        context,
+                        SettingsActivity::class.java
+                    )
+                )
+            }
         )
     )
 
@@ -374,19 +404,22 @@ private fun prepareOptionsData() {
         OptionsData(
             icon = appIcons.Info,
             title = "Help",
-            subTitle = "Get some help about how the app works"
+            subTitle = "Get some help about how the app works",
+            clickAction = {  } //TODO
         )
     )
 
 }
 
-data class OptionsData(val icon: ImageVector, val title: String, val subTitle: String)
+data class OptionsData(val icon: ImageVector, val title: String, val subTitle: String, val clickAction: () -> Unit)
 
 //@Preview(showBackground = true)
 //@Composable
 //fun ProfileScreenPreview() {
 //    ProfileScreen()
 //}
+
+
 
 @Preview
 @Composable
