@@ -57,6 +57,7 @@ fun UsernameBar(
     ) {
 
         OutlinedTextField(
+            modifier = Modifier.testTag("usernameTextField"),
             value = username,
             onValueChange = onUsernameChange,
             label = { Text(
