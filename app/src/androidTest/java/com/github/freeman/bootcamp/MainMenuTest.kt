@@ -46,12 +46,12 @@ class MainMenuTest {
 
     @Test
     fun settingsButtonTextIsCorrect() {
-        composeRule.onNode(hasTestTag("settingsButton")).assertTextContains("Settings")
+        node("settingsButton").assertTextContains("Settings")
     }
 
     @Test
     fun settingsButtonHasClickAction() {
-        composeRule.onNode(hasTestTag("settingsButton")).assertHasClickAction()
+        node("settingsButton").assertHasClickAction()
     }
 
     @Test

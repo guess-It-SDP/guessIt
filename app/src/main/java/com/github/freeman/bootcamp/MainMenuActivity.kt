@@ -65,13 +65,7 @@ fun play(context: Context) {
 
 @Composable
 fun PlayButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("playButton"),
-        onClick = { play(context) }
-    ) {
-        Text(PLAY)
-    }
+    createButton(testTag = "playButton" , unit = ::play, text = PLAY)
 }
 
 fun settings(context: Context) {
@@ -80,13 +74,7 @@ fun settings(context: Context) {
 
 @Composable
 fun SettingsButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("settingsButton"),
-        onClick = { settings(context) }
-    ) {
-        Text(SETTINGS)
-    }
+    createButton(testTag = "settingsButton", unit = ::settings, text = SETTINGS)
 }
 
 fun profile(context: Context) {
@@ -96,12 +84,7 @@ fun profile(context: Context) {
 @Composable
 fun ProfileButton() {
     val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("profileButton"),
-        onClick = { profile(context) }
-    ) {
-        Text(PROFILE)
-    }
+    createButton(testTag = "profileButton", unit = ::profile, text =PROFILE )
 }
 
 fun chatTest(context: Context) {
@@ -110,13 +93,7 @@ fun chatTest(context: Context) {
 
 @Composable
 fun ChatTestButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("chatTestButton"),
-        onClick = { chatTest(context) }
-    ) {
-        Text(CHAT)
-    }
+    createButton(testTag = "chatTestButton" , unit = ::chatTest, text = CHAT)
 }
 
 fun guessing(context: Context) {
@@ -125,13 +102,7 @@ fun guessing(context: Context) {
 
 @Composable
 fun GuessingButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("guessingButton"),
-        onClick = { guessing(context) }
-    ) {
-        Text(GUESSING)
-    }
+    createButton(testTag = "guessingButton", unit = ::guessing , text = GUESSING)
 }
 
 fun audioRec(context: Context) {
@@ -140,13 +111,7 @@ fun audioRec(context: Context) {
 
 @Composable
 fun AudioRecordingButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("audioRecordingButton"),
-        onClick = { audioRec(context) }
-    ) {
-        Text(AUDIO_REC)
-    }
+    createButton(testTag = "audioRecordingButton", unit = ::audioRec , text = AUDIO_REC)
 }
 
 fun drawing(context: Context) {
@@ -155,13 +120,7 @@ fun drawing(context: Context) {
 
 @Composable
 fun DrawingButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("drawingButton"),
-        onClick = { drawing(context) }
-    ) {
-        Text(DRAWING)
-    }
+    createButton(testTag = "drawingButton", unit = ::drawing, text =DRAWING )
 }
 
 fun signIn(context: Context) {
@@ -170,13 +129,7 @@ fun signIn(context: Context) {
 
 @Composable
 fun SignInButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("SignInButton"),
-        onClick = { signIn(context) }
-    ) {
-        Text(SIGN_IN)
-    }
+    createButton(testTag = "SignInButton", unit = ::signIn, text = SIGN_IN)
 }
 
 fun videoCall(context: Context) {
@@ -184,14 +137,19 @@ fun videoCall(context: Context) {
 }
 @Composable
 fun VideoCallButton() {
+    createButton(testTag = "videoCallButton", unit = ::videoCall, text = VIDEO_CALL)
+}
+@Composable
+fun createButton(testTag: String, unit:(context:Context)->Unit, text: String) {
     val context = LocalContext.current
     ElevatedButton(
-        modifier = Modifier.testTag("videoCallButton"),
-        onClick = { videoCall(context) }
+        modifier = Modifier.testTag(testTag),
+        onClick = { unit(context) }
     ) {
-        Text(VIDEO_CALL)
+        Text(text)
     }
 }
+
 
 @Composable
 fun BackButton() {
