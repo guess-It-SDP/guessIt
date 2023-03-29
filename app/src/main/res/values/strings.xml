@@ -18,4 +18,6 @@
     <string name="redo">Redo button</string>
     <string name="stroke_color">Stroke color button</string>
     <string name="stroke_width">Stroke Width button</string>
+
+    <string name="web_client_id">690006943045-qccs8s58p6ck2r3llb7e7kv6najg8485.apps.googleusercontent.com</string>
 </resources>

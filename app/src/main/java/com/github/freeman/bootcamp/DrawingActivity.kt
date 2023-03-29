@@ -39,6 +39,7 @@ class DrawingActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DrawingScreen {}
+            TimerScreen(100, 100L)
         }
     }
 }

@@ -42,4 +42,9 @@ class DrawingActivityTest {
         composeRule.onNodeWithContentDescription(composeRule.activity.getString(R.string.stroke_width)).performClick()
         composeRule.onNodeWithTag(composeRule.activity.getString(R.string.width_slider)).assertIsDisplayed()
     }
+
+    @Test
+    fun drawingScreenContainsTimer() {
+        composeRule.onNode(hasTestTag("timerScreen")).assertIsDisplayed()
+    }
 }
