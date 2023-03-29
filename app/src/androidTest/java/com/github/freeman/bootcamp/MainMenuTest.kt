@@ -145,7 +145,7 @@ class MainMenuTest {
     fun videoCallButtonIsDisplayedHasRightTextIsClickableAndSendsIntent(){
         testButton("videoCallButton", VideoCallActivity::class.java.name,MainMenuActivity.VIDEO_CALL)
     }
-    
+
     /**
      * Test is a button is displayed, has the right text, is clickable and sends the correct intents
      */

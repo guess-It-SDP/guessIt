@@ -37,7 +37,7 @@ class ChatTest {
         composeRule.onNodeWithTag("activateChatButton").assertIsDisplayed()
 
     }
-    /*
+
 
     @Test
     fun chatScreenIsNotDisplayedBeforeActivation() {
@@ -152,5 +152,5 @@ class ChatTest {
         composeRule.onNodeWithTag("chatMessageItem").onChild().assertIsDisplayed()
 
     }
-    */
+    
 }
