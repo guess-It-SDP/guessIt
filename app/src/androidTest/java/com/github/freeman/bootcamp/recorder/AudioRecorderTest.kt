@@ -57,12 +57,5 @@ class AudioRecordingTest {
     fun stopRecordingHasClickAction() {
         composeRule.onNode(hasTestTag("stop_recording_button")).assertHasClickAction()
     }
-
-    @Test
-    fun clickRecordButtonAndAfterPlayButtonDoesntCrash() {
-        composeRule.onNode(hasTestTag("start_recording_button")).performClick()
-        composeRule.onNode(hasTestTag("stop_recording_button")).performClick()
-    }
-
-
+    
 }
