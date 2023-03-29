@@ -39,7 +39,6 @@ class DrawingActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DrawingScreen {}
-            TimerScreen(100, 100L)
         }
     }
 }
@@ -144,6 +143,7 @@ fun ControlsBar(
     colorValue: MutableState<Color>,
 ) {
     Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
+        TimerScreen(100, 60L)
         MenuItems(
             R.drawable.ic_undo,
             LocalContext.current.getString(R.string.undo),
