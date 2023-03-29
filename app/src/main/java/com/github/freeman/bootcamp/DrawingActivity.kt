@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.border
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -130,7 +129,7 @@ fun DrawingScreen(save: (Bitmap) -> Unit) {
     }
 }
 
-// The controls bar offers many buttons such as undo, redo, color selection, ...
+// The controls bar offers buttons that allow to undo, redo, select color and stoke width.
 @Composable
 fun ControlsBar(
     drawController: DrawController,
