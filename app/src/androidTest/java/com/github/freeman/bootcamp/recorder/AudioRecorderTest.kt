@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.performClick
 import androidx.test.rule.GrantPermissionRule
 import org.junit.Rule
 import org.junit.Test
@@ -56,5 +57,12 @@ class AudioRecordingTest {
     fun stopRecordingHasClickAction() {
         composeRule.onNode(hasTestTag("stop_recording_button")).assertHasClickAction()
     }
+
+    @Test
+    fun clickRecordButtonAndAfterPlayButtonDoesntCrash() {
+        composeRule.onNode(hasTestTag("start_recording_button")).performClick()
+        composeRule.onNode(hasTestTag("stop_recording_button")).performClick()
+    }
+
 
 }

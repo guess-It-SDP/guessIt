@@ -1,0 +1,80 @@
+[debug] [2023-03-29T12:16:28.432Z] ----------------------------------------------------------------------
+[debug] [2023-03-29T12:16:28.434Z] Command:       C:\Users\david\DOCUME~1\SDP\guessIt\firebase-tools-instant-win.exe C:\Users\david\.cache\firebase\tools\lib\node_modules\firebase-tools\lib\bin\firebase emulators:start
+[debug] [2023-03-29T12:16:28.435Z] CLI Version:   11.24.0
+[debug] [2023-03-29T12:16:28.435Z] Platform:      win32
+[debug] [2023-03-29T12:16:28.435Z] Node Version:  v16.16.0
+[debug] [2023-03-29T12:16:28.436Z] Time:          Wed Mar 29 2023 14:16:28 GMT+0200 (GMT+02:00)
+[debug] [2023-03-29T12:16:28.437Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-03-29T12:16:28.537Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-03-29T12:16:28.537Z] > authorizing via signed-in user (davidlacourgaletto@gmail.com)
+[debug] [2023-03-29T12:16:28.931Z] openjdk version "11.0.16.1" 2022-08-12 LTS
+OpenJDK Runtime Environment Microsoft-40648 (build 11.0.16.1+1-LTS)
+OpenJDK 64-Bit Server VM Microsoft-40648 (build 11.0.16.1+1-LTS, mixed mode)
+
+[debug] [2023-03-29T12:16:28.961Z] Parsed Java major version: 11
+[info] i  emulators: Starting emulators: database, hosting {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: database, hosting"}}
+[debug] [2023-03-29T12:16:28.976Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2023-03-29T12:16:28.976Z] [database] Database Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2023-03-29T12:16:28.976Z] [hosting] Hosting Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2023-03-29T12:16:28.977Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"database":[{"address":"127.0.0.1","family":"IPv4","port":9000}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5000}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[warn] !  emulators: It seems that you are running multiple instances of the emulator suite for project sdp-guess-it. This may result in unexpected behavior. 
+[debug] [2023-03-29T12:16:28.987Z] [hub] writing locator at C:\Users\david\AppData\Local\Temp\hub-sdp-guess-it.json
+[debug] [2023-03-29T12:16:28.999Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/sdp-guess-it [none]
+[debug] [2023-03-29T12:16:29.861Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/sdp-guess-it 200
+[debug] [2023-03-29T12:16:29.862Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/sdp-guess-it {"projectId":"sdp-guess-it","projectNumber":"690006943045","displayName":"sdp-guess-it","name":"projects/sdp-guess-it","resources":{"hostingSite":"sdp-guess-it","realtimeDatabaseInstance":"sdp-guess-it-default-rtdb","storageBucket":"sdp-guess-it.appspot.com","locationId":"europe-west"},"state":"ACTIVE","etag":"1_99e988c6-44de-4a8f-927d-6d1044ce13a1"}
+[debug] [2023-03-29T12:16:29.862Z] database rules config:  []
+[warn] !  database: Did not find a Realtime Database rules file specified in a firebase.json config file. The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration. {"metadata":{"emulator":{"name":"database"},"message":"Did not find a Realtime Database rules file specified in a firebase.json config file. The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration."}}
+[debug] [2023-03-29T12:16:29.884Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: projectId"}}
+[debug] [2023-03-29T12:16:29.884Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2023-03-29T12:16:29.884Z] Ignoring unsupported arg: rules {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: rules"}}
+[debug] [2023-03-29T12:16:29.885Z] Starting Database Emulator with command {"binary":"java","args":["-Duser.language=en","-jar","C:\\Users\\david\\.cache\\firebase\\emulators\\firebase-database-emulator-v4.11.0.jar","--host","127.0.0.1","--port",9000,"--single_project_mode","Warning"],"optionalArgs":["port","host","functions_emulator_port","functions_emulator_host","single_project_mode"],"joinArgs":false} {"metadata":{"emulator":{"name":"database"},"message":"Starting Database Emulator with command {\"binary\":\"java\",\"args\":[\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\david\\\\.cache\\\\firebase\\\\emulators\\\\firebase-database-emulator-v4.11.0.jar\",\"--host\",\"127.0.0.1\",\"--port\",9000,\"--single_project_mode\",\"Warning\"],\"optionalArgs\":[\"port\",\"host\",\"functions_emulator_port\",\"functions_emulator_host\",\"single_project_mode\"],\"joinArgs\":false}"}}
+[info] i  database: Database Emulator logging to database-debug.log {"metadata":{"emulator":{"name":"database"},"message":"Database Emulator logging to \u001b[1mdatabase-debug.log\u001b[22m"}}
+[debug] [2023-03-29T12:16:31.104Z] WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by io.netty.util.internal.ReflectionUtil (file:/C:/Users/david/.cache/firebase/emulators/firebase-database-emulator-v4.11.0.jar) to field sun.nio.ch.SelectorImpl.selectedKeys
+WARNING: Please consider reporting this to the maintainers of io.netty.util.internal.ReflectionUtil
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release {"metadata":{"emulator":{"name":"database"},"message":"WARNING: An illegal reflective access operation has occurred\r\nWARNING: Illegal reflective access by io.netty.util.internal.ReflectionUtil (file:/C:/Users/david/.cache/firebase/emulators/firebase-database-emulator-v4.11.0.jar) to field sun.nio.ch.SelectorImpl.selectedKeys\r\nWARNING: Please consider reporting this to the maintainers of io.netty.util.internal.ReflectionUtil\r\nWARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations\r\nWARNING: All illegal access operations will be denied in a future release"}}
+[debug] [2023-03-29T12:16:31.104Z] 
+ {"metadata":{"emulator":{"name":"database"},"message":"\r\n"}}
+[debug] [2023-03-29T12:16:32.039Z] 14:16:32.038 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+ {"metadata":{"emulator":{"name":"database"},"message":"14:16:32.038 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started\r\n"}}
+[debug] [2023-03-29T12:16:32.298Z] 14:16:32.296 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
+ {"metadata":{"emulator":{"name":"database"},"message":"14:16:32.296 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000\r\n"}}
+[debug] [2023-03-29T12:16:32.739Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/sdp-guess-it/sites 
+[debug] [2023-03-29T12:16:33.826Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/sdp-guess-it/sites 200
+[debug] [2023-03-29T12:16:33.826Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/sdp-guess-it/sites {"sites":[{"name":"projects/sdp-guess-it/sites/sdp-guess-it","defaultUrl":"https://sdp-guess-it.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2023-03-29T12:16:33.826Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/sdp-guess-it/webApps/-/config [none]
+[debug] [2023-03-29T12:16:34.452Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/sdp-guess-it/webApps/-/config 200
+[debug] [2023-03-29T12:16:34.452Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/sdp-guess-it/webApps/-/config {"projectId":"sdp-guess-it","databaseURL":"https://sdp-guess-it-default-rtdb.europe-west1.firebasedatabase.app","storageBucket":"sdp-guess-it.appspot.com","locationId":"europe-west","apiKey":"AIzaSyBmfkMwCjSvQTTM9khDkrluCJhAZhSs1XU","authDomain":"sdp-guess-it.firebaseapp.com","messagingSenderId":"690006943045"}
+[debug] [2023-03-29T12:16:34.467Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/sdp-guess-it [none]
+[debug] [2023-03-29T12:16:34.766Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/sdp-guess-it 200
+[debug] [2023-03-29T12:16:34.766Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/sdp-guess-it {"projectId":"sdp-guess-it","projectNumber":"690006943045","displayName":"sdp-guess-it","name":"projects/sdp-guess-it","resources":{"hostingSite":"sdp-guess-it","realtimeDatabaseInstance":"sdp-guess-it-default-rtdb","storageBucket":"sdp-guess-it.appspot.com","locationId":"europe-west"},"state":"ACTIVE","etag":"1_99e988c6-44de-4a8f-927d-6d1044ce13a1"}
+[info] i  hosting[sdp-guess-it]: Serving hosting files from: public {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1mpublic\u001b[22m"}}
+[info] +  hosting[sdp-guess-it]: Local server: http://127.0.0.1:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://127.0.0.1:5000\u001b[22m\u001b[24m"}}
+[debug] [2023-03-29T12:16:34.847Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2023-03-29T12:16:34.847Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2023-03-29T12:16:34.848Z] Starting Emulator UI with command {"binary":"node","args":["C:\\Users\\david\\.cache\\firebase\\emulators\\ui-v1.11.4\\server\\server.js"],"optionalArgs":[],"joinArgs":false} {"metadata":{"emulator":{"name":"ui"},"message":"Starting Emulator UI with command {\"binary\":\"node\",\"args\":[\"C:\\\\Users\\\\david\\\\.cache\\\\firebase\\\\emulators\\\\ui-v1.11.4\\\\server\\\\server.js\"],\"optionalArgs\":[],\"joinArgs\":false}"}}
+[info] i  ui: Emulator UI logging to ui-debug.log {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI logging to \u001b[1mui-debug.log\u001b[22m"}}
+[debug] [2023-03-29T12:16:35.321Z] Web / API server started at 127.0.0.1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at 127.0.0.1:4000\n"}}
+[debug] [2023-03-29T12:16:35.321Z] Web / API server started at ::1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at ::1:4000\n"}}
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌──────────┬────────────────┬────────────────────────────────┐
+│ Emulator │ Host:Port      │ View in Emulator UI            │
+├──────────┼────────────────┼────────────────────────────────┤
+│ Database │ 127.0.0.1:9000 │ http://127.0.0.1:4000/database │
+├──────────┼────────────────┼────────────────────────────────┤
+│ Hosting  │ 127.0.0.1:5000 │ n/a                            │
+└──────────┴────────────────┴────────────────────────────────┘
+  Emulator Hub running at 127.0.0.1:4400
+  Other reserved ports: 4500
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
