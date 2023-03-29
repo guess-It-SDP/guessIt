@@ -54,9 +54,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.CompletableFuture
 
+/**
+ * Activity that shows up the settings and your profile
+ */
+class SettingsProfileActivity : ComponentActivity() {
 
-class ProfileActivity : ComponentActivity() {
-
+    // actualizes the data by restarting the activity
     override fun onRestart() {
         super.onRestart()
         finish()
@@ -69,11 +72,13 @@ class ProfileActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
             val dbRef = Firebase.database.reference
+            val storageRef = Firebase.storage.reference
 
-            val displayName = remember { mutableStateOf("Chris P. Bacon") }
-//            var profilePicBitmap = remember { mutableStateOf<Bitmap?>(null) }
+            val displayName = remember { mutableStateOf("") }
+            val profilePicBitmap = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
 
 
+            // get name from database
             val future = CompletableFuture<String>()
             //TODO get name from real database location
             dbRef.child("displayName").get().addOnSuccessListener {
@@ -82,9 +87,18 @@ class ProfileActivity : ComponentActivity() {
             }.addOnFailureListener {
                 future.completeExceptionally(it)
             }
-
             future.thenAccept {
                 displayName.value = it
+            }
+
+            // get User's image from firebase storage
+            //TODO modularize + adapt picture path
+            val userRef = storageRef.child("images/cat.jpg")
+            LaunchedEffect(Unit) {
+                val ONE_MEGABYTE: Long = 1024 * 1024
+                userRef.getBytes(ONE_MEGABYTE).addOnSuccessListener {
+                    profilePicBitmap.value = BitmapFactory.decodeByteArray(it, 0, it.size)
+                }
             }
 
             BootcampComposeTheme(darkTheme = false) {
@@ -92,10 +106,8 @@ class ProfileActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Top appbar
                     TopAppbarSettings(context = context)
-                    //TODO get info from database before creating profile
-                    Profile(displayName = displayName)
+                    Profile(displayName = displayName, profilePic = profilePicBitmap)
                 }
             }
 
@@ -105,6 +117,7 @@ class ProfileActivity : ComponentActivity() {
 
 }
 
+// list of option available global to the activity
 private val optionsList: ArrayList<OptionsData> = ArrayList()
 
 
@@ -124,7 +137,6 @@ fun TopAppbarSettings(context: Context) {
         elevation = 4.dp,
         navigationIcon = {
             IconButton(onClick = {
-                Toast.makeText(context, "Nav Button", Toast.LENGTH_SHORT).show()
                 val activity = (context as? Activity)
                 activity?.finish()
             }) {
@@ -138,7 +150,7 @@ fun TopAppbarSettings(context: Context) {
 }
 
 @Composable
-fun Profile(context: Context = LocalContext.current, displayName: MutableState<String>) {
+fun Profile(context: Context = LocalContext.current, displayName: MutableState<String>, profilePic: MutableState<Bitmap?>) {
 
     // This indicates if the optionsList has data or not
     // Initially, the list is empty. So, its value is false.
@@ -166,11 +178,10 @@ fun Profile(context: Context = LocalContext.current, displayName: MutableState<S
         ) {
 
             item {
-                // User's image, name, email and edit button
-                UserDetails(context = context, displayName = displayName)
+                UserDetails(displayName = displayName, profilePic = profilePic)
             }
 
-            // Show the options
+            // Show all the available options
             items(optionsList) { item ->
                 OptionsItemStyle(item = item)
             }
@@ -178,12 +189,8 @@ fun Profile(context: Context = LocalContext.current, displayName: MutableState<S
     }
 }
 
-// This composable displays user's image, name, email and edit button
 @Composable
-private fun UserDetails(context: Context, displayName: MutableState<String>) {
-    val storageRef = Firebase.storage.reference
-    var bitmap by remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
-
+private fun UserDetails(context: Context = LocalContext.current, displayName: MutableState<String>, profilePic: MutableState<Bitmap?>) {
 
     Row(
         modifier = Modifier
@@ -193,23 +200,9 @@ private fun UserDetails(context: Context, displayName: MutableState<String>) {
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        // User's image
-
-        //TODO modularize + adapt picture path
-        val userRef = storageRef.child("images/cat.jpg")
-
-        //var bitmap by remember { mutableStateOf<Bitmap?>(null) }
-
-        LaunchedEffect(Unit) {
-            val ONE_MEGABYTE: Long = 1024 * 1024
-            userRef.getBytes(ONE_MEGABYTE).addOnSuccessListener {
-                bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
-            }
-        }
-
-        if (bitmap != null) {
+        if (profilePic.value != null) {
             Image(
-                painter = rememberAsyncImagePainter(bitmap),
+                painter = rememberAsyncImagePainter(profilePic.value),
                 contentScale = ContentScale.Crop,
                 contentDescription = null,
                 modifier = Modifier
@@ -217,29 +210,6 @@ private fun UserDetails(context: Context, displayName: MutableState<String>) {
                     .clip(CircleShape)
             )
         }
-
-
-//        Image(
-//            modifier = Modifier
-//                .size(72.dp)
-//                .clip(shape = CircleShape),
-//            painter =
-//            rememberAsyncImagePainter(
-//                ImageRequest.Builder(LocalContext.current)
-//                    .data(data = "https://firebasestorage.googleapis.com/v0/b/sdp-guess-it.appspot.com/o/cat.jpg")
-//                    .crossfade(true)
-//                    .build()
-//            ),
-//            contentDescription = null // Add content description if applicable
-//        )
-
-//        Image(
-//            modifier = Modifier
-//                .size(72.dp)
-//                .clip(shape = CircleShape),
-//            painter = painterResource(id = R.drawable.ic_launcher_background),
-//            contentDescription = "Your Image"
-//        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -254,10 +224,9 @@ private fun UserDetails(context: Context, displayName: MutableState<String>) {
 
                 // User's name
                 Text(
-                    text = displayName.value, //TODO get name from database
+                    text = displayName.value,
                     style = TextStyle(
                         fontSize = 22.sp,
-                        //fontFamily = FontFamily(Font(R.font.roboto_bold, FontWeight.Bold)),
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -270,7 +239,6 @@ private fun UserDetails(context: Context, displayName: MutableState<String>) {
                     text = "email123@email.com",
                     style = TextStyle(
                         fontSize = 14.sp,
-                        //fontFamily = FontFamily(Font(R.font.roboto_regular, FontWeight.Normal)),
                         color = Color.Gray,
                         letterSpacing = (0.8).sp
                     ),
@@ -285,7 +253,6 @@ private fun UserDetails(context: Context, displayName: MutableState<String>) {
                     .weight(weight = 1f, fill = false),
                 onClick = {
                     context.startActivity(Intent(context, EditProfileActivity::class.java))
-                    Toast.makeText(context, "Edit Button", Toast.LENGTH_SHORT).show()
                 }) {
                 Icon(
                     modifier = Modifier.size(24.dp),
@@ -299,7 +266,6 @@ private fun UserDetails(context: Context, displayName: MutableState<String>) {
     }
 }
 
-// Row style for options
 @Composable
 private fun OptionsItemStyle(item: OptionsData) {
     Row(
@@ -313,7 +279,7 @@ private fun OptionsItemStyle(item: OptionsData) {
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        // Icon
+        // Option icon
         Icon(
             modifier = Modifier
                 .size(32.dp),
@@ -339,19 +305,17 @@ private fun OptionsItemStyle(item: OptionsData) {
                     text = item.title,
                     style = TextStyle(
                         fontSize = 18.sp,
-                        //fontFamily = FontFamily(Font(R.font.roboto_medium, FontWeight.Medium))
                     )
                 )
 
                 Spacer(modifier = Modifier.height(2.dp))
 
-                // Sub title
+                // Subtitle
                 Text(
                     text = item.subTitle,
                     style = TextStyle(
                         fontSize = 14.sp,
                         letterSpacing = (0.8).sp,
-                        //fontFamily = FontFamily(Font(R.font.roboto_regular, FontWeight.Normal)),
                         color = Color.Gray
                     )
                 )
@@ -367,10 +331,14 @@ private fun OptionsItemStyle(item: OptionsData) {
                 tint = Color.Black.copy(alpha = 0.70f)
             )
         }
-
     }
 }
 
+/**
+ * Fills the global option list with appropriate options
+ *
+ * @param context the current context
+ */
 private fun prepareOptionsData(context: Context) {
 
     val appIcons = Icons.Rounded
@@ -412,14 +380,10 @@ private fun prepareOptionsData(context: Context) {
 
 }
 
+/**
+ * Represents a Setting option
+ */
 data class OptionsData(val icon: ImageVector, val title: String, val subTitle: String, val clickAction: () -> Unit)
-
-//@Preview(showBackground = true)
-//@Composable
-//fun ProfileScreenPreview() {
-//    ProfileScreen()
-//}
-
 
 
 @Preview

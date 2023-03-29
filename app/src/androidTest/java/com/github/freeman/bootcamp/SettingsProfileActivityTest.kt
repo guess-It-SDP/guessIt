@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +18,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class ProfileActivityTest {
+class SettingsProfileActivityTest {
 
     @get:Rule
     val composeRule = createComposeRule()
@@ -28,6 +29,8 @@ class ProfileActivityTest {
             val context = LocalContext.current
 
             val displayName = remember { mutableStateOf("Chris P. Bacon") }
+            val profilePicBitmap = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
+
 
             BootcampComposeTheme(darkTheme = false) {
                 Column(
@@ -35,7 +38,7 @@ class ProfileActivityTest {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     TopAppbarSettings(context = context)
-                    Profile(displayName = displayName)
+                    Profile(displayName = displayName, profilePic = profilePicBitmap)
                 }
             }
         }

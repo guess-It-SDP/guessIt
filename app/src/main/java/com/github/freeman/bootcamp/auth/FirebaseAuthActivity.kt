@@ -88,8 +88,6 @@ fun AuthenticationForm(signInInfo: String) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // read only text field
-
         Text(
             modifier = Modifier.testTag("sign_in_info"),
             text = signInInfo,
@@ -101,14 +99,18 @@ fun AuthenticationForm(signInInfo: String) {
                 (context as? FirebaseAuthActivity)?.signIntoGoogleAccount()
             })
         { Text("Sign in") }
+
         Spacer(modifier = Modifier.size(24.dp))
+
         ElevatedButton(
             modifier = Modifier.testTag("sign_out_button"),
             onClick = {
                 (context as? FirebaseAuthActivity)?.signOutOfGoogleAccount()
             })
         { Text("Sign out") }
+
         Spacer(modifier = Modifier.size(24.dp))
+
         ElevatedButton(
             modifier = Modifier.testTag("delete_button"),
             onClick = {

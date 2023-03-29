@@ -70,7 +70,7 @@ fun PlayButton() {
 }
 
 fun settings(context: Context) {
-    context.startActivity(Intent(context, ProfileActivity::class.java))
+    context.startActivity(Intent(context, SettingsProfileActivity::class.java))
 }
 
 @Composable

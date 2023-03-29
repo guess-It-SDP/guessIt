@@ -168,7 +168,7 @@ fun EditUserDetails(displayName: MutableState<String>) {
                         val uploadTask = userRef.putBytes(image.value)
                         uploadTask.addOnFailureListener {
                             // Handle unsuccessful uploads
-                        }.addOnSuccessListener { taskSnapshot ->
+                        }.addOnSuccessListener {
                             // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
                             // ...
                         }
@@ -218,7 +218,6 @@ fun TopAppbarEditProfile(context: Context) {
         elevation = 4.dp,
         navigationIcon = {
             IconButton(onClick = {
-                Toast.makeText(context, "Nav Button", Toast.LENGTH_SHORT).show()
                 val activity = (context as? Activity)
                 activity?.finish()
 

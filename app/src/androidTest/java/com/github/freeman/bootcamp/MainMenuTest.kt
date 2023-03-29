@@ -74,7 +74,7 @@ class MainMenuTest {
         context.startService(Intent(context, BackgroundMusicService::class.java))
 
         composeRule.onNodeWithText("Settings").performClick()
-        Intents.intended(IntentMatchers.hasComponent(ProfileActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(SettingsProfileActivity::class.java.name))
 
         Intents.release()
     }
@@ -97,7 +97,7 @@ class MainMenuTest {
         setMainMenuScreen()
 
         composeRule.onNodeWithText("Settings").performClick()
-        Intents.intended(IntentMatchers.hasComponent(ProfileActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(SettingsProfileActivity::class.java.name))
 
         Intents.release()
     }
