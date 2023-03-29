@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,7 +49,7 @@ fun DrawingScreen(save: (Bitmap) -> Unit) {
     val undoVisibility = remember { mutableStateOf(false) }
     val redoVisibility = remember { mutableStateOf(false) }
     val colorBarVisibility = remember { mutableStateOf(false) }
-    val widthBarVisibility = remember { mutableStateOf(false) }
+    val widthSliderVisibility = remember { mutableStateOf(false) }
     val currentWidth = remember { mutableStateOf(DEFAULT_WIDTH) }
     val currentColor = remember { mutableStateOf(DEFAULT_COLOR) }
     val drawController = rememberDrawController()
@@ -58,7 +59,7 @@ fun DrawingScreen(save: (Bitmap) -> Unit) {
         drawController.changeStrokeWidth(DEFAULT_WIDTH)
         firstStroke.value = false
     }
-    Box(Modifier.testTag("drawingScreen")) {
+    Box(Modifier.testTag(LocalContext.current.getString(R.string.drawing_screen))) {
         Column {
             // Controls bar
             ControlsBar(
@@ -69,11 +70,11 @@ fun DrawingScreen(save: (Bitmap) -> Unit) {
                         false -> true
                         else -> false
                     }
-                    widthBarVisibility.value = false
+                    widthSliderVisibility.value = false
                 },
                 onWidthClick =
                 {
-                    widthBarVisibility.value = !widthBarVisibility.value
+                    widthSliderVisibility.value = !widthSliderVisibility.value
                     colorBarVisibility.value = false
                 },
                 undoVisibility,
@@ -92,8 +93,9 @@ fun DrawingScreen(save: (Bitmap) -> Unit) {
                 currentColor.value = it
                 drawController.changeColor(it)
             }
-            // Slider to select stroke width
-            if (widthBarVisibility.value) {
+            // Slider to select stroke width that appears when clicking the corresponding button in
+            // the controls bar
+            if (widthSliderVisibility.value) {
                 Slider(
                     value = currentWidth.value,
                     onValueChange = { newValue ->
@@ -105,7 +107,8 @@ fun DrawingScreen(save: (Bitmap) -> Unit) {
                         thumbColor = MaterialTheme.colors.primaryVariant,
                         activeTrackColor = MaterialTheme.colors.primary,
                         inactiveTrackColor = MaterialTheme.colors.secondary
-                    )
+                    ),
+                    modifier = Modifier.testTag(LocalContext.current.getString(R.string.width_slider))
                 )
             }
             // Drawing zone
@@ -142,22 +145,22 @@ fun ControlsBar(
     Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
         MenuItems(
             R.drawable.ic_undo,
-            "undo",
+            LocalContext.current.getString(R.string.undo),
             if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
         ) {
             if (undoVisibility.value) drawController.unDo()
         }
         MenuItems(
             R.drawable.ic_redo,
-            "redo",
+            LocalContext.current.getString(R.string.redo),
             if (redoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
         ) {
             if (redoVisibility.value) drawController.reDo()
         }
-        MenuItems(R.drawable.ic_color, "stroke color", colorValue.value) {
+        MenuItems(R.drawable.ic_color, LocalContext.current.getString(R.string.stroke_color), colorValue.value) {
             onColorClick()
         }
-        MenuItems(R.drawable.ic_width, "stroke width", MaterialTheme.colors.primary) {
+        MenuItems(R.drawable.ic_width, LocalContext.current.getString(R.string.stroke_width), MaterialTheme.colors.primary) {
             onWidthClick()
         }
     }

@@ -1,7 +1,6 @@
 package com.github.freeman.bootcamp
 
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
@@ -15,6 +14,32 @@ class DrawingActivityTest {
 
     @Test
     fun drawingScreenIsDisplayed() {
-        composeRule.onNode(hasTestTag("drawingScreen")).assertIsDisplayed()
+        composeRule.onNodeWithTag("drawingScreen").assertIsDisplayed()
+    }
+
+    @Test
+    fun colorButtonHasClickAction() {
+        composeRule.onNodeWithContentDescription(composeRule.activity.getString(R.string.stroke_color)).assertHasClickAction()
+    }
+
+    @Test
+    fun widthButtonHasClickAction() {
+        composeRule.onNodeWithContentDescription(composeRule.activity.getString(R.string.stroke_width)).assertHasClickAction()
+    }
+
+    @Test
+    fun undoButtonHasClickAction() {
+        composeRule.onNodeWithContentDescription(composeRule.activity.getString(R.string.undo)).assertHasClickAction()
+    }
+
+    @Test
+    fun redoButtonHasClickAction() {
+        composeRule.onNodeWithContentDescription(composeRule.activity.getString(R.string.redo)).assertHasClickAction()
+    }
+
+    @Test
+    fun widthSliderAppearsOnWidthButtonClick() {
+        composeRule.onNodeWithContentDescription(composeRule.activity.getString(R.string.stroke_width)).performClick()
+        composeRule.onNodeWithTag(composeRule.activity.getString(R.string.width_slider)).assertIsDisplayed()
     }
 }

@@ -10,4 +10,12 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="title_activity_bit_map_handler_testing">BitMapHandlerTestingActivity</string>
+
+    <!-- Strings used in DrawingActivity -->
+    <string name="drawing_screen">Drawing screen</string>
+    <string name="width_slider">Width slider</string>
+    <string name="undo">Undo button</string>
+    <string name="redo">Redo button</string>
+    <string name="stroke_color">Stroke color button</string>
+    <string name="stroke_width">Stroke Width button</string>
 </resources>
