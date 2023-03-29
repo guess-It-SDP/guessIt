@@ -25,9 +25,11 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PROFILE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.videocall.VideoCallActivity
 
 class MainMenuActivity : ComponentActivity() {
     private val backgroundMusicService = BackgroundMusicService()
@@ -52,6 +54,7 @@ class MainMenuActivity : ComponentActivity() {
         const val AUDIO_REC = "Audio Recording"
         const val SIGN_IN = "Sign in"
         const val DRAWING = "Drawing"
+        const val VIDEO_CALL = "Drawing"
 
     }
 }
@@ -176,6 +179,20 @@ fun SignInButton() {
     }
 }
 
+fun videoCall(context: Context) {
+    context.startActivity(Intent(context, VideoCallActivity::class.java))
+}
+@Composable
+fun VideoCallButton() {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("videoCallButton"),
+        onClick = { videoCall(context) }
+    ) {
+        Text(VIDEO_CALL)
+    }
+}
+
 @Composable
 fun BackButton() {
     val context = LocalContext.current
@@ -191,8 +208,6 @@ fun BackButton() {
         )
     }
 }
-
-
 
 @Preview
 @Composable
@@ -234,7 +249,8 @@ fun MainMenuScreen() {
         DrawingButton()
         Spacer(modifier = Modifier.size(8.dp))
         SignInButton()
-
+        Spacer(modifier = Modifier.size(8.dp))
+        VideoCallButton()
     }
 }
 

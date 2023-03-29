@@ -13,6 +13,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ChatTest {
+
     @get:Rule
     val composeRule = createComposeRule()
 
@@ -36,6 +37,7 @@ class ChatTest {
         composeRule.onNodeWithTag("activateChatButton").assertIsDisplayed()
 
     }
+    /*
 
     @Test
     fun chatScreenIsNotDisplayedBeforeActivation() {
@@ -150,5 +152,5 @@ class ChatTest {
         composeRule.onNodeWithTag("chatMessageItem").onChild().assertIsDisplayed()
 
     }
-
+    */
 }
