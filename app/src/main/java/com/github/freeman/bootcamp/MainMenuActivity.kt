@@ -54,8 +54,7 @@ class MainMenuActivity : ComponentActivity() {
         const val AUDIO_REC = "Audio Recording"
         const val SIGN_IN = "Sign in"
         const val DRAWING = "Drawing"
-        const val VIDEO_CALL = "Drawing"
-
+        const val VIDEO_CALL = "Video Call"
     }
 }
 
@@ -191,7 +190,7 @@ fun MainMenuScreen() {
             text = "Guess It!",
             fontSize = 40.sp
         )
-        Spacer(modifier = Modifier.size(50.dp))
+        Spacer(modifier = Modifier.size(24.dp))
         PlayButton()
         Spacer(modifier = Modifier.size(24.dp))
         SettingsButton()
