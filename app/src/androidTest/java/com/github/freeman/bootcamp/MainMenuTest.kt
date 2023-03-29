@@ -2,9 +2,7 @@ package com.github.freeman.bootcamp
 
 import android.content.Context
 import android.content.Intent
-import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.*
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
@@ -42,23 +40,8 @@ class MainMenuTest {
     }
 
     @Test
-    fun playButtonTextIsCorrect() {
-        composeRule.onNode(hasTestTag("playButton")).assertTextContains("Play game")
-    }
-
-    @Test
-    fun playButtonHasClickAction() {
-        composeRule.onNode(hasTestTag("playButton")).assertHasClickAction()
-    }
-
-    @Test
-    fun playIntentIsSent() {
-        Intents.init()
-
-        composeRule.onNode(hasTestTag("playButton")).performClick()
-        Intents.intended(IntentMatchers.hasComponent(GameOptionsActivity::class.java.name))
-
-        Intents.release()
+    fun playButtonIsDisplayedHasRightTextIsClickableAndSendsIntent(){
+        testButton("playButton", GameOptionsActivity::class.java.name,MainMenuActivity.PLAY)
     }
 
     @Test
@@ -84,41 +67,14 @@ class MainMenuTest {
     }
 
     @Test
-    fun profileButtonTextIsCorrect() {
-        composeRule.onNode(hasTestTag("profileButton")).assertTextContains("Profile")
+    fun profileButtonIsDisplayedHasRightTextIsClickableAndSendsIntent(){
+        testButton("profileButton", ProfileActivity::class.java.name,MainMenuActivity.PROFILE)
     }
 
     @Test
-    fun profileButtonHasClickAction() {
-        composeRule.onNode(hasTestTag("profileButton")).assertHasClickAction()
+    fun chatButtonIsDisplayedHasRightTextIsClickableAndSendsIntent(){
+        testButton("chatTestButton", ChatActivity::class.java.name,MainMenuActivity.CHAT)
     }
-
-    @Test
-    fun profileIntentIsSent() {
-        Intents.init()
-
-        composeRule.onNodeWithText("Profile").performClick()
-        Intents.intended(IntentMatchers.hasComponent(ProfileActivity::class.java.name))
-
-        Intents.release()
-    }
-
-    @Test
-    fun chatTestButtonIsDisplayed() {
-        composeRule.onNodeWithTag("chatTestButton").assertHasClickAction()
-    }
-
-    @Test
-    fun chatTestIntentIsSent() {
-        Intents.init()
-
-        composeRule.onNodeWithText("Chat").performClick()
-        Intents.intended(IntentMatchers.hasComponent(ChatActivity::class.java.name))
-
-        Intents.release()
-    }
-
-
 
     @Test
     fun guessingButtonIsDisplayedHasRightTextIsClickableAndSendsIntent(){
