@@ -3,14 +3,10 @@ package com.github.freeman.bootcamp
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -43,7 +39,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.core.content.ContextCompat.startActivity
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.ktx.database
@@ -51,21 +46,25 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 
+/**
+ * Activity where you can edit your profile information
+ */
 class EditProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val context = LocalContext.current
             val dbRef = Firebase.database.reference
+            val storageRef = Firebase.storage.reference
+
             val displayName = remember { mutableStateOf("wow") }
-            //val profilePicBitmap = remember { mutableStateOf<Bitmap?>(null) }
+            val profilePicBitmap = remember { mutableStateOf<Bitmap?>(null) }
 
 
+            // get name from database
             val future = CompletableFuture<String>()
             //TODO get name from real database location
             dbRef.child("displayName").get().addOnSuccessListener {
@@ -74,9 +73,18 @@ class EditProfileActivity : ComponentActivity() {
             }.addOnFailureListener {
                 future.completeExceptionally(it)
             }
-
             future.thenAccept {
                 displayName.value = it
+            }
+
+            // get User's image from firebase storage
+            //TODO modularize + adapt picture path
+            val userRef = storageRef.child("images/cat.jpg")
+            LaunchedEffect(Unit) {
+                val ONE_MEGABYTE: Long = 1024 * 1024
+                userRef.getBytes(ONE_MEGABYTE).addOnSuccessListener {
+                    profilePicBitmap.value = BitmapFactory.decodeByteArray(it, 0, it.size)
+                }
             }
 
             BootcampComposeTheme {
@@ -84,8 +92,8 @@ class EditProfileActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TopAppbarEditProfile(context = context)
-                    EditUserDetails(displayName = displayName)
+                    TopAppbarEditProfile()
+                    EditUserDetails(displayName = displayName, profilePic = profilePicBitmap)
                 }
 
             }
@@ -95,26 +103,29 @@ class EditProfileActivity : ComponentActivity() {
 
 }
 
+// list of editable option available global to the activity
 private val editablesList: ArrayList<EditableData> = ArrayList()
 
 @Composable
-fun EditUserDetails(displayName: MutableState<String>) {
-    val storageRef = Firebase.storage.reference
+fun EditUserDetails(context: Context = LocalContext.current, displayName: MutableState<String>, profilePic: MutableState<Bitmap?>) {
     val dbRef = Firebase.database.reference
+    val storageRef = Firebase.storage.reference
     val showNameDialog = remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    
+
+    // stores data for images chosen in phone storage
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val image = remember { mutableStateOf(byteArrayOf()) }
+
     // This indicates if the optionsList has data or not
     // Initially, the list is empty. So, its value is false.
     var listPrepared by remember {
         mutableStateOf(false)
     }
-
     LaunchedEffect(Unit) {
         withContext(Dispatchers.Default) {
             editablesList.clear()
 
-            // Add the data to optionsList
+            // Add the data to editablesList
             prepareEditableItemsData(displayName, showNameDialog)
 
             listPrepared = true
@@ -122,6 +133,7 @@ fun EditUserDetails(displayName: MutableState<String>) {
     }
 
     if (listPrepared) {
+        // Edit name dialog
         if (showNameDialog.value) {
             EditDialog(
                 text = displayName,
@@ -142,41 +154,26 @@ fun EditUserDetails(displayName: MutableState<String>) {
 
             item {
 
-                //TODO modularize + adapt picture path
-                val userRef = storageRef.child("images/cat.jpg")
 
-                val bitmap = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
+                if (profilePic.value != null) {
 
-                LaunchedEffect(Unit) {
-                    val ONE_MEGABYTE: Long = 1024 * 1024
-                    userRef.getBytes(ONE_MEGABYTE).addOnSuccessListener {
-                        bitmap.value = BitmapFactory.decodeByteArray(it, 0, it.size)
-                    }
-                }
-
-                if (bitmap.value != null) {
-                    var imageUri by remember { mutableStateOf<Uri?>(null) }
-                    val image = remember { mutableStateOf(byteArrayOf()) }
-
+                    // Enables choosing an image in the phone storage
                     val launcher = rememberLauncherForActivityResult(contract =
                     ActivityResultContracts.GetContent()) { uri: Uri? ->
-                        val stream = ByteArrayOutputStream()
-                        bitmap.value!!.compress(Bitmap.CompressFormat.PNG, 90, stream)
-                        image.value = stream.toByteArray()
                         imageUri = uri
                         image.value = readBytes(context, imageUri!!)!!
-                        val uploadTask = userRef.putBytes(image.value)
+                        val uploadTask = storageRef.child("images/cat.jpg").putBytes(image.value)
                         uploadTask.addOnFailureListener {
                             // Handle unsuccessful uploads
                         }.addOnSuccessListener {
                             // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-                            // ...
                         }
 
                     }
 
+                    // Actual user image
                     Image(
-                        painter = rememberAsyncImagePainter(if (imageUri != null) imageUri else bitmap.value),
+                        painter = rememberAsyncImagePainter(if (imageUri != null) imageUri else profilePic.value),
                         contentScale = ContentScale.Crop,
                         contentDescription = null,
                         modifier = Modifier
@@ -189,7 +186,7 @@ fun EditUserDetails(displayName: MutableState<String>) {
                 }
             }
 
-            // Show the options
+            // Show the editable options
             items(editablesList) { item ->
                 EditableItemStyle(
                     item = item
@@ -197,13 +194,10 @@ fun EditUserDetails(displayName: MutableState<String>) {
             }
         }
     }
-
-
-
 }
 
 @Composable
-fun TopAppbarEditProfile(context: Context) {
+fun TopAppbarEditProfile(context: Context = LocalContext.current) {
 
     TopAppBar(
         modifier = Modifier.testTag("topAppbarProfile"),
@@ -231,6 +225,7 @@ fun TopAppbarEditProfile(context: Context) {
     )
 }
 
+// Dialog that edits any field given in argument
 @Composable
 private fun EditDialog(text: MutableState<String>, updateData: (String) -> Unit, show: MutableState<Boolean>) {
 
@@ -305,7 +300,6 @@ private fun EditDialog(text: MutableState<String>, updateData: (String) -> Unit,
                         },
                         placeholder = { Text(text = "Enter value") },
                         value = txtField.value,
-                        //keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         onValueChange = {
                             txtField.value = it
                         }
@@ -338,8 +332,6 @@ private fun EditDialog(text: MutableState<String>, updateData: (String) -> Unit,
     }
 }
 
-
-// Row style for editable items
 @Composable
 private fun EditableItemStyle(item: EditableData) {
     Row(
@@ -353,7 +345,6 @@ private fun EditableItemStyle(item: EditableData) {
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        // Icon
         Icon(
             modifier = Modifier
                 .size(32.dp),
@@ -408,6 +399,12 @@ private fun EditableItemStyle(item: EditableData) {
     }
 }
 
+/**
+ * Fills the global editable options list with appropriate options
+ *
+ * @param displayName name of the user
+ * @param showNameDialog the state of the dialog that edits the name
+ */
 private fun prepareEditableItemsData(displayName: MutableState<String>, showNameDialog: MutableState<Boolean>) {
 
     val appIcons = Icons.Rounded
@@ -427,9 +424,21 @@ private fun prepareEditableItemsData(displayName: MutableState<String>, showName
 }
 
 //TODO add this to a utility file or something
+/**
+ * Converts a URI into an array of bytes
+ * @param context current context
+ * @param uri URI to be converted
+ */
 @SuppressLint("Recycle")
 @Throws(IOException::class)
 private fun readBytes(context: Context, uri: Uri): ByteArray? =
     context.contentResolver.openInputStream(uri)?.buffered()?.use { it.readBytes() }
 
+/**
+ * Represents an editable option
+ * @param icon icon that represents the field
+ * @param title main title of the field
+ * @param subTitle current editable data contained in the field
+ * @param clickAction what to do when the field is clicked
+ */
 data class EditableData(val icon: ImageVector, val title: String, val subTitle: MutableState<String>, val clickAction: () -> Unit)

@@ -6,11 +6,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
-import android.view.KeyEvent
-import android.view.WindowManager
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -43,11 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.Dispatchers
@@ -70,7 +61,6 @@ class SettingsProfileActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val context = LocalContext.current
             val dbRef = Firebase.database.reference
             val storageRef = Firebase.storage.reference
 
@@ -106,7 +96,7 @@ class SettingsProfileActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TopAppbarSettings(context = context)
+                    TopAppbarSettings()
                     Profile(displayName = displayName, profilePic = profilePicBitmap)
                 }
             }
@@ -122,7 +112,7 @@ private val optionsList: ArrayList<OptionsData> = ArrayList()
 
 
 @Composable
-fun TopAppbarSettings(context: Context) {
+fun TopAppbarSettings(context: Context = LocalContext.current) {
 
     TopAppBar(
         modifier = Modifier.testTag("topAppbarProfile"),
@@ -157,7 +147,6 @@ fun Profile(context: Context = LocalContext.current, displayName: MutableState<S
     var listPrepared by remember {
         mutableStateOf(false)
     }
-
     LaunchedEffect(Unit) {
         withContext(Dispatchers.Default) {
             optionsList.clear()
@@ -382,6 +371,10 @@ private fun prepareOptionsData(context: Context) {
 
 /**
  * Represents a Setting option
+ * @param icon icon that represents the field
+ * @param title main title of the field
+ * @param subTitle description text of the field
+ * @param clickAction what to do when the field is clicked
  */
 data class OptionsData(val icon: ImageVector, val title: String, val subTitle: String, val clickAction: () -> Unit)
 
