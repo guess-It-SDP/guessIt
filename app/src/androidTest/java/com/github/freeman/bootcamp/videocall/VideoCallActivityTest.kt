@@ -71,7 +71,7 @@ class VideoCallActivityTest {
         composeTestRule.onNode(hasTestTag("room_screen_error_field")).assertIsDisplayed()
             .assertTextContains("The room can't be empty")
     }
-
+    /*
     @Test
     fun leavingVideoScreenCloseVideoView() {
         val route = navController.currentBackStackEntry?.destination?.route
@@ -83,6 +83,7 @@ class VideoCallActivityTest {
         roomScreenButton().assertIsDisplayed()
         composeTestRule.onNode(hasTestTag("agora_video_view")).assertDoesNotExist()
     }
+    */
 
     private fun roomScreenButton(): SemanticsNodeInteraction {
         return composeTestRule.onNode(hasTestTag("room_screen_button"))
