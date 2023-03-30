@@ -49,7 +49,7 @@ import java.util.*
 
 class GameOptionsActivity : ComponentActivity() {
 
-    private val gameId = UUID.randomUUID().toString()
+    private val gameId = "TestGameId"//UUID.randomUUID().toString()
     private val dbref = Firebase.database.getReference("Games/$gameId")
 
     override fun onCreate(savedInstanceState: Bundle?) {

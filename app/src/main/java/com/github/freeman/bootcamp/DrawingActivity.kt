@@ -138,7 +138,7 @@ fun DrawingScreen(
 
 // The controls bar offers buttons that allow to undo, redo, select color and stoke width.
 @Composable
-fun ControlsBar(
+private fun ControlsBar(
     drawController: DrawController,
     onColorClick: () -> Unit,
     onWidthClick: () -> Unit,
@@ -188,7 +188,7 @@ fun ControlsBar(
 
 // Represents a button in the controls bar
 @Composable
-fun RowScope.MenuItems(
+private fun RowScope.MenuItems(
     @DrawableRes resId: Int,
     desc: String,
     colorTint: Color,

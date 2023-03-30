@@ -116,8 +116,10 @@ fun ChatTestButton() {
     }
 }
 
-fun guessing(context: Context) {
-    context.startActivity(Intent(context, GuessingActivity::class.java))
+fun guessing(context: Context, gameId: String, answer: String) {
+    context.startActivity(Intent(context, GuessingActivity::class.java).apply {
+        putExtra("gameId", gameId)
+    })
 }
 
 @Composable
@@ -125,7 +127,7 @@ fun GuessingButton() {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("guessingButton"),
-        onClick = { guessing(context) }
+        onClick = { guessing(context, "TestGameId", "Flower") } //TODO: Add the correct game ID and correct answer
     ) {
         Text(GUESSING)
     }

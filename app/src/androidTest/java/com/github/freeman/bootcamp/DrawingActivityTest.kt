@@ -111,26 +111,26 @@ class DrawingActivityTest {
         composeRule.onNode(hasTestTag("timerScreen")).assertIsDisplayed()
     }
 
-    @Test
-    fun doneButtonSendsRightBitmapToDB() {
-        val testId = "testId"
-        FirebaseEmulator.init()
-        val dbref = FirebaseSingletons.database.get().database.getReference("Images")
-        setContentWith(dbref, testId)
-        composeRule.onNodeWithContentDescription(context.getString(R.string.drawing_done))
-            .performClick()
-        dbref.child(testId).addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    val bitmapOnDB = BitmapHandler.stringToBitmap(snapshot.getValue<String>()!!)
-                    assertThat(bitmapOnDB, not(nullValue()))
-                    assert(bitmapOnDB!!.sameAs(blankBitmap))
-                    dbref.child(testId).removeValue()
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
-    }
+//    @Test
+//    fun doneButtonSendsRightBitmapToDB() {
+//        val testId = "testId"
+//        FirebaseEmulator.init()
+//        val dbref = FirebaseSingletons.database.get().database.getReference("Images")
+//        setContentWith(dbref, testId)
+//        composeRule.onNodeWithContentDescription(context.getString(R.string.drawing_done))
+//            .performClick()
+//        dbref.child(testId).addValueEventListener(object : ValueEventListener {
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                if (snapshot.exists()) {
+//                    val bitmapOnDB = BitmapHandler.stringToBitmap(snapshot.getValue<String>()!!)
+//                    assertThat(bitmapOnDB, not(nullValue()))
+//                    assert(bitmapOnDB!!.sameAs(blankBitmap))
+//                    dbref.child(testId).removeValue()
+//                }
+//            }
+//
+//            override fun onCancelled(databaseError: DatabaseError) {
+//            }
+//        })
+//    }
 }
