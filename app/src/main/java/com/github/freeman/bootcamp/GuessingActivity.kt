@@ -1,8 +1,10 @@
 package com.github.freeman.bootcamp
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +14,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,13 +32,13 @@ import com.google.firebase.ktx.Firebase
 
 class GuessingActivity : ComponentActivity() {
     private val gameGuessesId = "GameTestGuessesId" //TODO: set when a game is starting
-    private val dbref = Firebase.database.getReference("Guesses/$gameGuessesId")
+    private val dbrefGuesses = Firebase.database.getReference("Guesses/$gameGuessesId")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbref)
+                GuessingScreen(dbrefGuesses)
             }
         }
     }
@@ -105,11 +109,12 @@ fun GuessingBar(
 }
 
 @Composable
-fun GuessingScreen(dbref: DatabaseReference) {
+fun GuessingScreen(dbrefGuesses: DatabaseReference, gameId: String = LocalContext.current.getString(R.string.default_game_id)) {
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
+    val dbrefImages = Firebase.database.getReference("Images/$gameId")
 
-    dbref.addValueEventListener(object : ValueEventListener {
+    dbrefGuesses.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 val guessesList = snapshot.getValue<ArrayList<Guess>>()!!
@@ -145,11 +150,25 @@ fun GuessingScreen(dbref: DatabaseReference) {
                             .fillMaxWidth()
                             .background(Color.DarkGray)
             ) {
-                Text(
-                    text = "Something need to be drawn",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = Color.White)
-                //TODO: Display the drawing here
+                var bitmap by remember { mutableStateOf<Bitmap>(Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888)) }
+                dbrefImages.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists()) {
+                            val decoded = BitmapHandler.stringToBitmap(snapshot.getValue<String>()!!)
+                            if (decoded != null) bitmap = decoded
+                        }
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        // do nothing
+                    }
+                })
+                Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = "drawn image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Center)
+                )
             }
 
             Box(
@@ -168,7 +187,7 @@ fun GuessingScreen(dbref: DatabaseReference) {
                 onSendClick = {
                     val gs = Guess(guesser = "MyUsername", guess = guess) //TODO: Change the guesser name with my name in the database
                     val guessId = guesses.size.toString() //TODO: Change for a more accurate id
-                    dbref.child(guessId).setValue(gs)
+                    dbrefGuesses.child(guessId).setValue(gs)
 
                     guess = ""
                 }
