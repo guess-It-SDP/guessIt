@@ -37,10 +37,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.github.freeman.bootcamp.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import io.grpc.Context.Storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.CompletableFuture
@@ -63,32 +66,49 @@ class SettingsProfileActivity : ComponentActivity() {
         setContent {
             val dbRef = Firebase.database.reference
             val storageRef = Firebase.storage.reference
+            val userId = Firebase.auth.currentUser?.uid
+            val dbUserRef = dbRef.child("Profiles/$userId")
+            val storageUserRef = storageRef.child("Profiles/$userId")
 
             val displayName = remember { mutableStateOf("") }
+            val email = remember { mutableStateOf("") }
             val profilePicBitmap = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
 
 
             // get name from database
-            val future = CompletableFuture<String>()
-            //TODO get name from real database location
-            dbRef.child("displayName").get().addOnSuccessListener {
-                if (it.value == null) future.completeExceptionally(NoSuchFieldException())
-                else future.complete(it.value as String)
-            }.addOnFailureListener {
-                future.completeExceptionally(it)
-            }
-            future.thenAccept {
-                displayName.value = it
-            }
+            FirebaseUtilities.databaseGet(dbUserRef.child("username"))
+                .thenAccept {
+                    displayName.value = it
+                }
+
+            // get email from database
+
+            FirebaseUtilities.databaseGet(dbUserRef.child("email"))
+                .thenAccept {
+                    email.value = it
+                }
+
+//            val emailFuture = CompletableFuture<String>()
+//            dbUserRef.child("email").get().addOnSuccessListener {
+//                if (it.value == null) emailFuture.completeExceptionally(NoSuchFieldException())
+//                else emailFuture.complete(it.value as String)
+//            }.addOnFailureListener {
+//                emailFuture.completeExceptionally(it)
+//            }
+//            emailFuture.thenAccept {
+//                email.value = it
+//            }
 
             // get User's image from firebase storage
-            //TODO modularize + adapt picture path
-            val userRef = storageRef.child("images/cat.jpg")
             LaunchedEffect(Unit) {
-                val ONE_MEGABYTE: Long = 1024 * 1024
-                userRef.getBytes(ONE_MEGABYTE).addOnSuccessListener {
-                    profilePicBitmap.value = BitmapFactory.decodeByteArray(it, 0, it.size)
-                }
+                FirebaseUtilities.storageGet(storageUserRef.child("picture/pic.jpg"))
+                    .thenAccept {
+                        profilePicBitmap.value = it
+                    }
+//                val ONE_MEGABYTE: Long = 1024 * 1024
+//                storageUserRef.child("picture/pic.jpg").getBytes(ONE_MEGABYTE).addOnSuccessListener {
+//                    profilePicBitmap.value = BitmapFactory.decodeByteArray(it, 0, it.size)
+//                }
             }
 
             BootcampComposeTheme(darkTheme = false) {
@@ -97,7 +117,7 @@ class SettingsProfileActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     TopAppbarSettings()
-                    Profile(displayName = displayName, profilePic = profilePicBitmap)
+                    Profile(displayName = displayName, email = email, profilePic = profilePicBitmap)
                 }
             }
 
@@ -140,7 +160,7 @@ fun TopAppbarSettings(context: Context = LocalContext.current) {
 }
 
 @Composable
-fun Profile(context: Context = LocalContext.current, displayName: MutableState<String>, profilePic: MutableState<Bitmap?>) {
+fun Profile(context: Context = LocalContext.current, displayName: MutableState<String>, email: MutableState<String>, profilePic: MutableState<Bitmap?>) {
 
     // This indicates if the optionsList has data or not
     // Initially, the list is empty. So, its value is false.
@@ -167,7 +187,7 @@ fun Profile(context: Context = LocalContext.current, displayName: MutableState<S
         ) {
 
             item {
-                UserDetails(displayName = displayName, profilePic = profilePic)
+                UserDetails(displayName = displayName, email = email, profilePic = profilePic)
             }
 
             // Show all the available options
@@ -179,7 +199,7 @@ fun Profile(context: Context = LocalContext.current, displayName: MutableState<S
 }
 
 @Composable
-private fun UserDetails(context: Context = LocalContext.current, displayName: MutableState<String>, profilePic: MutableState<Bitmap?>) {
+private fun UserDetails(context: Context = LocalContext.current, displayName: MutableState<String>, email: MutableState<String>, profilePic: MutableState<Bitmap?>) {
 
     Row(
         modifier = Modifier
@@ -225,7 +245,7 @@ private fun UserDetails(context: Context = LocalContext.current, displayName: Mu
 
                 // User's email
                 Text(
-                    text = "email123@email.com",
+                    text = email.value,
                     style = TextStyle(
                         fontSize = 14.sp,
                         color = Color.Gray,

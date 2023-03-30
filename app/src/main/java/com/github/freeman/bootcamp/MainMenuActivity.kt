@@ -25,8 +25,14 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
+import com.github.freeman.bootcamp.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class MainMenuActivity : ComponentActivity() {
     private val backgroundMusicService = BackgroundMusicService()
@@ -69,16 +75,34 @@ fun PlayButton() {
     }
 }
 
-fun settings(context: Context) {
-    context.startActivity(Intent(context, SettingsProfileActivity::class.java))
+fun settings(context: Context, user: FirebaseUser?, dbRef: DatabaseReference, profile: MutableState<String>) {
+    if (profileExists(user, dbRef, profile)) {
+        context.startActivity(Intent(context, SettingsProfileActivity::class.java))
+    }
+}
+
+private fun profileExists(user: FirebaseUser?, dbRef: DatabaseReference, profile: MutableState<String>): Boolean {
+    return if (user == null) {
+        false
+    } else {
+        FirebaseUtilities.databaseGet(dbRef.child("Profiles/${user.uid}/email"))
+            .thenAccept {
+                profile.value = it
+            }
+        profile.value != ""
+        true
+    }
 }
 
 @Composable
 fun SettingsButton() {
     val context = LocalContext.current
+    val profile = remember {
+        mutableStateOf("")
+    }
     ElevatedButton(
         modifier = Modifier.testTag("settingsButton"),
-        onClick = { settings(context) }
+        onClick = { settings(context, Firebase.auth.currentUser, Firebase.database.reference, profile) }
     ) {
         Text(SETTINGS)
     }

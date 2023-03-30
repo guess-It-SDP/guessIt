@@ -40,7 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
+import com.github.freeman.bootcamp.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -59,32 +61,40 @@ class EditProfileActivity : ComponentActivity() {
         setContent {
             val dbRef = Firebase.database.reference
             val storageRef = Firebase.storage.reference
+            val userId = Firebase.auth.currentUser?.uid
+            val dbUserRef = dbRef.child("Profiles/$userId")
+            val storageUserRef = storageRef.child("Profiles/$userId")
 
             val displayName = remember { mutableStateOf("wow") }
             val profilePicBitmap = remember { mutableStateOf<Bitmap?>(null) }
 
 
             // get name from database
-            val future = CompletableFuture<String>()
-            //TODO get name from real database location
-            dbRef.child("displayName").get().addOnSuccessListener {
-                if (it.value == null) future.completeExceptionally(NoSuchFieldException())
-                else future.complete(it.value as String)
-            }.addOnFailureListener {
-                future.completeExceptionally(it)
-            }
-            future.thenAccept {
-                displayName.value = it
-            }
+            FirebaseUtilities.databaseGet(dbUserRef.child("username"))
+                .thenAccept {
+                    displayName.value = it
+                }
+//            val nameFuture = CompletableFuture<String>()
+//            dbUserRef.child("username").get().addOnSuccessListener {
+//                if (it.value == null) nameFuture.completeExceptionally(NoSuchFieldException())
+//                else nameFuture.complete(it.value as String)
+//            }.addOnFailureListener {
+//                nameFuture.completeExceptionally(it)
+//            }
+//            nameFuture.thenAccept {
+//                displayName.value = it
+//            }
 
             // get User's image from firebase storage
-            //TODO modularize + adapt picture path
-            val userRef = storageRef.child("images/cat.jpg")
             LaunchedEffect(Unit) {
-                val ONE_MEGABYTE: Long = 1024 * 1024
-                userRef.getBytes(ONE_MEGABYTE).addOnSuccessListener {
-                    profilePicBitmap.value = BitmapFactory.decodeByteArray(it, 0, it.size)
-                }
+                FirebaseUtilities.storageGet(storageUserRef.child("picture/pic.jpg"))
+                    .thenAccept {
+                        profilePicBitmap.value = it
+                    }
+//                val ONE_MEGABYTE: Long = 1024 * 1024
+//                storageUserRef.child("Profiles/$userId/picture/pic.jpg").getBytes(ONE_MEGABYTE).addOnSuccessListener {
+//                    profilePicBitmap.value = BitmapFactory.decodeByteArray(it, 0, it.size)
+//                }
             }
 
             BootcampComposeTheme {
@@ -157,7 +167,7 @@ fun EditUserDetails(context: Context = LocalContext.current, displayName: Mutabl
 
                 if (profilePic.value != null) {
 
-                    // Enables choosing an image in the phone storage
+                    // Enables choosing an image in the phone storage and sens it to the database
                     val launcher = rememberLauncherForActivityResult(contract =
                     ActivityResultContracts.GetContent()) { uri: Uri? ->
                         imageUri = uri
