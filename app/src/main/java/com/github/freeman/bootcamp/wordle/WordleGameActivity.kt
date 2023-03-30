@@ -77,7 +77,7 @@ class WordleGameActivity() : ComponentActivity() {
      * submit a word to the game and reset the graphic interface
      */
     @Composable
-    fun wordleButton() {
+    private fun wordleButton() {
         val msg: TextFieldState = remember { TextFieldState() }
         GreetingInput(msg)
         Button(onClick = {
@@ -104,7 +104,7 @@ class WordleGameActivity() : ComponentActivity() {
      * This is the grid containing all the tiles
      */
     @Composable
-    fun TileRoof(tiles: MutableList<WordleGameState.Tile>) {
+    private fun TileRoof(tiles: MutableList<WordleGameState.Tile>) {
         var id = 0
         LazyVerticalGrid(
             columns = GridCells.Fixed(5),
@@ -159,7 +159,7 @@ class WordleGameActivity() : ComponentActivity() {
 
 // this class is to store the value of the text field
 // in order to use it in other Composable
-class TextFieldState {
+private class TextFieldState {
     var text: String by mutableStateOf("")
 }
 
@@ -168,7 +168,7 @@ class TextFieldState {
  * @param location to save the input
  */
 @Composable
-fun GreetingInput(msg: TextFieldState = remember { TextFieldState() }) {
+private fun GreetingInput(msg: TextFieldState = remember { TextFieldState() }) {
     var text by remember { mutableStateOf(TextFieldValue("")) }
     OutlinedTextField(
         value = text,
