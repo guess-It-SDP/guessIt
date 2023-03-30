@@ -92,7 +92,7 @@ fun Timer(
 fun TimerText(currentTime: Long) {
     Text(
         text = (currentTime / 1000L).toString(),
-        fontSize = 44.sp,
+        fontSize = 40.sp,
         fontWeight = FontWeight.Bold,
         color = Color.DarkGray
     )
