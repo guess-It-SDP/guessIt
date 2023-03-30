@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import io.ak1.drawbox.DrawBox
@@ -47,7 +48,10 @@ class DrawingActivity : ComponentActivity() {
 
 // The drawing screen is made of a drawing zone and a controls bar
 @Composable
-fun DrawingScreen(gameId: String = LocalContext.current.getString(R.string.default_game_id)) {
+fun DrawingScreen(
+    dbref: DatabaseReference = DBREF,
+    gameId: String = LocalContext.current.getString(R.string.default_game_id)
+) {
     val undoVisibility = remember { mutableStateOf(false) }
     val redoVisibility = remember { mutableStateOf(false) }
     val colorBarVisibility = remember { mutableStateOf(false) }
@@ -119,7 +123,7 @@ fun DrawingScreen(gameId: String = LocalContext.current.getString(R.string.defau
                     .weight(1f, fill = false),
                 bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
                     imageBitmap?.let {
-                        DBREF.child(gameId)
+                        dbref.child(gameId)
                             .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
                     }
                 }

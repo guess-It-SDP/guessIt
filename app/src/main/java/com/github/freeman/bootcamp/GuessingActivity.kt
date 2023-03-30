@@ -128,6 +128,19 @@ fun GuessingScreen(dbrefGuesses: DatabaseReference, gameId: String = LocalContex
         }
     })
 
+    var bitmap by remember { mutableStateOf(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888).asImageBitmap()) }
+    dbrefImages.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                val decoded = BitmapHandler.stringToBitmap(snapshot.getValue<String>()!!)
+                if (decoded != null) bitmap = decoded.asImageBitmap()
+            }
+        }
+        override fun onCancelled(databaseError: DatabaseError) {
+            // do nothing
+        }
+    })
+
     MaterialTheme {
         Column(
             modifier = Modifier
@@ -137,8 +150,8 @@ fun GuessingScreen(dbrefGuesses: DatabaseReference, gameId: String = LocalContex
             Text(
                     text = "Your turn to guess!",
                     modifier = Modifier
-                            .padding(8.dp)
-                            .align(Alignment.CenterHorizontally)
+                        .padding(8.dp)
+                        .align(Alignment.CenterHorizontally)
                         .testTag("guessText"),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
@@ -146,24 +159,12 @@ fun GuessingScreen(dbrefGuesses: DatabaseReference, gameId: String = LocalContex
 
             Box(
                     modifier = Modifier
-                            .height(300.dp)
-                            .fillMaxWidth()
-                            .background(Color.DarkGray)
+                        .height(400.dp)
+                        .fillMaxWidth()
+                        .background(Color.DarkGray)
             ) {
-                var bitmap by remember { mutableStateOf<Bitmap>(Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888)) }
-                dbrefImages.addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        if (snapshot.exists()) {
-                            val decoded = BitmapHandler.stringToBitmap(snapshot.getValue<String>()!!)
-                            if (decoded != null) bitmap = decoded
-                        }
-                    }
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        // do nothing
-                    }
-                })
                 Image(
-                    bitmap = bitmap.asImageBitmap(),
+                    bitmap = bitmap,
                     contentDescription = "drawn image",
                     modifier = Modifier
                         .fillMaxWidth()
