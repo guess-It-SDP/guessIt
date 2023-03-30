@@ -1,8 +1,10 @@
 package com.github.freeman.bootcamp
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,17 +40,17 @@ import com.google.firebase.ktx.Firebase
 
 
 class GuessingActivity : ComponentActivity() {
-    private lateinit var dbref: DatabaseReference
+    private lateinit var dbrefGames: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val gameId = intent.getStringExtra("gameId").toString()
-        dbref = Firebase.database.getReference("Games/$gameId")
+        dbrefGames = Firebase.database.getReference("Games/$gameId")
 
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbref)
+                GuessingScreen(dbrefGames)
             }
         }
     }
@@ -121,11 +125,12 @@ fun GuessingBar(
 }
 
 @Composable
-fun GuessingScreen(dbref: DatabaseReference) {
+fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.current.getString(R.string.default_game_id)) {
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
+    val dbrefImages = Firebase.database.getReference("Images/$gameId")
 
-    dbref.child("Guesses").addValueEventListener(object : ValueEventListener {
+    dbrefGames.child("Guesses").addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 val guessesList = snapshot.getValue<ArrayList<Guess>>()!!
@@ -139,14 +144,25 @@ fun GuessingScreen(dbref: DatabaseReference) {
         }
     })
 
+    var bitmap by remember { mutableStateOf(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888).asImageBitmap()) }
+    dbrefImages.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                val decoded = BitmapHandler.stringToBitmap(snapshot.getValue<String>()!!)
+                if (decoded != null) bitmap = decoded.asImageBitmap()
+            }
+        }
+        override fun onCancelled(databaseError: DatabaseError) {
+            // do nothing
+        }
+    })
     var answer = ""
-    dbref.child("topic").addListenerForSingleValueEvent(object : ValueEventListener {
+    dbrefGames.child("topic").addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             if (dataSnapshot.exists()) {
                 answer = dataSnapshot.getValue<String>()!!
             }
         }
-
         override fun onCancelled(databaseError: DatabaseError) {
             // do nothing
         }
@@ -159,26 +175,28 @@ fun GuessingScreen(dbref: DatabaseReference) {
                 .testTag("guessingScreen")
         ) {
             Text(
-                text = "Your turn to guess!",
-                modifier = Modifier
-                    .padding(8.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .testTag("guessText"),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                    text = "Your turn to guess!",
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .testTag("guessText"),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
             )
 
             Box(
-                modifier = Modifier
-                    .height(300.dp)
-                    .fillMaxWidth()
-                    .background(Color.DarkGray)
+                    modifier = Modifier
+                        .height(400.dp)
+                        .fillMaxWidth()
+                        .background(Color.DarkGray)
             ) {
-                Text(
-                    text = "Something need to be drawn",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = Color.White)
-                //TODO: Display the drawing here
+                Image(
+                    bitmap = bitmap,
+                    contentDescription = "drawn image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Center)
+                )
             }
 
             Box(
@@ -197,7 +215,7 @@ fun GuessingScreen(dbref: DatabaseReference) {
                 onSendClick = {
                     val gs = Guess(guesser = "MyUsername", guess = guess) //TODO: Change the guesser name with my name in the database
                     val guessId = guesses.size.toString() //TODO: Change for a more accurate id
-                    dbref.child("Guesses").child(guessId).setValue(gs)
+                    dbrefGames.child("Guesses").child(guessId).setValue(gs)
 
                     guess = ""
                 }
