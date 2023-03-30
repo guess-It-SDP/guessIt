@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
+import com.github.freeman.bootcamp.TopicSelectionActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.auth.FirebaseAuth
 
@@ -97,6 +98,9 @@ fun AuthenticationForm(signInInfo: String) {
             modifier = Modifier.testTag("sign_in_button"),
             onClick = {
                 (context as? FirebaseAuthActivity)?.signIntoGoogleAccount()
+                if (FirebaseAuth.getInstance().currentUser != null) {
+                    context.startActivity(Intent(context, ProfileCreationActivity::class.java))
+                }
             })
         { Text("Sign in") }
 
