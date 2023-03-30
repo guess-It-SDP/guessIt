@@ -7,17 +7,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.ui.theme.Purple40
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -26,12 +32,18 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
+
+
+
 class GuessingActivity : ComponentActivity() {
-    private val gameGuessesId = "GameTestGuessesId" //TODO: set when a game is starting
-    private val dbref = Firebase.database.getReference("Guesses/$gameGuessesId")
+    private lateinit var dbref: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val gameId = intent.getStringExtra("gameId").toString()
+        dbref = Firebase.database.getReference("Games/$gameId")
+
         setContent {
             BootcampComposeTheme {
                 GuessingScreen(dbref)
@@ -41,27 +53,31 @@ class GuessingActivity : ComponentActivity() {
 }
 
 @Composable
-fun GuessItem(guess: Guess) {
+fun GuessItem(guess: Guess, answer: String) {
     Row(
         modifier = Modifier
             .padding(8.dp)
             .testTag("guessItem")
     ) {
-        //if guess.guesser.equals(MYNAME) {
-        //    Text(text = "$You try \"${guess.guess}\"")
-        //} else {
+        if (guess.guess?.lowercase()  == answer.lowercase()) {
+            Popup {
+                val gs = Guess(guess.guesser, answer)
+                CorrectAnswerScreen(gs = gs)
+            }
+        }
+
         Text(text = "${guess.guesser} tries \"${guess.guess}\"")
     }
 }
 
 @Composable
-fun GuessesList(guesses: Array<Guess>) {
+fun GuessesList(guesses: Array<Guess>, answer: String) {
     LazyColumn (
         modifier = Modifier
             .fillMaxWidth()
     ) {
         items(guesses) { guess ->
-            GuessItem(guess = guess)
+            GuessItem(guess, answer)
         }
     }
 }
@@ -109,7 +125,7 @@ fun GuessingScreen(dbref: DatabaseReference) {
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
 
-    dbref.addValueEventListener(object : ValueEventListener {
+    dbref.child("Guesses").addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 val guessesList = snapshot.getValue<ArrayList<Guess>>()!!
@@ -123,6 +139,19 @@ fun GuessingScreen(dbref: DatabaseReference) {
         }
     })
 
+    var answer = ""
+    dbref.child("topic").addListenerForSingleValueEvent(object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            if (dataSnapshot.exists()) {
+                answer = dataSnapshot.getValue<String>()!!
+            }
+        }
+
+        override fun onCancelled(databaseError: DatabaseError) {
+            // do nothing
+        }
+    })
+
     MaterialTheme {
         Column(
             modifier = Modifier
@@ -130,20 +159,20 @@ fun GuessingScreen(dbref: DatabaseReference) {
                 .testTag("guessingScreen")
         ) {
             Text(
-                    text = "Your turn to guess!",
-                    modifier = Modifier
-                            .padding(8.dp)
-                            .align(Alignment.CenterHorizontally)
-                        .testTag("guessText"),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
+                text = "Your turn to guess!",
+                modifier = Modifier
+                    .padding(8.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .testTag("guessText"),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
             )
 
             Box(
-                    modifier = Modifier
-                            .height(300.dp)
-                            .fillMaxWidth()
-                            .background(Color.DarkGray)
+                modifier = Modifier
+                    .height(300.dp)
+                    .fillMaxWidth()
+                    .background(Color.DarkGray)
             ) {
                 Text(
                     text = "Something need to be drawn",
@@ -159,7 +188,7 @@ fun GuessingScreen(dbref: DatabaseReference) {
                     .align(Alignment.End)
                     .testTag("guessesList")
             ) {
-                GuessesList(guesses = guesses)
+                GuessesList(guesses = guesses, answer = answer)
             }
 
             GuessingBar(
@@ -168,10 +197,57 @@ fun GuessingScreen(dbref: DatabaseReference) {
                 onSendClick = {
                     val gs = Guess(guesser = "MyUsername", guess = guess) //TODO: Change the guesser name with my name in the database
                     val guessId = guesses.size.toString() //TODO: Change for a more accurate id
-                    dbref.child(guessId).setValue(gs)
+                    dbref.child("Guesses").child(guessId).setValue(gs)
 
                     guess = ""
                 }
+            )
+        }
+    }
+}
+
+@Composable
+fun CorrectAnswerScreen(gs: Guess) {
+    val currentUser = FirebaseAuth.getInstance().currentUser?.uid
+    val guesser = Firebase.database.getReference("Profiles/${gs.guesser}").child("uid").get().toString()
+
+    val sb = StringBuilder()
+    if (currentUser.equals(guesser)) {
+        sb.append("You")
+    } else {
+        sb.append(gs.guesser)
+    }
+
+    sb.append(" made a correct guess: \nThe word was \"")
+        .append(gs.guess)
+        .append("\"!")
+
+    val shape = RoundedCornerShape(12.dp)
+
+    Column(
+        modifier = Modifier
+            .testTag("correctAnswerScreen")
+            .background(Color.Transparent)
+            .fillMaxSize()
+            .wrapContentSize(Alignment.Center)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .testTag("correctAnswerPopup")
+                .size(275.dp, 130.dp)
+                .clip(shape)
+                .background(Purple40),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                modifier = Modifier.testTag("correctAnswerText"),
+                text = sb.toString(),
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = Color.White
             )
         }
     }
@@ -181,9 +257,11 @@ fun GuessingScreen(dbref: DatabaseReference) {
 @Composable
 fun GuessingPreview() {
     val guessGameId = "GameTestGuessesId"
+    val answer = "Flower"
+
     val db = Firebase.database
     db.useEmulator("10.0.2.2", 9000)
-    val dbref = Firebase.database.getReference("Guesses/$guessGameId")
+    val dbref = Firebase.database.getReference("Games/$guessGameId")
     BootcampComposeTheme {
         GuessingScreen(dbref)
     }
