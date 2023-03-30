@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,7 +32,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -43,10 +41,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import io.grpc.Context.Storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.concurrent.CompletableFuture
 
 /**
  * Activity that shows up the settings and your profile
@@ -82,22 +78,11 @@ class SettingsProfileActivity : ComponentActivity() {
                 }
 
             // get email from database
-
             FirebaseUtilities.databaseGet(dbUserRef.child("email"))
                 .thenAccept {
                     email.value = it
                 }
 
-//            val emailFuture = CompletableFuture<String>()
-//            dbUserRef.child("email").get().addOnSuccessListener {
-//                if (it.value == null) emailFuture.completeExceptionally(NoSuchFieldException())
-//                else emailFuture.complete(it.value as String)
-//            }.addOnFailureListener {
-//                emailFuture.completeExceptionally(it)
-//            }
-//            emailFuture.thenAccept {
-//                email.value = it
-//            }
 
             // get User's image from firebase storage
             LaunchedEffect(Unit) {
@@ -105,10 +90,6 @@ class SettingsProfileActivity : ComponentActivity() {
                     .thenAccept {
                         profilePicBitmap.value = it
                     }
-//                val ONE_MEGABYTE: Long = 1024 * 1024
-//                storageUserRef.child("picture/pic.jpg").getBytes(ONE_MEGABYTE).addOnSuccessListener {
-//                    profilePicBitmap.value = BitmapFactory.decodeByteArray(it, 0, it.size)
-//                }
             }
 
             BootcampComposeTheme(darkTheme = false) {
@@ -358,7 +339,7 @@ private fun prepareOptionsData(context: Context) {
             icon = appIcons.PlayArrow,
             title = "Game Stats",
             subTitle = "Check your Game statistics",
-            clickAction = {  } //TODO
+            clickAction = {  }
         )
     )
 
@@ -383,7 +364,7 @@ private fun prepareOptionsData(context: Context) {
             icon = appIcons.Info,
             title = "Help",
             subTitle = "Get some help about how the app works",
-            clickAction = {  } //TODO
+            clickAction = {  }
         )
     )
 
@@ -398,9 +379,3 @@ private fun prepareOptionsData(context: Context) {
  */
 data class OptionsData(val icon: ImageVector, val title: String, val subTitle: String, val clickAction: () -> Unit)
 
-
-@Preview
-@Composable
-fun TopAppBarPreview() {
-    TopAppbarSettings(LocalContext.current)
-}

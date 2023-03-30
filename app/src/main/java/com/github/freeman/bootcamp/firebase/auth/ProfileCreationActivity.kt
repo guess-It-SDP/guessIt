@@ -1,7 +1,6 @@
-package com.github.freeman.bootcamp.auth
+package com.github.freeman.bootcamp.firebase.auth
 
 import android.content.Intent
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -16,8 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.MainMenuActivity
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -134,7 +133,8 @@ fun ProfileCreationScreen(dbref: DatabaseReference, storageRef: StorageReference
                     val image = stream.toByteArray()
                     storageRef.child("Profiles/$userId/picture/pic.jpg").putBytes(image)
 
-                    context.startActivity(Intent(context, FirebaseAuthActivity::class.java))
+                    // go to main menu after profile created
+                    context.startActivity(Intent(context, MainMenuActivity::class.java))
                 }
             )
         }

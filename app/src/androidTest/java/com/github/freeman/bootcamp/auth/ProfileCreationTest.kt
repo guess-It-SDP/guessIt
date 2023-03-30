@@ -2,11 +2,10 @@ package com.github.freeman.bootcamp.auth
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.FirebaseEmulator
-import com.github.freeman.bootcamp.FirebaseSingletons
+import com.github.freeman.bootcamp.firebase.FirebaseSingletons
+import com.github.freeman.bootcamp.firebase.auth.ProfileCreationScreen
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import org.junit.Rule
 import org.junit.Test
@@ -20,10 +19,11 @@ class ProfileCreationTest {
     fun initScreen() {
         FirebaseEmulator.init()
         val database = FirebaseSingletons.database.get().database.getReference("Profiles")
+        val storage = FirebaseSingletons.storage.get().storage.reference
 
         composeRule.setContent {
             BootcampComposeTheme {
-                ProfileCreationScreen(database)
+                ProfileCreationScreen(database, storage)
             }
         }
     }
@@ -76,17 +76,5 @@ class ProfileCreationTest {
         composeRule.onNodeWithTag("usernameOkayButton").assertContentDescriptionContains( "okIconForUsername")
     }
 
-    @Test
-    fun firebaseAuthActivityIsLauched() {
-        Intents.init()
-        initScreen()
-
-        composeRule.onNode(hasSetTextAction()).performTextInput("ItsATest")
-        composeRule.onNodeWithTag("usernameOkayButton").performClick()
-
-        Intents.intended(IntentMatchers.hasComponent(FirebaseAuthActivity::class.java.name))
-
-        Intents.release()
-    }
 
 }

@@ -6,15 +6,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.AUDIO_REC
@@ -24,8 +22,8 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
-import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
-import com.github.freeman.bootcamp.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.firebase.FirebaseUtilities.profileExists
+import com.github.freeman.bootcamp.firebase.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.auth.FirebaseUser
@@ -75,34 +73,22 @@ fun PlayButton() {
     }
 }
 
-fun settings(context: Context, user: FirebaseUser?, dbRef: DatabaseReference, profile: MutableState<String>) {
-    if (profileExists(user, dbRef, profile)) {
-        context.startActivity(Intent(context, SettingsProfileActivity::class.java))
-    }
-}
-
-private fun profileExists(user: FirebaseUser?, dbRef: DatabaseReference, profile: MutableState<String>): Boolean {
-    return if (user == null) {
-        false
-    } else {
-        FirebaseUtilities.databaseGet(dbRef.child("Profiles/${user.uid}/email"))
-            .thenAccept {
-                profile.value = it
+fun settings(context: Context, user: FirebaseUser?, dbRef: DatabaseReference) {
+    profileExists(user, dbRef)
+        .thenAccept {
+            if (it) {
+                context.startActivity(Intent(context, SettingsProfileActivity::class.java))
             }
-        profile.value != ""
-        true
-    }
+        }
 }
 
 @Composable
 fun SettingsButton() {
     val context = LocalContext.current
-    val profile = remember {
-        mutableStateOf("")
-    }
+
     ElevatedButton(
         modifier = Modifier.testTag("settingsButton"),
-        onClick = { settings(context, Firebase.auth.currentUser, Firebase.database.reference, profile) }
+        onClick = { settings(context, Firebase.auth.currentUser, Firebase.database.reference) }
     ) {
         Text(SETTINGS)
     }
@@ -183,30 +169,6 @@ fun SignInButton() {
     }
 }
 
-@Composable
-fun BackButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("backButton"),
-        onClick = {
-            context.startActivity(Intent(context, MainMenuActivity::class.java))
-        }
-    ) {
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Back arrow icon"
-        )
-    }
-}
-
-
-
-@Preview
-@Composable
-fun BackButtonPreview() {
-    BackButton()
-}
-
 /**
  * This class will be the main screen of the app
  * This class is not debugging
@@ -243,10 +205,3 @@ fun MainMenuScreen() {
     }
 }
 
-
-
-@Preview(showBackground = true)
-@Composable
-fun MainMenuScreenPreview() {
-    MainMenuScreen()
-}

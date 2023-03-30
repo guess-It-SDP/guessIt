@@ -16,7 +16,7 @@
         android:theme="@style/Theme.BootcampCompose"
         tools:targetApi="31" >
         <activity
-            android:name=".auth.ProfileCreationActivity"
+            android:name=".firebase.auth.ProfileCreationActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
@@ -94,7 +94,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".auth.FirebaseAuthActivity"
+            android:name=".firebase.auth.FirebaseAuthActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"

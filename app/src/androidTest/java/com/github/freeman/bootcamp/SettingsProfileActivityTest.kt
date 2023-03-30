@@ -30,6 +30,7 @@ class SettingsProfileActivityTest {
 
             val displayName = remember { mutableStateOf("Chris P. Bacon") }
             val profilePicBitmap = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
+            val email = remember { mutableStateOf("em@il.com") }
 
 
             BootcampComposeTheme(darkTheme = false) {
@@ -38,7 +39,7 @@ class SettingsProfileActivityTest {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     TopAppbarSettings(context = context)
-                    Profile(displayName = displayName, profilePic = profilePicBitmap)
+                    Profile(displayName = displayName, profilePic = profilePicBitmap, email = email)
                 }
             }
         }

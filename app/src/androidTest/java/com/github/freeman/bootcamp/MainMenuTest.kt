@@ -1,10 +1,7 @@
 package com.github.freeman.bootcamp
 
-import android.content.Context
-import android.content.Intent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -64,42 +61,6 @@ class MainMenuTest {
     fun settingsButtonHasClickAction() {
         setMainMenuScreen()
         composeRule.onNode(hasTestTag("settingsButton")).assertHasClickAction()
-    }
-
-    @Test
-    fun settingsIntentIsSent() {
-        Intents.init()
-        setMainMenuScreen()
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        context.startService(Intent(context, BackgroundMusicService::class.java))
-
-        composeRule.onNodeWithText("Settings").performClick()
-        Intents.intended(IntentMatchers.hasComponent(SettingsProfileActivity::class.java.name))
-
-        Intents.release()
-    }
-
-//    @Test
-//    fun profileButtonTextIsCorrect() {
-//        setMainMenuScreen()
-//        composeRule.onNode(hasTestTag("profileButton")).assertTextContains("Profile")
-//    }
-
-//    @Test
-//    fun profileButtonHasClickAction() {
-//        setMainMenuScreen()
-//        composeRule.onNode(hasTestTag("profileButton")).assertHasClickAction()
-//    }
-
-    @Test
-    fun profileIntentIsSent() {
-        Intents.init()
-        setMainMenuScreen()
-
-        composeRule.onNodeWithText("Settings").performClick()
-        Intents.intended(IntentMatchers.hasComponent(SettingsProfileActivity::class.java.name))
-
-        Intents.release()
     }
 
     @Test

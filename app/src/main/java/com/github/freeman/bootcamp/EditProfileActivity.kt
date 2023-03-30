@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -49,7 +48,6 @@ import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.util.concurrent.CompletableFuture
 
 /**
  * Activity where you can edit your profile information
@@ -65,25 +63,14 @@ class EditProfileActivity : ComponentActivity() {
             val dbUserRef = dbRef.child("Profiles/$userId")
             val storageUserRef = storageRef.child("Profiles/$userId")
 
-            val displayName = remember { mutableStateOf("wow") }
+            val displayName = remember { mutableStateOf("") }
             val profilePicBitmap = remember { mutableStateOf<Bitmap?>(null) }
-
 
             // get name from database
             FirebaseUtilities.databaseGet(dbUserRef.child("username"))
                 .thenAccept {
                     displayName.value = it
                 }
-//            val nameFuture = CompletableFuture<String>()
-//            dbUserRef.child("username").get().addOnSuccessListener {
-//                if (it.value == null) nameFuture.completeExceptionally(NoSuchFieldException())
-//                else nameFuture.complete(it.value as String)
-//            }.addOnFailureListener {
-//                nameFuture.completeExceptionally(it)
-//            }
-//            nameFuture.thenAccept {
-//                displayName.value = it
-//            }
 
             // get User's image from firebase storage
             LaunchedEffect(Unit) {
@@ -91,10 +78,6 @@ class EditProfileActivity : ComponentActivity() {
                     .thenAccept {
                         profilePicBitmap.value = it
                     }
-//                val ONE_MEGABYTE: Long = 1024 * 1024
-//                storageUserRef.child("Profiles/$userId/picture/pic.jpg").getBytes(ONE_MEGABYTE).addOnSuccessListener {
-//                    profilePicBitmap.value = BitmapFactory.decodeByteArray(it, 0, it.size)
-//                }
             }
 
             BootcampComposeTheme {
@@ -120,6 +103,7 @@ private val editablesList: ArrayList<EditableData> = ArrayList()
 fun EditUserDetails(context: Context = LocalContext.current, displayName: MutableState<String>, profilePic: MutableState<Bitmap?>) {
     val dbRef = Firebase.database.reference
     val storageRef = Firebase.storage.reference
+    val userId = Firebase.auth.currentUser?.uid
     val showNameDialog = remember { mutableStateOf(false) }
 
     // stores data for images chosen in phone storage
@@ -148,7 +132,7 @@ fun EditUserDetails(context: Context = LocalContext.current, displayName: Mutabl
             EditDialog(
                 text = displayName,
                 updateData = { name ->
-                    dbRef.child("displayName").setValue(name) //TODO set in correct database
+                    dbRef.child("Profiles/$userId/username").setValue(name)
                 },
                 show = showNameDialog
             )
@@ -172,7 +156,7 @@ fun EditUserDetails(context: Context = LocalContext.current, displayName: Mutabl
                     ActivityResultContracts.GetContent()) { uri: Uri? ->
                         imageUri = uri
                         image.value = readBytes(context, imageUri!!)!!
-                        val uploadTask = storageRef.child("images/cat.jpg").putBytes(image.value)
+                        val uploadTask = storageRef.child("Profiles/$userId/picture/pic.jpg").putBytes(image.value)
                         uploadTask.addOnFailureListener {
                             // Handle unsuccessful uploads
                         }.addOnSuccessListener {
@@ -418,7 +402,6 @@ private fun EditableItemStyle(item: EditableData) {
 private fun prepareEditableItemsData(displayName: MutableState<String>, showNameDialog: MutableState<Boolean>) {
 
     val appIcons = Icons.Rounded
-    //displayName.value = "Chris P. Bacon"
 
     editablesList.add(
         EditableData(
@@ -433,7 +416,6 @@ private fun prepareEditableItemsData(displayName: MutableState<String>, showName
 
 }
 
-//TODO add this to a utility file or something
 /**
  * Converts a URI into an array of bytes
  * @param context current context
