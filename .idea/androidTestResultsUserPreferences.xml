@@ -29,6 +29,20 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-1517412785">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="39V4C19703010730" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="HUAWEI&#10; POT-LX1" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-1375076982">
           <value>
             <AndroidTestResultsTableState>
@@ -49,6 +63,20 @@
                 <map>
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_2_API_33" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="-271960985">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="39V4C19703010730" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="HUAWEI&#10; POT-LX1" value="120" />
                   <entry key="Tests" value="360" />
                 </map>
               </option>
@@ -101,6 +129,20 @@
                 <map>
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_2_API_33" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="461366642">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="39V4C19703010730" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="HUAWEI&#10; POT-LX1" value="120" />
                   <entry key="Tests" value="360" />
                 </map>
               </option>
@@ -355,6 +397,20 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="1474541755">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="39V4C19703010730" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="HUAWEI&#10; POT-LX1" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="1487570081">
           <value>
             <AndroidTestResultsTableState>
@@ -466,6 +522,21 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Pixel_2_API_33" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="2096921970">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="39V4C19703010730" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="HUAWEI&#10; POT-LX1" value="120" />
                   <entry key="Pixel_2_API_33" value="120" />
                   <entry key="Tests" value="360" />
                 </map>
