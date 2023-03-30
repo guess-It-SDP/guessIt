@@ -226,6 +226,7 @@ fun CorrectAnswerScreen(gs: Guess) {
 
     Column(
         modifier = Modifier
+            .testTag("correctAnswerScreen")
             .background(Color.Transparent)
             .fillMaxSize()
             .wrapContentSize(Alignment.Center)
@@ -235,12 +236,14 @@ fun CorrectAnswerScreen(gs: Guess) {
     ) {
         Box(
             modifier = Modifier
+                .testTag("correctAnswerPopup")
                 .size(275.dp, 130.dp)
                 .clip(shape)
                 .background(Purple40),
             contentAlignment = Alignment.Center
         ) {
             Text(
+                modifier = Modifier.testTag("correctAnswerText"),
                 text = sb.toString(),
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center,
