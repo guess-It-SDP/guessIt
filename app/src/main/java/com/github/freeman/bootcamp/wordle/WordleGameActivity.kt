@@ -34,6 +34,10 @@ import androidx.compose.ui.platform.LocalContext
 
 import androidx.compose.ui.text.input.TextFieldValue
 
+/**
+ * The is the class that allow the play to the wordle game.
+ * This is and adapter from WordleGameState to android
+ */
 class WordleGameActivity() : ComponentActivity() {
     private lateinit var wordle: WordleGameState
     private lateinit var solutionsData: String
@@ -51,8 +55,8 @@ class WordleGameActivity() : ComponentActivity() {
         solutions = solutionsData.split("\n").map { it.trim() }
         validWords = validWordsData.split("\n").map { it.trim() }
         wordle = WordleGameState(false, solutions, validWords)
-        var tiles = wordle.getTiles()
-        var testing = getIntent().getBooleanExtra("testing", false)
+        val tiles = wordle.getTiles()
+        val testing = getIntent().getBooleanExtra("testing", false)
         if (testing == true) {
             //#### for testing #test
             wordle = wordle.withSetWordToGuess("hello")
@@ -69,13 +73,16 @@ class WordleGameActivity() : ComponentActivity() {
         }
     }
 
+    /**
+     * submit a word to the game and reset the graphic interface
+     */
     @Composable
     fun wordleButton() {
-        var msg: TextFieldState = remember { TextFieldState() }
+        val msg: TextFieldState = remember { TextFieldState() }
         GreetingInput(msg)
         Button(onClick = {
             if (msg.text.length == 5) {
-                wordle = wordle.submitWord(
+                wordle = wordle.withSubmittedWord(
                     msg.text
                 )
                 var tiles = wordle.getTiles()
@@ -93,7 +100,9 @@ class WordleGameActivity() : ComponentActivity() {
         }) { Text(text = "Submit word", color = Color.Magenta) }
     }
 
-
+    /**
+     * This is the grid containing all the tiles
+     */
     @Composable
     fun TileRoof(tiles: MutableList<WordleGameState.Tile>) {
         var id = 0
@@ -116,7 +125,10 @@ class WordleGameActivity() : ComponentActivity() {
         }
     }
 
-
+    /**
+     * hold a letter and the color correspond to the state of the letter
+     * at the right position,at the wrong sport or the the wordToguess does not contains the letter
+     */
     @Composable
     private fun TileContainer(
         modifier: Modifier,
@@ -151,6 +163,10 @@ class TextFieldState {
     var text: String by mutableStateOf("")
 }
 
+/**
+ * text-field where the player enters a word to try to guess the hidden wordToGuess
+ * @param location to save the input
+ */
 @Composable
 fun GreetingInput(msg: TextFieldState = remember { TextFieldState() }) {
     var text by remember { mutableStateOf(TextFieldValue("")) }

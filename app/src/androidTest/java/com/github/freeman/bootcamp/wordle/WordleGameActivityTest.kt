@@ -31,6 +31,7 @@ class WordleGameActivityTest {
     /**
      * Factory method to provide android specific implementation of createComposeRule, for a given
      * activity class type A that needs to be launched via an intent.
+     * https://stackoverflow.com/questions/68267861/add-intent-extras-in-compose-ui-test
      *
      * @param intentFactory A lambda that provides a Context that can used to create an intent. A intent needs to be returned.
      */
@@ -121,6 +122,10 @@ class WordleGameActivityTest {
             .assertBackgroundColor(Color(WordleGameState.TileState.INCORRECT.argb))
     }
 
+    /**
+     * allow to compare colors
+     * https://stackoverflow.com/questions/70682864/android-jetpack-compose-how-to-test-background-color
+     */
     fun SemanticsNodeInteraction.assertBackgroundColor(expectedBackground: Color) {
         val capturedName = captureToImage().colorSpace.name
         assertEquals(expectedBackground.colorSpace.name, capturedName)
