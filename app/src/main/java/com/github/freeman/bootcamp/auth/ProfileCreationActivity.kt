@@ -119,10 +119,3 @@ fun ProfileCreationScreen(dbref: DatabaseReference) {
         }
     }
 }
-
-@Preview
-@Composable
-fun ProfileCreationPreview() {
-    val dbref = Firebase.database.getReference("Profiles")
-    ProfileCreationScreen(dbref)
-}

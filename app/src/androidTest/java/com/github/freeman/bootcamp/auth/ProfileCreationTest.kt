@@ -43,15 +43,13 @@ class ProfileCreationTest {
     @Test
     fun usernameLabelIsDisplayed() {
         initScreen()
-
-        composeRule.onNodeWithTag("usernameLabel", true).assertIsDisplayed()
+        composeRule.onNode(hasTestTag("usernameLabel"), true).assertIsDisplayed()
     }
 
     @Test
     fun usernameBarContainsCorrectLabel() {
         initScreen()
-
-        composeRule.onNodeWithTag("usernameLabel", true).assertTextContains("Username")
+        composeRule.onNode(hasTestTag("usernameLabel"), true).assertTextContains("Username")
     }
 
     @Test
@@ -76,13 +74,6 @@ class ProfileCreationTest {
     fun doneButtonHasCorrectDescription() {
         initScreen()
         composeRule.onNodeWithTag("usernameOkayButton").assertContentDescriptionContains( "okIconForUsername")
-    }
-
-    @Test
-    fun profileCreationPreviewDisplaysProfileCreationScreen() {
-        initScreen()
-        composeRule.onNodeWithTag("profileCreationScreen").assertIsDisplayed()
-        composeRule.onNodeWithTag("usernameBar").assertIsDisplayed()
     }
 
     @Test
