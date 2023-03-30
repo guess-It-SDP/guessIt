@@ -14,7 +14,7 @@ class DrawingActivityTest {
 
     @Test
     fun drawingScreenIsDisplayed() {
-        composeRule.onNodeWithTag("drawingScreen").assertIsDisplayed()
+        composeRule.onNodeWithTag(composeRule.activity.getString(R.string.drawing_screen)).assertIsDisplayed()
     }
 
     @Test
@@ -40,6 +40,20 @@ class DrawingActivityTest {
     @Test
     fun widthSliderAppearsOnWidthButtonClick() {
         composeRule.onNodeWithContentDescription(composeRule.activity.getString(R.string.stroke_width)).performClick()
+        composeRule.onNodeWithTag(composeRule.activity.getString(R.string.width_slider)).assertIsDisplayed()
+    }
+
+    @Test
+    fun sliderStaysOnScreenWhenClickingUndo() {
+        composeRule.onNodeWithContentDescription(composeRule.activity.getString(R.string.stroke_width)).performClick()
+        composeRule.onNodeWithContentDescription(composeRule.activity.getString(R.string.undo)).performClick()
+        composeRule.onNodeWithTag(composeRule.activity.getString(R.string.width_slider)).assertIsDisplayed()
+    }
+
+    @Test
+    fun sliderStaysOnScreenWhenClickingRedo() {
+        composeRule.onNodeWithContentDescription(composeRule.activity.getString(R.string.stroke_width)).performClick()
+        composeRule.onNodeWithContentDescription(composeRule.activity.getString(R.string.redo)).performClick()
         composeRule.onNodeWithTag(composeRule.activity.getString(R.string.width_slider)).assertIsDisplayed()
     }
 

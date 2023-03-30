@@ -66,10 +66,7 @@ fun DrawingScreen(save: (Bitmap) -> Unit) {
                 drawController,
                 onColorClick =
                 {
-                    colorBarVisibility.value = when (colorBarVisibility.value) {
-                        false -> true
-                        else -> false
-                    }
+                    colorBarVisibility.value = !colorBarVisibility.value
                     widthSliderVisibility.value = false
                 },
                 onWidthClick =
@@ -147,14 +144,14 @@ fun ControlsBar(
         MenuItems(
             R.drawable.ic_undo,
             LocalContext.current.getString(R.string.undo),
-            if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
+            if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
         ) {
             if (undoVisibility.value) drawController.unDo()
         }
         MenuItems(
             R.drawable.ic_redo,
             LocalContext.current.getString(R.string.redo),
-            if (redoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
+            if (redoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
         ) {
             if (redoVisibility.value) drawController.reDo()
         }
