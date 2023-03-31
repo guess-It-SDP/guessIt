@@ -22,7 +22,7 @@ class WordleGameStateTest {
 
     @Test
     fun submitWordAndGetTilesWorksWithHellotoHello() {
-        var wordle = helloWordle.submitWord("hello")
+        var wordle = helloWordle.withSubmittedWord("hello")
         var tiles = wordle.getTiles()
         assertEquals('h', tiles.get(0).letter)
         assertEquals('e', tiles.get(1).letter)
@@ -37,7 +37,7 @@ class WordleGameStateTest {
 
     @Test
     fun submitWordAndGetGridWorksWithHelloToHello() {
-        var wordle = helloWordle.submitWord("hello")
+        var wordle = helloWordle.withSubmittedWord("hello")
         var grid = wordle.getGrid()
         assertEquals('h', grid[0][0].letter)
         assertEquals('e', grid[0][1].letter)
@@ -56,10 +56,10 @@ class WordleGameStateTest {
         val word2 = "llppl"
         val word3 = "lllll"
         val word4 = "lllol"
-        var wordle = helloWordle.submitWord(word1)
-        wordle = wordle.submitWord(word2)
-        wordle = wordle.submitWord(word3)
-        wordle = wordle.submitWord(word4)
+        var wordle = helloWordle.withSubmittedWord(word1)
+        wordle = wordle.withSubmittedWord(word2)
+        wordle = wordle.withSubmittedWord(word3)
+        wordle = wordle.withSubmittedWord(word4)
         var grid = wordle.getGrid()
         assertEquals(WordleGameState.TileState.WRONG_SPOT, grid[0][0].state)
         assertEquals(WordleGameState.TileState.WRONG_SPOT, grid[0][1].state)
@@ -93,15 +93,15 @@ class WordleGameStateTest {
     @Test
     fun submit9WrongWordsRestartsTheGame() {
         val word1 = "ehxxo"
-        var wordle = helloWordle.submitWord(word1)
-        wordle = wordle.submitWord(word1)
-        wordle = wordle.submitWord(word1)
-        wordle = wordle.submitWord(word1)
-        wordle = wordle.submitWord(word1)
-        wordle = wordle.submitWord(word1)
-        wordle = wordle.submitWord(word1)
-        wordle = wordle.submitWord(word1)
-        wordle = wordle.submitWord(word1)
+        var wordle = helloWordle.withSubmittedWord(word1)
+        wordle = wordle.withSubmittedWord(word1)
+        wordle = wordle.withSubmittedWord(word1)
+        wordle = wordle.withSubmittedWord(word1)
+        wordle = wordle.withSubmittedWord(word1)
+        wordle = wordle.withSubmittedWord(word1)
+        wordle = wordle.withSubmittedWord(word1)
+        wordle = wordle.withSubmittedWord(word1)
+        wordle = wordle.withSubmittedWord(word1)
 
         var tiles = wordle.getTiles()
         for (i in 0..5 * 8 - 1) {
@@ -114,23 +114,23 @@ class WordleGameStateTest {
     fun withSetWordToGuessReturnNewGameWithCorrectWord() {
         val word1 = "train"
         var wordle = helloWordle.withSetWordToGuess(word1)
-        wordle.submitWord("train")
+        wordle.withSubmittedWord("train")
         for (i in 0..4) {
-            assertEquals(word1[i], wordle.getGrid()[0][i].letter)
-            assertEquals(WordleGameState.TileState.CORRECT, wordle.getGrid()[0][i].state)
+            assertEquals(word1[i], wordle.withSubmittedWord(word1).getGrid()[0][i].letter)
+            assertEquals(WordleGameState.TileState.CORRECT, wordle.withSubmittedWord(word1).getGrid()[0][i].state)
         }
 
     }
     @Test
     fun wordsOnlyRefusesRandomLetter(){
         var wordle = WordleGameState(true,listOf("hello"),listOf("hello") )
-        wordle = wordle.submitWord("ebcde")
+        wordle = wordle.withSubmittedWord("ebcde")
         assertEquals('\u0000',wordle.getTiles().get(0).letter)
     }
 
     @Test(expected = InvalidParameterException::class)
     fun submit6LettersThrowIllegalArgumentEx(){
-        var wordle = WordleGameState(true,listOf("hello"),listOf("hello") ).submitWord("abcdef")
+        var wordle = WordleGameState(true,listOf("hello"),listOf("hello") ).withSubmittedWord("abcdef")
     }
 
 }

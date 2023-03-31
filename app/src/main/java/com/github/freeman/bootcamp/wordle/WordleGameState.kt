@@ -101,7 +101,7 @@ class WordleGameState private constructor(
             // For a specific letter we don't want to assign more wrong spot that the word contains
             // this letter
             var remainingLetters = wordToGuess
-            val grid = this.grid
+            val grid = this.grid.clone()
             val row = grid[current_line]
 
             initiateRow(row, submittedWord)
@@ -181,5 +181,12 @@ class WordleGameState private constructor(
             }
         }
         return remainingLetters
+    }
+
+    /**
+     * The tiles of the games
+     */
+    fun getGrid(): Array<Array<Tile>>{
+        return grid.clone()
     }
 }
