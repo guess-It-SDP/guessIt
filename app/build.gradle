@@ -132,9 +132,11 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
 
     androidTestImplementation "androidx.navigation:navigation-testing:2.5.3"
-
+    implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
     // UI Automator
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+    implementation("io.coil-kt:coil-compose:2.3.0")
+
 }
 
 tasks.withType(Test) {

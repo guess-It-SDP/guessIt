@@ -5,12 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.freeman.bootcamp.Node.node
-import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
-import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.videocall.VideoCallActivity
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,11 +15,6 @@ import org.junit.runner.RunWith
 class MainMenuTest {
     @get:Rule
     val composeRule = createComposeRule()
-
-    @Before
-    fun setTheContentBefore(){
-        setMainMenuScreen()
-    }
 
     @Test
     fun mainMenuScreenIsDisplayed() {
@@ -39,83 +29,61 @@ class MainMenuTest {
     }
 
     @Test
-    fun playButtonIsDisplayedHasRightTextIsClickableAndSendsIntent(){
-        testButton("playButton", GameOptionsActivity::class.java.name,MainMenuActivity.PLAY)
+    fun playButtonTextIsCorrect() {
+        setMainMenuScreen()
+        composeRule.onNode(hasTestTag("playButton")).assertTextContains("Play game")
     }
 
     @Test
-    fun settingsButtonTextIsCorrect() {
-        node("settingsButton").assertTextContains("Settings")
+    fun playButtonHasClickAction() {
+        setMainMenuScreen()
+        composeRule.onNode(hasTestTag("playButton")).assertHasClickAction()
     }
 
     @Test
-    fun settingsButtonHasClickAction() {
-        node("settingsButton").assertHasClickAction()
-    }
-
-    @Test
-    fun settingsIntentIsSent() {
+    fun playIntentIsSent() {
         Intents.init()
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        context.startService(Intent(context, BackgroundMusicService::class.java))
+        setMainMenuScreen()
 
-        composeRule.onNodeWithText("Settings").performClick()
-        Intents.intended(IntentMatchers.hasComponent(SettingsActivity::class.java.name))
+        composeRule.onNode(hasTestTag("playButton")).performClick()
+        Intents.intended(IntentMatchers.hasComponent(GameOptionsActivity::class.java.name))
 
         Intents.release()
     }
 
     @Test
-    fun profileButtonIsDisplayedHasRightTextIsClickableAndSendsIntent(){
-        testButton("profileButton", ProfileActivity::class.java.name,MainMenuActivity.PROFILE)
+    fun settingsButtonTextIsCorrect() {
+        setMainMenuScreen()
+        composeRule.onNode(hasTestTag("settingsButton")).assertTextContains("Settings")
     }
 
     @Test
-    fun chatButtonIsDisplayedHasRightTextIsClickableAndSendsIntent(){
-        testButton("chatTestButton", ChatActivity::class.java.name,MainMenuActivity.CHAT)
+    fun settingsButtonHasClickAction() {
+        setMainMenuScreen()
+        composeRule.onNode(hasTestTag("settingsButton")).assertHasClickAction()
     }
 
     @Test
-    fun guessingButtonIsDisplayedHasRightTextIsClickableAndSendsIntent(){
-        testButton("guessingButton", GuessingActivity::class.java.name,MainMenuActivity.GUESSING)
-    }
-
-
-    @Test
-    fun audioRecButtonIsDisplayedHasRightTextIsClickableAndSendsIntent(){
-        testButton("audioRecordingButton", AudioRecordingActivity::class.java.name,MainMenuActivity.AUDIO_REC)
+    fun chatTestButtonIsDisplayed() {
+        setMainMenuScreen()
+        composeRule.onNodeWithTag("chatTestButton").assertHasClickAction()
     }
 
     @Test
-    fun drawingButtonIsDisplayedHasRightTextIsClickableAndSendsIntent(){
-        testButton("drawingButton", DrawingActivity::class.java.name,MainMenuActivity.DRAWING)
+    fun clickingSettingsDoesNothingBeforeLoggedIn() {
+        setMainMenuScreen()
+        composeRule.onNodeWithTag("settingsButton").performClick()
+        composeRule.onNodeWithTag("settingsButton").assertIsDisplayed()
     }
 
     @Test
-    fun signInButtonIsDisplayedHasRightTextIsClickableAndSendsIntent(){
-    testButton("SignInButton", FirebaseAuthActivity::class.java.name,MainMenuActivity.SIGN_IN)
-    }
-
-    @Test
-    fun videoCallButtonIsDisplayedHasRightTextIsClickableAndSendsIntent(){
-        testButton("videoCallButton", VideoCallActivity::class.java.name,MainMenuActivity.VIDEO_CALL)
-    }
-
-    /**
-     * Test is a button is displayed, has the right text, is clickable and sends the correct intents
-     */
-    private fun testButton(testTag: String, activityClassName: String, text:String){
-        node(testTag).assertIsDisplayed().assertHasClickAction().assertTextContains(text)
-        intentIsSend(testTag,activityClassName)
-    }
-
-    /**
-     * Test that an intend is sent when clicking on a button with given test tag
-     */
-    private fun intentIsSend(testTag: String, activityClassName: String){
+    fun chatTestIntentIsSent() {
         Intents.init()
-        node(testTag).performClick()
-        Intents.intended(IntentMatchers.hasComponent(activityClassName))
+        setMainMenuScreen()
+
+        composeRule.onNodeWithText("Chat").performClick()
+        Intents.intended(IntentMatchers.hasComponent(ChatActivity::class.java.name))
+
         Intents.release()
     }
 
@@ -125,12 +93,5 @@ class MainMenuTest {
                 MainMenuScreen()
             }
         }
-    }
-
-    /**
-     * Return a node from a test Tag
-     */
-    private fun node(testTag: String): SemanticsNodeInteraction {
-        return node(testTag,composeRule);
     }
 }

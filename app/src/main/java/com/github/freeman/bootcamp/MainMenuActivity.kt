@@ -6,7 +6,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,7 +28,6 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.PROFILE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
-import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.firebase.FirebaseUtilities.profileExists
 import com.github.freeman.bootcamp.firebase.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
@@ -95,7 +97,7 @@ fun SettingsButton() {
 }
 
 fun profile(context: Context) {
-    context.startActivity(Intent(context, ProfileActivity::class.java))
+    context.startActivity(Intent(context, SettingsProfileActivity::class.java))
 }
 
 @Composable
@@ -126,7 +128,6 @@ fun guessing(context: Context, gameId: String, answer: String) {
 
 @Composable
 fun GuessingButton() {
-    createButton(testTag = "guessingButton", unit = ::guessing , text = GUESSING)
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("guessingButton"),
