@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp
 
+import com.github.freeman.bootcamp.firebase.FirebaseSingletons
 import com.google.firebase.database.FirebaseDatabase
 
 object FirebaseEmulator {

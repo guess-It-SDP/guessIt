@@ -11,6 +11,18 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="title_activity_bit_map_handler_testing">BitMapHandlerTestingActivity</string>
 
+    <!-- Strings used in DrawingActivity -->
+    <string name="drawing_screen">Drawing screen</string>
+    <string name="width_slider">Width slider</string>
+    <string name="undo">Undo button</string>
+    <string name="redo">Redo button</string>
+    <string name="stroke_color">Stroke color button</string>
+    <string name="stroke_width">Stroke Width button</string>
+    <string name="drawing_done">Drawing done button</string>
+
+    <!-- Useful for now as there are no game lobbies -->
+    <string name="default_game_id">1</string>
+
     <string name="web_client_id">690006943045-qccs8s58p6ck2r3llb7e7kv6najg8485.apps.googleusercontent.com</string>
 
 </resources>

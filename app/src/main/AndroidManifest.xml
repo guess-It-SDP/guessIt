@@ -21,16 +21,21 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.BootcampCompose"
-        tools:targetApi="31">
-        
+        tools:targetApi="31" >
         <activity
-            android:name=".TimerActivity"
-            android:exported="false">
+            android:name=".firebase.auth.ProfileCreationActivity"
+            android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
+        <activity
+            android:name=".TimerActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".TopicSelectionActivity"
             android:exported="false" />
@@ -71,7 +76,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ProfileActivity"
+            android:name=".SettingsProfileActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
@@ -85,6 +90,13 @@
                 android:value="" />
         </activity>
         <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".GuessingActivity"
             android:exported="false" >
             <meta-data
@@ -92,7 +104,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".auth.FirebaseAuthActivity"
+            android:name=".firebase.auth.FirebaseAuthActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"

@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp.auth
+package com.github.freeman.bootcamp.firebase.auth
 
 import android.app.Activity
 import android.content.Context
@@ -45,6 +45,7 @@ class GoogleAuthenticator : Authenticator {
             val user = FirebaseAuth.getInstance().currentUser
                 ?: throw IllegalStateException("User is null")
             onSuccess!!.accept(user.email)
+            //context.startActivity(Intent(context, ProfileCreationActivity::class.java)
         } else if (result.resultCode == Activity.RESULT_CANCELED) {
             // Sign in was cancelled by the user
             onFailure!!.accept("User cancelled sign in")

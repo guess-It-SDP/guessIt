@@ -16,7 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -158,6 +160,15 @@ fun Main(dbref: DatabaseReference) {
         }
     })
 
+    //the username of the current user
+    var username = ""
+    val uid = FirebaseAuth.getInstance().currentUser?.uid
+    val dbrefUsername = Firebase.database.reference.child("Profiles/$uid").child("username")
+    FirebaseUtilities.databaseGet(dbrefUsername)
+        .thenAccept {
+            username = it
+        }
+
     MaterialTheme {
         Box(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -177,7 +188,7 @@ fun Main(dbref: DatabaseReference) {
                         onMessageChange = { message = it },
                         onSendClick = {
                             // Currently the Id of each msg is simply the order on which they appeared
-                            val chtMsg = ChatMessage(message = message, sender = randomName.toString())
+                            val chtMsg = ChatMessage(message = message, sender = username)
                             val msgId = chatMessages.size.toString()
                             dbref.child(msgId).setValue(chtMsg)
                             message = ""

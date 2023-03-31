@@ -1,10 +1,7 @@
 package com.github.freeman.bootcamp
 
-import android.content.Context
-import android.content.Intent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -22,7 +19,7 @@ import org.junit.runner.RunWith
 
 class MainMenuTest {
     @get:Rule
-      val composeRule = createComposeRule()
+    val composeRule = createComposeRule()
 
     @Before
     fun setTheContentBefore(){
@@ -31,11 +28,13 @@ class MainMenuTest {
 
     @Test
     fun mainMenuScreenIsDisplayed() {
+        setMainMenuScreen()
         composeRule.onNode(hasTestTag("mainMenuScreen")).assertIsDisplayed()
     }
 
     @Test
     fun mainMenuScreenHasGameName() {
+        setMainMenuScreen()
         composeRule.onNode(hasTestTag("gameName")).assertTextContains("Guess It!")
     }
 

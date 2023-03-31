@@ -6,10 +6,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -27,8 +26,15 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
+import com.github.freeman.bootcamp.firebase.FirebaseUtilities.profileExists
+import com.github.freeman.bootcamp.firebase.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.github.freeman.bootcamp.videocall.VideoCallActivity
 
 class MainMenuActivity : ComponentActivity() {
@@ -67,13 +73,25 @@ fun PlayButton() {
     createButton(testTag = "playButton" , unit = ::play, text = PLAY)
 }
 
-fun settings(context: Context) {
-    context.startActivity(Intent(context, SettingsActivity::class.java))
+fun settings(context: Context, user: FirebaseUser?, dbRef: DatabaseReference) {
+    profileExists(user, dbRef)
+        .thenAccept {
+            if (it) {
+                context.startActivity(Intent(context, SettingsProfileActivity::class.java))
+            }
+        }
 }
 
 @Composable
 fun SettingsButton() {
-    createButton(testTag = "settingsButton", unit = ::settings, text = SETTINGS)
+    val context = LocalContext.current
+
+    ElevatedButton(
+        modifier = Modifier.testTag("settingsButton"),
+        onClick = { settings(context, Firebase.auth.currentUser, Firebase.database.reference) }
+    ) {
+        Text(SETTINGS)
+    }
 }
 
 fun profile(context: Context) {
@@ -83,7 +101,12 @@ fun profile(context: Context) {
 @Composable
 fun ProfileButton() {
     val context = LocalContext.current
-    createButton(testTag = "profileButton", unit = ::profile, text =PROFILE )
+    ElevatedButton(
+        modifier = Modifier.testTag("profileButton"),
+        onClick = { profile(context) }
+    ) {
+        Text(PROFILE)
+    }
 }
 
 fun chatTest(context: Context) {
@@ -95,13 +118,22 @@ fun ChatTestButton() {
     createButton(testTag = "chatTestButton" , unit = ::chatTest, text = CHAT)
 }
 
-fun guessing(context: Context) {
-    context.startActivity(Intent(context, GuessingActivity::class.java))
+fun guessing(context: Context, gameId: String, answer: String) {
+    context.startActivity(Intent(context, GuessingActivity::class.java).apply {
+        putExtra("gameId", gameId)
+    })
 }
 
 @Composable
 fun GuessingButton() {
     createButton(testTag = "guessingButton", unit = ::guessing , text = GUESSING)
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("guessingButton"),
+        onClick = { guessing(context, "TestGameId", "Flower") } //TODO: Add the correct game ID and correct answer
+    ) {
+        Text(GUESSING)
+    }
 }
 
 fun audioRec(context: Context) {
@@ -149,7 +181,6 @@ fun createButton(testTag: String, unit:(context:Context)->Unit, text: String) {
     }
 }
 
-
 @Composable
 fun BackButton() {
     val context = LocalContext.current
@@ -165,6 +196,8 @@ fun BackButton() {
         )
     }
 }
+
+
 
 @Preview
 @Composable
@@ -190,7 +223,7 @@ fun MainMenuScreen() {
             text = "Guess It!",
             fontSize = 40.sp
         )
-        Spacer(modifier = Modifier.size(24.dp))
+        Spacer(modifier = Modifier.size(50.dp))
         PlayButton()
         Spacer(modifier = Modifier.size(24.dp))
         SettingsButton()
@@ -206,8 +239,7 @@ fun MainMenuScreen() {
         DrawingButton()
         Spacer(modifier = Modifier.size(8.dp))
         SignInButton()
-        Spacer(modifier = Modifier.size(8.dp))
-        VideoCallButton()
+
     }
 }
 

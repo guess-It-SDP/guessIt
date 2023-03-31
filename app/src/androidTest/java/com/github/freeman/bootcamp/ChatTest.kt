@@ -4,7 +4,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.freeman.bootcamp.FirebaseSingletons.database
+import com.github.freeman.bootcamp.firebase.FirebaseSingletons.database
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.DatabaseReference
 import org.junit.Rule
