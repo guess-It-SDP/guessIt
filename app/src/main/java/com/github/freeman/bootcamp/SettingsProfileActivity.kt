@@ -240,7 +240,8 @@ private fun UserDetails(context: Context = LocalContext.current, displayName: Mu
             // Edit button
             IconButton(
                 modifier = Modifier
-                    .weight(weight = 1f, fill = false),
+                    .weight(weight = 1f, fill = false)
+                    .testTag("editProfileButton"),
                 onClick = {
                     context.startActivity(Intent(context, EditProfileActivity::class.java))
                 }) {
@@ -349,11 +350,7 @@ private fun prepareOptionsData(context: Context) {
             title = "Parameters",
             subTitle = "App parameters",
             clickAction = {
-                context.startActivity(
-                    Intent(
-                        context,
-                        SettingsActivity::class.java
-                    )
+                context.startActivity(Intent(context, SettingsActivity::class.java)
                 )
             }
         )

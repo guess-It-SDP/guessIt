@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -34,7 +33,7 @@ class EditProfileActivityTest {
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TopAppbarSettings(context = LocalContext.current)
+                    TopAppbarEditProfile()
                     EditUserDetails(displayName = displayName, profilePic = profilePicBitmap)
                 }
             }
@@ -54,8 +53,28 @@ class EditProfileActivityTest {
     }
 
     @Test
+    fun customDialogIsStillDisplayedAfterEmptyTextInput() {
+        composeRule.onNodeWithText("Name").performClick()
+        composeRule.onNodeWithTag("dialogTextField").performTextClearance()
+        composeRule.onNodeWithTag("doneButton").performClick()
+        composeRule.onNodeWithTag("customDialog").assertIsDisplayed()
+    }
+
+    @Test
     fun editOptionsItemStyleIsDisplayed() {
         composeRule.onNodeWithTag("editOptionsItemStyle").assertIsDisplayed()
+    }
+
+    @Test
+    fun topAppBarIsDisplayed() {
+        composeRule.onNodeWithTag("topAppbarEditProfile").assertIsDisplayed()
+    }
+
+    @Test
+    fun topAppBarBackBringsToPreviousActivity() {
+
+        composeRule.onNodeWithTag("appBarBack").assertHasClickAction()
+        composeRule.onNodeWithTag("appBarBack").performClick()
     }
 
 }

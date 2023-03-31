@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import org.junit.Before
@@ -65,4 +67,29 @@ class SettingsProfileActivityTest {
     fun optionsItemStyleIsDisplayed() {
         composeRule.onAllNodesWithTag("optionsItemStyle").assertAll(isEnabled())
     }
+
+    @Test
+    fun editButtonLaunchesEditProfileActivity() {
+        Intents.init()
+
+        composeRule.onNodeWithTag("editProfileButton").performClick()
+
+        Intents.intended(IntentMatchers.hasComponent(EditProfileActivity::class.java.name))
+
+        Intents.release()
+    }
+
+    @Test
+    fun helpButtonHasClickAction() {
+        composeRule.onNodeWithText("Help").assertHasClickAction()
+    }
+
+    @Test
+    fun gameStatsButtonHasClickAction() {
+        composeRule.onNodeWithText("Game Stats").assertHasClickAction()
+    }
+
+
+
+
 }

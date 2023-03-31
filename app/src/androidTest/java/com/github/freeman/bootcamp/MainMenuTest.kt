@@ -70,6 +70,13 @@ class MainMenuTest {
     }
 
     @Test
+    fun clickingSettingsDoesNothingBeforeLoggedIn() {
+        setMainMenuScreen()
+        composeRule.onNodeWithTag("settingsButton").performClick()
+        composeRule.onNodeWithTag("settingsButton").assertIsDisplayed()
+    }
+
+    @Test
     fun chatTestIntentIsSent() {
         Intents.init()
         setMainMenuScreen()

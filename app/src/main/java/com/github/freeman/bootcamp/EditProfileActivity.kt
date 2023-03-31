@@ -194,7 +194,7 @@ fun EditUserDetails(context: Context = LocalContext.current, displayName: Mutabl
 fun TopAppbarEditProfile(context: Context = LocalContext.current) {
 
     TopAppBar(
-        modifier = Modifier.testTag("topAppbarProfile"),
+        modifier = Modifier.testTag("topAppbarEditProfile"),
         title = {
             Text(
                 text = "Profile",
@@ -205,7 +205,10 @@ fun TopAppbarEditProfile(context: Context = LocalContext.current) {
         backgroundColor = MaterialTheme.colors.background,
         elevation = 4.dp,
         navigationIcon = {
-            IconButton(onClick = {
+            IconButton(
+                modifier = Modifier
+                    .testTag("appBarBack"),
+                onClick = {
                 val activity = (context as? Activity)
                 activity?.finish()
 
@@ -267,6 +270,7 @@ private fun EditDialog(text: MutableState<String>, updateData: (String) -> Unit,
 
                     TextField(
                         modifier = Modifier
+                            .testTag("dialogTextField")
                             .fillMaxWidth()
                             .border(
                                 BorderStroke(
@@ -316,6 +320,7 @@ private fun EditDialog(text: MutableState<String>, updateData: (String) -> Unit,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp)
+                                .testTag("doneButton")
                         ) {
                             Text(text = "Done")
                         }
