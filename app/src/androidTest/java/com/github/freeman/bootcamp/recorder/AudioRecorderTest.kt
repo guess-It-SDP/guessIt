@@ -6,7 +6,6 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.rule.GrantPermissionRule
 import org.junit.Rule
 import org.junit.Test
-import com.github.freeman.bootcamp.Node.node
 
 class AudioRecordingTest {
     @get:Rule
@@ -54,7 +53,7 @@ class AudioRecordingTest {
     }
 
     private fun node(testTag: String): SemanticsNodeInteraction {
-        return node(testTag,composeRule)
+        return composeRule.onNodeWithTag(testTag)
     }
 
 }
