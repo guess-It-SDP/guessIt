@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
+import com.github.freeman.bootcamp.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.ui.theme.Purple40
 import com.google.firebase.auth.FirebaseAuth
@@ -35,10 +36,11 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import java.util.concurrent.CompletableFuture
 
-
-
-
+/**
+ * The activity where the guesser tries to guess what is the drawing
+ */
 class GuessingActivity : ComponentActivity() {
     private lateinit var dbrefGames: DatabaseReference
 
@@ -56,6 +58,9 @@ class GuessingActivity : ComponentActivity() {
     }
 }
 
+/**
+ * Displays of one guess (with the guesser name)
+ */
 @Composable
 fun GuessItem(guess: Guess, answer: String) {
     Row(
@@ -74,6 +79,9 @@ fun GuessItem(guess: Guess, answer: String) {
     }
 }
 
+/**
+ * Displays all guesses that have been made in the game
+ */
 @Composable
 fun GuessesList(guesses: Array<Guess>, answer: String) {
     LazyColumn (
@@ -86,6 +94,9 @@ fun GuessesList(guesses: Array<Guess>, answer: String) {
     }
 }
 
+/**
+ * The writing bar where guessers can enten their guesses
+ */
 @Composable
 fun GuessingBar(
     guess: String,
@@ -144,6 +155,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
         }
     })
 
+    //The drawing sent by the drawer to the guessers
     var bitmap by remember { mutableStateOf(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888).asImageBitmap()) }
     dbrefImages.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -156,6 +168,8 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
             // do nothing
         }
     })
+
+    //the correct answer of the round
     var answer = ""
     dbrefGames.child("topic").addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -167,6 +181,15 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
             // do nothing
         }
     })
+
+    //the username of the current user
+    var username = ""
+    val uid = FirebaseAuth.getInstance().currentUser?.uid
+    val dbrefUsername = Firebase.database.reference.child("Profiles/$uid").child("username")
+    FirebaseUtilities.databaseGet(dbrefUsername)
+        .thenAccept {
+            username = it
+        }
 
     MaterialTheme {
         Column(
@@ -213,8 +236,8 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
                 guess = guess,
                 onGuessChange = { guess = it },
                 onSendClick = {
-                    val gs = Guess(guesser = "MyUsername", guess = guess) //TODO: Change the guesser name with my name in the database
-                    val guessId = guesses.size.toString() //TODO: Change for a more accurate id
+                    val gs = Guess(guesser = username, guess = guess)
+                    val guessId = guesses.size.toString() //TODO: Change for a more accurate id ?
                     dbrefGames.child("Guesses").child(guessId).setValue(gs)
 
                     guess = ""
@@ -224,6 +247,9 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
     }
 }
 
+/**
+ * The popup screen when a user guesses the correct answer
+ */
 @Composable
 fun CorrectAnswerScreen(gs: Guess) {
     val currentUser = FirebaseAuth.getInstance().currentUser?.uid
