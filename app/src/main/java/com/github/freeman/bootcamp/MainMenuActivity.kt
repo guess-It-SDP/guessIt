@@ -162,16 +162,6 @@ fun wordle(context: Context) {
 
 }
 
-@Composable
-fun WordleButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("wordleButton"),
-        onClick = { wordle(context) }
-    ) {
-        Text(WORDLE)
-    }
-}
 
 fun signIn(context: Context) {
     context.startActivity(Intent(context, FirebaseAuthActivity::class.java))
@@ -185,10 +175,7 @@ fun SignInButton() {
 fun videoCall(context: Context) {
     context.startActivity(Intent(context, VideoCallActivity::class.java))
 }
-@Composable
-fun VideoCallButton() {
-    createButton(testTag = "videoCallButton", unit = ::videoCall, text = VIDEO_CALL)
-}
+
 @Composable
 fun createButton(testTag: String, unit:(context:Context)->Unit, text: String) {
     val context = LocalContext.current
@@ -240,7 +227,7 @@ fun MainMenuScreen() {
             text = "Guess It!",
             fontSize = 40.sp
         )
-        Spacer(modifier = Modifier.size(50.dp))
+        Spacer(modifier = Modifier.size(24.dp))
         PlayButton()
         Spacer(modifier = Modifier.size(24.dp))
         SettingsButton()
@@ -255,8 +242,9 @@ fun MainMenuScreen() {
         Spacer(modifier = Modifier.size(8.dp))
         DrawingButton()
         Spacer(modifier = Modifier.size(8.dp))
-        WordleButton()
         SignInButton()
+        createButton(testTag = VIDEO_CALL, unit = ::videoCall, text = VIDEO_CALL)
+        createButton(testTag = WORDLE, unit = ::wordle, text = WORDLE)
     }
 }
 
