@@ -42,6 +42,7 @@ class ProfileCreationActivity : ComponentActivity() {
 /**
  * The bar where the user chooses his/her username
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UsernameBar(
     username: String,
