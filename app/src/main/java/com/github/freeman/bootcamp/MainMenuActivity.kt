@@ -40,6 +40,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.github.freeman.bootcamp.videocall.VideoCallActivity
+
 class MainMenuActivity : ComponentActivity() {
     private val backgroundMusicService = BackgroundMusicService()
 
@@ -85,7 +86,6 @@ fun settings(context: Context, user: FirebaseUser?, dbRef: DatabaseReference) {
 @Composable
 fun SettingsButton() {
     val context = LocalContext.current
-
     ElevatedButton(
         modifier = Modifier.testTag("settingsButton"),
         onClick = { settings(context, Firebase.auth.currentUser, Firebase.database.reference) }
@@ -98,25 +98,11 @@ fun profile(context: Context) {
     context.startActivity(Intent(context, SettingsProfileActivity::class.java))
 }
 
-@Composable
-fun ProfileButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("profileButton"),
-        onClick = { profile(context) }
-    ) {
-        Text(PROFILE)
-    }
-}
 
 fun chatTest(context: Context) {
     context.startActivity(Intent(context, ChatActivity::class.java))
 }
 
-@Composable
-fun ChatTestButton() {
-    createButton(testTag = "chatTestButton" , unit = ::chatTest, text = CHAT)
-}
 
 fun guessing(context: Context, gameId: String, answer: String) {
     context.startActivity(Intent(context, GuessingActivity::class.java).apply {
@@ -129,7 +115,13 @@ fun GuessingButton() {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("guessingButton"),
-        onClick = { guessing(context, "TestGameId", "Flower") } //TODO: Add the correct game ID and correct answer
+        onClick = {
+            guessing(
+                context,
+                "TestGameId",
+                "Flower"
+            )
+        } //TODO: Add the correct game ID and correct answer
     ) {
         Text(GUESSING)
     }
@@ -141,16 +133,11 @@ fun audioRec(context: Context) {
 
 @Composable
 fun AudioRecordingButton() {
-    createButton(testTag = "audioRecordingButton", unit = ::audioRec , text = AUDIO_REC)
+    CreateButton(testTag = "audioRecordingButton", unit = ::audioRec, text = AUDIO_REC)
 }
 
 fun drawing(context: Context) {
     context.startActivity(Intent(context, DrawingActivity::class.java))
-}
-
-@Composable
-fun DrawingButton() {
-    createButton(testTag = "drawingButton", unit = ::drawing, text =DRAWING )
 }
 
 fun wordle(context: Context) {
@@ -158,22 +145,17 @@ fun wordle(context: Context) {
 
 }
 
-
 fun signIn(context: Context) {
     context.startActivity(Intent(context, FirebaseAuthActivity::class.java))
 }
 
-@Composable
-fun SignInButton() {
-    createButton(testTag = "SignInButton", unit = ::signIn, text = SIGN_IN)
-}
-
+@OptIn(ExperimentalUnsignedTypes::class)
 fun videoCall(context: Context) {
     context.startActivity(Intent(context, VideoCallActivity::class.java))
 }
 
 @Composable
-fun createButton(testTag: String, unit:(context:Context)->Unit, text: String) {
+fun CreateButton(testTag: String, unit: (context: Context) -> Unit, text: String) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag(testTag),
@@ -224,25 +206,26 @@ fun MainMenuScreen() {
             fontSize = 40.sp
         )
         Spacer(modifier = Modifier.size(24.dp))
-        createButton(testTag = "playButton" , unit = ::play, text = PLAY)
+        CreateButton(testTag = "playButton", unit = ::play, text = PLAY)
         Spacer(modifier = Modifier.size(24.dp))
         SettingsButton()
         Spacer(modifier = Modifier.size(24.dp))
-        ProfileButton()
+        CreateButton(testTag = "profileButton", unit = ::profile, text = PROFILE)
         Spacer(modifier = Modifier.size(24.dp))
-        ChatTestButton()
+        CreateButton(testTag = "chatTestButton", unit = ::chatTest, text = CHAT)
         Spacer(modifier = Modifier.size(24.dp))
         AudioRecordingButton()
         Spacer(modifier = Modifier.size(8.dp))
         GuessingButton()
         Spacer(modifier = Modifier.size(8.dp))
-        DrawingButton()
+        CreateButton(testTag = "drawingButton", unit = ::drawing, text = DRAWING)
         Spacer(modifier = Modifier.size(8.dp))
-        SignInButton()
-        createButton(testTag = VIDEO_CALL, unit = ::videoCall, text = VIDEO_CALL)
-        createButton(testTag = WORDLE, unit = ::wordle, text = WORDLE)
+        CreateButton(testTag = "SignInButton", unit = ::signIn, text = SIGN_IN)
+        CreateButton(testTag = VIDEO_CALL, unit = ::videoCall, text = VIDEO_CALL)
+        CreateButton(testTag = WORDLE, unit = ::wordle, text = WORDLE)
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
