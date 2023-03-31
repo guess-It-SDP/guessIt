@@ -110,16 +110,33 @@ dependencies {
     implementation 'com.google.firebase:firebase-database-ktx'
     implementation 'com.google.firebase:firebase-auth-ktx:21.1.0'
     implementation 'com.google.firebase:firebase-firestore-ktx'
-    implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
+    implementation 'com.google.firebase:firebase-storage-ktx'
     implementation 'com.firebaseui:firebase-ui-auth:8.0.1'
     implementation 'com.firebaseui:firebase-ui-database:8.0.1'
 
     implementation 'com.google.android.gms:play-services-auth:20.4.1'
 
+    // Agora
+    implementation "com.github.AgoraIO-Community:Android-UIKit:v2.0.0"
+    //implementation 'io.agora.rtc:full-sdk:4.0.1'
+    // Compose
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1"
+    implementation "androidx.navigation:navigation-compose:2.6.0-alpha08"
+    implementation "androidx.activity:activity-compose:1.7.0"
+
+    // Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+
+    // Coroutine Lifecycle Scopes
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
+
+    androidTestImplementation "androidx.navigation:navigation-testing:2.5.3"
+    implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
     // UI Automator
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
-
     implementation("io.coil-kt:coil-compose:2.3.0")
+
 }
 
 tasks.withType(Test) {

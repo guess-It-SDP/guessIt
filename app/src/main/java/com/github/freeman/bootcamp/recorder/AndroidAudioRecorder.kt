@@ -22,7 +22,7 @@ class AndroidAudioRecorder(
     override fun start(outputFile: File) {
         createRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
-           setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             //setOutputFormat(MediaRecorder.OutputFormat.MPEG_2_TS)
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
             setOutputFile(FileOutputStream(outputFile).fd)
