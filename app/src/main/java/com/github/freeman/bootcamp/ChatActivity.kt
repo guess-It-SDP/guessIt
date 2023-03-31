@@ -213,7 +213,7 @@ fun Main(dbref: DatabaseReference) {
 fun MainPreview() {
     val chatId = "TestChatId01"
     val db = Firebase.database
-    db.useEmulator("10.0.2.2", 9000)
+    //db.useEmulator("10.0.2.2", 9000)
     val dbref = Firebase.database.getReference("Chat/$chatId")
     BootcampComposeTheme {
         Main(dbref)

@@ -12,13 +12,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.Key.Companion.D
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.AUDIO_REC
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
@@ -27,6 +25,8 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PROFILE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.wordle.WordleGameActivity
@@ -52,6 +52,7 @@ class MainMenuActivity : ComponentActivity() {
         const val CHAT = "Chat"
         const val GUESSING = "Guessing"
         const val AUDIO_REC = "Audio Recording"
+        const val SIGN_IN = "Sign in"
         const val DRAWING = "Drawing"
         const val WORDLE = "Play Wordle"
     }
@@ -117,8 +118,10 @@ fun ChatTestButton() {
     }
 }
 
-fun guessing(context: Context) {
-    context.startActivity(Intent(context, GuessingActivity::class.java))
+fun guessing(context: Context, gameId: String, answer: String) {
+    context.startActivity(Intent(context, GuessingActivity::class.java).apply {
+        putExtra("gameId", gameId)
+    })
 }
 
 @Composable
@@ -126,7 +129,7 @@ fun GuessingButton() {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("guessingButton"),
-        onClick = { guessing(context) }
+        onClick = { guessing(context, "TestGameId", "Flower") } //TODO: Add the correct game ID and correct answer
     ) {
         Text(GUESSING)
     }
@@ -162,9 +165,6 @@ fun DrawingButton() {
     }
 }
 
-
-
-
 fun wordle(context: Context) {
     context.startActivity(Intent(context, WordleGameActivity::class.java))
 
@@ -180,6 +180,22 @@ fun WordleButton() {
         Text(WORDLE)
     }
 }
+
+fun signIn(context: Context) {
+    context.startActivity(Intent(context, FirebaseAuthActivity::class.java))
+}
+
+@Composable
+fun SignInButton() {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier.testTag("SignInButton"),
+        onClick = { signIn(context) }
+    ) {
+        Text(SIGN_IN)
+    }
+}
+
 @Composable
 fun BackButton() {
     val context = LocalContext.current
@@ -236,6 +252,7 @@ fun MainMenuScreen() {
         DrawingButton()
         Spacer(modifier = Modifier.size(8.dp))
         WordleButton()
+        SignInButton()
     }
 }
 

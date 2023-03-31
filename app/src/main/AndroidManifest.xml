@@ -14,16 +14,21 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.BootcampCompose"
-        tools:targetApi="31">
-        
+        tools:targetApi="31" >
         <activity
-            android:name=".TimerActivity"
-            android:exported="false">
+            android:name=".auth.ProfileCreationActivity"
+            android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
+        <activity
+            android:name=".TimerActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".TopicSelectionActivity"
             android:exported="false" />
@@ -31,7 +36,7 @@
         <service
             android:name=".BackgroundMusicService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <activity
             android:name=".MainMenuActivity"
@@ -68,6 +73,34 @@
                 android:value="" />
         </activity>
         <activity
+            android:name=".ChatActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".GuessingActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".auth.FirebaseAuthActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".recorder.AudioRecordingActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
@@ -96,5 +129,6 @@
             android:name="OtherGamesMenuActivity"
             android:exported="true" />
 </application>
+
 
 </manifest>
