@@ -110,23 +110,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.BootcampCompose" />
-        <activity
-            android:name=".ChatActivity"
-            android:exported="true" />
-        <activity
-            android:name=".GuessingActivity"
-            android:exported="true" />
-        <activity
-            android:name=".recorder.AudioRecordingActivity"
-            android:exported="true" />
-        <activity
             android:name=".wordle.WordleGameActivity"
-            android:exported="true" />
-        <activity
-            android:name="OtherGamesMenuActivity"
             android:exported="true" />
 </application>
 
