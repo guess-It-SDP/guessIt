@@ -81,9 +81,10 @@ class WordleGameState private constructor(
      * contained by the word and at which place
      *
      *@param submittedWord the word to compare with the hidden word
+     *@throws InvalidParameterException
      */
     fun withSubmittedWord(submittedWord: String): WordleGameState {
-        check(submittedWord)
+        checkArgumentLength(submittedWord)
         // accept only existing words if random letters mode is not activated
         if (wordOnly) {
             if (!validWords.contains(submittedWord)) {
@@ -115,7 +116,12 @@ class WordleGameState private constructor(
         }
     }
 
-    private fun check(submittedWord: String) {
+    /**
+     * check that only 5 letters are submitted
+     * @param submittedWord
+     * @throws InvalidParameterException
+     */
+    private fun checkArgumentLength(submittedWord: String) {
         if (submittedWord.length != 5) {
             throw InvalidParameterException("the submitted word does not contains 5 letters")
         }
