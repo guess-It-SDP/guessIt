@@ -5,7 +5,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -16,7 +23,7 @@
         android:theme="@style/Theme.BootcampCompose"
         tools:targetApi="31" >
         <activity
-            android:name=".auth.ProfileCreationActivity"
+            android:name=".firebase.auth.ProfileCreationActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
@@ -52,6 +59,9 @@
                 android:value="" />
         </activity>
         <activity
+            android:name=".videocall.VideoCallActivity"
+            android:exported="true" >  </activity>
+        <activity
             android:name=".DrawingActivity"
             android:exported="true" >
             <meta-data
@@ -66,7 +76,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ProfileActivity"
+            android:name=".SettingsProfileActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
@@ -80,6 +90,13 @@
                 android:value="" />
         </activity>
         <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".GuessingActivity"
             android:exported="false" >
             <meta-data
@@ -87,7 +104,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".auth.FirebaseAuthActivity"
+            android:name=".firebase.auth.FirebaseAuthActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"

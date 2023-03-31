@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp.auth
+package com.github.freeman.bootcamp.firebase.auth
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,17 +6,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
-import com.github.freeman.bootcamp.TopicSelectionActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.auth.FirebaseAuth
 
@@ -89,8 +90,6 @@ fun AuthenticationForm(signInInfo: String) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // read only text field
-
         Text(
             modifier = Modifier.testTag("sign_in_info"),
             text = signInInfo,
@@ -105,14 +104,18 @@ fun AuthenticationForm(signInInfo: String) {
                 }
             })
         { Text("Sign in") }
+
         Spacer(modifier = Modifier.size(24.dp))
+
         ElevatedButton(
             modifier = Modifier.testTag("sign_out_button"),
             onClick = {
                 (context as? FirebaseAuthActivity)?.signOutOfGoogleAccount()
             })
         { Text("Sign out") }
+
         Spacer(modifier = Modifier.size(24.dp))
+
         ElevatedButton(
             modifier = Modifier.testTag("delete_button"),
             onClick = {

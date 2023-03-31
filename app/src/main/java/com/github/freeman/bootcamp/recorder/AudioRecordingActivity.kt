@@ -70,6 +70,3 @@ class AudioRecordingActivity : ComponentActivity() {
         }
     }
 }
-
-fun MainMenuScreen() {
-}

@@ -3,6 +3,7 @@ package com.github.freeman.bootcamp
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.freeman.bootcamp.firebase.FirebaseSingletons
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import org.junit.Before
 import org.junit.Rule
@@ -56,11 +57,11 @@ class GuessingTest {
         composeRule.onNodeWithTag("guessingBar").assertIsDisplayed()
     }
 
-//    @Test
-//    fun guessIsDisplayedInGuessingList() {
-//        composeRule.onNode(hasSetTextAction()).performTextInput("House")
-//        composeRule.onNodeWithTag("guessButton").performClick()
-//        composeRule.onNodeWithTag("guessItem").onChild().assertIsDisplayed()
-//    }
+    @Test
+    fun guessIsDisplayedInGuessingList() {
+        composeRule.onNode(hasSetTextAction()).performTextInput("House")
+        composeRule.onNodeWithTag("guessButton").performClick()
+        composeRule.onNodeWithTag("guessItem").onChild().assertIsDisplayed()
+    }
 
 }

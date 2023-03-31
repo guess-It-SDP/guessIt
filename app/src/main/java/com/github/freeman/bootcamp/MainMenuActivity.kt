@@ -8,8 +8,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,11 +28,18 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.PROFILE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
-import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
+import com.github.freeman.bootcamp.firebase.FirebaseUtilities.profileExists
+import com.github.freeman.bootcamp.firebase.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.wordle.WordleGameActivity
-
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import com.github.freeman.bootcamp.videocall.VideoCallActivity
 class MainMenuActivity : ComponentActivity() {
     private val backgroundMusicService = BackgroundMusicService()
 
@@ -55,6 +64,7 @@ class MainMenuActivity : ComponentActivity() {
         const val SIGN_IN = "Sign in"
         const val DRAWING = "Drawing"
         const val WORDLE = "Play Wordle"
+        const val VIDEO_CALL = "Video Call"
     }
 }
 
@@ -64,32 +74,32 @@ fun play(context: Context) {
 
 @Composable
 fun PlayButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("playButton"),
-        onClick = { play(context) }
-    ) {
-        Text(PLAY)
-    }
+    createButton(testTag = "playButton" , unit = ::play, text = PLAY)
 }
 
-fun settings(context: Context) {
-    context.startActivity(Intent(context, SettingsActivity::class.java))
+fun settings(context: Context, user: FirebaseUser?, dbRef: DatabaseReference) {
+    profileExists(user, dbRef)
+        .thenAccept {
+            if (it) {
+                context.startActivity(Intent(context, SettingsProfileActivity::class.java))
+            }
+        }
 }
 
 @Composable
 fun SettingsButton() {
     val context = LocalContext.current
+
     ElevatedButton(
         modifier = Modifier.testTag("settingsButton"),
-        onClick = { settings(context) }
+        onClick = { settings(context, Firebase.auth.currentUser, Firebase.database.reference) }
     ) {
         Text(SETTINGS)
     }
 }
 
 fun profile(context: Context) {
-    context.startActivity(Intent(context, ProfileActivity::class.java))
+    context.startActivity(Intent(context, SettingsProfileActivity::class.java))
 }
 
 @Composable
@@ -109,13 +119,7 @@ fun chatTest(context: Context) {
 
 @Composable
 fun ChatTestButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("chatTestButton"),
-        onClick = { chatTest(context) }
-    ) {
-        Text(CHAT)
-    }
+    createButton(testTag = "chatTestButton" , unit = ::chatTest, text = CHAT)
 }
 
 fun guessing(context: Context, gameId: String, answer: String) {
@@ -141,13 +145,7 @@ fun audioRec(context: Context) {
 
 @Composable
 fun AudioRecordingButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("audioRecordingButton"),
-        onClick = { audioRec(context) }
-    ) {
-        Text(AUDIO_REC)
-    }
+    createButton(testTag = "audioRecordingButton", unit = ::audioRec , text = AUDIO_REC)
 }
 
 fun drawing(context: Context) {
@@ -156,13 +154,7 @@ fun drawing(context: Context) {
 
 @Composable
 fun DrawingButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("drawingButton"),
-        onClick = { drawing(context) }
-    ) {
-        Text(DRAWING)
-    }
+    createButton(testTag = "drawingButton", unit = ::drawing, text =DRAWING )
 }
 
 fun wordle(context: Context) {
@@ -187,12 +179,24 @@ fun signIn(context: Context) {
 
 @Composable
 fun SignInButton() {
+    createButton(testTag = "SignInButton", unit = ::signIn, text = SIGN_IN)
+}
+
+fun videoCall(context: Context) {
+    context.startActivity(Intent(context, VideoCallActivity::class.java))
+}
+@Composable
+fun VideoCallButton() {
+    createButton(testTag = "videoCallButton", unit = ::videoCall, text = VIDEO_CALL)
+}
+@Composable
+fun createButton(testTag: String, unit:(context:Context)->Unit, text: String) {
     val context = LocalContext.current
     ElevatedButton(
-        modifier = Modifier.testTag("SignInButton"),
-        onClick = { signIn(context) }
+        modifier = Modifier.testTag(testTag),
+        onClick = { unit(context) }
     ) {
-        Text(SIGN_IN)
+        Text(text)
     }
 }
 

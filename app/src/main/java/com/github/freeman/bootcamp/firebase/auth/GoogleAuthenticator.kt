@@ -1,14 +1,12 @@
-package com.github.freeman.bootcamp.auth
+package com.github.freeman.bootcamp.firebase.auth
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
-import androidx.compose.ui.platform.LocalContext
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.AuthUI.IdpConfig.GoogleBuilder
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
-import com.github.freeman.bootcamp.TopicSelectionActivity
 import com.google.firebase.auth.FirebaseAuth
 import java.util.function.Consumer
 
