@@ -6,6 +6,7 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.videocall.VideoCallActivity
 import com.github.freeman.bootcamp.wordle.WordleGameActivity
 import org.junit.Before
 import org.junit.Rule
@@ -92,7 +93,7 @@ class MainMenuTest {
 
     @Test
     fun videoButtonIsDisplayedHasClickActionAndCorrectText(){
-        testButton(MainMenuActivity.WORDLE,WordleGameActivity::class.java.name,MainMenuActivity.WORDLE)
+        testButton(MainMenuActivity.VIDEO_CALL,VideoCallActivity::class.java.name,MainMenuActivity.VIDEO_CALL)
     }
 
 

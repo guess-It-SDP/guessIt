@@ -72,10 +72,6 @@ fun play(context: Context) {
     context.startActivity(Intent(context, GameOptionsActivity::class.java))
 }
 
-@Composable
-fun PlayButton() {
-    createButton(testTag = "playButton" , unit = ::play, text = PLAY)
-}
 
 fun settings(context: Context, user: FirebaseUser?, dbRef: DatabaseReference) {
     profileExists(user, dbRef)
@@ -228,7 +224,7 @@ fun MainMenuScreen() {
             fontSize = 40.sp
         )
         Spacer(modifier = Modifier.size(24.dp))
-        PlayButton()
+        createButton(testTag = "playButton" , unit = ::play, text = PLAY)
         Spacer(modifier = Modifier.size(24.dp))
         SettingsButton()
         Spacer(modifier = Modifier.size(24.dp))
