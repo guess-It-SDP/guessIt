@@ -1,6 +1,8 @@
-package com.github.freeman.bootcamp.auth
+package com.github.freeman.bootcamp.firebase.auth
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,14 +15,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.MainMenuActivity
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
+import java.io.ByteArrayOutputStream
 
 /**
  * The activity that create the GuessIt profile in the real time database
@@ -28,12 +34,13 @@ import com.google.firebase.ktx.Firebase
  */
 class ProfileCreationActivity : ComponentActivity() {
     private val dbref = Firebase.database.getReference("Profiles")
+    private val storageRef = Firebase.storage.reference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
-                ProfileCreationScreen(dbref)
+                ProfileCreationScreen(dbref, storageRef)
             }
         }
     }
@@ -90,7 +97,7 @@ fun UsernameBar(
  * The Screen of the profile creation activity
  */
 @Composable
-fun ProfileCreationScreen(dbref: DatabaseReference) {
+fun ProfileCreationScreen(dbref: DatabaseReference, storageRef: StorageReference) {
     var username by remember { mutableStateOf("") }
     val context = LocalContext.current
 
@@ -111,9 +118,23 @@ fun ProfileCreationScreen(dbref: DatabaseReference) {
                         username = "UnknownPlayer"
                     }
                     val userId = FirebaseAuth.getInstance().currentUser?.uid
-                    dbref.child(username).child("uid").setValue(userId)
 
-                    context.startActivity(Intent(context, FirebaseAuthActivity::class.java))
+                    // email
+                    val userEmail = Firebase.auth.currentUser?.email
+                    dbref.child(userId!!).child("email").setValue(userEmail)
+
+                    // username
+                    dbref.child(userId).child("username").setValue(username)
+
+                    // default profile picture
+                    val profilePicBitmap = BitmapFactory.decodeResource(context.resources, R.raw.default_profile_pic)
+                    val stream = ByteArrayOutputStream()
+                    profilePicBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+                    val image = stream.toByteArray()
+                    storageRef.child("Profiles/$userId/picture/pic.jpg").putBytes(image)
+
+                    // go to main menu after profile created
+                    context.startActivity(Intent(context, MainMenuActivity::class.java))
                 }
             )
         }

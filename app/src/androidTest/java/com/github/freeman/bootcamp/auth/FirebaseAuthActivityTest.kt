@@ -32,11 +32,11 @@ class FirebaseAuthActivityTest {
         composeRule.onNodeWithTag("SignInButton").performClick()
     }
 
-//    @Test
-//    fun deleteGoogleAccountResultsInCorrectMessage() {
-//        composeRule.onNodeWithTag("delete_button").performClick()
-//        composeRule.onNodeWithTag("sign_in_info").assertTextContains("Account deleted")
-//    }
+    @Test
+    fun deleteGoogleAccountResultsInCorrectMessage() {
+        composeRule.onNodeWithTag("delete_button").performClick()
+        composeRule.onNodeWithTag("sign_in_info").assertTextContains("Account deleted")
+    }
 
     @Test
     fun signOutResultsInCorrectMessage() {

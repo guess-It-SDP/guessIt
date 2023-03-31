@@ -6,15 +6,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.AUDIO_REC
@@ -22,12 +20,17 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.PROFILE
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
-import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
+import com.github.freeman.bootcamp.firebase.FirebaseUtilities.profileExists
+import com.github.freeman.bootcamp.firebase.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class MainMenuActivity : ComponentActivity() {
     private val backgroundMusicService = BackgroundMusicService()
@@ -46,7 +49,6 @@ class MainMenuActivity : ComponentActivity() {
     companion object {
         const val SETTINGS = "Settings"
         const val PLAY = "Play game"
-        const val PROFILE = "Profile"
         const val CHAT = "Chat"
         const val GUESSING = "Guessing"
         const val AUDIO_REC = "Audio Recording"
@@ -71,33 +73,24 @@ fun PlayButton() {
     }
 }
 
-fun settings(context: Context) {
-    context.startActivity(Intent(context, SettingsActivity::class.java))
+fun settings(context: Context, user: FirebaseUser?, dbRef: DatabaseReference) {
+    profileExists(user, dbRef)
+        .thenAccept {
+            if (it) {
+                context.startActivity(Intent(context, SettingsProfileActivity::class.java))
+            }
+        }
 }
 
 @Composable
 fun SettingsButton() {
     val context = LocalContext.current
+
     ElevatedButton(
         modifier = Modifier.testTag("settingsButton"),
-        onClick = { settings(context) }
+        onClick = { settings(context, Firebase.auth.currentUser, Firebase.database.reference) }
     ) {
         Text(SETTINGS)
-    }
-}
-
-fun profile(context: Context) {
-    context.startActivity(Intent(context, ProfileActivity::class.java))
-}
-
-@Composable
-fun ProfileButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("profileButton"),
-        onClick = { profile(context) }
-    ) {
-        Text(PROFILE)
     }
 }
 
@@ -178,30 +171,6 @@ fun SignInButton() {
     }
 }
 
-@Composable
-fun BackButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("backButton"),
-        onClick = {
-            context.startActivity(Intent(context, MainMenuActivity::class.java))
-        }
-    ) {
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Back arrow icon"
-        )
-    }
-}
-
-
-
-@Preview
-@Composable
-fun BackButtonPreview() {
-    BackButton()
-}
-
 /**
  * This class will be the main screen of the app
  * This class is not debugging
@@ -225,8 +194,6 @@ fun MainMenuScreen() {
         Spacer(modifier = Modifier.size(24.dp))
         SettingsButton()
         Spacer(modifier = Modifier.size(24.dp))
-        ProfileButton()
-        Spacer(modifier = Modifier.size(24.dp))
         ChatTestButton()
         Spacer(modifier = Modifier.size(24.dp))
         AudioRecordingButton()
@@ -240,10 +207,3 @@ fun MainMenuScreen() {
     }
 }
 
-
-
-@Preview(showBackground = true)
-@Composable
-fun MainMenuScreenPreview() {
-    MainMenuScreen()
-}
