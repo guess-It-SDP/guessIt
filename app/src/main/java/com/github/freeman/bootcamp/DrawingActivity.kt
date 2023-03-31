@@ -1,6 +1,5 @@
 package com.github.freeman.bootcamp
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,6 +20,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.DrawController
 import io.ak1.drawbox.rememberDrawController
@@ -30,6 +32,7 @@ import io.ak1.rangvikalp.RangVikalp
 // - For the drawing zone : DrawBox (https://github.com/akshay2211/DrawBox)
 // - For the color picker : Rang-Vikalp (https://github.com/akshay2211/rang-vikalp)
 
+private val DBREF = Firebase.database.getReference("Images")
 private val DEFAULT_COLOR = black
 private const val DEFAULT_WIDTH = 15f
 
@@ -38,14 +41,17 @@ class DrawingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            DrawingScreen {}
+            DrawingScreen()
         }
     }
 }
 
 // The drawing screen is made of a drawing zone and a controls bar
 @Composable
-fun DrawingScreen(save: (Bitmap) -> Unit) {
+fun DrawingScreen(
+    dbref: DatabaseReference = DBREF,
+    gameId: String = LocalContext.current.getString(R.string.default_game_id)
+) {
     val undoVisibility = remember { mutableStateOf(false) }
     val redoVisibility = remember { mutableStateOf(false) }
     val colorBarVisibility = remember { mutableStateOf(false) }
@@ -115,9 +121,10 @@ fun DrawingScreen(save: (Bitmap) -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f, fill = false),
-                bitmapCallback = { imageBitmap, _ ->
+                bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
                     imageBitmap?.let {
-                        save(it.asAndroidBitmap())
+                        dbref.child(gameId)
+                            .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
                     }
                 }
             ) { undoCount, redoCount ->
@@ -131,7 +138,7 @@ fun DrawingScreen(save: (Bitmap) -> Unit) {
 
 // The controls bar offers buttons that allow to undo, redo, select color and stoke width.
 @Composable
-fun ControlsBar(
+private fun ControlsBar(
     drawController: DrawController,
     onColorClick: () -> Unit,
     onWidthClick: () -> Unit,
@@ -155,18 +162,33 @@ fun ControlsBar(
         ) {
             if (redoVisibility.value) drawController.reDo()
         }
-        MenuItems(R.drawable.ic_color, LocalContext.current.getString(R.string.stroke_color), colorValue.value) {
+        MenuItems(
+            R.drawable.ic_color,
+            LocalContext.current.getString(R.string.stroke_color),
+            colorValue.value
+        ) {
             onColorClick()
         }
-        MenuItems(R.drawable.ic_width, LocalContext.current.getString(R.string.stroke_width), MaterialTheme.colors.primary) {
+        MenuItems(
+            R.drawable.ic_width,
+            LocalContext.current.getString(R.string.stroke_width),
+            MaterialTheme.colors.primary
+        ) {
             onWidthClick()
+        }
+        MenuItems(
+            R.drawable.ic_sharp_arrow_circle_up,
+            LocalContext.current.getString(R.string.drawing_done),
+            MaterialTheme.colors.primary
+        ) {
+            drawController.saveBitmap()
         }
     }
 }
 
 // Represents a button in the controls bar
 @Composable
-fun RowScope.MenuItems(
+private fun RowScope.MenuItems(
     @DrawableRes resId: Int,
     desc: String,
     colorTint: Color,
@@ -193,5 +215,5 @@ fun RowScope.MenuItems(
 @Preview(showBackground = true)
 @Composable
 fun DrawingScreenPreview() {
-    DrawingScreen {}
+    DrawingScreen()
 }
