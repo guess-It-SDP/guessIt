@@ -4,7 +4,6 @@ package com.github.freeman.bootcamp
 
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -41,7 +40,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import java.util.concurrent.CompletableFuture
 
 /**
  * The activity where the guesser tries to guess what is the drawing
@@ -71,9 +69,7 @@ class GuessingActivity : ComponentActivity() {
  * Displays of one guess (with the guesser name)
  */
 @Composable
-fun GuessItem(guess: Guess, answer: String, dbrefGames: DatabaseReference) {
-    val context = LocalContext.current
-
+fun GuessItem(guess: Guess, answer: String, dbrefGames: DatabaseReference, artistId: String) {
     Row(
         modifier = Modifier
             .padding(8.dp)
@@ -81,14 +77,37 @@ fun GuessItem(guess: Guess, answer: String, dbrefGames: DatabaseReference) {
     ) {
         if (guess.guess?.lowercase() == answer.lowercase()) {
             val userId = Firebase.auth.currentUser?.uid
-            val dbScoreRef = dbrefGames.child("Players/$userId/score")
+            val dbGuesserScoreRef = dbrefGames.child("Players/$userId/score")
+            val dbArtistScoreRef = dbrefGames.child("Players/$artistId/score")
+            val correctGuessesRef = dbrefGames.child("Current/correct_guesses")
+
+            // Increase the points of the artist if they haven't already received points this round
+            FirebaseUtilities.databaseGetLong(correctGuessesRef)
+                .thenAccept {
+                    val nbGuesses = it
+
+                    // If the artist hasn't yet received points for this drawing, grant them
+                    if (nbGuesses.toInt() == 0) {
+                        FirebaseUtilities.databaseGetLong(dbArtistScoreRef)
+                            .thenAccept {
+                                val artistsPoints = it
+                                dbArtistScoreRef.setValue(artistsPoints + 1)
+                            }
+                    }
+
+                    // Increment the number of correct guesses
+                    if (!pointsReceived) {
+                        correctGuessesRef.setValue(nbGuesses + 1)
+                    }
+                }
 
             // Give the points to the player who guessed correctly
-            FirebaseUtilities.databaseGetLong(dbScoreRef)
+            FirebaseUtilities.databaseGetLong(dbGuesserScoreRef)
                 .thenAccept {
                     // Increase current player's points
                     if (!pointsReceived) {
-                        dbScoreRef.setValue(it + 1)
+                        val score = it
+                        dbGuesserScoreRef.setValue(score + 1)
                         pointsReceived = true
                     }
                 }
@@ -107,13 +126,13 @@ fun GuessItem(guess: Guess, answer: String, dbrefGames: DatabaseReference) {
  * Displays all guesses that have been made in the game
  */
 @Composable
-fun GuessesList(guesses: Array<Guess>, answer: String, dbrefGames: DatabaseReference) {
+fun GuessesList(guesses: Array<Guess>, answer: String, dbrefGames: DatabaseReference, artistId: String) {
     LazyColumn (
         modifier = Modifier
             .fillMaxWidth()
     ) {
         items(guesses) { guess ->
-            GuessItem(guess, answer, dbrefGames)
+            GuessItem(guess, answer, dbrefGames, artistId)
         }
     }
 }
@@ -215,6 +234,15 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
             username = it
         }
 
+    // Fetch the ID of the current artist
+    val currentArtist = remember {
+        mutableStateOf("No artist")
+    }
+    FirebaseUtilities.databaseGet(dbrefGames.child("Current/current_artist"))
+        .thenAccept {
+            currentArtist.value = it
+        }
+
     MaterialTheme {
         Column(
             modifier = Modifier
@@ -253,7 +281,8 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
                     .align(Alignment.End)
                     .testTag("guessesList")
             ) {
-                GuessesList(guesses = guesses, answer = answer, dbrefGames)
+                GuessesList(guesses = guesses, answer = answer, dbrefGames = dbrefGames,
+                    artistId = currentArtist.value)
             }
 
             GuessingBar(
