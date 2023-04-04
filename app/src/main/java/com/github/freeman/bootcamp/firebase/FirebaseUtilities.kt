@@ -15,13 +15,30 @@ object FirebaseUtilities {
     /**
      * Gets the value located in the given database reference
      * @param dbRef database reference
-     * @return a future of the value contained in the database
+     * @return a future of the value of type String contained in the database
      */
     fun databaseGet(dbRef: DatabaseReference): CompletableFuture<String> {
         val future = CompletableFuture<String>()
         dbRef.get().addOnSuccessListener {
             if (it.value == null) future.completeExceptionally(NoSuchFieldException())
             else future.complete(it.value as String)
+        }.addOnFailureListener {
+            future.completeExceptionally(it)
+        }
+
+        return future
+    }
+
+    /**
+     * Gets the value located in the given database reference
+     * @param dbRef database reference
+     * @return a future of the value of type Long contained in the database
+     */
+    fun databaseGetLong(dbRef: DatabaseReference): CompletableFuture<Long> {
+        val future = CompletableFuture<Long>()
+        dbRef.get().addOnSuccessListener {
+            if (it.value == null) future.completeExceptionally(NoSuchFieldException())
+            else future.complete(it.value as Long)
         }.addOnFailureListener {
             future.completeExceptionally(it)
         }

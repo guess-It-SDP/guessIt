@@ -4,6 +4,7 @@ package com.github.freeman.bootcamp
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -27,10 +28,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
+import com.github.freeman.bootcamp.GuessingActivity.Companion.pointsReceived
 import com.github.freeman.bootcamp.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.ui.theme.Purple40
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -58,19 +61,38 @@ class GuessingActivity : ComponentActivity() {
             }
         }
     }
+
+    companion object {
+        var pointsReceived = false
+    }
 }
 
 /**
  * Displays of one guess (with the guesser name)
  */
 @Composable
-fun GuessItem(guess: Guess, answer: String) {
+fun GuessItem(guess: Guess, answer: String, dbrefGames: DatabaseReference) {
+    val context = LocalContext.current
+
     Row(
         modifier = Modifier
             .padding(8.dp)
             .testTag("guessItem")
     ) {
-        if (guess.guess?.lowercase()  == answer.lowercase()) {
+        if (guess.guess?.lowercase() == answer.lowercase()) {
+            val userId = Firebase.auth.currentUser?.uid
+            val dbScoreRef = dbrefGames.child("Players/$userId/score")
+
+            // Give the points to the player who guessed correctly
+            FirebaseUtilities.databaseGetLong(dbScoreRef)
+                .thenAccept {
+                    // Increase current player's points
+                    if (!pointsReceived) {
+                        dbScoreRef.setValue(it + 1)
+                        pointsReceived = true
+                    }
+                }
+
             Popup {
                 val gs = Guess(guess.guesser, answer)
                 CorrectAnswerScreen(gs = gs)
@@ -85,13 +107,13 @@ fun GuessItem(guess: Guess, answer: String) {
  * Displays all guesses that have been made in the game
  */
 @Composable
-fun GuessesList(guesses: Array<Guess>, answer: String) {
+fun GuessesList(guesses: Array<Guess>, answer: String, dbrefGames: DatabaseReference) {
     LazyColumn (
         modifier = Modifier
             .fillMaxWidth()
     ) {
         items(guesses) { guess ->
-            GuessItem(guess, answer)
+            GuessItem(guess, answer, dbrefGames)
         }
     }
 }
@@ -231,7 +253,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
                     .align(Alignment.End)
                     .testTag("guessesList")
             ) {
-                GuessesList(guesses = guesses, answer = answer)
+                GuessesList(guesses = guesses, answer = answer, dbrefGames)
             }
 
             GuessingBar(
