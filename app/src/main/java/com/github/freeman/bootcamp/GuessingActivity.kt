@@ -272,6 +272,8 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
                         .fillMaxWidth()
                         .align(Alignment.Center)
                 )
+
+                ScoreScreen("TestGameId" )//gameId)
             }
 
             Box(

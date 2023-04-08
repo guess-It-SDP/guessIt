@@ -47,6 +47,23 @@ object FirebaseUtilities {
     }
 
     /**
+     * Gets the value located in the given database reference
+     * @param dbref database reference
+     * @return a future of the value of type Map<String, Int> contained in the database
+     */
+    fun databaseGetMap(dbRef: DatabaseReference): CompletableFuture<Map<*, *>> {
+        val future = CompletableFuture<Map<*, *>>()
+        dbRef.get().addOnSuccessListener {
+            if (it.value == null) future.completeExceptionally(NoSuchFieldException())
+            else future.complete(it.value as Map<*, *>?)
+        }.addOnFailureListener {
+            future.completeExceptionally(it)
+        }
+
+        return future
+    }
+
+    /**
      * Gets the value located in the given storage reference
      * @param storageRef storage reference
      * @return a future of the file contained in the storage, in a bitmap format
