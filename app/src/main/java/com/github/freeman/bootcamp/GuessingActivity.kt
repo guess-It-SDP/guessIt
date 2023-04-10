@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
+import com.github.freeman.bootcamp.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.GuessingActivity.Companion.pointsReceived
 import com.github.freeman.bootcamp.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
@@ -62,6 +63,7 @@ class GuessingActivity : ComponentActivity() {
 
     companion object {
         var pointsReceived = false
+        lateinit var answer: String
     }
 }
 
@@ -213,7 +215,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
     })
 
     //the correct answer of the round
-    var answer = ""
+    answer = ""
     dbrefGames.child("topic").addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             if (dataSnapshot.exists()) {

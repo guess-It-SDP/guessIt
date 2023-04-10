@@ -3,6 +3,7 @@ package com.github.freeman.bootcamp
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.freeman.bootcamp.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.firebase.FirebaseSingletons
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import org.junit.Before
@@ -20,7 +21,6 @@ class GuessingTest {
         FirebaseEmulator.init()
         val guessGameId = "GameTestGuessesId"
         val database = FirebaseSingletons.database.get().database.getReference("Games/$guessGameId/Guesses")
-
 
         composeRule.setContent {
             BootcampComposeTheme {
@@ -64,4 +64,10 @@ class GuessingTest {
         composeRule.onNodeWithTag("guessItem").onChild().assertIsDisplayed()
     }
 
+    @Test
+    fun popupIsDisplayedUponGuessingCorrectly() {
+        composeRule.onNode(hasSetTextAction()).performTextInput(answer)
+        composeRule.onNodeWithTag("guessButton").performClick()
+        composeRule.onNodeWithTag("correctAnswerPopup").assertIsDisplayed()
+    }
 }

@@ -14,8 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.ScoreActivity.Companion.SCORES_TITLE
 import com.github.freeman.bootcamp.ScoreActivity.Companion.size
 import com.github.freeman.bootcamp.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
@@ -31,8 +33,6 @@ class ScoreActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Todo: Correctly set the game id
         val gameId = "TestGameId"
         val dbRef = Firebase.database.getReference("Games/$gameId/Players")
         setContent {
@@ -44,6 +44,7 @@ class ScoreActivity : ComponentActivity() {
 
     companion object {
         const val size = 200
+        const val SCORES_TITLE = "Scores"
     }
 }
 
@@ -169,6 +170,7 @@ fun ScoreScreen(dbRef: DatabaseReference) {
             modifier = Modifier
                 .width((0.475 * size).dp)
                 .height((0.575 * size).dp)
+                .testTag("scoreboard")
         )
     }
 }
@@ -191,9 +193,9 @@ fun Scoreboard(playerScores: ArrayList<Pair<String?, Int>>, modifier: Modifier) 
                 .fillMaxSize()
         ) {
             Text(
-                text = "Scores",
+                text = SCORES_TITLE,
                 style = MaterialTheme.typography.h6,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.CenterHorizontally).testTag("scoresTitle")
             )
             Spacer(modifier = Modifier.height(2.dp))
             playerScores.forEach { (name, score) ->
@@ -204,13 +206,15 @@ fun Scoreboard(playerScores: ArrayList<Pair<String?, Int>>, modifier: Modifier) 
                         Text(
                             text = name,
                             style = MaterialTheme.typography.body2,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f).testTag(name)
+                        )
+
+                        Text(
+                            text = score.toString(),
+                            style = MaterialTheme.typography.body2,
+                            modifier = Modifier.testTag("$score")
                         )
                     }
-                    Text(
-                        text = score.toString(),
-                        style = MaterialTheme.typography.body2,
-                    )
                 }
                 Divider(color = Color.Black, thickness = 1.dp)
             }

@@ -1,13 +1,8 @@
-12:38:07.344 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
-12:38:07.563 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
-12:38:08.291 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO com.firebase.core.namespace.NamespaceActor - sdp-guess-it-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 150ms, init: 0ms
-12:38:11.948 [FirebaseWorkerPool-1-2] WARN com.firebase.core.persistence.backend.dummy.EmulatorMetadataPersistence - Multiple projectIds are not recommended in single project mode. Requested 
-namespace sdp-guess-it, but the emulator is configured for sdp-guess-it-default-rtdb. To 
+17:43:53.070 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+17:43:53.265 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
+17:44:04.916 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO com.firebase.core.namespace.NamespaceActor - sdp-guess-it successfully activated FBKV (SurveyIdle(0)) wait: 176ms, init: 0ms
+17:44:44.325 [FirebaseWorkerPool-1-3] WARN com.firebase.core.persistence.backend.dummy.EmulatorMetadataPersistence - Multiple projectIds are not recommended in single project mode. Requested 
+namespace sdp-guess-it-default-rtdb, but the emulator is configured for sdp-guess-it. To 
 opt-out of single project mode add/set the single_project_mode: false property in 
 the firebase.json emulators config. 
-12:38:11.952 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - sdp-guess-it successfully activated FBKV (SurveyIdle(0)) wait: 2ms, init: 0ms
-12:49:02.754 [Thread-0] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.
-12:49:02.842 [NamespaceSystem-akka.actor.default-dispatcher-8] INFO com.firebase.core.namespace.Terminator$Terminator - 2 actors left to terminate: sdp-guess-it-default-rtdb, sdp-guess-it
-12:49:02.863 [NamespaceSystem-akka.actor.default-dispatcher-7] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for sdp-guess-it-default-rtdb
-12:49:02.863 [NamespaceSystem-akka.actor.default-dispatcher-39] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for sdp-guess-it
-12:49:02.869 [Thread-0] INFO com.firebase.server.forge.App$ - Graceful shutdown complete.
+17:44:44.368 [NamespaceSystem-akka.actor.default-dispatcher-6] INFO com.firebase.core.namespace.NamespaceActor - sdp-guess-it-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 14ms, init: 0ms
