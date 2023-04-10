@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp.firebase.auth
+package com.github.freeman.bootcamp.auth
 
 import android.app.Activity
 import android.content.Context

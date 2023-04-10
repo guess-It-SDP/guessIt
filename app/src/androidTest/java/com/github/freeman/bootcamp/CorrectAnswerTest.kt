@@ -5,6 +5,8 @@ import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.freeman.bootcamp.games.guessit.guessing.CorrectAnswerScreen
+import com.github.freeman.bootcamp.games.guessit.guessing.Guess
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import org.junit.Before
 import org.junit.Rule

@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp
+package com.github.freeman.bootcamp.utilities
 
 /**
  * A generic singleton class that allows for getting, setting, and mocking its value.

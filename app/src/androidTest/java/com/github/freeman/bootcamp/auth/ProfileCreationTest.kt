@@ -4,8 +4,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.FirebaseEmulator
-import com.github.freeman.bootcamp.firebase.FirebaseSingletons
-import com.github.freeman.bootcamp.firebase.auth.ProfileCreationScreen
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import org.junit.Rule
 import org.junit.Test

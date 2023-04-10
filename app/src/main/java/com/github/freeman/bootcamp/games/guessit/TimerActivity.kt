@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp
+package com.github.freeman.bootcamp.games.guessit
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -108,7 +108,7 @@ fun TimerCircles(modifier: Modifier, activeBarColor: Color, strokeWidth: Dp, val
             startAngle = 90f,
             sweepAngle = 360f,
             useCenter = false,
-            size = Size(size.width.toFloat(), size.height.toFloat()),
+            size = Size(size.width, size.height),
             style = Stroke(strokeWidth.toPx(), cap = StrokeCap.Round)
         )
 
@@ -117,7 +117,7 @@ fun TimerCircles(modifier: Modifier, activeBarColor: Color, strokeWidth: Dp, val
             startAngle = 90f,
             sweepAngle = 360f * value,
             useCenter = false,
-            size = Size(size.width.toFloat(), size.height.toFloat()),
+            size = Size(size.width, size.height),
             style = Stroke(strokeWidth.toPx(), cap = StrokeCap.Round)
         )
 

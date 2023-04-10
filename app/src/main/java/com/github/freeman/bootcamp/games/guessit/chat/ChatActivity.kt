@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.github.freeman.bootcamp
+package com.github.freeman.bootcamp.games.guessit.chat
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,10 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.github.freeman.bootcamp.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -144,8 +143,6 @@ fun Main(dbref: DatabaseReference) {
     var chatMessages by remember { mutableStateOf(arrayOf<ChatMessage>()) }
     var message by remember { mutableStateOf("") }
     var chatActive by remember { mutableStateOf(false) }
-    // For testing purpose. Real name would be assigned with google account for example
-    val randomName by remember { mutableStateOf(Random.nextInt(100, 1000)) }
 
     // Listens for change in the database
     dbref.addValueEventListener(object : ValueEventListener {
@@ -215,19 +212,6 @@ fun Main(dbref: DatabaseReference) {
     // Disable chat by pressing back
     BackHandler(enabled = chatActive) {
         chatActive = false
-    }
-}
-
-// For testing and visualization purpose
-@Preview
-@Composable
-fun MainPreview() {
-    val chatId = "TestChatId01"
-    val db = Firebase.database
-    //db.useEmulator("10.0.2.2", 9000)
-    val dbref = Firebase.database.getReference("Chat/$chatId")
-    BootcampComposeTheme {
-        Main(dbref)
     }
 }
 

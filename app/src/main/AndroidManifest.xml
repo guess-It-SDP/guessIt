@@ -19,21 +19,21 @@
         android:theme="@style/Theme.BootcampCompose"
         tools:targetApi="31" >
         <activity
-            android:name=".firebase.auth.ProfileCreationActivity"
+            android:name=".auth.ProfileCreationActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".TimerActivity"
+            android:name=".games.guessit.TimerActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".TopicSelectionActivity"
+            android:name=".games.guessit.TopicSelectionActivity"
             android:exported="false" />
 
         <service
@@ -58,14 +58,14 @@
             android:name=".videocall.VideoCallActivity"
             android:exported="true" >  </activity>
         <activity
-            android:name=".DrawingActivity"
+            android:name=".games.guessit.drawing.DrawingActivity"
             android:exported="true" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".GameOptionsActivity"
+            android:name=".games.guessit.GameOptionsActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
@@ -79,7 +79,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ChatActivity"
+            android:name=".games.guessit.chat.ChatActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
@@ -93,14 +93,14 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".GuessingActivity"
+            android:name=".games.guessit.guessing.GuessingActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".firebase.auth.FirebaseAuthActivity"
+            android:name=".auth.FirebaseAuthActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
@@ -123,7 +123,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".wordle.WordleGameActivity"
+            android:name=".games.wordle.WordleGameActivity"
             android:exported="true" />
 </application>
 

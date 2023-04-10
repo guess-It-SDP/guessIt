@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp
+package com.github.freeman.bootcamp.games.guessit.drawing
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -20,6 +20,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.black
+import com.github.freeman.bootcamp.colorArray
+import com.github.freeman.bootcamp.games.guessit.TimerScreen
+import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
