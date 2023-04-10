@@ -1,6 +1,5 @@
 package com.github.freeman.bootcamp
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,13 +14,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.ScoreActivity.Companion.size
 import com.github.freeman.bootcamp.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class ScoreActivity : ComponentActivity() {
@@ -31,9 +34,10 @@ class ScoreActivity : ComponentActivity() {
 
         // Todo: Correctly set the game id
         val gameId = "TestGameId"
+        val dbRef = Firebase.database.getReference("Games/$gameId/Players")
         setContent {
             BootcampComposeTheme {
-                ScoreScreen(gameId)
+                ScoreScreen(dbRef)
             }
         }
     }
@@ -43,40 +47,30 @@ class ScoreActivity : ComponentActivity() {
     }
 }
 
-@SuppressLint("MutableCollectionMutableState")
+// This function is necessary as the scoreboard takes as input Pairs, not Maps
 @Composable
-fun fetchScores(gameId: String):  List<Pair<String, Map<String, Int>>> {
-    val dbRef = Firebase.database.reference
-    val dbPlayersRef = dbRef.child("Games/$gameId/Players")
-    val playerIds = remember { mutableStateOf(HashMap<String, Map<String, Int>>()) }
+fun turnIntoPairs(playersToScores: Map<String, MutableState<Int>>): List<Pair<String, Int>> {
 
-    // Get the Ids of all players in this game
-    FirebaseUtilities.databaseGetMap(dbPlayersRef)
-        .thenAccept {
-            playerIds.value = it as HashMap<String, Map<String, Int>>
-        }
-
-    val scorePairs = ArrayList<Pair<String, Map<String, Int>>>()
-    val playerToAttributes = playerIds.value.toList()
-    if (playerToAttributes.isNotEmpty()) {
-        for (entry in playerIds.value) {
-            scorePairs.add(Pair(entry.key, entry.value))
+    // Converts the map of players to mutable state of int into a list of pairs ID-score instead
+    val scorePairs = ArrayList<Pair<String, Int>>()
+    if (playersToScores.isNotEmpty()) {
+        for (entry in playersToScores) {
+            scorePairs.add(Pair(entry.key, entry.value.value))
         }
     }
 
     return scorePairs
 }
 
-
 @Composable
-fun fetchUserNames(playerIds: List<Pair<String, Map<String, Int>>>): Map<String, MutableState<String>> {
+fun fetchUserNames(playerIds: List<Pair<String, Int>>): Map<String, MutableState<String>> {
     val dbRef = Firebase.database.reference
     val usernames = HashMap<String, MutableState<String>>()
 
     // Initialise the values of the map player ID to username
     for (entry in playerIds) {
         val id = entry.first
-        usernames[id] = remember { mutableStateOf("") }//username
+        usernames[id] = remember { mutableStateOf("") }
     }
 
     // Get the usernames of all players in this game
@@ -93,7 +87,7 @@ fun fetchUserNames(playerIds: List<Pair<String, Map<String, Int>>>): Map<String,
 
 @Composable
 fun usernamesToScores(
-    scores: List<Pair<String, Map<String, Int>>>,
+    scores: List<Pair<String, Int>>,
     usernames: Map<String, MutableState<String>>
 ): ArrayList<Pair<String?, Int>> {
 
@@ -101,7 +95,7 @@ fun usernamesToScores(
     val usersToScores = ArrayList<Pair<String?, Int>>()
     for (entry in scores) {
         val id = entry.first
-        val score = entry.second.values.toList()[0]
+        val score = entry.second
         val username = usernames[id]?.value
         usersToScores.add(Pair(username, score))
     }
@@ -109,10 +103,59 @@ fun usernamesToScores(
     return usersToScores
 }
 
+fun updateScoreMap(playersToScores: Map<String, MutableState<Int>>, id: String, snapshot: DataSnapshot) {
+    if (snapshot.exists() && snapshot.key == "score") {
+        val score = snapshot.getValue<Int>()
+        if (score != null) {
+            playersToScores[id]?.value = score
+        }
+    }
+}
+
 @Composable
-fun ScoreScreen(gameId: String) {
-    val scores = fetchScores(gameId)
+fun ScoreScreen(dbRef: DatabaseReference) {
+
+    // Get the Ids of all players in this game (IDs = playerIds.value.keys)
+    val playerIds = remember { mutableStateOf(mapOf<String, Map<String, Int>>()) }
+    FirebaseUtilities.databaseGetMap(dbRef)
+        .thenAccept {
+            playerIds.value = it as HashMap<String, Map<String, Int>>
+        }
+
+    // Initialise the values of the map player ID to score
+    val playersToScores = HashMap<String, MutableState<Int>>()
+    for (id in playerIds.value.keys) {
+        playersToScores[id] = remember { mutableStateOf(-1) }
+    }
+
+    // Observe the points of all players to update the scoreboard
+    for (id in playerIds.value.keys) {
+        dbRef.child(id).addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                updateScoreMap(playersToScores, id, snapshot)
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                updateScoreMap(playersToScores, id, snapshot)
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                updateScoreMap(playersToScores, id, snapshot)
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                updateScoreMap(playersToScores, id, snapshot)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // No particular action needs to be taken in this case
+            }
+        })
+    }
+
+    val scores = turnIntoPairs(playersToScores)
     val usernames = fetchUserNames(scores)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -173,11 +216,4 @@ fun Scoreboard(playerScores: ArrayList<Pair<String?, Int>>, modifier: Modifier) 
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ScorePreview() {
-    val gameId = "TestGameId"
-    ScoreScreen(gameId)
 }
