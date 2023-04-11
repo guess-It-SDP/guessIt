@@ -17,7 +17,9 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.ScoreActivity.Companion.FINAL_SCORES_TITLE
 import com.github.freeman.bootcamp.ScoreActivity.Companion.SCORES_TITLE
+import com.github.freeman.bootcamp.ScoreActivity.Companion.WINNER_TITLE
 import com.github.freeman.bootcamp.ScoreActivity.Companion.gameEnded
 import com.github.freeman.bootcamp.ScoreActivity.Companion.size
 import com.github.freeman.bootcamp.ScoreActivity.Companion.turnEnded
@@ -47,6 +49,8 @@ class ScoreActivity : ComponentActivity() {
     companion object {
         const val size = 200
         const val SCORES_TITLE = "Scores"
+        const val FINAL_SCORES_TITLE = "Final Scores"
+        const val WINNER_TITLE = "And the winner is… "
         var turnEnded = false
         var gameEnded = false
     }
@@ -139,7 +143,11 @@ fun reinitialise(dbRef: DatabaseReference, playerIds: Set<String>) {
 }
 
 @Composable
-fun ScoreScreen(dbRef: DatabaseReference) {
+fun ScoreScreen(
+    dbRef: DatabaseReference,
+    testingPlayersToScores: HashMap<String, MutableState<Int>> = HashMap<String, MutableState<Int>>(),
+    testingUsersToScores:  List<Pair<String?, Int>> = listOf()
+) {
 
     // Get the Ids of all players in this game (IDs = playerIds.value.keys)
     val playerIds = remember { mutableStateOf(mapOf<String, Map<String, Int>>()) }
@@ -149,7 +157,7 @@ fun ScoreScreen(dbRef: DatabaseReference) {
         }
 
     // Initialise the values of the map player ID to score
-    val playersToScores = HashMap<String, MutableState<Int>>()
+    var playersToScores = HashMap<String, MutableState<Int>>()
     for (id in playerIds.value.keys) {
         playersToScores[id] = remember { mutableStateOf(-1) }
     }
@@ -179,9 +187,19 @@ fun ScoreScreen(dbRef: DatabaseReference) {
         })
     }
 
+    // Dependency injection for testing purposes
+    if (testingPlayersToScores.size > 0) {
+        playersToScores = testingPlayersToScores
+    }
+
     val scores = turnIntoPairs(playersToScores)
     val usernames = fetchUserNames(scores)
-    val usersToScores = usernamesToScores(scores, usernames).sortedWith(compareByDescending { it.second })
+    var usersToScores = usernamesToScores(scores, usernames).sortedWith(compareByDescending { it.second })
+
+    // Dependency injection for testing purposes
+    if (testingPlayersToScores.size > 0) {
+        usersToScores = testingUsersToScores
+    }
 
     Row(
         modifier = Modifier
@@ -247,15 +265,13 @@ fun Scoreboard(playerScores: List<Pair<String?, Int>>, modifier: Modifier) {
                         Text(
                             text = name,
                             style = MaterialTheme.typography.body2,
-                            modifier = Modifier
-                                .weight(1f)
-                                .testTag(name)
+                            modifier = Modifier.weight(1f).testTag(name)
                         )
 
                         Text(
                             text = score.toString(),
                             style = MaterialTheme.typography.body2,
-                            modifier = Modifier.testTag("$score")
+                            modifier = Modifier.testTag("score")
                         )
                     }
                 }
@@ -271,30 +287,30 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
         modifier = Modifier
             .background(Color.Blue, RoundedCornerShape(16.dp))
             .padding(16.dp)
+            .testTag("endScoreboard")
     ) {
         Column (
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Final Scores",
+                text = FINAL_SCORES_TITLE,
                 color = Color.White,
                 style = MaterialTheme.typography.h4,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.CenterHorizontally).testTag("endScoresTitle")
             )
 
             Spacer(modifier = Modifier.height(2.dp))
             Divider(color = Color.White, thickness = 4.dp)
 
-            if (usersToScores.isNotEmpty()) {
-                val winner = usersToScores[0].first
-                Spacer(modifier = Modifier.height(30.dp))
-                Text(
-                    text = "And the winner is… $winner!",
-                    style = MaterialTheme.typography.body1,
-                    color = Color.White
-                )
-            }
+            val winner = if (usersToScores.isNotEmpty()) usersToScores[0].first else "???"
+            Spacer(modifier = Modifier.height(30.dp))
+            Text(
+                text = "$WINNER_TITLE$winner!",
+                style = MaterialTheme.typography.body1,
+                color = Color.White,
+                modifier = Modifier.testTag("winnerDeclaration")
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -307,13 +323,14 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
                             text = name,
                             color = Color.White,
                             style = MaterialTheme.typography.body1,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f).testTag("end$name")
                         )
 
                         Text(
                             text = score.toString(),
                             color = Color.White,
                             style = MaterialTheme.typography.body1,
+                            modifier = Modifier.testTag("endScore")
                         )
                     }
                 }
