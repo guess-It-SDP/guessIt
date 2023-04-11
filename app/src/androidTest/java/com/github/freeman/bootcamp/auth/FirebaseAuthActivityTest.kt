@@ -2,13 +2,12 @@ package com.github.freeman.bootcamp.auth
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.*
-
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiSelector
+import androidx.test.uiautomator.Until
 import com.github.freeman.bootcamp.MainMenuScreen
-import com.github.freeman.bootcamp.TopicSelectionActivity
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,7 +28,7 @@ class FirebaseAuthActivityTest {
             MainMenuScreen()
 
         }
-        composeRule.onNodeWithTag("SignInButton").performClick()
+        composeRule.onNodeWithTag("signInButton").performClick()
     }
 
     @Test

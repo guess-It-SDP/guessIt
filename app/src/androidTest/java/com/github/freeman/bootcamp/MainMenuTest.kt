@@ -5,9 +5,14 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
+import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
+import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.videocall.VideoCallActivity
-import com.github.freeman.bootcamp.wordle.WordleGameActivity
+import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
+import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -67,7 +72,7 @@ class MainMenuTest {
 
     @Test
     fun chatTestButtonIsDisplayed() {
-        composeRule.onNodeWithTag("chatTestButton").assertHasClickAction()
+        composeRule.onNodeWithTag("chatButton").assertHasClickAction()
     }
 
     @Test
@@ -87,13 +92,43 @@ class MainMenuTest {
     }
 
     @Test
+    fun guessingIntentIsSent() {
+        Intents.init()
+
+        composeRule.onNodeWithText("Guessing").performClick()
+        Intents.intended(IntentMatchers.hasComponent(GuessingActivity::class.java.name))
+
+        Intents.release()
+    }
+
+    @Test
+    fun audioRecIntentIsSent() {
+        Intents.init()
+
+        composeRule.onNodeWithText("Audio Recording").performClick()
+        Intents.intended(IntentMatchers.hasComponent(AudioRecordingActivity::class.java.name))
+
+        Intents.release()
+    }
+
+    @Test
+    fun drawingIntentIsSent() {
+        Intents.init()
+
+        composeRule.onNodeWithText("Drawing").performClick()
+        Intents.intended(IntentMatchers.hasComponent(DrawingActivity::class.java.name))
+
+        Intents.release()
+    }
+
+    @Test
     fun wordleButtonIsDisplayedHasClickActionAndCorrectText(){
-        testButton(MainMenuActivity.WORDLE,WordleGameActivity::class.java.name,MainMenuActivity.WORDLE)
+        testButton("wordleButton", WordleGameActivity::class.java.name,MainMenuActivity.WORDLE)
     }
 
     @Test
     fun videoButtonIsDisplayedHasClickActionAndCorrectText(){
-        testButton(MainMenuActivity.VIDEO_CALL,VideoCallActivity::class.java.name,MainMenuActivity.VIDEO_CALL)
+        testButton("videoCallButton",VideoCallActivity::class.java.name,MainMenuActivity.VIDEO_CALL)
     }
 
 
@@ -119,7 +154,7 @@ class MainMenuTest {
      * Return a node from a test Tag
      */
     private fun node(testTag: String): SemanticsNodeInteraction {
-        return composeRule.onNodeWithTag(testTag);
+        return composeRule.onNodeWithTag(testTag)
     }
 
     private fun setMainMenuScreen() {

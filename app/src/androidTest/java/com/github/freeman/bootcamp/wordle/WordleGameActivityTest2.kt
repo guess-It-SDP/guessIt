@@ -10,6 +10,8 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
+import com.github.freeman.bootcamp.games.wordle.WordleGameState
 import junit.framework.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -76,7 +78,7 @@ class WordleGameActivityTest2 {
     @Test
     fun addingHelloDoesntCrash() {
         composeRule.onNode(hasText("Enter a 5 letters word to submit")).performTextInput("hello")
-        Espresso.closeSoftKeyboard();
+        Espresso.closeSoftKeyboard()
         composeRule.onNode(hasText("Submit word")).performClick()
         for (i in 0 until 40) {
             composeRule.onNode(hasTestTag("wordle_tile_id_" + i.toString())).assertIsDisplayed()
@@ -86,7 +88,7 @@ class WordleGameActivityTest2 {
     @Test
     fun adding6LettersDoesntCrash() {
         composeRule.onNode(hasText("Enter a 5 letters word to submit")).performTextInput("helloo")
-        Espresso.closeSoftKeyboard();
+        Espresso.closeSoftKeyboard()
         composeRule.onNode(hasText("Submit word")).performClick()
         for (i in 0 until 40) {
             composeRule.onNode(hasTestTag("wordle_tile_id_" + i.toString())).assertIsDisplayed()

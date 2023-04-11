@@ -5,8 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.MatcherAssert.assertThat
+import com.github.freeman.bootcamp.utilities.BitmapHandler
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.random.Random

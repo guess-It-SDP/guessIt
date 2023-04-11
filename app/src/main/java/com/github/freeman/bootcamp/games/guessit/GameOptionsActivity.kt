@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp
+package com.github.freeman.bootcamp.games.guessit
 
 import android.app.Activity
 import android.content.Context
@@ -27,16 +27,16 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.github.freeman.bootcamp.GameOptionsActivity.Companion.CATEGORIES_SELECTION
-import com.github.freeman.bootcamp.GameOptionsActivity.Companion.DEFAULT_CATEGORY_SIZE
-import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NB_ROUNDS
-import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NEXT
-import com.github.freeman.bootcamp.GameOptionsActivity.Companion.ROUNDS_SELECTION
-import com.github.freeman.bootcamp.GameOptionsActivity.Companion.categories
-import com.github.freeman.bootcamp.GameOptionsActivity.Companion.categorySize
-import com.github.freeman.bootcamp.GameOptionsActivity.Companion.selectedCategory
-import com.github.freeman.bootcamp.GameOptionsActivity.Companion.selectedTopics
-import com.github.freeman.bootcamp.GameOptionsActivity.Companion.selection
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.CATEGORIES_SELECTION
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.DEFAULT_CATEGORY_SIZE
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NB_ROUNDS
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NEXT
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.ROUNDS_SELECTION
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.categories
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.categorySize
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedCategory
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedTopics
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selection
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.github.freeman.bootcamp
+package com.github.freeman.bootcamp.games.guessit.guessing
 
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -27,9 +27,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
-import com.github.freeman.bootcamp.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.ui.theme.Purple40
+import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -38,7 +40,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import java.util.concurrent.CompletableFuture
 
 /**
  * The activity where the guesser tries to guess what is the drawing

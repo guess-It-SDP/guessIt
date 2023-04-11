@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp
+package com.github.freeman.bootcamp.games.guessit
 
 import android.app.Activity
 import android.content.Context
@@ -18,9 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import com.github.freeman.bootcamp.GameOptionsActivity.Companion.NB_TOPICS
-import com.github.freeman.bootcamp.TopicSelectionActivity.Companion.SELECT_TOPIC
-import com.github.freeman.bootcamp.TopicSelectionActivity.Companion.topics
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NB_TOPICS
+import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.SELECT_TOPIC
+import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.topics
+import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database

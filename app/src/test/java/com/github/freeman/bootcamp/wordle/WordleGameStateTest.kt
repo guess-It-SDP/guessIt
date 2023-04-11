@@ -1,9 +1,7 @@
 package com.github.freeman.bootcamp.wordle
 
+import com.github.freeman.bootcamp.games.wordle.WordleGameState
 import junit.framework.TestCase.assertEquals
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.*
-import org.junit.Before
 import org.junit.Test
 import java.security.InvalidParameterException
 

@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp.wordle
+package com.github.freeman.bootcamp.games.wordle
 
 import java.security.InvalidParameterException
 import kotlin.random.Random
@@ -64,7 +64,7 @@ class WordleGameState private constructor(
     /**
      * return a list containing all tile in the right order going from left to right then up to down
      */
-    fun getTiles(): MutableList<WordleGameState.Tile> {
+    fun getTiles(): MutableList<Tile> {
         return grid.flatten().toMutableList()
     }
 
@@ -93,7 +93,7 @@ class WordleGameState private constructor(
         }
         // the game is over if the grid is full, starts a new game
         if (current_line >= grid.size) {
-            return WordleGameState(wordOnly, solutions, validWords); // new Game
+            return WordleGameState(wordOnly, solutions, validWords) // new Game
         } else {
 
             // We need a way to be able to count letter only once

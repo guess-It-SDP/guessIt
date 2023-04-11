@@ -4,13 +4,10 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
+import com.github.freeman.bootcamp.games.guessit.drawing.DrawingScreen
+import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.getValue
 import org.hamcrest.CoreMatchers.*
-import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
