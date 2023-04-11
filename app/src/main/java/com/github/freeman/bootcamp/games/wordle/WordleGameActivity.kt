@@ -1,38 +1,24 @@
-package com.github.freeman.bootcamp.wordle
+package com.github.freeman.bootcamp.games.wordle
 
-import android.content.Context
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.github.freeman.bootcamp.GameOptionsActivity
-import com.github.freeman.bootcamp.Main
-import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.touchlane.gridpad.GridPad
-import com.touchlane.gridpad.GridPadCells
-import androidx.compose.runtime.remember as remember1
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.*
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.runtime.*
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-
-
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import androidx.compose.runtime.remember as remember1
 
 /**
  * The is the class that allow the play to the wordle game.
@@ -67,7 +53,7 @@ class WordleGameActivity() : ComponentActivity() {
                     TileRoof(
                         tiles
                     )
-                    wordleButton()
+                    WordleButton()
                 }
             }
         }
@@ -77,8 +63,8 @@ class WordleGameActivity() : ComponentActivity() {
      * submit a word to the game and reset the graphic interface
      */
     @Composable
-    private fun wordleButton() {
-        val msg: TextFieldState = remember { TextFieldState() }
+    private fun WordleButton() {
+        val msg: TextFieldState = remember1 { TextFieldState() }
         GreetingInput(msg)
         Button(onClick = {
             if (msg.text.length == 5) {
@@ -92,7 +78,7 @@ class WordleGameActivity() : ComponentActivity() {
                             TileRoof(
                                 tiles
                             )
-                            wordleButton()
+                            WordleButton()
                         }
                     }
                 }
@@ -168,8 +154,8 @@ private class TextFieldState {
  * @param location to save the input
  */
 @Composable
-private fun GreetingInput(msg: TextFieldState = remember { TextFieldState() }) {
-    var text by remember { mutableStateOf(TextFieldValue("")) }
+private fun GreetingInput(msg: TextFieldState = remember1 { TextFieldState() }) {
+    var text by remember1 { mutableStateOf(TextFieldValue("")) }
     OutlinedTextField(
         value = text,
         label = {

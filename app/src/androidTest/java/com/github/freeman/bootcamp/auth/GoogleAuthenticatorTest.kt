@@ -4,7 +4,6 @@ import android.app.Activity
 import com.firebase.ui.auth.IdpResponse
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.firebase.ui.auth.data.model.User
-import com.github.freeman.bootcamp.firebase.auth.GoogleAuthenticator
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
 import org.junit.Assert

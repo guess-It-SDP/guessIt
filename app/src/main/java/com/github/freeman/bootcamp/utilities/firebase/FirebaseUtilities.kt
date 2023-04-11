@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp.firebase
+package com.github.freeman.bootcamp.utilities.firebase
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

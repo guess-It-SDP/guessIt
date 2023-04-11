@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.github.freeman.bootcamp
+package com.github.freeman.bootcamp.games.guessit.guessing
 
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -29,8 +29,11 @@ import androidx.compose.ui.window.Popup
 import com.github.freeman.bootcamp.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.GuessingActivity.Companion.pointsReceived
 import com.github.freeman.bootcamp.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.ui.theme.Purple40
+import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
