@@ -18,7 +18,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.ScoreActivity.Companion.SCORES_TITLE
+import com.github.freeman.bootcamp.ScoreActivity.Companion.gameEnded
 import com.github.freeman.bootcamp.ScoreActivity.Companion.size
+import com.github.freeman.bootcamp.ScoreActivity.Companion.turnEnded
 import com.github.freeman.bootcamp.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.ChildEventListener
@@ -34,7 +36,7 @@ class ScoreActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameId = "TestGameId"
-        val dbRef = Firebase.database.getReference("Games/$gameId/Players")
+        val dbRef = Firebase.database.getReference("Games/$gameId")
         setContent {
             BootcampComposeTheme {
                 ScoreScreen(dbRef)
@@ -45,10 +47,14 @@ class ScoreActivity : ComponentActivity() {
     companion object {
         const val size = 200
         const val SCORES_TITLE = "Scores"
+        var turnEnded = false
+        var gameEnded = false
     }
 }
 
-// This function is necessary as the scoreboard takes as input Pairs, not Maps
+/***
+ * This function is necessary as the scoreboard takes Pairs as input, not Maps
+ */
 @Composable
 fun turnIntoPairs(playersToScores: Map<String, MutableState<Int>>): List<Pair<String, Int>> {
 
@@ -90,7 +96,7 @@ fun fetchUserNames(playerIds: List<Pair<String, Int>>): Map<String, MutableState
 fun usernamesToScores(
     scores: List<Pair<String, Int>>,
     usernames: Map<String, MutableState<String>>
-): ArrayList<Pair<String?, Int>> {
+): List<Pair<String?, Int>> {
 
     // Map the usernames to their corresponding scores
     val usersToScores = ArrayList<Pair<String?, Int>>()
@@ -113,12 +119,31 @@ fun updateScoreMap(playersToScores: Map<String, MutableState<Int>>, id: String, 
     }
 }
 
+/***
+ * This function is to be called between turns to set variables back to their default values or
+ * to change the artist
+  */
+fun reinitialise(dbRef: DatabaseReference, playerIds: Set<String>) {
+    // Reset the number of guesses to 0
+    dbRef.child("Current/correct_guesses").setValue(0)
+
+    // Choose a new artist. Todo: create a mechanism for switching the artist in a fair manner
+    if (playerIds.isNotEmpty()) {
+        val randInt = playerIds.indices.random()
+        val newArtist = playerIds.toList()[randInt]
+        dbRef.child("Current/current_artist").setValue(newArtist)
+    }
+
+    // Delete all the guesses
+    dbRef.child("Guesses").removeValue()
+}
+
 @Composable
 fun ScoreScreen(dbRef: DatabaseReference) {
 
     // Get the Ids of all players in this game (IDs = playerIds.value.keys)
     val playerIds = remember { mutableStateOf(mapOf<String, Map<String, Int>>()) }
-    FirebaseUtilities.databaseGetMap(dbRef)
+    FirebaseUtilities.databaseGetMap(dbRef.child("Players"))
         .thenAccept {
             playerIds.value = it as HashMap<String, Map<String, Int>>
         }
@@ -131,7 +156,7 @@ fun ScoreScreen(dbRef: DatabaseReference) {
 
     // Observe the points of all players to update the scoreboard
     for (id in playerIds.value.keys) {
-        dbRef.child(id).addChildEventListener(object : ChildEventListener {
+        dbRef.child("/Players/$id").addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 updateScoreMap(playersToScores, id, snapshot)
             }
@@ -156,6 +181,7 @@ fun ScoreScreen(dbRef: DatabaseReference) {
 
     val scores = turnIntoPairs(playersToScores)
     val usernames = fetchUserNames(scores)
+    val usersToScores = usernamesToScores(scores, usernames).sortedWith(compareByDescending { it.second })
 
     Row(
         modifier = Modifier
@@ -165,18 +191,31 @@ fun ScoreScreen(dbRef: DatabaseReference) {
         verticalAlignment = Alignment.Top
     ) {
         Spacer(modifier = Modifier.weight(1f))
-        Scoreboard(
-            playerScores = usernamesToScores(scores, usernames),
-            modifier = Modifier
-                .width((0.475 * size).dp)
-                .height((0.575 * size).dp)
-                .testTag("scoreboard")
-        )
+
+        if (!gameEnded) {
+            val nbPlayers = usersToScores.size
+            Scoreboard(
+                playerScores = usersToScores,
+                modifier = Modifier
+                    .width((0.475 * size).dp)
+                    .height(((0.225 + nbPlayers * 0.11) * size).dp)
+                    .testTag("scoreboard")
+            )
+        }
+    }
+
+    if (turnEnded) {
+        reinitialise(dbRef, playerIds.value.keys)
+        turnEnded = false
+    }
+
+    if (gameEnded) {
+        EndScoreboard(usersToScores)
     }
 }
 
 @Composable
-fun Scoreboard(playerScores: ArrayList<Pair<String?, Int>>, modifier: Modifier) {
+fun Scoreboard(playerScores: List<Pair<String?, Int>>, modifier: Modifier) {
     var size by remember { mutableStateOf(IntSize.Zero) }
 
     Box(
@@ -195,7 +234,9 @@ fun Scoreboard(playerScores: ArrayList<Pair<String?, Int>>, modifier: Modifier) 
             Text(
                 text = SCORES_TITLE,
                 style = MaterialTheme.typography.h6,
-                modifier = Modifier.align(Alignment.CenterHorizontally).testTag("scoresTitle")
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .testTag("scoresTitle")
             )
             Spacer(modifier = Modifier.height(2.dp))
             playerScores.forEach { (name, score) ->
@@ -206,7 +247,9 @@ fun Scoreboard(playerScores: ArrayList<Pair<String?, Int>>, modifier: Modifier) 
                         Text(
                             text = name,
                             style = MaterialTheme.typography.body2,
-                            modifier = Modifier.weight(1f).testTag(name)
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag(name)
                         )
 
                         Text(
@@ -217,6 +260,64 @@ fun Scoreboard(playerScores: ArrayList<Pair<String?, Int>>, modifier: Modifier) 
                     }
                 }
                 Divider(color = Color.Black, thickness = 1.dp)
+            }
+        }
+    }
+}
+
+@Composable
+fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
+    Box(
+        modifier = Modifier
+            .background(Color.Blue, RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Column (
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Final Scores",
+                color = Color.White,
+                style = MaterialTheme.typography.h4,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            Spacer(modifier = Modifier.height(2.dp))
+            Divider(color = Color.White, thickness = 4.dp)
+
+            if (usersToScores.isNotEmpty()) {
+                val winner = usersToScores[0].first
+                Spacer(modifier = Modifier.height(30.dp))
+                Text(
+                    text = "And the winner is… $winner!",
+                    style = MaterialTheme.typography.body1,
+                    color = Color.White
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            usersToScores.forEach { (name, score) ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (name != null) {
+                        Text(
+                            text = name,
+                            color = Color.White,
+                            style = MaterialTheme.typography.body1,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        Text(
+                            text = score.toString(),
+                            color = Color.White,
+                            style = MaterialTheme.typography.body1,
+                        )
+                    }
+                }
+                Divider(color = Color.White, thickness = 1.dp)
             }
         }
     }

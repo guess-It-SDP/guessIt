@@ -275,7 +275,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
                         .align(Alignment.Center)
                 )
 
-                ScoreScreen(dbrefGames.child("Players"))//gameId)
+                ScoreScreen(dbrefGames)
             }
 
             Box(

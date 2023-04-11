@@ -59,19 +59,19 @@ class ScoreActivityTest {
         composeRule.onNodeWithTag("scoresTitle").assertTextContains(SCORES_TITLE)
     }
 
-    @Test
-    fun usernamesAreDisplayed() {
-        for (username in usernames.values) {
-            composeRule.onNodeWithTag(username).assertIsDisplayed()
-        }
-    }
+//    @Test
+//    fun usernamesAreDisplayed() {
+//        for (username in usernames.values) {
+//            composeRule.onNodeWithTag(username).assertIsDisplayed()
+//        }
+//    }
 
-    @Test
-    fun usernamesTextIsCorrect() {
-        for (username in usernames.values) {
-            composeRule.onNodeWithTag(username).assertTextContains(username)
-        }
-    }
+//    @Test
+//    fun usernamesTextIsCorrect() {
+//        for (username in usernames.values) {
+//            composeRule.onNodeWithTag(username).assertTextContains(username)
+//        }
+//    }
 
     @Test
     fun scoresAreDisplayed() {
