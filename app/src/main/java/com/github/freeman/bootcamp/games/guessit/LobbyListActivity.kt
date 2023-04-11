@@ -6,6 +6,7 @@ import android.media.AsyncPlayer
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -36,7 +37,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.github.freeman.bootcamp.games.guessit.chat.ChatMessage
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
 
 class LobbyListActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +71,7 @@ class LobbyListActivity: ComponentActivity() {
                             Lobby("test lobby3", 0, 0),
                             Lobby("test lobby3", 0, 0),
                         )
-                        LobbyList(lobbyList)
+                        LobbyList()
                     }
                 }
             }
@@ -147,17 +156,44 @@ fun ListItem(
 }
 
 @Composable
-fun LobbyList(lobbies: List<Lobby>) {
-    var lobbyList = remember {
-        mutableStateListOf<Lobby>()
-    }
+fun LobbyList() {
+    val dbRef = Firebase.database.getReference("Games")
+    var lobbies = remember { mutableStateListOf<Lobby>() }
+    val context = LocalContext.current
+
+    dbRef.addChildEventListener(object: ChildEventListener {
+        override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+            Toast.makeText(context, "child added", Toast.LENGTH_SHORT).show()
+            val gameInfo = snapshot.value as HashMap<*, *>
+            val lobbyName = gameInfo["lobby_name"] as String
+            val nbRounds = gameInfo["nb_rounds"] as Long
+            lobbies.add(Lobby(lobbyName, 1, nbRounds.toInt()))
+        }
+
+        override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+            Toast.makeText(context, "child changed", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onChildRemoved(snapshot: DataSnapshot) {
+            Toast.makeText(context, "child removed", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+            Toast.makeText(context, "child moved", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            Toast.makeText(context, "cancelled", Toast.LENGTH_SHORT).show()
+        }
+    })
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
     ) {
         LazyColumn {
-            items(lobbies) { lobby ->
+            items(lobbies.toList()) { lobby ->
                 ListItem(
                     lobby = lobby,
                     backgroundColor = Color.White,
