@@ -3,10 +3,9 @@ package com.github.freeman.bootcamp
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingScreen
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
-import com.github.freeman.bootcamp.GuessingActivity.Companion.answer
-import com.github.freeman.bootcamp.firebase.FirebaseSingletons
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import org.junit.Before
 import org.junit.Rule

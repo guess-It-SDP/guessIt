@@ -26,10 +26,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
-import com.github.freeman.bootcamp.GuessingActivity.Companion.answer
-import com.github.freeman.bootcamp.GuessingActivity.Companion.pointsReceived
-import com.github.freeman.bootcamp.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.games.guessit.ScoreScreen
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.pointsReceived
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.ui.theme.Purple40
@@ -150,6 +150,7 @@ fun GuessesList(guesses: Array<Guess>, answer: String, dbrefGames: DatabaseRefer
 /**
  * The writing bar where guessers can enten their guesses
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GuessingBar(
     guess: String,

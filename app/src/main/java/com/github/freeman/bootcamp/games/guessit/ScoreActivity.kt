@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp
+package com.github.freeman.bootcamp.games.guessit
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,14 +17,14 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.github.freeman.bootcamp.ScoreActivity.Companion.FINAL_SCORES_TITLE
-import com.github.freeman.bootcamp.ScoreActivity.Companion.SCORES_TITLE
-import com.github.freeman.bootcamp.ScoreActivity.Companion.WINNER_TITLE
-import com.github.freeman.bootcamp.ScoreActivity.Companion.gameEnded
-import com.github.freeman.bootcamp.ScoreActivity.Companion.size
-import com.github.freeman.bootcamp.ScoreActivity.Companion.turnEnded
-import com.github.freeman.bootcamp.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.FINAL_SCORES_TITLE
+import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.SCORES_TITLE
+import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.WINNER_TITLE
+import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.gameEnded
+import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.size
+import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.turnEnded
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
