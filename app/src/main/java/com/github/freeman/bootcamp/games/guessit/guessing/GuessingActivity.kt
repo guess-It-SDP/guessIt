@@ -23,16 +23,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.games.guessit.ScoreScreen
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.pointsReceived
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.ui.theme.Purple40
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -59,19 +62,66 @@ class GuessingActivity : ComponentActivity() {
             }
         }
     }
+
+    companion object {
+        var pointsReceived = false
+        lateinit var answer: String
+    }
 }
 
 /**
  * Displays of one guess (with the guesser name)
  */
 @Composable
-fun GuessItem(guess: Guess, answer: String) {
+fun GuessItem(guess: Guess, answer: String, dbrefGames: DatabaseReference, artistId: String) {
     Row(
         modifier = Modifier
             .padding(8.dp)
             .testTag("guessItem")
     ) {
-        if (guess.guess?.lowercase()  == answer.lowercase()) {
+        if (guess.guess?.lowercase() == answer.lowercase()) {
+            val userId = Firebase.auth.currentUser?.uid
+            val dbGuesserScoreRef = dbrefGames.child("Players/$userId/score")
+            val dbArtistScoreRef = dbrefGames.child("Players/$artistId/score")
+            val correctGuessesRef = dbrefGames.child("Current/correct_guesses")
+
+            // Increase the points of the artist if they haven't already received points this round
+            FirebaseUtilities.databaseGetLong(correctGuessesRef)
+                .thenAccept {
+                    val nbGuesses = it
+
+                    // If the artist hasn't yet received points for this drawing, grant them
+                    if (nbGuesses.toInt() == 0) {
+                        FirebaseUtilities.databaseGetLong(dbArtistScoreRef)
+                            .thenAccept {
+                                val artistsPoints = it
+                                dbArtistScoreRef.setValue(artistsPoints + 1)
+                            }
+                    }
+                }
+
+            // Give the guesser points and increase the number of correct guesses by 1
+            FirebaseUtilities.databaseGetLong(correctGuessesRef)
+                .thenAccept {
+                    val nbGuesses = it
+
+                    // Give the points to the player who guessed correctly
+                    FirebaseUtilities.databaseGetLong(dbGuesserScoreRef)
+                        .thenAccept {
+                            // Increase current player's points
+                            if (!pointsReceived) {
+                                val score = it
+                                dbGuesserScoreRef.setValue(score + 1)
+                                pointsReceived = true
+                            }
+                        }
+
+                    // Increment the number of correct guesses
+                    if (!pointsReceived) {
+                        correctGuessesRef.setValue(nbGuesses + 1)
+                    }
+                }
+
             Popup {
                 val gs = Guess(guess.guesser, answer)
                 CorrectAnswerScreen(gs = gs)
@@ -86,13 +136,13 @@ fun GuessItem(guess: Guess, answer: String) {
  * Displays all guesses that have been made in the game
  */
 @Composable
-fun GuessesList(guesses: Array<Guess>, answer: String) {
+fun GuessesList(guesses: Array<Guess>, answer: String, dbrefGames: DatabaseReference, artistId: String) {
     LazyColumn (
         modifier = Modifier
             .fillMaxWidth()
     ) {
         items(guesses) { guess ->
-            GuessItem(guess, answer)
+            GuessItem(guess, answer, dbrefGames, artistId)
         }
     }
 }
@@ -100,6 +150,7 @@ fun GuessesList(guesses: Array<Guess>, answer: String) {
 /**
  * The writing bar where guessers can enten their guesses
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GuessingBar(
     guess: String,
@@ -173,7 +224,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
     })
 
     //the correct answer of the round
-    var answer = ""
+    answer = ""
     dbrefGames.child("topic").addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             if (dataSnapshot.exists()) {
@@ -192,6 +243,15 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
     FirebaseUtilities.databaseGet(dbrefUsername)
         .thenAccept {
             username = it
+        }
+
+    // Fetch the ID of the current artist
+    val currentArtist = remember {
+        mutableStateOf("No artist")
+    }
+    FirebaseUtilities.databaseGet(dbrefGames.child("Current/current_artist"))
+        .thenAccept {
+            currentArtist.value = it
         }
 
     MaterialTheme {
@@ -223,6 +283,8 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
                         .fillMaxWidth()
                         .align(Alignment.Center)
                 )
+
+                ScoreScreen(dbrefGames)
             }
 
             Box(
@@ -232,7 +294,8 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
                     .align(Alignment.End)
                     .testTag("guessesList")
             ) {
-                GuessesList(guesses = guesses, answer = answer)
+                GuessesList(guesses = guesses, answer = answer, dbrefGames = dbrefGames,
+                    artistId = currentArtist.value)
             }
 
             GuessingBar(
@@ -299,20 +362,3 @@ fun CorrectAnswerScreen(gs: Guess) {
         }
     }
 }
-
-@Preview
-@Composable
-fun GuessingPreview() {
-    val guessGameId = "GameTestGuessesId"
-    val answer = "Flower"
-
-    val db = Firebase.database
-    db.useEmulator("10.0.2.2", 9000)
-    val dbref = Firebase.database.getReference("Games/$guessGameId")
-    BootcampComposeTheme {
-        GuessingScreen(dbref)
-    }
-}
-
-
-
