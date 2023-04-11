@@ -107,6 +107,20 @@
                 android:value="" />
         </activity>
         <activity
+            android:name=".games.guessit.CreateJoinActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".games.guessit.LobbyListActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".recorder.AudioRecordingActivity"
             android:exported="false" >
             <meta-data

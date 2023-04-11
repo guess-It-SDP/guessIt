@@ -23,6 +23,8 @@ import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companio
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.topics
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -88,10 +90,14 @@ fun TopicButton(dbref: DatabaseReference, topic: String, id: Int) {
 }
 
 fun selectTopic(context: Context, dbref: DatabaseReference, topic: String) {
-    dbref.child("topic").setValue(topic)
-    context.startActivity(Intent(context, DrawingActivity::class.java).apply {
-        putExtra("topic", topic)
-    })
+    val userId = Firebase.auth.uid
+    databaseGet(Firebase.database.getReference("Profiles/$userId/username")).thenAccept {
+        dbref.child("topic").setValue(topic)
+        dbref.child("lobby_name").setValue("$it's room")
+        context.startActivity(Intent(context, DrawingActivity::class.java).apply {
+            putExtra("topic", topic)
+        })
+    }
 }
 
 @Composable
