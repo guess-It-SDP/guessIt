@@ -37,7 +37,8 @@ class EndScoreboardTest {
         gameEnded = true
         composeRule.setContent {
             val gameId = "TestGameId"
-            val dbRef = Firebase.database.getReference("Games/$gameId/Players")
+            val dbRef = Firebase.database.getReference("Games/$gameId")
+            reinitialise(dbRef, playerIds.toSet())
 
             initFirebaseScores(dbRef, playerIds, scores)
             val playersToScores = initPlayersToScores(playerIds, scores)

@@ -23,7 +23,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
@@ -96,21 +95,27 @@ fun GuessItem(guess: Guess, answer: String, dbrefGames: DatabaseReference, artis
                                 dbArtistScoreRef.setValue(artistsPoints + 1)
                             }
                     }
+                }
+
+            // Give the guesser points and increase the number of correct guesses by 1
+            FirebaseUtilities.databaseGetLong(correctGuessesRef)
+                .thenAccept {
+                    val nbGuesses = it
+
+                    // Give the points to the player who guessed correctly
+                    FirebaseUtilities.databaseGetLong(dbGuesserScoreRef)
+                        .thenAccept {
+                            // Increase current player's points
+                            if (!pointsReceived) {
+                                val score = it
+                                dbGuesserScoreRef.setValue(score + 1)
+                                pointsReceived = true
+                            }
+                        }
 
                     // Increment the number of correct guesses
                     if (!pointsReceived) {
                         correctGuessesRef.setValue(nbGuesses + 1)
-                    }
-                }
-
-            // Give the points to the player who guessed correctly
-            FirebaseUtilities.databaseGetLong(dbGuesserScoreRef)
-                .thenAccept {
-                    // Increase current player's points
-                    if (!pointsReceived) {
-                        val score = it
-                        dbGuesserScoreRef.setValue(score + 1)
-                        pointsReceived = true
                     }
                 }
 
@@ -353,20 +358,3 @@ fun CorrectAnswerScreen(gs: Guess) {
         }
     }
 }
-
-@Preview
-@Composable
-fun GuessingPreview() {
-    val guessGameId = "GameTestGuessesId"
-    val answer = "Flower"
-
-    val db = Firebase.database
-    db.useEmulator("10.0.2.2", 9000)
-    val dbref = Firebase.database.getReference("Games/$guessGameId")
-    BootcampComposeTheme {
-        GuessingScreen(dbref)
-    }
-}
-
-
-
