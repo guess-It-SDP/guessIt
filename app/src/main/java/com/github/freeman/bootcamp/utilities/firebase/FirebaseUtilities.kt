@@ -21,7 +21,12 @@ object FirebaseUtilities {
         val future = CompletableFuture<String>()
         dbRef.get().addOnSuccessListener {
             if (it.value == null) future.completeExceptionally(NoSuchFieldException())
-            else future.complete(it.value as String)
+            else if (it.value is Long) {
+                future.complete((it.value as Long).toString())
+            } else {
+                future.complete(it.value as String)
+            }
+
         }.addOnFailureListener {
             future.completeExceptionally(it)
         }

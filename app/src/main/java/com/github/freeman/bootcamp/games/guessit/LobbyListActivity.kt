@@ -117,9 +117,9 @@ fun ListItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .padding(8.dp)
             .clip(RoundedCornerShape(5.dp))
             .clickable { onItemClick() }
-            .padding(8.dp)
             .background(backgroundColor)
 
     ) {
@@ -130,8 +130,7 @@ fun ListItem(
             horizontalArrangement = Arrangement.SpaceBetween
 
         ) {
-            Column(
-            ) {
+            Column {
                 Text(
                     text = lobby.name,
                     fontWeight = FontWeight.SemiBold,
@@ -158,7 +157,7 @@ fun ListItem(
 @Composable
 fun LobbyList() {
     val dbRef = Firebase.database.getReference("Games")
-    var lobbies = remember { mutableStateListOf<Lobby>() }
+    val lobbies = remember { mutableStateListOf<Lobby>() }
     val context = LocalContext.current
 
     dbRef.addChildEventListener(object: ChildEventListener {

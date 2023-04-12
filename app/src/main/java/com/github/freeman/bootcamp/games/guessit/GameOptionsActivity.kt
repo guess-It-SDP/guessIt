@@ -38,6 +38,8 @@ import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.s
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedTopics
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selection
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -220,11 +222,29 @@ fun NextButton(dbref: DatabaseReference, gameId: String) {
 }
 
 fun next(context: Context, dbref: DatabaseReference, gameId: String) {
+    val userId = Firebase.auth.uid
+
     if (categorySize <= 0) {
         Toast.makeText(context, "Please first select a category", Toast.LENGTH_SHORT).show()
     } else {
-        dbref.child("nb_rounds").setValue(selection)
-        context.startActivity(Intent(context, TopicSelectionActivity::class.java).apply {
+        dbref.child("Players/$userId/score").setValue(0)
+
+        dbref.child("Current/correct_guesses").setValue(0)
+        dbref.child("Current/current_state").setValue("waiting for players")
+        dbref.child("Current/current_artist").setValue(userId)
+        dbref.child("Current/current_round").setValue(0)
+        dbref.child("Current/current_turn").setValue(0)
+
+        dbref.child("Parameters/nb_rounds").setValue(selection)
+        dbref.child("Parameters/nb_players").setValue(1)
+        dbref.child("Parameters/host_id").setValue(userId)
+        dbref.child("Parameters/category").setValue(selectedCategory)
+
+        FirebaseUtilities.databaseGet(Firebase.database.getReference("Profiles/$userId/username")).thenAccept {
+            dbref.child("lobby_name").setValue("$it's room")
+        }
+
+        context.startActivity(Intent(context, WaitingRoomActivity::class.java).apply {
             putExtra("gameId", gameId)
             for (i in 0 until selectedTopics.size) {
                 putExtra("topic$i", selectedTopics[i])

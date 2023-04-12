@@ -90,14 +90,11 @@ fun TopicButton(dbref: DatabaseReference, topic: String, id: Int) {
 }
 
 fun selectTopic(context: Context, dbref: DatabaseReference, topic: String) {
-    val userId = Firebase.auth.uid
-    databaseGet(Firebase.database.getReference("Profiles/$userId/username")).thenAccept {
-        dbref.child("topic").setValue(topic)
-        dbref.child("lobby_name").setValue("$it's room")
-        context.startActivity(Intent(context, DrawingActivity::class.java).apply {
-            putExtra("topic", topic)
-        })
-    }
+
+    dbref.child("topic").setValue(topic)
+    context.startActivity(Intent(context, DrawingActivity::class.java).apply {
+        putExtra("topic", topic)
+    })
 }
 
 @Composable
