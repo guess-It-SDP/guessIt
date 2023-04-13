@@ -2,43 +2,36 @@ package com.github.freeman.bootcamp.games.guessit
 
 import android.app.Activity
 import android.content.Context
-import android.media.AsyncPlayer
+import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import com.github.freeman.bootcamp.games.guessit.chat.ChatMessage
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -59,18 +52,6 @@ class LobbyListActivity: ComponentActivity() {
                     Surface(
                         modifier = Modifier.fillMaxSize(), color = Color(0xFFF1F1F1)
                     ) {
-                        val lobbyList = listOf(
-                            Lobby("test lobby", 0, 0),
-                            Lobby("test lobby2", 0, 0),
-                            Lobby("test lobby3", 0, 0),
-                            Lobby("test lobby3", 0, 0),
-                            Lobby("test lobby3", 0, 0),
-                            Lobby("test lobby3", 0, 0),
-                            Lobby("test lobby3", 0, 0),
-                            Lobby("test lobby3", 0, 0),
-                            Lobby("test lobby3", 0, 0),
-                            Lobby("test lobby3", 0, 0),
-                        )
                         LobbyList()
                     }
                 }
@@ -110,10 +91,27 @@ fun TopAppbarLobbies(context: Context = LocalContext.current) {
 @Composable
 fun ListItem(
     modifier: Modifier = Modifier,
-    lobby: Lobby = Lobby("default lobby", 0, 0),
+    lobby: Lobby = Lobby("default id", "default lobby", 0, 0),
     backgroundColor: Color = Color.LightGray,
     onItemClick: () -> Unit = {}
 ) {
+    val nbPlayer = remember { mutableStateOf(lobby.nbPlayer) }
+    val nbPlayerRef = Firebase.database.getReference("games/${lobby.id}/parameters/nb_players")
+
+
+    nbPlayerRef.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                nbPlayer.value = snapshot.getValue<Int>()!!
+            }
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            // do nothing
+        }
+    })
+
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -145,7 +143,7 @@ fun ListItem(
             }
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "players : ${lobby.nbPlayer}/5",
+                text = "players : ${nbPlayer.value}/5",
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp
             )
@@ -156,33 +154,43 @@ fun ListItem(
 
 @Composable
 fun LobbyList() {
-    val dbRef = Firebase.database.getReference("Games")
+    val dbRef = Firebase.database.getReference("games")
+    val userId = Firebase.auth.uid
     val lobbies = remember { mutableStateListOf<Lobby>() }
     val context = LocalContext.current
 
     dbRef.addChildEventListener(object: ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-            Toast.makeText(context, "child added", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "lobby added", Toast.LENGTH_SHORT).show()
             val gameInfo = snapshot.value as HashMap<*, *>
+            val id = snapshot.key!!
             val lobbyName = gameInfo["lobby_name"] as String
-            val nbRounds = gameInfo["nb_rounds"] as Long
-            lobbies.add(Lobby(lobbyName, 1, nbRounds.toInt()))
+            val nbPlayer = ((gameInfo["parameters"] as HashMap<*, *>)["nb_players"] as Long).toInt()
+            val nbRounds = ((gameInfo["parameters"] as HashMap<*, *>)["nb_rounds"] as Long).toInt()
+
+            lobbies.add(Lobby(id, lobbyName, nbPlayer, nbRounds))
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-            Toast.makeText(context, "child changed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "lobby changed", Toast.LENGTH_SHORT).show()
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
-            Toast.makeText(context, "child removed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "lobby removed", Toast.LENGTH_SHORT).show()
+            for (lobby in lobbies) {
+                if (lobby.id == snapshot.key!!) {
+                    lobbies.remove(lobby)
+                }
+            }
+
         }
 
         override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-            Toast.makeText(context, "child moved", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "lobby moved", Toast.LENGTH_SHORT).show()
         }
 
         override fun onCancelled(error: DatabaseError) {
-            Toast.makeText(context, "cancelled", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "lobby cancelled", Toast.LENGTH_SHORT).show()
         }
     })
 
@@ -197,7 +205,16 @@ fun LobbyList() {
                     lobby = lobby,
                     backgroundColor = Color.White,
                     onItemClick = {
-                        Log.i("LobbyList", "Info $lobby")
+//                        Log.i("LobbyList", "Info $lobby")
+                        databaseGet(dbRef.child("${lobby.id}/parameters/nb_players"))
+                            .thenAccept {
+                                //dbRef.child("${lobby.id}/Parameters/nb_players").setValue(it.toInt() + 1)
+                                dbRef.child("${lobby.id}/players/$userId/score").setValue(0)
+
+                                val intent = Intent(context, WaitingRoomActivity::class.java)
+                                    .putExtra("gameId", lobby.id)
+                                context.startActivity(intent)
+                            }
                     },
                 )
             }
@@ -205,4 +222,4 @@ fun LobbyList() {
     }
 }
 
-data class Lobby(val name: String, val nbPlayer: Int, val nbRounds: Int)
+data class Lobby(val id: String, val name: String, val nbPlayer: Int, val nbRounds: Int)

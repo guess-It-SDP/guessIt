@@ -42,23 +42,21 @@ import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import java.util.*
 
 class GameOptionsActivity : ComponentActivity() {
 
-    private val gameId = "TestGameId"//UUID.randomUUID().toString()
-    private val dbref = Firebase.database.getReference("Games/$gameId")
+//    private val gameId = UUID.randomUUID().toString()
+//    private val dbref = Firebase.database.getReference("Games/$gameId")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
-                GameOptionsScreen(dbref, gameId)
+                GameOptionsScreen()
             }
         }
     }
@@ -209,49 +207,76 @@ fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> U
 }
 
 @Composable
-fun NextButton(dbref: DatabaseReference, gameId: String) {
+fun NextButton() {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("nextButton"),
         onClick = {
-            next(context, dbref, gameId)
+            next(context)
         }
     ) {
         Text(NEXT)
     }
 }
 
-fun next(context: Context, dbref: DatabaseReference, gameId: String) {
+fun next(context: Context) {
     val userId = Firebase.auth.uid
+    val dbref = Firebase.database.getReference("games/")
+    val gameId = dbref.push().key
 
     if (categorySize <= 0) {
         Toast.makeText(context, "Please first select a category", Toast.LENGTH_SHORT).show()
     } else {
-        dbref.child("Players/$userId/score").setValue(0)
 
-        dbref.child("Current/correct_guesses").setValue(0)
-        dbref.child("Current/current_state").setValue("waiting for players")
-        dbref.child("Current/current_artist").setValue(userId)
-        dbref.child("Current/current_round").setValue(0)
-        dbref.child("Current/current_turn").setValue(0)
+        FirebaseUtilities.databaseGet(Firebase.database.getReference("Profiles/$userId/username"))
+            .thenAccept {
+                val gameData = GameData(
+                    Current = Current(
+                        correct_guesses = 0,
+                        current_artist = userId!!,
+                        current_round = 0,
+                        current_state = "waiting for players",
+                        current_turn = 0
+                    ),
+                    Parameters = Parameters(
+                        category = selectedCategory,
+                        host_id = userId,
+                        nb_players = 1,
+                        nb_rounds = selection
+                    ),
+                    Players = mapOf(Pair(userId, Player(0))),
+                    lobby_name = "$it's room"
+                )
 
-        dbref.child("Parameters/nb_rounds").setValue(selection)
-        dbref.child("Parameters/nb_players").setValue(1)
-        dbref.child("Parameters/host_id").setValue(userId)
-        dbref.child("Parameters/category").setValue(selectedCategory)
+                dbref.child(gameId!!).setValue(gameData)
 
-        FirebaseUtilities.databaseGet(Firebase.database.getReference("Profiles/$userId/username")).thenAccept {
-            dbref.child("lobby_name").setValue("$it's room")
-        }
+//                dbref.child("lobby_name").setValue("$it's room")
+//
+//                dbref.child("Players/$userId/score").setValue(0)
+//
+//                dbref.child("Current/correct_guesses").setValue(0)
+//                dbref.child("Current/current_state").setValue("waiting for players")
+//                dbref.child("Current/current_artist").setValue(userId)
+//                dbref.child("Current/current_round").setValue(0)
+//                dbref.child("Current/current_turn").setValue(0)
+//
+//                dbref.child("Parameters/nb_rounds").setValue(selection)
+//                dbref.child("Parameters/nb_players").setValue(1)
+//                dbref.child("Parameters/host_id").setValue(userId)
+//                dbref.child("Parameters/category").setValue(selectedCategory)
 
-        context.startActivity(Intent(context, WaitingRoomActivity::class.java).apply {
-            putExtra("gameId", gameId)
-            for (i in 0 until selectedTopics.size) {
-                putExtra("topic$i", selectedTopics[i])
+
+
+                context.startActivity(Intent(context, WaitingRoomActivity::class.java).apply {
+                    putExtra("gameId", gameId)
+                    for (i in 0 until selectedTopics.size) {
+                        putExtra("topic$i", selectedTopics[i])
+                    }
+                })
+                val activity = (context as? Activity)
+                activity?.finish()
             }
-        })
-        val activity = (context as? Activity)
-        activity?.finish()
+
     }
 }
 
@@ -313,7 +338,7 @@ fun backToMainMenu(context: Context) {
 }
 
 @Composable
-fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
+fun GameOptionsScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -333,7 +358,7 @@ fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
             text = ROUNDS_SELECTION
         )
         RoundsDisplay()
-        NextButton(dbref, gameId)
+        NextButton()
     }
 
     Column(

@@ -5,10 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,10 +18,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,50 +35,104 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.github.freeman.bootcamp.EditProfileActivity
-import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.topics
+import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.storageGet
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 
 class WaitingRoomActivity: ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val userId = Firebase.auth.uid
+
         val gameId = intent.getStringExtra("gameId").toString()
-//        for (i in 0 until GameOptionsActivity.NB_TOPICS) {
-//            (intent.getStringExtra("topic$i").toString())
-//        }
+        val allTopics = ArrayList<String>()
+
+        for (i in 0 until GameOptionsActivity.NB_TOPICS) {
+            allTopics.add(intent.getStringExtra("topic$i").toString())
+        }
+
 
 
         setContent {
+            val context = LocalContext.current
             BootcampComposeTheme {
-                Column {
-                    TopAppbarWaitingRoom()
+                val players = remember { mutableStateListOf<String>() }
 
-                    Column {
-                        RoomInfo(gameId = gameId)
-                    }
+                Column{
+                    TopAppbarWaitingRoom(gameId = gameId)
 
-                    PlayerList(gameId)
+                    RoomInfo(gameId = gameId)
 
-//                    StartButton()
+                    PlayerList(
+                        modifier = Modifier.weight(1f),
+                        gameId = gameId,
+                        players = players
+                    )
+                    
+//                    Spacer(modifier = Modifier.weight(1f))
+                    StartButton(gameId, players)
                 }
             }
+
+            val gameStateRef = Firebase.database.getReference("games/$gameId/current/current_state")
+            val artistRef = Firebase.database.getReference("games/$gameId/current/current_artist")
+            gameStateRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        if (snapshot.getValue<String>()!! == "play game") {
+                            databaseGet(artistRef)
+                                .thenAccept {
+                                    val intent = if (userId == it) {
+                                        Intent(context, DrawingActivity::class.java)
+                                    } else {
+                                        Intent(context, GuessingActivity::class.java)
+                                    }
+
+                                    intent.apply {
+                                        putExtra("gameId", gameId)
+                                        for (i in allTopics.indices) {
+                                            putExtra("topic$i", allTopics[i])
+                                        }
+                                    }
+
+                                    context.startActivity(intent)
+                                }
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // do nothing
+                }
+            })
+
+            BackHandler {
+                Firebase.database.getReference("games/$gameId/players/$userId").removeValue()
+                val activity = (context as? Activity)
+                activity?.finish()
+            }
         }
+
+
     }
 }
 
 @Composable
-fun TopAppbarWaitingRoom(context: Context = LocalContext.current) {
+fun TopAppbarWaitingRoom(context: Context = LocalContext.current, gameId: String) {
+    val userId = Firebase.auth.uid
 
     TopAppBar(
         modifier = Modifier.testTag("topAppbarWaitingRoom"),
@@ -95,6 +147,7 @@ fun TopAppbarWaitingRoom(context: Context = LocalContext.current) {
         elevation = 4.dp,
         navigationIcon = {
             IconButton(onClick = {
+                Firebase.database.getReference("games/$gameId/players/$userId").removeValue()
                 val activity = (context as? Activity)
                 activity?.finish()
             }) {
@@ -109,7 +162,7 @@ fun TopAppbarWaitingRoom(context: Context = LocalContext.current) {
 
 @Composable
 fun RoomInfo(modifier: Modifier = Modifier, gameId: String) {
-    val dbRef = Firebase.database.getReference("Games/$gameId")
+    val dbRef = Firebase.database.getReference("games/$gameId")
 
     val lobbyName = remember { mutableStateOf("") }
     val nbRounds = remember { mutableStateOf(0) }
@@ -119,11 +172,11 @@ fun RoomInfo(modifier: Modifier = Modifier, gameId: String) {
         lobbyName.value = it
     }
 
-    databaseGet(dbRef.child("Parameters/nb_rounds")).thenAccept {
+    databaseGet(dbRef.child("parameters/nb_rounds")).thenAccept {
         nbRounds.value = it.toInt()
     }
 
-    databaseGet(dbRef.child("Parameters/category")).thenAccept {
+    databaseGet(dbRef.child("parameters/category")).thenAccept {
         category.value = it
     }
 
@@ -200,15 +253,16 @@ fun RoomInfo(modifier: Modifier = Modifier, gameId: String) {
 }
 
 @Composable
-fun PlayerList(gameId: String) {
+fun PlayerList(modifier: Modifier = Modifier, gameId: String, players: MutableCollection<String>) {
     val context = LocalContext.current
-    val dbRef = Firebase.database.getReference("Games/$gameId/Players")
-    val players = remember { mutableStateListOf<String>() }
+    val dbRef = Firebase.database.getReference("games/$gameId/players")
+
 
     dbRef.addChildEventListener(object: ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
             Toast.makeText(context, "player added", Toast.LENGTH_SHORT).show()
             players.add(snapshot.key!!)
+            Firebase.database.getReference("games/$gameId/parameters/nb_players").setValue(players.size)
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
@@ -217,6 +271,9 @@ fun PlayerList(gameId: String) {
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
             Toast.makeText(context, "player removed", Toast.LENGTH_SHORT).show()
+            players.remove(snapshot.key)
+            Firebase.database.getReference("games/$gameId/parameters/nb_players").setValue(players.size)
+
         }
 
         override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -228,12 +285,8 @@ fun PlayerList(gameId: String) {
         }
     })
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
-        LazyColumn {
+
+        LazyColumn (modifier){
             items(players.toList()) { playerId ->
                 val picture = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
                 val storageRef = Firebase.storage.getReference("Profiles/$playerId/picture/pic.jpg")
@@ -251,24 +304,27 @@ fun PlayerList(gameId: String) {
                     }
 
                 PlayerDisplay(
-                    player = Player(
+                    player = PlayerData(
                         name = username.value,
                         picture = picture.value
                     )
                 )
             }
         }
-    }
+
+
 }
 
 @Composable
-fun PlayerDisplay(player: Player) {
+fun PlayerDisplay(player: PlayerData) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .testTag("playerDisplay"),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(8.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .testTag("playerDisplay")
+            .clickable {},
+        verticalAlignment = Alignment.CenterVertically,
     ) {
 
         Image(
@@ -276,8 +332,10 @@ fun PlayerDisplay(player: Player) {
             contentScale = ContentScale.Crop,
             contentDescription = null,
             modifier = Modifier
-                .size(72.dp)
+                .size(100.dp)
+                .padding(10.dp)
                 .clip(CircleShape)
+
         )
 
         Row(
@@ -305,4 +363,39 @@ fun PlayerDisplay(player: Player) {
     }
 }
 
-data class Player(val name: String, val picture: Bitmap?)
+@Composable
+fun StartButton(gameId: String, players: MutableCollection<String>) {
+    val dbRef = Firebase.database.getReference("games/$gameId")
+
+    val userId = Firebase.auth.uid
+
+    var hostId by remember { mutableStateOf("") }
+    databaseGet(dbRef.child("parameters/host_id")).thenAccept {
+        hostId = it
+    }
+
+    var artistId by remember { mutableStateOf("") }
+    databaseGet(dbRef.child("current/current_artist")).thenAccept {
+        artistId = it
+    }
+
+    Column (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+
+    ){
+        ElevatedButton(
+            enabled = userId == hostId && players.size >= 2,
+            onClick = {
+                dbRef.child("current/current_state").setValue("play game")
+            }
+        ) {
+            Text("Start")
+        }
+    }
+
+}
+
+data class PlayerData(val name: String, val picture: Bitmap?)
