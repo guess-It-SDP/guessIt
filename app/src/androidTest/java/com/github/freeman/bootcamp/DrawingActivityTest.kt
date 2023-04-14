@@ -29,12 +29,6 @@ class DrawingActivityTest {
         }
     }
 
-    private fun setContentWith(dbref: DatabaseReference, gameId: String) {
-        composeRule.setContent {
-            DrawingScreen(dbref, gameId)
-        }
-    }
-
     @Test
     fun drawingScreenIsDisplayed() {
         setContent()

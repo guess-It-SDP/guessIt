@@ -20,9 +20,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NB_TOPICS
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.SELECT_TOPIC
+import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.topics
+import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.turnNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -42,7 +46,7 @@ class TopicSelectionActivity : ComponentActivity() {
         val turnNb = intent.getIntExtra("roundNb", 5)
         setContent {
             BootcampComposeTheme {
-                TopicSelectionScreen(dbref, roundNb, turnNb, gameId)
+                TopicSelectionScreen(dbref, gameId)
             }
         }
     }
@@ -50,7 +54,10 @@ class TopicSelectionActivity : ComponentActivity() {
     companion object {
         const val SELECT_TOPIC = "Select the topic you wish to draw"
         var topics = mutableListOf<String>("Topic1", "Topic2", "Topic3")
+        var roundNb = 0
+        var turnNb = 0
     }
+
 }
 
 @Composable
@@ -77,33 +84,41 @@ fun backToGameOptions(context: Context) {
 }
 
 @Composable
-fun TopicButton(dbref: DatabaseReference, topic: String, id: Int, roundNb: Int, turnNb: Int, gameId: String) {
+fun TopicButton(dbref: DatabaseReference, topic: String, id: Int, gameId: String) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("topicButton$id"),
         onClick = {
-            selectTopic(context, dbref, topic, roundNb, turnNb, gameId)
+            selectTopic(context, dbref, topic, gameId)
         }
     ) {
         Text(topic)
     }
 }
 
-fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, roundNb: Int, turnNb: Int, gameId: String) {
+fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, gameId: String) {
     dbref.child("topics").child(roundNb.toString()).child(turnNb.toString()).child("topic").setValue(topic)
     dbref.child("current").child("current_round").setValue(roundNb)
     dbref.child("current").child("current_turn").setValue(turnNb)
 
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {
-        putExtra("topic", topic)
-        putExtra("roundNb", roundNb)
-        putExtra("turnNb", turnNb)
         putExtra("gameId", gameId)
     })
 }
 
 @Composable
-fun TopicSelectionScreen(dbref: DatabaseReference, roundNb: Int, turnNb: Int, gameId: String) {
+fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
+    //the current round and turn (in the round)
+    val dbrefCurrent = dbref.child("Current")
+    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_round"))
+        .thenAccept {
+            roundNb = it.toInt()
+        }
+    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_turn"))
+        .thenAccept {
+            turnNb = it.toInt()
+        }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -116,11 +131,11 @@ fun TopicSelectionScreen(dbref: DatabaseReference, roundNb: Int, turnNb: Int, ga
             text = SELECT_TOPIC
         )
         Spacer(modifier = Modifier.size(40.dp))
-        TopicButton(dbref, topics[0], 1, roundNb, turnNb, gameId)
+        TopicButton(dbref, topics[0], 1, gameId)
         Spacer(modifier = Modifier.size(20.dp))
-        TopicButton(dbref, topics[1], 2, roundNb, turnNb, gameId)
+        TopicButton(dbref, topics[1], 2, gameId)
         Spacer(modifier = Modifier.size(20.dp))
-        TopicButton(dbref, topics[2], 3, roundNb, turnNb, gameId)
+        TopicButton(dbref, topics[2], 3, gameId)
     }
 
     Column(

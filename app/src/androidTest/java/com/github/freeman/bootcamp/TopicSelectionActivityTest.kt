@@ -63,7 +63,7 @@ class TopicSelectionActivityTest {
     private fun setTopicSelectionScreen() {
         composeRule.setContent {
             BootcampComposeTheme {
-                TopicSelectionScreen(dbref)
+                TopicSelectionScreen(dbref, "testgameid")
             }
         }
     }

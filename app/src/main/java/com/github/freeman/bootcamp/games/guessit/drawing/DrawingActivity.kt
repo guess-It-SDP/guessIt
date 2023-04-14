@@ -24,7 +24,11 @@ import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.black
 import com.github.freeman.bootcamp.colorArray
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
+import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.roundNb
+import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.turnNb
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.utilities.BitmapHandler
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -45,22 +49,34 @@ class DrawingActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val roundNb = intent.getIntExtra("roundNb", 0)
-        val turnNb = intent.getIntExtra("turnNb", 0)
         val gameId = intent.getStringExtra("gameId").toString()
         dbref = Firebase.database.getReference("games/$gameId")
         setContent {
-            DrawingScreen(roundNb, turnNb)
+            DrawingScreen()
         }
+    }
+
+    companion object {
+        var roundNb = 0
+        var turnNb = 0
     }
 }
 
 // The drawing screen is made of a drawing zone and a controls bar
 @Composable
 fun DrawingScreen(
-    roundNb: Int,
-    turnNb: Int
 ) {
+    //the current round and turn (in the round) and topic corresponding
+    val dbrefCurrent = dbref.child("Current")
+    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_round"))
+        .thenAccept {
+            roundNb = it.toInt()
+        }
+    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_turn"))
+        .thenAccept {
+            turnNb = it.toInt()
+        }
+
     val undoVisibility = remember { mutableStateOf(false) }
     val redoVisibility = remember { mutableStateOf(false) }
     val colorBarVisibility = remember { mutableStateOf(false) }
@@ -74,6 +90,7 @@ fun DrawingScreen(
         drawController.changeStrokeWidth(DEFAULT_WIDTH)
         firstStroke.value = false
     }
+
     Box(Modifier.testTag(LocalContext.current.getString(R.string.drawing_screen))) {
         Column {
             // Controls bar
@@ -105,6 +122,7 @@ fun DrawingScreen(
                 currentColor.value = it
                 drawController.changeColor(it)
             }
+
             // Slider to select stroke width that appears when clicking the corresponding button in
             // the controls bar
             if (widthSliderVisibility.value) {
@@ -116,13 +134,14 @@ fun DrawingScreen(
                     },
                     valueRange = 5f..50f,
                     colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colors.primaryVariant,
+                            thumbColor = MaterialTheme.colors.primaryVariant,
                         activeTrackColor = MaterialTheme.colors.primary,
                         inactiveTrackColor = MaterialTheme.colors.secondary
                     ),
                     modifier = Modifier.testTag(LocalContext.current.getString(R.string.width_slider))
                 )
             }
+
             // Drawing zone
             DrawBox(
                 drawController = drawController,
@@ -141,6 +160,8 @@ fun DrawingScreen(
                 undoVisibility.value = undoCount != 0
                 redoVisibility.value = redoCount != 0
             }
+
+
         }
     }
 }
@@ -224,5 +245,5 @@ private fun RowScope.MenuItems(
 @Preview(showBackground = true)
 @Composable
 fun DrawingScreenPreview() {
-    DrawingScreen(0, 0)
+    DrawingScreen()
 }

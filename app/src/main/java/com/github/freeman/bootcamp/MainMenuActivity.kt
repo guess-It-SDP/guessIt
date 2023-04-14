@@ -168,16 +168,8 @@ fun AudioRecordingButton() {
 
 
 fun drawing(context: Context, gameId: String) {
-    val dbref = Firebase.database.getReference("Games/$gameId")
-
-    lateinit var roundNb: String
-    databaseGet(dbref.child("Current").child("current_round"))
-        .thenAccept {
-            roundNb = it
-        }
-
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {
-        putExtra("roundNb", roundNb)
+        putExtra("gameId", gameId)
     })
 }
 
