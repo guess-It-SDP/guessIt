@@ -24,7 +24,11 @@ import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.black
 import com.github.freeman.bootcamp.colorArray
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
+import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.roundNb
+import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.turnNb
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.utilities.BitmapHandler
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -37,7 +41,6 @@ import io.ak1.rangvikalp.RangVikalp
 // - For the drawing zone : DrawBox (https://github.com/akshay2211/DrawBox)
 // - For the color picker : Rang-Vikalp (https://github.com/akshay2211/rang-vikalp)
 
-private val DBREF = Firebase.database.getReference("Images")
 private val DEFAULT_COLOR = black
 private const val DEFAULT_WIDTH = 15f
 
@@ -45,18 +48,35 @@ class DrawingActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val gameId = intent.getStringExtra("gameId").toString()
+        val dbref = Firebase.database.getReference("games/$gameId")
         setContent {
-            DrawingScreen()
+            DrawingScreen(dbref)
         }
+    }
+
+    companion object {
+        var roundNb = 0
+        var turnNb = 0
     }
 }
 
 // The drawing screen is made of a drawing zone and a controls bar
 @Composable
 fun DrawingScreen(
-    dbref: DatabaseReference = DBREF,
-    gameId: String = LocalContext.current.getString(R.string.default_game_id)
+    dbref: DatabaseReference
 ) {
+    //the current round and turn (in the round) and topic corresponding
+    val dbrefCurrent = dbref.child("Current")
+    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_round"))
+        .thenAccept {
+            roundNb = it.toInt()
+        }
+    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_turn"))
+        .thenAccept {
+            turnNb = it.toInt()
+        }
+
     val undoVisibility = remember { mutableStateOf(false) }
     val redoVisibility = remember { mutableStateOf(false) }
     val colorBarVisibility = remember { mutableStateOf(false) }
@@ -70,6 +90,7 @@ fun DrawingScreen(
         drawController.changeStrokeWidth(DEFAULT_WIDTH)
         firstStroke.value = false
     }
+
     Box(Modifier.testTag(LocalContext.current.getString(R.string.drawing_screen))) {
         Column {
             // Controls bar
@@ -101,6 +122,7 @@ fun DrawingScreen(
                 currentColor.value = it
                 drawController.changeColor(it)
             }
+
             // Slider to select stroke width that appears when clicking the corresponding button in
             // the controls bar
             if (widthSliderVisibility.value) {
@@ -112,13 +134,14 @@ fun DrawingScreen(
                     },
                     valueRange = 5f..50f,
                     colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colors.primaryVariant,
+                            thumbColor = MaterialTheme.colors.primaryVariant,
                         activeTrackColor = MaterialTheme.colors.primary,
                         inactiveTrackColor = MaterialTheme.colors.secondary
                     ),
                     modifier = Modifier.testTag(LocalContext.current.getString(R.string.width_slider))
                 )
             }
+
             // Drawing zone
             DrawBox(
                 drawController = drawController,
@@ -128,7 +151,7 @@ fun DrawingScreen(
                     .weight(1f, fill = false),
                 bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
                     imageBitmap?.let {
-                        dbref.child(gameId)
+                        dbref.child("topics").child(roundNb.toString()).child(turnNb.toString()).child("drawing")
                             .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
                     }
                 }
@@ -137,6 +160,8 @@ fun DrawingScreen(
                 undoVisibility.value = undoCount != 0
                 redoVisibility.value = redoCount != 0
             }
+
+
         }
     }
 }
@@ -220,5 +245,6 @@ private fun RowScope.MenuItems(
 @Preview(showBackground = true)
 @Composable
 fun DrawingScreenPreview() {
-    DrawingScreen()
+    val dbref = Firebase.database.getReference("games/testgameid")
+    DrawingScreen(dbref)
 }
