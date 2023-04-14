@@ -161,14 +161,28 @@ fun LobbyList() {
 
     dbRef.addChildEventListener(object: ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-            Toast.makeText(context, "lobby added", Toast.LENGTH_SHORT).show()
-            val gameInfo = snapshot.value as HashMap<*, *>
-            val id = snapshot.key!!
-            val lobbyName = gameInfo["lobby_name"] as String
-            val nbPlayer = ((gameInfo["parameters"] as HashMap<*, *>)["nb_players"] as Long).toInt()
-            val nbRounds = ((gameInfo["parameters"] as HashMap<*, *>)["nb_rounds"] as Long).toInt()
+            if (snapshot.value != null) {
+                Toast.makeText(context, "lobby added", Toast.LENGTH_SHORT).show()
+                val gameInfo = snapshot.value as HashMap<*, *>
+                val id = snapshot.key!!
+                try {
+                    val lobbyName = gameInfo["lobby_name"] as String
+                    val nbPlayer = ((gameInfo["parameters"] as HashMap<*, *>)["nb_players"] as Long).toInt()
+                    val nbRounds = ((gameInfo["parameters"] as HashMap<*, *>)["nb_rounds"] as Long).toInt()
 
-            lobbies.add(Lobby(id, lobbyName, nbPlayer, nbRounds))
+                    if (nbPlayer == 0) {
+                        dbRef.child(id).removeValue()
+                    } else {
+                        lobbies.add(Lobby(id, lobbyName, nbPlayer, nbRounds))
+                    }
+                } catch (_: Exception) {
+
+                }
+
+
+
+            }
+
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {

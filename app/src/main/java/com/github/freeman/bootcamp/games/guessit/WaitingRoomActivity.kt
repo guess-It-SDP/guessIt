@@ -35,7 +35,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
@@ -55,10 +54,16 @@ class WaitingRoomActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+
         val userId = Firebase.auth.uid
 
         val gameId = intent.getStringExtra("gameId").toString()
         val allTopics = ArrayList<String>()
+
+        val dbRef = Firebase.database.getReference("games/$gameId")
+
+
 
         for (i in 0 until GameOptionsActivity.NB_TOPICS) {
             allTopics.add(intent.getStringExtra("topic$i").toString())
@@ -68,35 +73,27 @@ class WaitingRoomActivity: ComponentActivity() {
 
         setContent {
             val context = LocalContext.current
-            BootcampComposeTheme {
-                val players = remember { mutableStateListOf<String>() }
 
-                Column{
-                    TopAppbarWaitingRoom(gameId = gameId)
-
-                    RoomInfo(gameId = gameId)
-
-                    PlayerList(
-                        modifier = Modifier.weight(1f),
-                        gameId = gameId,
-                        players = players
-                    )
-                    
-//                    Spacer(modifier = Modifier.weight(1f))
-                    StartButton(gameId, players)
-                }
+            val hostId = remember { mutableStateOf("") }
+            databaseGet(dbRef.child("parameters/host_id")).thenAccept {
+                hostId.value = it
             }
 
-            val gameStateRef = Firebase.database.getReference("games/$gameId/current/current_state")
-            val artistRef = Firebase.database.getReference("games/$gameId/current/current_artist")
-            gameStateRef.addValueEventListener(object : ValueEventListener {
+            val players = remember { mutableStateListOf<String>() }
+
+
+
+            val gameStateRef = dbRef.child("current/current_state")
+            val artistRef = dbRef.child("current/current_artist")
+            val dbListener = gameStateRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
-                        if (snapshot.getValue<String>()!! == "play game") {
+                        val gameState = snapshot.getValue<String>()!!
+                        if (gameState == "play game") {
                             databaseGet(artistRef)
                                 .thenAccept {
                                     val intent = if (userId == it) {
-                                        Intent(context, DrawingActivity::class.java)
+                                        Intent(context, TopicSelectionActivity::class.java)
                                     } else {
                                         Intent(context, GuessingActivity::class.java)
                                     }
@@ -110,6 +107,10 @@ class WaitingRoomActivity: ComponentActivity() {
 
                                     context.startActivity(intent)
                                 }
+                        } else if (gameState == "lobby closed") {
+                            dbRef.removeValue()
+                            val activity = (context as? Activity)
+                            activity?.finish()
                         }
                     }
                 }
@@ -119,10 +120,88 @@ class WaitingRoomActivity: ComponentActivity() {
                 }
             })
 
+
+            val playersRef = Firebase.database.getReference("games/$gameId/players")
+            val playersListener = playersRef.addChildEventListener(object: ChildEventListener {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    if (snapshot.key !in players) {
+                        Toast.makeText(context, "player added", Toast.LENGTH_SHORT).show()
+                        players.add(snapshot.key!!)
+
+//                        if (userId != hostId.value) {
+                            Firebase.database.getReference("games/$gameId/parameters/nb_players").setValue(players.size)
+//                        }
+                    }
+
+                }
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    Toast.makeText(context, "player changed", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+                    Toast.makeText(context, "player removed", Toast.LENGTH_SHORT).show()
+                    players.remove(snapshot.key)
+                    if (snapshot.key == hostId.value && !players.isEmpty()) {
+                        val newHost = players.toList()[0]
+                        Firebase.database.getReference("games/$gameId/parameters/host_id").setValue(players.toList()[0])
+                        hostId.value = newHost
+                    }
+//                    if (userId != hostId.value) {
+                        Firebase.database.getReference("games/$gameId/parameters/nb_players").setValue(players.size)
+//                    }
+
+                }
+
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                    Toast.makeText(context, "player moved", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(context, "player cancelled", Toast.LENGTH_SHORT).show()
+                }
+            })
+
+
+            BootcampComposeTheme {
+
+
+                Column{
+                    TopAppbarWaitingRoom(
+                        gameId = gameId,
+                        hostId = hostId,
+                        players = players,
+                        dbListener = dbListener,
+                        playersListener = playersListener
+                    )
+
+                    RoomInfo(gameId = gameId)
+
+                    PlayerList(
+                        modifier = Modifier.weight(1f),
+                        players = players,
+                    )
+
+//                    Spacer(modifier = Modifier.weight(1f))
+                    StartButton(gameId, players)
+                }
+            }
+
             BackHandler {
-                Firebase.database.getReference("games/$gameId/players/$userId").removeValue()
+
+                if (userId == hostId.value && players.size == 1) {
+                    gameStateRef.setValue("lobby closed")
+                } else {
+                    dbRef.child("players/$userId").removeValue()
+                }
+
+                dbRef.removeEventListener(dbListener)
+                playersRef.removeEventListener(playersListener)
+
                 val activity = (context as? Activity)
                 activity?.finish()
+
+
             }
         }
 
@@ -131,8 +210,11 @@ class WaitingRoomActivity: ComponentActivity() {
 }
 
 @Composable
-fun TopAppbarWaitingRoom(context: Context = LocalContext.current, gameId: String) {
+fun TopAppbarWaitingRoom(context: Context = LocalContext.current, gameId: String, hostId: MutableState<String>, players: MutableCollection<String>, dbListener: ValueEventListener, playersListener: ChildEventListener) {
     val userId = Firebase.auth.uid
+    val dbRef = Firebase.database.getReference("games/$gameId")
+    val playersRef = dbRef.child("players")
+    val gameStateRef = dbRef.child("current/current_state")
 
     TopAppBar(
         modifier = Modifier.testTag("topAppbarWaitingRoom"),
@@ -147,7 +229,15 @@ fun TopAppbarWaitingRoom(context: Context = LocalContext.current, gameId: String
         elevation = 4.dp,
         navigationIcon = {
             IconButton(onClick = {
-                Firebase.database.getReference("games/$gameId/players/$userId").removeValue()
+                if (userId == hostId.value && players.size == 1) {
+                    gameStateRef.setValue("lobby closed")
+                } else {
+                    dbRef.child("players/$userId").removeValue()
+                }
+
+                dbRef.removeEventListener(dbListener)
+                playersRef.removeEventListener(playersListener)
+
                 val activity = (context as? Activity)
                 activity?.finish()
             }) {
@@ -253,64 +343,35 @@ fun RoomInfo(modifier: Modifier = Modifier, gameId: String) {
 }
 
 @Composable
-fun PlayerList(modifier: Modifier = Modifier, gameId: String, players: MutableCollection<String>) {
-    val context = LocalContext.current
-    val dbRef = Firebase.database.getReference("games/$gameId/players")
+fun PlayerList(modifier: Modifier = Modifier, players: MutableCollection<String>) {
 
 
-    dbRef.addChildEventListener(object: ChildEventListener {
-        override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-            Toast.makeText(context, "player added", Toast.LENGTH_SHORT).show()
-            players.add(snapshot.key!!)
-            Firebase.database.getReference("games/$gameId/parameters/nb_players").setValue(players.size)
-        }
 
-        override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-            Toast.makeText(context, "player changed", Toast.LENGTH_SHORT).show()
-        }
+    LazyColumn (modifier){
+        items(players.toList()) { playerId ->
+            val picture = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
+            val storageRef = Firebase.storage.getReference("profiles/$playerId/picture/pic.jpg")
+            LaunchedEffect(Unit) {
+                storageGet(storageRef)
+                    .thenAccept {
+                        picture.value = it
+                    }
+            }
 
-        override fun onChildRemoved(snapshot: DataSnapshot) {
-            Toast.makeText(context, "player removed", Toast.LENGTH_SHORT).show()
-            players.remove(snapshot.key)
-            Firebase.database.getReference("games/$gameId/parameters/nb_players").setValue(players.size)
-
-        }
-
-        override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-            Toast.makeText(context, "player moved", Toast.LENGTH_SHORT).show()
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-            Toast.makeText(context, "player cancelled", Toast.LENGTH_SHORT).show()
-        }
-    })
-
-
-        LazyColumn (modifier){
-            items(players.toList()) { playerId ->
-                val picture = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
-                val storageRef = Firebase.storage.getReference("profiles/$playerId/picture/pic.jpg")
-                LaunchedEffect(Unit) {
-                    storageGet(storageRef)
-                        .thenAccept {
-                            picture.value = it
-                        }
+            val username = remember { mutableStateOf("") }
+            databaseGet(Firebase.database.getReference("profiles/$playerId/username"))
+                .thenAccept {
+                    username.value = it
                 }
 
-                val username = remember { mutableStateOf("") }
-                databaseGet(Firebase.database.getReference("profiles/$playerId/username"))
-                    .thenAccept {
-                        username.value = it
-                    }
-
-                PlayerDisplay(
-                    player = PlayerData(
-                        name = username.value,
-                        picture = picture.value
-                    )
+            PlayerDisplay(
+                player = PlayerData(
+                    name = username.value,
+                    picture = picture.value
                 )
-            }
+            )
         }
+    }
 
 
 }
