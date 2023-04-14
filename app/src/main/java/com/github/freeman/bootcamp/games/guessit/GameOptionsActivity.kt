@@ -49,8 +49,8 @@ import java.util.*
 
 class GameOptionsActivity : ComponentActivity() {
 
-    private val gameId = "TestGameId"//UUID.randomUUID().toString()
-    private val dbref = Firebase.database.getReference("Games/$gameId")
+    private val gameId = "testgameid"//UUID.randomUUID().toString()
+    private val dbref = Firebase.database.getReference("games/$gameId")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -223,12 +223,14 @@ fun next(context: Context, dbref: DatabaseReference, gameId: String) {
     if (categorySize <= 0) {
         Toast.makeText(context, "Please first select a category", Toast.LENGTH_SHORT).show()
     } else {
-        dbref.child("nb_rounds").setValue(selection)
+        dbref.child("parameters").child("nb_rounds").setValue(selection)
         context.startActivity(Intent(context, TopicSelectionActivity::class.java).apply {
             putExtra("gameId", gameId)
             for (i in 0 until selectedTopics.size) {
                 putExtra("topic$i", selectedTopics[i])
             }
+            putExtra("roundNb", 0)
+            putExtra("roundTurn", 0)
         })
         val activity = (context as? Activity)
         activity?.finish()
@@ -236,7 +238,7 @@ fun next(context: Context, dbref: DatabaseReference, gameId: String) {
 }
 
 fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
-    val dbrefTopics = Firebase.database.getReference("Topics/$selectedCategory")
+    val dbrefTopics = Firebase.database.getReference("topics/$selectedCategory")
 
     // Fetch the number of topics present in the given category
     dbrefTopics.addValueEventListener(object : ValueEventListener {
@@ -254,7 +256,7 @@ fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String
 }
 
 fun fetchTopics(setTopics: (topics: Array<String>) -> Unit) {
-    val dbrefTopics = Firebase.database.getReference("Topics/$selectedCategory")
+    val dbrefTopics = Firebase.database.getReference("topics/$selectedCategory")
 
     // Fetches topics from the database
     dbrefTopics.addValueEventListener(object : ValueEventListener {

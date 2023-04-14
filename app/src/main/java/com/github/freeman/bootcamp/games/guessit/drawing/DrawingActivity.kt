@@ -37,7 +37,7 @@ import io.ak1.rangvikalp.RangVikalp
 // - For the drawing zone : DrawBox (https://github.com/akshay2211/DrawBox)
 // - For the color picker : Rang-Vikalp (https://github.com/akshay2211/rang-vikalp)
 
-private val DBREF = Firebase.database.getReference("Images")
+private lateinit var dbref: DatabaseReference
 private val DEFAULT_COLOR = black
 private const val DEFAULT_WIDTH = 15f
 
@@ -45,8 +45,12 @@ class DrawingActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val roundNb = intent.getIntExtra("roundNb", 0)
+        val turnNb = intent.getIntExtra("turnNb", 0)
+        val gameId = intent.getStringExtra("gameId").toString()
+        dbref = Firebase.database.getReference("games/$gameId")
         setContent {
-            DrawingScreen()
+            DrawingScreen(roundNb, turnNb)
         }
     }
 }
@@ -54,8 +58,8 @@ class DrawingActivity : ComponentActivity() {
 // The drawing screen is made of a drawing zone and a controls bar
 @Composable
 fun DrawingScreen(
-    dbref: DatabaseReference = DBREF,
-    gameId: String = LocalContext.current.getString(R.string.default_game_id)
+    roundNb: Int,
+    turnNb: Int
 ) {
     val undoVisibility = remember { mutableStateOf(false) }
     val redoVisibility = remember { mutableStateOf(false) }
@@ -128,7 +132,7 @@ fun DrawingScreen(
                     .weight(1f, fill = false),
                 bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
                     imageBitmap?.let {
-                        dbref.child(gameId)
+                        dbref.child("topics").child(roundNb.toString()).child(turnNb.toString()).child("drawing")
                             .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
                     }
                 }
@@ -220,5 +224,5 @@ private fun RowScope.MenuItems(
 @Preview(showBackground = true)
 @Composable
 fun DrawingScreenPreview() {
-    DrawingScreen()
+    DrawingScreen(0, 0)
 }

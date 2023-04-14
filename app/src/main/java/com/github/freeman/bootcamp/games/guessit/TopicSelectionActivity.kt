@@ -33,14 +33,16 @@ class TopicSelectionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra("gameId").toString()
-        dbref = Firebase.database.getReference("Games/$gameId")
+        dbref = Firebase.database.getReference("games/$gameId")
         topics.clear()
         for (i in 0 until NB_TOPICS) {
             topics.add(intent.getStringExtra("topic$i").toString())
         }
+        val roundNb = intent.getIntExtra("roundNb", 5)
+        val turnNb = intent.getIntExtra("roundNb", 5)
         setContent {
             BootcampComposeTheme {
-                TopicSelectionScreen(dbref)
+                TopicSelectionScreen(dbref, roundNb, turnNb, gameId)
             }
         }
     }
@@ -75,27 +77,33 @@ fun backToGameOptions(context: Context) {
 }
 
 @Composable
-fun TopicButton(dbref: DatabaseReference, topic: String, id: Int) {
+fun TopicButton(dbref: DatabaseReference, topic: String, id: Int, roundNb: Int, turnNb: Int, gameId: String) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("topicButton$id"),
         onClick = {
-            selectTopic(context, dbref, topic)
+            selectTopic(context, dbref, topic, roundNb, turnNb, gameId)
         }
     ) {
         Text(topic)
     }
 }
 
-fun selectTopic(context: Context, dbref: DatabaseReference, topic: String) {
-    dbref.child("topic").setValue(topic)
+fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, roundNb: Int, turnNb: Int, gameId: String) {
+    dbref.child("topics").child(roundNb.toString()).child(turnNb.toString()).child("topic").setValue(topic)
+    dbref.child("current").child("current_round").setValue(roundNb)
+    dbref.child("current").child("current_turn").setValue(turnNb)
+
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {
         putExtra("topic", topic)
+        putExtra("roundNb", roundNb)
+        putExtra("turnNb", turnNb)
+        putExtra("gameId", gameId)
     })
 }
 
 @Composable
-fun TopicSelectionScreen(dbref: DatabaseReference) {
+fun TopicSelectionScreen(dbref: DatabaseReference, roundNb: Int, turnNb: Int, gameId: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -108,11 +116,11 @@ fun TopicSelectionScreen(dbref: DatabaseReference) {
             text = SELECT_TOPIC
         )
         Spacer(modifier = Modifier.size(40.dp))
-        TopicButton(dbref, topics[0], 1)
+        TopicButton(dbref, topics[0], 1, roundNb, turnNb, gameId)
         Spacer(modifier = Modifier.size(20.dp))
-        TopicButton(dbref, topics[1], 2)
+        TopicButton(dbref, topics[1], 2, roundNb, turnNb, gameId)
         Spacer(modifier = Modifier.size(20.dp))
-        TopicButton(dbref, topics[2], 3)
+        TopicButton(dbref, topics[2], 3, roundNb, turnNb, gameId)
     }
 
     Column(
