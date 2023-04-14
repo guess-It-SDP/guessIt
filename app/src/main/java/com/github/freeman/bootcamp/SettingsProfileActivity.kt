@@ -63,8 +63,8 @@ class SettingsProfileActivity : ComponentActivity() {
             val dbRef = Firebase.database.reference
             val storageRef = Firebase.storage.reference
             val userId = Firebase.auth.currentUser?.uid
-            val dbUserRef = dbRef.child("Profiles/$userId")
-            val storageUserRef = storageRef.child("Profiles/$userId")
+            val dbUserRef = dbRef.child("profiles/$userId")
+            val storageUserRef = storageRef.child("profiles/$userId")
 
             val displayName = remember { mutableStateOf("") }
             val email = remember { mutableStateOf("") }

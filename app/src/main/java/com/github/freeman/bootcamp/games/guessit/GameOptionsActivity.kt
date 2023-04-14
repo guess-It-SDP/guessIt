@@ -228,7 +228,7 @@ fun next(context: Context) {
         Toast.makeText(context, "Please first select a category", Toast.LENGTH_SHORT).show()
     } else {
 
-        FirebaseUtilities.databaseGet(Firebase.database.getReference("Profiles/$userId/username"))
+        FirebaseUtilities.databaseGet(Firebase.database.getReference("profiles/$userId/username"))
             .thenAccept {
                 val gameData = GameData(
                     Current = Current(
@@ -281,7 +281,7 @@ fun next(context: Context) {
 }
 
 fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
-    val dbrefTopics = Firebase.database.getReference("Topics/$selectedCategory")
+    val dbrefTopics = Firebase.database.getReference("topics/$selectedCategory")
 
     // Fetch the number of topics present in the given category
     dbrefTopics.addValueEventListener(object : ValueEventListener {
@@ -299,7 +299,7 @@ fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String
 }
 
 fun fetchTopics(setTopics: (topics: Array<String>) -> Unit) {
-    val dbrefTopics = Firebase.database.getReference("Topics/$selectedCategory")
+    val dbrefTopics = Firebase.database.getReference("topics/$selectedCategory")
 
     // Fetches topics from the database
     dbrefTopics.addValueEventListener(object : ValueEventListener {

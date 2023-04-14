@@ -35,7 +35,7 @@ class TopicSelectionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra("gameId").toString()
-        dbref = Firebase.database.getReference("Games/$gameId")
+        dbref = Firebase.database.getReference("games/$gameId")
         topics.clear()
         for (i in 0 until NB_TOPICS) {
             topics.add(intent.getStringExtra("topic$i").toString())

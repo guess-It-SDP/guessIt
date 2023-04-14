@@ -53,7 +53,7 @@ object FirebaseUtilities {
 
     /**
      * Gets the value located in the given database reference
-     * @param dbref database reference
+     * @param dbRef database reference
      * @return a future of the value of type Map<String, Int> contained in the database
      */
     fun databaseGetMap(dbRef: DatabaseReference): CompletableFuture<Map<*, *>> {
@@ -98,7 +98,7 @@ object FirebaseUtilities {
             future.complete(false)
         } else {
             // if the email exists, the profile exists too
-            databaseGet(dbRef.child("Profiles/${user.uid}/email"))
+            databaseGet(dbRef.child("profiles/${user.uid}/email"))
                 .thenAccept {
                     future.complete(it != "")
                 }

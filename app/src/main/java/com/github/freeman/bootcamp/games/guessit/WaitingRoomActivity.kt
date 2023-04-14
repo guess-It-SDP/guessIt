@@ -289,7 +289,7 @@ fun PlayerList(modifier: Modifier = Modifier, gameId: String, players: MutableCo
         LazyColumn (modifier){
             items(players.toList()) { playerId ->
                 val picture = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
-                val storageRef = Firebase.storage.getReference("Profiles/$playerId/picture/pic.jpg")
+                val storageRef = Firebase.storage.getReference("profiles/$playerId/picture/pic.jpg")
                 LaunchedEffect(Unit) {
                     storageGet(storageRef)
                         .thenAccept {
@@ -298,7 +298,7 @@ fun PlayerList(modifier: Modifier = Modifier, gameId: String, players: MutableCo
                 }
 
                 val username = remember { mutableStateOf("") }
-                databaseGet(Firebase.database.getReference("Profiles/$playerId/username"))
+                databaseGet(Firebase.database.getReference("profiles/$playerId/username"))
                     .thenAccept {
                         username.value = it
                     }

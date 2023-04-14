@@ -33,7 +33,7 @@ import java.io.ByteArrayOutputStream
  * linked with the google profile
  */
 class ProfileCreationActivity : ComponentActivity() {
-    private val dbref = Firebase.database.getReference("Profiles")
+    private val dbref = Firebase.database.getReference("profiles")
     private val storageRef = Firebase.storage.reference
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -132,7 +132,7 @@ fun ProfileCreationScreen(dbref: DatabaseReference, storageRef: StorageReference
                     val stream = ByteArrayOutputStream()
                     profilePicBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
                     val image = stream.toByteArray()
-                    storageRef.child("Profiles/$userId/picture/pic.jpg").putBytes(image)
+                    storageRef.child("profiles/$userId/picture/pic.jpg").putBytes(image)
 
                     // go to main menu after profile created
                     context.startActivity(Intent(context, MainMenuActivity::class.java))

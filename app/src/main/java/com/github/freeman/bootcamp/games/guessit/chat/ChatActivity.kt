@@ -32,7 +32,7 @@ import kotlin.random.Random
 // Any activities should work with the following code for chat
 class ChatActivity : ComponentActivity() {
     private val chatId = "TestChatId01" // TODO: will be set when a game is created (with intent for example)
-    private val dbref = Firebase.database.getReference("Chat/$chatId")
+    private val dbref = Firebase.database.getReference("chat/$chatId")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -162,7 +162,7 @@ fun Main(dbref: DatabaseReference) {
     //the username of the current user
     var username = ""
     val uid = FirebaseAuth.getInstance().currentUser?.uid
-    val dbrefUsername = Firebase.database.reference.child("Profiles/$uid").child("username")
+    val dbrefUsername = Firebase.database.reference.child("profiles/$uid").child("username")
     FirebaseUtilities.databaseGet(dbrefUsername)
         .thenAccept {
             username = it
