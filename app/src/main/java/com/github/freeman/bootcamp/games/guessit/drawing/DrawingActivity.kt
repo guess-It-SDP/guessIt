@@ -41,7 +41,6 @@ import io.ak1.rangvikalp.RangVikalp
 // - For the drawing zone : DrawBox (https://github.com/akshay2211/DrawBox)
 // - For the color picker : Rang-Vikalp (https://github.com/akshay2211/rang-vikalp)
 
-private lateinit var dbref: DatabaseReference
 private val DEFAULT_COLOR = black
 private const val DEFAULT_WIDTH = 15f
 
@@ -50,9 +49,9 @@ class DrawingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra("gameId").toString()
-        dbref = Firebase.database.getReference("games/$gameId")
+        val dbref = Firebase.database.getReference("games/$gameId")
         setContent {
-            DrawingScreen()
+            DrawingScreen(dbref)
         }
     }
 
@@ -65,6 +64,7 @@ class DrawingActivity : ComponentActivity() {
 // The drawing screen is made of a drawing zone and a controls bar
 @Composable
 fun DrawingScreen(
+    dbref: DatabaseReference
 ) {
     //the current round and turn (in the round) and topic corresponding
     val dbrefCurrent = dbref.child("Current")
@@ -245,5 +245,6 @@ private fun RowScope.MenuItems(
 @Preview(showBackground = true)
 @Composable
 fun DrawingScreenPreview() {
-    DrawingScreen()
+    val dbref = Firebase.database.getReference("games/testgameid")
+    DrawingScreen(dbref)
 }

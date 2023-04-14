@@ -7,6 +7,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingScreen
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import org.hamcrest.CoreMatchers.*
 import org.junit.Rule
 import org.junit.Test
@@ -24,8 +26,9 @@ class DrawingActivityTest {
     val composeRule = createComposeRule()
 
     private fun setContent() {
+        val dbref = Firebase.database.getReference("games/testgameid")
         composeRule.setContent {
-            DrawingScreen()
+            DrawingScreen(dbref)
         }
     }
 
