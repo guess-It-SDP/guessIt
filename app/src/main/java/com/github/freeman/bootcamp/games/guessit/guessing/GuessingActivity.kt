@@ -54,7 +54,7 @@ class GuessingActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val gameId = intent.getStringExtra("gameId").toString()
-        dbrefGames = Firebase.database.getReference("Games/$gameId")
+        dbrefGames = Firebase.database.getReference("games/$gameId")
 
         setContent {
             BootcampComposeTheme {
@@ -81,9 +81,9 @@ fun GuessItem(guess: Guess, answer: String, dbrefGames: DatabaseReference, artis
     ) {
         if (guess.guess?.lowercase() == answer.lowercase()) {
             val userId = Firebase.auth.currentUser?.uid
-            val dbGuesserScoreRef = dbrefGames.child("Players/$userId/score")
-            val dbArtistScoreRef = dbrefGames.child("Players/$artistId/score")
-            val correctGuessesRef = dbrefGames.child("Current/correct_guesses")
+            val dbGuesserScoreRef = dbrefGames.child("players/$userId/score")
+            val dbArtistScoreRef = dbrefGames.child("players/$artistId/score")
+            val correctGuessesRef = dbrefGames.child("current/correct_guesses")
 
             // Increase the points of the artist if they haven't already received points this round
             FirebaseUtilities.databaseGetLong(correctGuessesRef)
@@ -148,7 +148,7 @@ fun GuessesList(guesses: Array<Guess>, answer: String, dbrefGames: DatabaseRefer
 }
 
 /**
- * The writing bar where guessers can enten their guesses
+ * The writing bar where guessers can enter their guesses
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -193,9 +193,9 @@ fun GuessingBar(
 fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.current.getString(R.string.default_game_id)) {
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
-    val dbrefImages = Firebase.database.getReference("Images/$gameId")
+    val dbrefImages = Firebase.database.getReference("images/$gameId")
 
-    dbrefGames.child("Guesses").addValueEventListener(object : ValueEventListener {
+    dbrefGames.child("guesses").addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 val guessesList = snapshot.getValue<ArrayList<Guess>>()!!
@@ -239,7 +239,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
     //the username of the current user
     var username = ""
     val uid = FirebaseAuth.getInstance().currentUser?.uid
-    val dbrefUsername = Firebase.database.reference.child("Profiles/$uid").child("username")
+    val dbrefUsername = Firebase.database.reference.child("profiles/$uid").child("username")
     FirebaseUtilities.databaseGet(dbrefUsername)
         .thenAccept {
             username = it
@@ -249,7 +249,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
     val currentArtist = remember {
         mutableStateOf("No artist")
     }
-    FirebaseUtilities.databaseGet(dbrefGames.child("Current/current_artist"))
+    FirebaseUtilities.databaseGet(dbrefGames.child("current/current_artist"))
         .thenAccept {
             currentArtist.value = it
         }
@@ -304,7 +304,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
                 onSendClick = {
                     val gs = Guess(guesser = username, guess = guess)
                     val guessId = guesses.size.toString() //TODO: Change for a more accurate id ?
-                    dbrefGames.child("Guesses").child(guessId).setValue(gs)
+                    dbrefGames.child("guesses").child(guessId).setValue(gs)
 
                     guess = ""
                 }
@@ -319,7 +319,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
 @Composable
 fun CorrectAnswerScreen(gs: Guess) {
     val currentUser = FirebaseAuth.getInstance().currentUser?.uid
-    val guesser = Firebase.database.getReference("Profiles/${gs.guesser}").child("uid").get().toString()
+    val guesser = Firebase.database.getReference("profiles/${gs.guesser}").child("uid").get().toString()
 
     val sb = StringBuilder()
     if (currentUser.equals(guesser)) {

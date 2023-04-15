@@ -38,7 +38,7 @@ class ScoreActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameId = "TestGameId"
-        val dbRef = Firebase.database.getReference("Games/$gameId")
+        val dbRef = Firebase.database.getReference("games/$gameId")
         setContent {
             BootcampComposeTheme {
                 ScoreScreen(dbRef)
@@ -87,7 +87,7 @@ fun fetchUserNames(playerIds: List<Pair<String, Int>>): Map<String, MutableState
     // Get the usernames of all players in this game
     for (entry in playerIds) {
         val id = entry.first
-        FirebaseUtilities.databaseGet(dbRef.child("Profiles/$id/username"))
+        FirebaseUtilities.databaseGet(dbRef.child("profiles/$id/username"))
             .thenAccept {
                 usernames[id]?.value = it
             }
@@ -129,17 +129,17 @@ fun updateScoreMap(playersToScores: Map<String, MutableState<Int>>, id: String, 
   */
 fun reinitialise(dbRef: DatabaseReference, playerIds: Set<String>) {
     // Reset the number of guesses to 0
-    dbRef.child("Current/correct_guesses").setValue(0)
+    dbRef.child("current/correct_guesses").setValue(0)
 
     // Choose a new artist. Todo: create a mechanism for switching the artist in a fair manner
     if (playerIds.isNotEmpty()) {
         val randInt = playerIds.indices.random()
         val newArtist = playerIds.toList()[randInt]
-        dbRef.child("Current/current_artist").setValue(newArtist)
+        dbRef.child("current/current_artist").setValue(newArtist)
     }
 
     // Delete all the guesses
-    dbRef.child("Guesses").removeValue()
+    dbRef.child("guesses").removeValue()
 }
 
 @Composable
@@ -151,7 +151,7 @@ fun ScoreScreen(
 
     // Get the Ids of all players in this game (IDs = playerIds.value.keys)
     val playerIds = remember { mutableStateOf(mapOf<String, Map<String, Int>>()) }
-    FirebaseUtilities.databaseGetMap(dbRef.child("Players"))
+    FirebaseUtilities.databaseGetMap(dbRef.child("players"))
         .thenAccept {
             playerIds.value = it as HashMap<String, Map<String, Int>>
         }
@@ -164,7 +164,7 @@ fun ScoreScreen(
 
     // Observe the points of all players to update the scoreboard
     for (id in playerIds.value.keys) {
-        dbRef.child("/Players/$id").addChildEventListener(object : ChildEventListener {
+        dbRef.child("/players/$id").addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 updateScoreMap(playersToScores, id, snapshot)
             }

@@ -50,7 +50,7 @@ import java.util.*
 class GameOptionsActivity : ComponentActivity() {
 
     private val gameId = "TestGameId"//UUID.randomUUID().toString()
-    private val dbref = Firebase.database.getReference("Games/$gameId")
+    private val dbref = Firebase.database.getReference("games/$gameId")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -236,7 +236,7 @@ fun next(context: Context, dbref: DatabaseReference, gameId: String) {
 }
 
 fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
-    val dbrefTopics = Firebase.database.getReference("Topics/$selectedCategory")
+    val dbrefTopics = Firebase.database.getReference("topics/$selectedCategory")
 
     // Fetch the number of topics present in the given category
     dbrefTopics.addValueEventListener(object : ValueEventListener {
@@ -254,7 +254,7 @@ fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String
 }
 
 fun fetchTopics(setTopics: (topics: Array<String>) -> Unit) {
-    val dbrefTopics = Firebase.database.getReference("Topics/$selectedCategory")
+    val dbrefTopics = Firebase.database.getReference("topics/$selectedCategory")
 
     // Fetches topics from the database
     dbrefTopics.addValueEventListener(object : ValueEventListener {

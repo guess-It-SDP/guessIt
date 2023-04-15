@@ -37,7 +37,7 @@ import io.ak1.rangvikalp.RangVikalp
 // - For the drawing zone : DrawBox (https://github.com/akshay2211/DrawBox)
 // - For the color picker : Rang-Vikalp (https://github.com/akshay2211/rang-vikalp)
 
-private val DBREF = Firebase.database.getReference("Images")
+private val DBREF = Firebase.database.getReference("images")
 private val DEFAULT_COLOR = black
 private const val DEFAULT_WIDTH = 15f
 

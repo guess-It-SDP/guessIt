@@ -60,8 +60,8 @@ class EditProfileActivity : ComponentActivity() {
             val dbRef = Firebase.database.reference
             val storageRef = Firebase.storage.reference
             val userId = Firebase.auth.currentUser?.uid
-            val dbUserRef = dbRef.child("Profiles/$userId")
-            val storageUserRef = storageRef.child("Profiles/$userId")
+            val dbUserRef = dbRef.child("profiles/$userId")
+            val storageUserRef = storageRef.child("profiles/$userId")
 
             val displayName = remember { mutableStateOf("") }
             val profilePicBitmap = remember { mutableStateOf<Bitmap?>(null) }
@@ -132,7 +132,7 @@ fun EditUserDetails(context: Context = LocalContext.current, displayName: Mutabl
             EditDialog(
                 text = displayName,
                 updateData = { name ->
-                    dbRef.child("Profiles/$userId/username").setValue(name)
+                    dbRef.child("profiles/$userId/username").setValue(name)
                 },
                 show = showNameDialog
             )
@@ -156,7 +156,7 @@ fun EditUserDetails(context: Context = LocalContext.current, displayName: Mutabl
                     ActivityResultContracts.GetContent()) { uri: Uri? ->
                         imageUri = uri
                         image.value = readBytes(context, imageUri!!)!!
-                        val uploadTask = storageRef.child("Profiles/$userId/picture/pic.jpg").putBytes(image.value)
+                        val uploadTask = storageRef.child("profiles/$userId/picture/pic.jpg").putBytes(image.value)
                         uploadTask.addOnFailureListener {
                             // Handle unsuccessful uploads
                         }.addOnSuccessListener {
