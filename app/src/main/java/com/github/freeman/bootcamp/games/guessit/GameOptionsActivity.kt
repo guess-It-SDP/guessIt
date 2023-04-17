@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -56,9 +57,11 @@ class GameOptionsActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val dbRef = Firebase.database.reference
         setContent {
             BootcampComposeTheme {
-                GameOptionsScreen()
+                GameOptionsScreen(dbRef)
             }
         }
     }
@@ -209,33 +212,38 @@ fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> U
 }
 
 @Composable
-fun NextButton() {
+fun NextButton(dbRef: DatabaseReference) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("nextButton"),
         onClick = {
-            next(context)
+            next(context, dbRef)
         }
     ) {
         Text(NEXT)
     }
 }
 
-fun next(context: Context) {
-    val userId = Firebase.auth.uid
-    val dbref = Firebase.database.getReference("games/")
+fun next(context: Context, database: DatabaseReference) {
+    var userId = Firebase.auth.uid
+    userId = userId ?: "null"
+    val dbref = database.child("games/")
     val gameId = dbref.push().key
 
     if (categorySize <= 0) {
         Toast.makeText(context, "Please first select a category", Toast.LENGTH_SHORT).show()
     } else {
 
-        FirebaseUtilities.databaseGet(Firebase.database.getReference("profiles/$userId/username"))
+
+
+        FirebaseUtilities.databaseGet(database.child("profiles/$userId/username"))
             .thenAccept {
+                Log.d("user id", userId.toString())
+
                 val gameData = GameData(
                     Current = Current(
                         correct_guesses = 0,
-                        current_artist = userId!!,
+                        current_artist = userId,
                         current_round = 0,
                         current_state = "waiting for players",
                         current_turn = 0
@@ -323,7 +331,7 @@ fun backToMainMenu(context: Context) {
 }
 
 @Composable
-fun GameOptionsScreen() {
+fun GameOptionsScreen(dbRef: DatabaseReference) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -343,7 +351,7 @@ fun GameOptionsScreen() {
             text = ROUNDS_SELECTION
         )
         RoundsDisplay()
-        NextButton()
+        NextButton(dbRef)
     }
 
     Column(
