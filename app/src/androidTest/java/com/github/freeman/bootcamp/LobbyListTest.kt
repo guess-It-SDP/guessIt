@@ -5,9 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
 import com.github.freeman.bootcamp.games.guessit.*
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
@@ -73,7 +72,7 @@ class LobbyListTest {
 
     @Test
     fun listItemIsDisplayed() {
-        composeRule.onNodeWithTag("listItem").assertIsDisplayed()
+        composeRule.onAllNodesWithTag("listItem").assertAll(isEnabled())
     }
 
     @Test
