@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
@@ -94,12 +95,13 @@ fun TopAppbarLobbies(context: Context = LocalContext.current) {
 @Composable
 fun ListItem(
     modifier: Modifier = Modifier,
+    dbRef: DatabaseReference,
     lobby: Lobby = Lobby("default id", "default lobby", 0, 0),
     backgroundColor: Color = Color.LightGray,
     onItemClick: () -> Unit = {}
 ) {
     val nbPlayer = remember { mutableStateOf(lobby.nbPlayer) }
-    val nbPlayerRef = Firebase.database.getReference("games/${lobby.id}/parameters/nb_players")
+    val nbPlayerRef = dbRef.child("games/${lobby.id}/parameters/nb_players")
 
 
     nbPlayerRef.addValueEventListener(object : ValueEventListener {
@@ -217,6 +219,7 @@ fun LobbyList(database: DatabaseReference) {
             items(lobbies.toList()) { lobby ->
                 ListItem(
                     lobby = lobby,
+                    dbRef = dbRef,
                     backgroundColor = Color.White,
                     onItemClick = {
 //                        Log.i("LobbyList", "Info $lobby")
