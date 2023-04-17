@@ -30,6 +30,8 @@ import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.pointsReceived
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.roundNb
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.turnNb
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.ui.theme.Purple40
@@ -43,6 +45,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import kotlin.properties.Delegates
 
 /**
  * The activity where the guesser tries to guess what is the drawing
@@ -58,7 +61,7 @@ class GuessingActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbrefGames)
+                GuessingScreen(dbrefGames, gameId)
             }
         }
     }
@@ -66,6 +69,8 @@ class GuessingActivity : ComponentActivity() {
     companion object {
         var pointsReceived = false
         lateinit var answer: String
+        var roundNb = 0
+        var turnNb = 0
     }
 }
 
@@ -136,7 +141,7 @@ fun GuessItem(guess: Guess, answer: String, dbrefGames: DatabaseReference, artis
  * Displays all guesses that have been made in the game
  */
 @Composable
-fun GuessesList(guesses: Array<Guess>, answer: String, dbrefGames: DatabaseReference, artistId: String) {
+fun GuessesList(guesses: Array<Guess>, dbrefGames: DatabaseReference, artistId: String) {
     LazyColumn (
         modifier = Modifier
             .fillMaxWidth()
@@ -193,8 +198,8 @@ fun GuessingBar(
 fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.current.getString(R.string.default_game_id)) {
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
-    val dbrefImages = Firebase.database.getReference("images/$gameId")
 
+    //the guesses made by the guessers
     dbrefGames.child("guesses").addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
@@ -209,32 +214,24 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
         }
     })
 
-    //The drawing sent by the drawer to the guessers
-    var bitmap by remember { mutableStateOf(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888).asImageBitmap()) }
-    dbrefImages.addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            if (snapshot.exists()) {
-                val decoded = BitmapHandler.stringToBitmap(snapshot.getValue<String>()!!)
-                if (decoded != null) bitmap = decoded.asImageBitmap()
-            }
+    //the current round and turn (in the round)
+    val dbrefCurrent = dbrefGames.child("Current")
+    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_round"))
+        .thenAccept {
+            roundNb = it.toInt()
         }
-        override fun onCancelled(databaseError: DatabaseError) {
-            // do nothing
+    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_turn"))
+        .thenAccept {
+            turnNb = it.toInt()
         }
-    })
 
     //the correct answer of the round
     answer = ""
-    dbrefGames.child("topic").addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(dataSnapshot: DataSnapshot) {
-            if (dataSnapshot.exists()) {
-                answer = dataSnapshot.getValue<String>()!!
-            }
+    val dbrefAnswer = dbrefGames.child("topics/$roundNb/$turnNb/topic")
+    FirebaseUtilities.databaseGet(dbrefAnswer)
+        .thenAccept {
+            answer = it
         }
-        override fun onCancelled(databaseError: DatabaseError) {
-            // do nothing
-        }
-    })
 
     //the username of the current user
     var username = ""
@@ -253,6 +250,21 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
         .thenAccept {
             currentArtist.value = it
         }
+
+    //The drawing sent by the drawer to the guessers
+    val dbrefImages = dbrefGames.child("topics/$roundNb/$turnNb/drawing")
+    var bitmap by remember { mutableStateOf(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888).asImageBitmap()) }
+    dbrefImages.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                val decoded = BitmapHandler.stringToBitmap(snapshot.getValue<String>()!!)
+                if (decoded != null) bitmap = decoded.asImageBitmap()
+            }
+        }
+        override fun onCancelled(databaseError: DatabaseError) {
+            // do nothing
+        }
+    })
 
     MaterialTheme {
         Column(
@@ -294,7 +306,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
                     .align(Alignment.End)
                     .testTag("guessesList")
             ) {
-                GuessesList(guesses = guesses, answer = answer, dbrefGames = dbrefGames,
+                GuessesList(guesses = guesses, dbrefGames = dbrefGames,
                     artistId = currentArtist.value)
             }
 
@@ -319,7 +331,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
 @Composable
 fun CorrectAnswerScreen(gs: Guess) {
     val currentUser = FirebaseAuth.getInstance().currentUser?.uid
-    val guesser = Firebase.database.getReference("Profiles/${gs.guesser}").child("uid").get().toString()
+    val guesser = Firebase.database.getReference("profiles/${gs.guesser}").child("uid").get().toString()
 
     val sb = StringBuilder()
     if (currentUser.equals(guesser)) {

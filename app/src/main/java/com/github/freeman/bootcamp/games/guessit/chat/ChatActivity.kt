@@ -31,11 +31,11 @@ import kotlin.random.Random
 
 // Any activities should work with the following code for chat
 class ChatActivity : ComponentActivity() {
-    private val chatId = "TestChatId01" // TODO: will be set when a game is created (with intent for example)
-    private val dbref = Firebase.database.getReference("chat/$chatId")
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val gameId = intent.getStringExtra("gameId")
+        val dbref = Firebase.database.getReference("games/$gameId/chat")
 
         setContent {
             BootcampComposeTheme {
