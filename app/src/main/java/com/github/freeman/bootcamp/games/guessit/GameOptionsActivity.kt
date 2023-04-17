@@ -252,23 +252,6 @@ fun next(context: Context) {
 
                 dbref.child(gameId!!).setValue(gameData)
 
-//                dbref.child("lobby_name").setValue("$it's room")
-//
-//                dbref.child("Players/$userId/score").setValue(0)
-//
-//                dbref.child("Current/correct_guesses").setValue(0)
-//                dbref.child("Current/current_state").setValue("waiting for players")
-//                dbref.child("Current/current_artist").setValue(userId)
-//                dbref.child("Current/current_round").setValue(0)
-//                dbref.child("Current/current_turn").setValue(0)
-//
-//                dbref.child("Parameters/nb_rounds").setValue(selection)
-//                dbref.child("Parameters/nb_players").setValue(1)
-//                dbref.child("Parameters/host_id").setValue(userId)
-//                dbref.child("Parameters/category").setValue(selectedCategory)
-
-
-
                 context.startActivity(Intent(context, WaitingRoomActivity::class.java).apply {
                     putExtra("gameId", gameId)
                     for (i in 0 until selectedTopics.size) {

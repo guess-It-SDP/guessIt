@@ -21,7 +21,7 @@ class GuessingTest {
     fun initScreenWithDatabase() {
         FirebaseEmulator.init()
         val guessGameId = "GameTestGuessesId"
-        val database = FirebaseSingletons.database.get().database.getReference("Games/$guessGameId/Guesses")
+        val database = FirebaseSingletons.database.get().database.getReference("games/$guessGameId/guesses")
 
         composeRule.setContent {
             BootcampComposeTheme {
@@ -62,7 +62,6 @@ class GuessingTest {
     fun guessIsDisplayedInGuessingList() {
         composeRule.onNode(hasSetTextAction()).performTextInput("House")
         composeRule.onNodeWithTag("guessButton").performClick()
-        //composeRule.onNodeWithTag("guessItem").onChild().assertIsDisplayed()
     }
 
     @Test

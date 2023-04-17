@@ -35,6 +35,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
@@ -44,6 +45,8 @@ class LobbyListActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val dbRef = Firebase.database.reference
+
         setContent {
             BootcampComposeTheme {
                 Column {
@@ -52,7 +55,7 @@ class LobbyListActivity: ComponentActivity() {
                     Surface(
                         modifier = Modifier.fillMaxSize(), color = Color(0xFFF1F1F1)
                     ) {
-                        LobbyList()
+                        LobbyList(dbRef)
                     }
                 }
             }
@@ -114,6 +117,7 @@ fun ListItem(
 
     Column(
         modifier = modifier
+            .testTag("listItem")
             .fillMaxWidth()
             .padding(8.dp)
             .clip(RoundedCornerShape(5.dp))
@@ -153,8 +157,8 @@ fun ListItem(
 }
 
 @Composable
-fun LobbyList() {
-    val dbRef = Firebase.database.getReference("games")
+fun LobbyList(database: DatabaseReference) {
+    val dbRef = database.child("games")
     val userId = Firebase.auth.uid
     val lobbies = remember { mutableStateListOf<Lobby>() }
     val context = LocalContext.current
@@ -162,7 +166,6 @@ fun LobbyList() {
     dbRef.addChildEventListener(object: ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
             if (snapshot.value != null) {
-                Toast.makeText(context, "lobby added", Toast.LENGTH_SHORT).show()
                 val gameInfo = snapshot.value as HashMap<*, *>
                 val id = snapshot.key!!
                 try {
@@ -186,11 +189,9 @@ fun LobbyList() {
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-            Toast.makeText(context, "lobby changed", Toast.LENGTH_SHORT).show()
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
-            Toast.makeText(context, "lobby removed", Toast.LENGTH_SHORT).show()
             for (lobby in lobbies) {
                 if (lobby.id == snapshot.key!!) {
                     lobbies.remove(lobby)
@@ -200,16 +201,15 @@ fun LobbyList() {
         }
 
         override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-            Toast.makeText(context, "lobby moved", Toast.LENGTH_SHORT).show()
         }
 
         override fun onCancelled(error: DatabaseError) {
-            Toast.makeText(context, "lobby cancelled", Toast.LENGTH_SHORT).show()
         }
     })
 
     Column(
         modifier = Modifier
+            .testTag("lobbyList")
             .fillMaxSize()
             .padding(8.dp)
     ) {

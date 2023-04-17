@@ -43,10 +43,12 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 
 class WaitingRoomActivity: ComponentActivity() {
@@ -61,8 +63,10 @@ class WaitingRoomActivity: ComponentActivity() {
         val gameId = intent.getStringExtra("gameId").toString()
         val allTopics = ArrayList<String>()
 
-        val dbRef = Firebase.database.getReference("games/$gameId")
+        val database = Firebase.database.reference
+        val dbRef = database.child("games/$gameId")
 
+        val storage = Firebase.storage.reference
 
 
         for (i in 0 until GameOptionsActivity.NB_TOPICS) {
@@ -121,44 +125,39 @@ class WaitingRoomActivity: ComponentActivity() {
             })
 
 
-            val playersRef = Firebase.database.getReference("games/$gameId/players")
+            val playersRef = database.child("games/$gameId/players")
             val playersListener = playersRef.addChildEventListener(object: ChildEventListener {
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                     if (snapshot.key !in players) {
-                        Toast.makeText(context, "player added", Toast.LENGTH_SHORT).show()
                         players.add(snapshot.key!!)
 
 //                        if (userId != hostId.value) {
-                            Firebase.database.getReference("games/$gameId/parameters/nb_players").setValue(players.size)
+                            database.child("games/$gameId/parameters/nb_players").setValue(players.size)
 //                        }
                     }
 
                 }
 
                 override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    Toast.makeText(context, "player changed", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onChildRemoved(snapshot: DataSnapshot) {
-                    Toast.makeText(context, "player removed", Toast.LENGTH_SHORT).show()
                     players.remove(snapshot.key)
                     if (snapshot.key == hostId.value && !players.isEmpty()) {
                         val newHost = players.toList()[0]
-                        Firebase.database.getReference("games/$gameId/parameters/host_id").setValue(players.toList()[0])
+                        database.child("games/$gameId/parameters/host_id").setValue(players.toList()[0])
                         hostId.value = newHost
                     }
 //                    if (userId != hostId.value) {
-                        Firebase.database.getReference("games/$gameId/parameters/nb_players").setValue(players.size)
+                        database.child("games/$gameId/parameters/nb_players").setValue(players.size)
 //                    }
 
                 }
 
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                    Toast.makeText(context, "player moved", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(context, "player cancelled", Toast.LENGTH_SHORT).show()
                 }
             })
 
@@ -169,21 +168,28 @@ class WaitingRoomActivity: ComponentActivity() {
                 Column{
                     TopAppbarWaitingRoom(
                         gameId = gameId,
+                        dbRef = dbRef,
                         hostId = hostId,
                         players = players,
                         dbListener = dbListener,
                         playersListener = playersListener
                     )
 
-                    RoomInfo(gameId = gameId)
+                    RoomInfo(
+                        dbRef = dbRef
+                    )
 
                     PlayerList(
                         modifier = Modifier.weight(1f),
+                        dbRef = database,
+                        storageRef = storage,
                         players = players,
                     )
 
-//                    Spacer(modifier = Modifier.weight(1f))
-                    StartButton(gameId, players)
+                    StartButton(
+                        dbRef = database,
+                        players = players
+                    )
                 }
             }
 
@@ -210,9 +216,15 @@ class WaitingRoomActivity: ComponentActivity() {
 }
 
 @Composable
-fun TopAppbarWaitingRoom(context: Context = LocalContext.current, gameId: String, hostId: MutableState<String>, players: MutableCollection<String>, dbListener: ValueEventListener, playersListener: ChildEventListener) {
+fun TopAppbarWaitingRoom(
+    context: Context = LocalContext.current, gameId: String,
+    dbRef: DatabaseReference,
+    hostId: MutableState<String>,
+    players: MutableCollection<String>,
+    dbListener: ValueEventListener,
+    playersListener: ChildEventListener
+) {
     val userId = Firebase.auth.uid
-    val dbRef = Firebase.database.getReference("games/$gameId")
     val playersRef = dbRef.child("players")
     val gameStateRef = dbRef.child("current/current_state")
 
@@ -228,7 +240,9 @@ fun TopAppbarWaitingRoom(context: Context = LocalContext.current, gameId: String
         backgroundColor = MaterialTheme.colors.background,
         elevation = 4.dp,
         navigationIcon = {
-            IconButton(onClick = {
+            IconButton(
+                modifier = Modifier.testTag("topAppBarBack"),
+                onClick = {
                 if (userId == hostId.value && players.size == 1) {
                     gameStateRef.setValue("lobby closed")
                 } else {
@@ -251,8 +265,11 @@ fun TopAppbarWaitingRoom(context: Context = LocalContext.current, gameId: String
 }
 
 @Composable
-fun RoomInfo(modifier: Modifier = Modifier, gameId: String) {
-    val dbRef = Firebase.database.getReference("games/$gameId")
+fun RoomInfo(
+    modifier: Modifier = Modifier,
+    dbRef: DatabaseReference,
+) {
+//    val dbRef = Firebase.database.getReference("games/$gameId")
 
     val lobbyName = remember { mutableStateOf("") }
     val nbRounds = remember { mutableStateOf(0) }
@@ -272,6 +289,7 @@ fun RoomInfo(modifier: Modifier = Modifier, gameId: String) {
 
     Column(
         modifier = modifier
+            .testTag("roomInfo")
             .padding(8.dp)
             .clip(RoundedCornerShape(5.dp))
             .background(Color.LightGray)
@@ -343,23 +361,29 @@ fun RoomInfo(modifier: Modifier = Modifier, gameId: String) {
 }
 
 @Composable
-fun PlayerList(modifier: Modifier = Modifier, players: MutableCollection<String>) {
+fun PlayerList(
+    modifier: Modifier = Modifier,
+    dbRef: DatabaseReference,
+    storageRef: StorageReference,
+    players: MutableCollection<String>
+) {
 
-
-
-    LazyColumn (modifier){
+    LazyColumn (
+        modifier = modifier
+            .testTag("playerList")
+    ){
         items(players.toList()) { playerId ->
             val picture = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
-            val storageRef = Firebase.storage.getReference("profiles/$playerId/picture/pic.jpg")
+            val profilePicRef = storageRef.child("profiles/$playerId/picture/pic.jpg")
             LaunchedEffect(Unit) {
-                storageGet(storageRef)
+                storageGet(profilePicRef)
                     .thenAccept {
                         picture.value = it
                     }
             }
 
             val username = remember { mutableStateOf("") }
-            databaseGet(Firebase.database.getReference("profiles/$playerId/username"))
+            databaseGet(dbRef.child("profiles/$playerId/username"))
                 .thenAccept {
                     username.value = it
                 }
@@ -380,6 +404,7 @@ fun PlayerList(modifier: Modifier = Modifier, players: MutableCollection<String>
 fun PlayerDisplay(player: PlayerData) {
     Row(
         modifier = Modifier
+            .testTag("playerDisplay")
             .fillMaxWidth()
             .padding(8.dp)
             .clip(RoundedCornerShape(10.dp))
@@ -425,8 +450,11 @@ fun PlayerDisplay(player: PlayerData) {
 }
 
 @Composable
-fun StartButton(gameId: String, players: MutableCollection<String>) {
-    val dbRef = Firebase.database.getReference("games/$gameId")
+fun StartButton(
+    dbRef: DatabaseReference,
+    players: MutableCollection<String>
+) {
+//    val dbRef = Firebase.database.getReference("games/$gameId")
 
     val userId = Firebase.auth.uid
 
@@ -448,6 +476,8 @@ fun StartButton(gameId: String, players: MutableCollection<String>) {
 
     ){
         ElevatedButton(
+            modifier = Modifier
+                .testTag("startButton"),
             enabled = userId == hostId && players.size >= 2,
             onClick = {
                 dbRef.child("current/current_state").setValue("play game")
