@@ -51,9 +51,6 @@ import java.util.*
 
 class GameOptionsActivity : ComponentActivity() {
 
-//    private val gameId = UUID.randomUUID().toString()
-//    private val dbref = Firebase.database.getReference("Games/$gameId")
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -232,8 +229,6 @@ fun next(context: Context, database: DatabaseReference) {
     if (categorySize <= 0) {
         Toast.makeText(context, "Please first select a category", Toast.LENGTH_SHORT).show()
     } else {
-
-
 
         FirebaseUtilities.databaseGet(database.child("profiles/$userId/username"))
             .thenAccept {

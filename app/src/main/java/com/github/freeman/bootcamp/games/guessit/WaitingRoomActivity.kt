@@ -184,7 +184,7 @@ class WaitingRoomActivity: ComponentActivity() {
                     )
 
                     StartButton(
-                        dbRef = database,
+                        dbRef = dbRef,
                         players = players
                     )
                 }
@@ -455,17 +455,16 @@ fun StartButton(
     players: MutableCollection<String>
 ) {
 
-    val userId = Firebase.auth.uid
+    var userId = Firebase.auth.uid
+    userId = userId ?: "null"
 
-    var hostId by remember { mutableStateOf("") }
+
+    val hostId = remember { mutableStateOf("") }
     databaseGet(dbRef.child("parameters/host_id")).thenAccept {
-        hostId = it
+        hostId.value = it
     }
 
-    var artistId by remember { mutableStateOf("") }
-    databaseGet(dbRef.child("current/current_artist")).thenAccept {
-        artistId = it
-    }
+
 
     Column (
         modifier = Modifier
@@ -478,7 +477,7 @@ fun StartButton(
             modifier = Modifier
                 .testTag("startButton"),
             // the game can start if two or more players are present
-            enabled = userId == hostId && players.size >= 2,
+            enabled = userId == hostId.value && players.size >= 2,
             onClick = {
                 dbRef.child("current/current_state").setValue("play game")
             }
