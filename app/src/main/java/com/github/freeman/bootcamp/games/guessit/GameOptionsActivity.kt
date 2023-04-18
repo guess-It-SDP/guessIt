@@ -246,7 +246,8 @@ fun next(context: Context, database: DatabaseReference) {
                         current_artist = userId,
                         current_round = 0,
                         current_state = "waiting for players",
-                        current_turn = 0
+                        current_turn = 0,
+                        current_timer = "useless"
                     ),
                     Parameters = Parameters(
                         category = selectedCategory,

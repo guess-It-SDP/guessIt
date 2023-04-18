@@ -17,8 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 class CreateJoinActivity: ComponentActivity() {
@@ -32,10 +34,26 @@ class CreateJoinActivity: ComponentActivity() {
                 Column (
                     modifier = Modifier
                         .fillMaxSize()
-                        .testTag("mainMenuScreen"),
+                        .testTag("createJoinScreen"),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
+
+                    Text(
+                        modifier = Modifier
+                            .testTag("createJoinText1"),
+                        text = "Let's have fun!",
+                        fontSize = 30.sp,
+                        fontStyle = FontStyle.Italic
+                    )
+                    Spacer(modifier = Modifier.size(60.dp))
+                    Text(
+                        modifier = Modifier
+                            .testTag("createJoinText2"),
+                        fontSize = 20.sp,
+                        text = "What do you want to do?",
+                    )
+                    Spacer(modifier = Modifier.size(15.dp))
                     CreateGameButton()
                     Spacer(modifier = Modifier.size(6.dp))
                     JoinGameButton()
@@ -79,7 +97,7 @@ fun CreateGameButton() {
     ElevatedButton(
         onClick = { context.startActivity(Intent(context, GameOptionsActivity::class.java)) }
     ) {
-        Text("Create")
+        Text("Create a new game")
     }
 }
 
@@ -89,6 +107,6 @@ fun JoinGameButton() {
     ElevatedButton(
         onClick = { context.startActivity(Intent(context, LobbyListActivity::class.java)) }
     ) {
-        Text("Join")
+        Text("Join an existing game")
     }
 }

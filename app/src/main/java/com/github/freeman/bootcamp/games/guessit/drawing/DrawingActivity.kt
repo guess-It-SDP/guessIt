@@ -50,6 +50,9 @@ class DrawingActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra("gameId").toString()
         val dbref = Firebase.database.getReference("games/$gameId")
+
+        dbref.child("current/current_timer").setValue("inprogress")
+
         setContent {
             DrawingScreen(dbref)
         }
@@ -95,6 +98,7 @@ fun DrawingScreen(
         Column {
             // Controls bar
             ControlsBar(
+                dbref,
                 drawController,
                 onColorClick =
                 {
@@ -167,6 +171,7 @@ fun DrawingScreen(
 // The controls bar offers buttons that allow to undo, redo, select color and stoke width.
 @Composable
 private fun ControlsBar(
+    dbref: DatabaseReference,
     drawController: DrawController,
     onColorClick: () -> Unit,
     onWidthClick: () -> Unit,
@@ -174,8 +179,10 @@ private fun ControlsBar(
     redoVisibility: MutableState<Boolean>,
     colorValue: MutableState<Color>,
 ) {
+    val dbrefTimer = dbref.child("current/current_timer")
+
     Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-        TimerScreen(100, 60L)
+        TimerScreen(dbrefTimer,100, 10L)
         MenuItems(
             R.drawable.ic_undo,
             LocalContext.current.getString(R.string.undo),

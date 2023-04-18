@@ -179,7 +179,7 @@ fun DrawingButton() {
     val context = LocalContext.current
     MainMenuButton(
         testTag = "drawingButton",
-        onClick = { drawing(context, "testgameId") },
+        onClick = { drawing(context, "testgameid") },
         text = DRAWING
     )
 }
