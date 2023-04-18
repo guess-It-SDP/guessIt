@@ -21,7 +21,12 @@ object FirebaseUtilities {
         val future = CompletableFuture<String>()
         dbRef.get().addOnSuccessListener {
             if (it.value == null) future.completeExceptionally(NoSuchFieldException())
-            else future.complete(it.value as String)
+            else if (it.value is Long) {
+                future.complete((it.value as Long).toString())
+            } else {
+                future.complete(it.value as String)
+            }
+
         }.addOnFailureListener {
             future.completeExceptionally(it)
         }
@@ -48,7 +53,7 @@ object FirebaseUtilities {
 
     /**
      * Gets the value located in the given database reference
-     * @param dbref database reference
+     * @param dbRef database reference
      * @return a future of the value of type Map<String, Int> contained in the database
      */
     fun databaseGetMap(dbRef: DatabaseReference): CompletableFuture<Map<*, *>> {

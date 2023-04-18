@@ -134,7 +134,7 @@ fun DrawingScreen(
                     },
                     valueRange = 5f..50f,
                     colors = SliderDefaults.colors(
-                            thumbColor = MaterialTheme.colors.primaryVariant,
+                        thumbColor = MaterialTheme.colors.primaryVariant,
                         activeTrackColor = MaterialTheme.colors.primary,
                         inactiveTrackColor = MaterialTheme.colors.secondary
                     ),
@@ -160,8 +160,6 @@ fun DrawingScreen(
                 undoVisibility.value = undoCount != 0
                 redoVisibility.value = redoCount != 0
             }
-
-
         }
     }
 }

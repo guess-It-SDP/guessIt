@@ -12,10 +12,10 @@ import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.c
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.categorySize
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedTopics
 import com.github.freeman.bootcamp.games.guessit.GameOptionsScreen
-import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity
+import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
+import com.google.firebase.database.DatabaseReference
 import junit.framework.TestCase.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -23,8 +23,6 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class GameOptionsActivityTest {
-    private val gameId = "TestGameId"
-    private val dbref = Firebase.database.getReference("Games/$gameId")
 
     @get:Rule
     val composeRule = createComposeRule()
@@ -67,10 +65,11 @@ class GameOptionsActivityTest {
     @Test
     fun nextButtonsIntentIsSent() {
         Intents.init()
+
         setGameOptionsScreen()
         categorySize = 10
         composeRule.onNode(hasTestTag("nextButton")).performClick()
-        Intents.intended(IntentMatchers.hasComponent(TopicSelectionActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(WaitingRoomActivity::class.java.name))
         Intents.release()
     }
 
@@ -105,10 +104,18 @@ class GameOptionsActivityTest {
     }
 
     private fun setGameOptionsScreen() {
+        val dbRef = initDatabase()
+        dbRef.child("profiles/null/email").setValue("test@mail.abc")
+        dbRef.child("profiles/null/username").setValue("test_username")
         composeRule.setContent {
             BootcampComposeTheme {
-                GameOptionsScreen(dbref, gameId)
+                GameOptionsScreen(dbRef)
             }
         }
+    }
+
+    private fun initDatabase(): DatabaseReference {
+        FirebaseEmulator.init()
+        return FirebaseSingletons.database.get().database.reference
     }
 }

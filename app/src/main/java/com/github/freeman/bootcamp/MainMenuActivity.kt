@@ -25,6 +25,7 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
+import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
@@ -83,7 +84,7 @@ fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String) {
 
 
 fun play(context: Context) {
-    context.startActivity(Intent(context, GameOptionsActivity::class.java))
+    context.startActivity(Intent(context, CreateJoinActivity::class.java))
 }
 
 @Composable

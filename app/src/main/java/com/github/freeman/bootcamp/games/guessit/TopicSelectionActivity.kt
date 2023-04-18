@@ -26,6 +26,8 @@ import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companio
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
+import com.google.firebase.auth.ktx.auth
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
@@ -53,11 +55,10 @@ class TopicSelectionActivity : ComponentActivity() {
 
     companion object {
         const val SELECT_TOPIC = "Select the topic you wish to draw"
-        var topics = mutableListOf<String>("Topic1", "Topic2", "Topic3")
+        var topics = mutableListOf("Topic1", "Topic2", "Topic3")
         var roundNb = 0
         var turnNb = 0
     }
-
 }
 
 @Composable
