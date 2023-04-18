@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -38,6 +39,8 @@ import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.s
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedTopics
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selection
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
