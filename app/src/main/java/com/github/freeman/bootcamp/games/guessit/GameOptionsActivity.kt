@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -238,7 +237,6 @@ fun next(context: Context, database: DatabaseReference) {
 
         FirebaseUtilities.databaseGet(database.child("profiles/$userId/username"))
             .thenAccept {
-                Log.d("user id", userId.toString())
 
                 val gameData = GameData(
                     Current = Current(
