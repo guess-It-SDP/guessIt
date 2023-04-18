@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -278,7 +277,6 @@ fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String
         }
 
         override fun onCancelled(databaseError: DatabaseError) {
-            throw databaseError.toException()
         }
     })
 
@@ -298,7 +296,6 @@ fun fetchTopics(setTopics: (topics: Array<String>) -> Unit) {
         }
 
         override fun onCancelled(databaseError: DatabaseError) {
-            throw databaseError.toException()
         }
     })
 }
