@@ -2,17 +2,13 @@ package com.github.freeman.bootcamp
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NB_ROUNDS
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NEXT
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.ROUNDS_SELECTION
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.categories
-import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.categorySize
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedTopics
 import com.github.freeman.bootcamp.games.guessit.GameOptionsScreen
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
 import com.google.firebase.database.DatabaseReference
@@ -61,20 +57,6 @@ class GameOptionsActivityTest {
             composeRule.onNode(hasTestTag("categoryButtonText$category"), useUnmergedTree = true).assertTextContains(category)
         }
     }
-
-//    @Test
-//    fun nextButtonsIntentIsSent() {
-//        Intents.init()
-//
-//        setGameOptionsScreen()
-//        categorySize = 5
-//        composeRule.onNodeWithText("5").performClick()
-//        composeRule.onNodeWithText("Objects").performClick()
-//        composeRule.waitForIdle()
-//        composeRule.onNode(hasTestTag("nextButton")).performClick()
-//        Intents.intended(IntentMatchers.hasComponent(WaitingRoomActivity::class.java.name))
-//        Intents.release()
-//    }
 
     @Test
     fun nextButtonHasClickAction() {
