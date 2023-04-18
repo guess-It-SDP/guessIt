@@ -215,7 +215,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
     })
 
     //the current round and turn (in the round)
-    val dbrefCurrent = dbrefGames.child("Current")
+    val dbrefCurrent = dbrefGames.child("current")
     FirebaseUtilities.databaseGet(dbrefCurrent.child("current_round"))
         .thenAccept {
             roundNb = it.toInt()
