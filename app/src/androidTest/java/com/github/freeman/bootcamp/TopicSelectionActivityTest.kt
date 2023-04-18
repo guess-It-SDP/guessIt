@@ -37,6 +37,12 @@ class TopicSelectionActivityTest {
     }
 
     @Test
+    fun refreshButtonIsDisplayed() {
+        setTopicSelectionScreen()
+        composeRule.onNodeWithTag("refreshButton").assertIsDisplayed()
+    }
+
+    @Test
     fun backButtonHasClickAction() {
         setTopicSelectionScreen()
         composeRule.onNode(hasTestTag("topicSelectionBackButton")).assertHasClickAction()

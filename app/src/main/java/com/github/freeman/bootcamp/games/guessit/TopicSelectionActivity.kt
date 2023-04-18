@@ -32,7 +32,6 @@ import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companio
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGetList
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
@@ -66,7 +65,8 @@ class TopicSelectionActivity : ComponentActivity() {
     }
 }
 
-fun refreshTopics(dbref: DatabaseReference, topicList: List<MutableState<String>>) {
+
+private fun refreshTopics(dbref: DatabaseReference, topicList: List<MutableState<String>>) {
     databaseGet(dbref.child("parameters/category"))
         .thenAccept { category ->
 
@@ -134,11 +134,11 @@ fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, gameI
 fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
     //the current round and turn (in the round)
     val dbrefCurrent = dbref.child("Current")
-    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_round"))
+    databaseGet(dbrefCurrent.child("current_round"))
         .thenAccept {
             roundNb = it.toInt()
         }
-    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_turn"))
+    databaseGet(dbrefCurrent.child("current_turn"))
         .thenAccept {
             turnNb = it.toInt()
         }
@@ -166,6 +166,7 @@ fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
         Spacer(modifier = Modifier.size(20.dp))
         TopicButton(dbref, topic2, 3, gameId)
 
+        // refresh button
         IconButton(
             modifier = Modifier
                 .weight(weight = 1f, fill = false)
