@@ -196,7 +196,7 @@ class WaitingRoomTest {
                     )
 
                     StartButton(
-                        dbRef = database,
+                        dbRef = dbRef,
                         players = players
                     )
                 }
