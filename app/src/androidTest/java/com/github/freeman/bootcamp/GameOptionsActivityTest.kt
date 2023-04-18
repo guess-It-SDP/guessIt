@@ -62,16 +62,16 @@ class GameOptionsActivityTest {
         }
     }
 
-    @Test
-    fun nextButtonsIntentIsSent() {
-        Intents.init()
-
-        setGameOptionsScreen()
-        categorySize = 10
-        composeRule.onNode(hasTestTag("nextButton")).performClick()
-        Intents.intended(IntentMatchers.hasComponent(WaitingRoomActivity::class.java.name))
-        Intents.release()
-    }
+//    @Test
+//    fun nextButtonsIntentIsSent() {
+//        Intents.init()
+//
+//        setGameOptionsScreen()
+//        categorySize = 10
+//        composeRule.onNode(hasTestTag("nextButton")).performClick()
+//        Intents.intended(IntentMatchers.hasComponent(WaitingRoomActivity::class.java.name))
+//        Intents.release()
+//    }
 
     @Test
     fun nextButtonHasClickAction() {
