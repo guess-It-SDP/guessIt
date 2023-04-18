@@ -231,8 +231,6 @@ fun next(context: Context, database: DatabaseReference) {
         Toast.makeText(context, "Please first select a category", Toast.LENGTH_SHORT).show()
     } else {
 
-
-
         FirebaseUtilities.databaseGet(database.child("profiles/$userId/username"))
             .thenAccept {
 
