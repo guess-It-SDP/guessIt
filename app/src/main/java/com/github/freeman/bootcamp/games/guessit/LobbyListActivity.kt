@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -14,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
@@ -42,6 +40,9 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
+/**
+ * Shows all the available lobbies that a player can join
+ */
 class LobbyListActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +55,8 @@ class LobbyListActivity: ComponentActivity() {
                     TopAppbarLobbies()
 
                     Surface(
-                        modifier = Modifier.fillMaxSize(), color = Color(0xFFF1F1F1)
+                        modifier = Modifier.fillMaxSize(),
+                        color = Color(0xFFF1F1F1)
                     ) {
                         LobbyList(dbRef)
                     }
@@ -104,6 +106,7 @@ fun ListItem(
     val nbPlayerRef = dbRef.child("games/${lobby.id}/parameters/nb_players")
 
 
+    // changes dynamically the number of players in a lobby
     nbPlayerRef.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
@@ -165,6 +168,7 @@ fun LobbyList(database: DatabaseReference) {
     val lobbies = remember { mutableStateListOf<Lobby>() }
     val context = LocalContext.current
 
+    // automatically fetches data from available lobbies in database
     dbRef.addChildEventListener(object: ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
             if (snapshot.value != null) {
@@ -183,9 +187,6 @@ fun LobbyList(database: DatabaseReference) {
                 } catch (_: Exception) {
 
                 }
-
-
-
             }
 
         }
@@ -222,10 +223,9 @@ fun LobbyList(database: DatabaseReference) {
                     dbRef = dbRef,
                     backgroundColor = Color.White,
                     onItemClick = {
-//                        Log.i("LobbyList", "Info $lobby")
+                        // joins a lobby
                         databaseGet(dbRef.child("${lobby.id}/parameters/nb_players"))
                             .thenAccept {
-                                //dbRef.child("${lobby.id}/Parameters/nb_players").setValue(it.toInt() + 1)
                                 dbRef.child("${lobby.id}/players/$userId/score").setValue(0)
 
                                 val intent = Intent(context, WaitingRoomActivity::class.java)
@@ -239,4 +239,17 @@ fun LobbyList(database: DatabaseReference) {
     }
 }
 
-data class Lobby(val id: String, val name: String, val nbPlayer: Int, val nbRounds: Int)
+/**
+ * Represents a lobby item to be displayed in the lobby list
+ *
+ * @param id lobby id
+ * @param name lobby name
+ * @param nbPlayer numbers of player in the lobby
+ * @param nbRounds numbers of rounds chosen for the game
+ */
+data class Lobby(
+    val id: String,
+    val name: String,
+    val nbPlayer: Int,
+    val nbRounds: Int
+)

@@ -232,7 +232,6 @@ fun next(context: Context, database: DatabaseReference) {
 
         FirebaseUtilities.databaseGet(database.child("profiles/$userId/username"))
             .thenAccept {
-                Log.d("user id", userId.toString())
 
                 val gameData = GameData(
                     Current = Current(
