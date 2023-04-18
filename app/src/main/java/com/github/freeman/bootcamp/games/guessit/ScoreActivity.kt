@@ -37,7 +37,7 @@ class ScoreActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val gameId = "TestGameId"
+        val gameId = "testgameid"
         val dbRef = Firebase.database.getReference("games/$gameId")
         setContent {
             BootcampComposeTheme {

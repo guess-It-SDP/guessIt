@@ -49,14 +49,13 @@ import java.util.*
 
 class GameOptionsActivity : ComponentActivity() {
 
-    private val gameId = "TestGameId"//UUID.randomUUID().toString()
-    private val dbref = Firebase.database.getReference("games/$gameId")
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val dbRef = Firebase.database.reference
         setContent {
             BootcampComposeTheme {
-                GameOptionsScreen(dbref, gameId)
+                GameOptionsScreen(dbRef)
             }
         }
     }
@@ -207,31 +206,64 @@ fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> U
 }
 
 @Composable
-fun NextButton(dbref: DatabaseReference, gameId: String) {
+fun NextButton(dbRef: DatabaseReference) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("nextButton"),
         onClick = {
-            next(context, dbref, gameId)
+            next(context, dbRef)
         }
     ) {
         Text(NEXT)
     }
 }
 
-fun next(context: Context, dbref: DatabaseReference, gameId: String) {
+fun next(context: Context, database: DatabaseReference) {
+    var userId = Firebase.auth.uid
+    userId = userId ?: "null"
+    val dbref = database.child("games/")
+    val gameId = dbref.push().key
+
     if (categorySize <= 0) {
         Toast.makeText(context, "Please first select a category", Toast.LENGTH_SHORT).show()
     } else {
-        dbref.child("nb_rounds").setValue(selection)
-        context.startActivity(Intent(context, TopicSelectionActivity::class.java).apply {
-            putExtra("gameId", gameId)
-            for (i in 0 until selectedTopics.size) {
-                putExtra("topic$i", selectedTopics[i])
+
+
+
+        FirebaseUtilities.databaseGet(database.child("profiles/$userId/username"))
+            .thenAccept {
+                Log.d("user id", userId.toString())
+
+                val gameData = GameData(
+                    Current = Current(
+                        correct_guesses = 0,
+                        current_artist = userId,
+                        current_round = 0,
+                        current_state = "waiting for players",
+                        current_turn = 0
+                    ),
+                    Parameters = Parameters(
+                        category = selectedCategory,
+                        host_id = userId,
+                        nb_players = 1,
+                        nb_rounds = selection
+                    ),
+                    Players = mapOf(Pair(userId, Player(0))),
+                    lobby_name = "$it's room"
+                )
+
+                dbref.child(gameId!!).setValue(gameData)
+
+                context.startActivity(Intent(context, WaitingRoomActivity::class.java).apply {
+                    putExtra("gameId", gameId)
+                    for (i in 0 until selectedTopics.size) {
+                        putExtra("topic$i", selectedTopics[i])
+                    }
+                })
+                val activity = (context as? Activity)
+                activity?.finish()
             }
-        })
-        val activity = (context as? Activity)
-        activity?.finish()
+
     }
 }
 
@@ -293,7 +325,7 @@ fun backToMainMenu(context: Context) {
 }
 
 @Composable
-fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
+fun GameOptionsScreen(dbRef: DatabaseReference) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -313,7 +345,7 @@ fun GameOptionsScreen(dbref: DatabaseReference, gameId: String) {
             text = ROUNDS_SELECTION
         )
         RoundsDisplay()
-        NextButton(dbref, gameId)
+        NextButton(dbRef)
     }
 
     Column(

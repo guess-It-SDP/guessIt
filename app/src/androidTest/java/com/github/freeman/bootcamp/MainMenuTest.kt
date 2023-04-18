@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
@@ -55,7 +56,7 @@ class MainMenuTest {
         Intents.init()
 
         composeRule.onNode(hasTestTag("playButton")).performClick()
-        Intents.intended(IntentMatchers.hasComponent(GameOptionsActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(CreateJoinActivity::class.java.name))
 
         Intents.release()
     }

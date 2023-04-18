@@ -25,6 +25,7 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
+import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
@@ -32,6 +33,7 @@ import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.profileExists
 import com.github.freeman.bootcamp.videocall.VideoCallActivity
 import com.google.firebase.auth.FirebaseUser
@@ -82,7 +84,7 @@ fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String) {
 
 
 fun play(context: Context) {
-    context.startActivity(Intent(context, GameOptionsActivity::class.java))
+    context.startActivity(Intent(context, CreateJoinActivity::class.java))
 }
 
 @Composable
@@ -117,7 +119,9 @@ fun SettingsButton() {
 
 
 fun chatTest(context: Context) {
-    context.startActivity(Intent(context, ChatActivity::class.java))
+    context.startActivity(Intent(context, ChatActivity::class.java).apply {
+        putExtra("gameId", "testgameid")
+    })
 }
 
 @Composable
@@ -131,7 +135,7 @@ fun ChatButton() {
 }
 
 
-fun guessing(context: Context, gameId: String, answer: String) {
+fun guessing(context: Context, gameId: String) {
     context.startActivity(Intent(context, GuessingActivity::class.java).apply {
         putExtra("gameId", gameId)
     })
@@ -143,7 +147,7 @@ fun GuessingButton() {
     MainMenuButton(
         testTag = "guessingButton",
         // TODO: Add the correct game ID and correct answer
-        onClick = { guessing(context, "TestGameId", "Flower") },
+        onClick = { guessing(context, "testgameid") },
         text = GUESSING
     )
 }
@@ -164,8 +168,10 @@ fun AudioRecordingButton() {
 }
 
 
-fun drawing(context: Context) {
-    context.startActivity(Intent(context, DrawingActivity::class.java))
+fun drawing(context: Context, gameId: String) {
+    context.startActivity(Intent(context, DrawingActivity::class.java).apply {
+        putExtra("gameId", gameId)
+    })
 }
 
 @Composable
@@ -173,7 +179,7 @@ fun DrawingButton() {
     val context = LocalContext.current
     MainMenuButton(
         testTag = "drawingButton",
-        onClick = { drawing(context) },
+        onClick = { drawing(context, "testgameId") },
         text = DRAWING
     )
 }

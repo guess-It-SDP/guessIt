@@ -26,9 +26,15 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NB_TOPICS
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.SELECT_TOPIC
+import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.topics
+import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.turnNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
+import com.google.firebase.auth.ktx.auth
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGetList
 import com.google.firebase.database.DatabaseReference
@@ -41,14 +47,16 @@ class TopicSelectionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra("gameId").toString()
-        dbref = Firebase.database.getReference("games/testgameid") //TODO change testgameid to $gameId when lobbies are merged
+        dbref = Firebase.database.getReference("games/$gameId")
         topics.clear()
         for (i in 0 until NB_TOPICS) {
             topics.add(intent.getStringExtra("topic$i").toString())
         }
+        val roundNb = intent.getIntExtra("roundNb", 5)
+        val turnNb = intent.getIntExtra("roundNb", 5)
         setContent {
             BootcampComposeTheme {
-                TopicSelectionScreen(dbref)
+                TopicSelectionScreen(dbref, gameId)
             }
         }
     }
@@ -56,6 +64,8 @@ class TopicSelectionActivity : ComponentActivity() {
     companion object {
         const val SELECT_TOPIC = "Select the topic you wish to draw"
         var topics = mutableListOf("Topic1", "Topic2", "Topic3")
+        var roundNb = 0
+        var turnNb = 0
     }
 }
 
@@ -101,27 +111,40 @@ fun backToGameOptions(context: Context) {
 }
 
 @Composable
-fun TopicButton(dbref: DatabaseReference, topic: MutableState<String>, id: Int) {
+fun TopicButton(dbref: DatabaseReference, topic: MutableState<String>, id: Int, gameId: String) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("topicButton$id"),
         onClick = {
-            selectTopic(context, dbref, topic.value)
+            selectTopic(context, dbref, topic.value, gameId)
         }
     ) {
         Text(topic.value)
     }
 }
 
-fun selectTopic(context: Context, dbref: DatabaseReference, topic: String) {
-    dbref.child("topic").setValue(topic)
+fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, gameId: String) {
+    dbref.child("topics").child(roundNb.toString()).child(turnNb.toString()).child("topic").setValue(topic)
+    dbref.child("current").child("current_round").setValue(roundNb)
+    dbref.child("current").child("current_turn").setValue(turnNb)
+
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {
-        putExtra("topic", topic)
+        putExtra("gameId", gameId)
     })
 }
 
 @Composable
-fun TopicSelectionScreen(dbref: DatabaseReference) {
+fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
+    //the current round and turn (in the round)
+    val dbrefCurrent = dbref.child("Current")
+    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_round"))
+        .thenAccept {
+            roundNb = it.toInt()
+        }
+    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_turn"))
+        .thenAccept {
+            turnNb = it.toInt()
+        }
 
     val topic0 = remember { mutableStateOf(topics[0]) }
     val topic1 = remember { mutableStateOf(topics[1]) }
@@ -140,11 +163,11 @@ fun TopicSelectionScreen(dbref: DatabaseReference) {
             text = SELECT_TOPIC
         )
         Spacer(modifier = Modifier.size(40.dp))
-        TopicButton(dbref, topic0, 1)
+        TopicButton(dbref, topic0, 1, gameId)
         Spacer(modifier = Modifier.size(20.dp))
-        TopicButton(dbref, topic1, 2)
+        TopicButton(dbref, topic1, 2, gameId)
         Spacer(modifier = Modifier.size(20.dp))
-        TopicButton(dbref, topic2, 3)
+        TopicButton(dbref, topic2, 3, gameId)
 
         IconButton(
             modifier = Modifier
