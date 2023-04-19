@@ -43,14 +43,20 @@ class PopUpsTest {
 
     @Test
     fun correctAnswerPopupIsDisplayed() {
+        setPopUp("correctAnswer")
         composeRule.onNodeWithTag("popUpBox").assertIsDisplayed()
     }
 
     @Test
-    fun correctAnswerPopUpContainsCorrectText() {
+    fun correctAnswerBoxContainsCorrectText() {
         setPopUp("correctAnswer")
-        val text = guess.guesser + " made a correct guess: \n\nThe word was \"" + guess.guess
-        composeRule.onNodeWithTag("popUpText").assertTextContains(text)
+
+        val sb = StringBuilder()
+        sb.append(guess.guesser).append(" made a correct guess: \n\nThe word was \"")
+            .append(guess.guess)
+            .append("\"!")
+
+        composeRule.onNodeWithTag("popUpText").assertTextContains(sb.toString())
     }
 
     @Test
@@ -60,8 +66,14 @@ class PopUpsTest {
     }
 
     @Test
+    fun timerOveroxIsDisplayed() {
+        setPopUp("timerOver")
+        composeRule.onNodeWithTag("popUpBox").assertIsDisplayed()
+    }
+
+    @Test
     fun timerOverPopUpContainsCorrectText() {
-        setPopUp("correctAnswer")
+        setPopUp("timerOver")
         val text = "The time is over!"
         composeRule.onNodeWithTag("popUpText").assertTextContains(text)
     }

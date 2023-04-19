@@ -200,11 +200,18 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
     var timer by remember { mutableStateOf("") }
 
     //the timer of the game
+    timer = ""
     val dbrefTimer = dbrefGames.child("current/current_timer")
-    FirebaseUtilities.databaseGet(dbrefTimer)
-        .thenAccept {
-            timer = it
+    dbrefTimer.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                timer = snapshot.getValue<String>()!!
+            }
         }
+        override fun onCancelled(error: DatabaseError) {
+            TODO("Not yet implemented")
+        }
+    })
 
     //the guesses made by the guessers
     dbrefGames.child("guesses").addValueEventListener(object : ValueEventListener {
@@ -243,15 +250,10 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
         }
 
         override fun onCancelled(error: DatabaseError) {
-            TODO("Not yet implemented")
+            // do nothing
         }
 
     })
-
-    FirebaseUtilities.databaseGet(dbrefAnswer)
-        .thenAccept {
-            answer = it
-        }
 
     //the username of the current user
     var username = ""
@@ -330,7 +332,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
                     artistId = currentArtist.value)
             }
 
-            if (timer.equals("over")) {
+            if (timer == "over") {
                 TimerOverPopUp()
             } else {
                 GuessingBar(

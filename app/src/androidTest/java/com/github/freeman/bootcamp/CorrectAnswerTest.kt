@@ -5,7 +5,7 @@ import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.freeman.bootcamp.games.guessit.guessing.CorrectAnswerScreen
+import com.github.freeman.bootcamp.games.guessit.CorrectAnswerPopUp
 import com.github.freeman.bootcamp.games.guessit.guessing.Guess
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import org.junit.Before
@@ -29,7 +29,7 @@ class CorrectAnswerTest {
 
         composeRule.setContent {
             BootcampComposeTheme {
-                CorrectAnswerScreen(gs = guess)
+                CorrectAnswerPopUp(gs = guess)
             }
         }
     }
@@ -47,9 +47,9 @@ class CorrectAnswerTest {
     @Test
     fun correctAnswerScreenContainsCorrectText() {
         val sb = StringBuilder()
-        sb.append(guesser).append(" made a correct guess: \nThe word was \"")
+        sb.append(guesser).append(" made a correct guess: \n\nThe word was \"")
             .append(guess)
             .append("\"!")
-        composeRule.onNodeWithTag("correctAnswerText").assertTextContains(sb.toString())
+        composeRule.onNodeWithTag("popUpText").assertTextContains(sb.toString())
     }
 }

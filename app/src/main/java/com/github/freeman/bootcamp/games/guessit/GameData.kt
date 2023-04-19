@@ -16,7 +16,7 @@ data class Current(
     val current_round: Int,
     val current_state: String,
     val current_turn: Int,
-    val current_timer: String //can be : "over", "inprogress", "useless"
+    val current_timer: String //can be : "over", "inprogress", "unused"
 )
 
 data class Parameters(
