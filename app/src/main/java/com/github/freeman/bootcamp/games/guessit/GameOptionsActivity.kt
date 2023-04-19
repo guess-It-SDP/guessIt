@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -51,9 +50,6 @@ import com.google.firebase.ktx.Firebase
 import java.util.*
 
 class GameOptionsActivity : ComponentActivity() {
-
-//    private val gameId = UUID.randomUUID().toString()
-//    private val dbref = Firebase.database.getReference("Games/$gameId")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -234,11 +230,8 @@ fun next(context: Context, database: DatabaseReference) {
         Toast.makeText(context, "Please first select a category", Toast.LENGTH_SHORT).show()
     } else {
 
-
-
         FirebaseUtilities.databaseGet(database.child("profiles/$userId/username"))
             .thenAccept {
-                Log.d("user id", userId.toString())
 
                 val gameData = GameData(
                     Current = Current(
