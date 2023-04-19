@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -132,11 +131,4 @@ fun TimerCircles(modifier: Modifier, activeBarColor: Color, strokeWidth: Dp, val
         )
 
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TimerPreview() {
-    val dbref = Firebase.database.getReference("games/testgameid/current/current_timer")
-    TimerScreen(dbref, 100, 100L)
 }

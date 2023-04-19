@@ -222,7 +222,7 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
     })
 
     //the current round and turn (in the round)
-    val dbrefCurrent = dbrefGames.child("Current")
+    val dbrefCurrent = dbrefGames.child("current")
     FirebaseUtilities.databaseGet(dbrefCurrent.child("current_round"))
         .thenAccept {
             roundNb = it.toInt()
@@ -235,6 +235,19 @@ fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.
     //the correct answer of the round
     answer = ""
     val dbrefAnswer = dbrefGames.child("topics/$roundNb/$turnNb/topic")
+    dbrefAnswer.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                answer = snapshot.getValue<String>()!!
+            }
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            TODO("Not yet implemented")
+        }
+
+    })
+
     FirebaseUtilities.databaseGet(dbrefAnswer)
         .thenAccept {
             answer = it

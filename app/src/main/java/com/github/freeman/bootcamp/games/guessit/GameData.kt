@@ -1,6 +1,8 @@
 package com.github.freeman.bootcamp.games.guessit
 
-
+/**
+ * Represents the structure of a game/lobby in the database
+ */
 data class GameData (
     val Current: Current,
     val Parameters: Parameters,

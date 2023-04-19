@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -23,6 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
+/**
+ * Shows a screen where you can either join or create a Guess It game
+ */
 class CreateJoinActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +36,7 @@ class CreateJoinActivity: ComponentActivity() {
                 Column (
                     modifier = Modifier
                         .fillMaxSize()
-                        .testTag("createJoinScreen"),
+                        .testTag("createJoin"),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
