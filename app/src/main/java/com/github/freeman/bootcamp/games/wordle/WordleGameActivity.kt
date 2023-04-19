@@ -28,6 +28,7 @@ class WordleGameActivity() : ComponentActivity() {
     private lateinit var wordle: WordleGameState
     private lateinit var solutionsData: String
     private lateinit var validWordsData: String
+    private var nbRow = 8;
     lateinit var solutions: List<String>
     lateinit var validWords: List<String>
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +41,7 @@ class WordleGameActivity() : ComponentActivity() {
         }
         solutions = solutionsData.split("\n").map { it.trim() }
         validWords = validWordsData.split("\n").map { it.trim() }
-        wordle = WordleGameState(false, solutions, validWords)
+        wordle = WordleGameState.startGame(false, solutions, validWords,8)
         val tiles = wordle.getTiles()
         val testing = getIntent().getBooleanExtra("testing", false)
         if (testing == true) {

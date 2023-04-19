@@ -2,46 +2,95 @@ package com.github.freeman.bootcamp.games.wordle
 
 import java.security.InvalidParameterException
 import kotlin.random.Random
-import java.lang.Character.MIN_VALUE as nullChar
+import java.lang.Character.MIN_VALUE as NULLCHAR
 
 /**
  * This is a wordle Game. The game is the same as a mastermind but with words and letters instead of colors.
  * Green means right position, yellow means right letter but wrong spot, red means wrong letter.
  * You have to try words until you guess the right word
  *
- * @param current_line the last row of letters that have been added to the game
+ * @param currentLine the last row of letters that have been added to the game
  * @param grid The tiles containing the letters and the state of the letters
  * @param wordOnly true means you have to chose an existing english word and random letters are not allowed
  * @param wordToGuess the word to guess in order to wins the game
  * @param validWords the set of existing english words
  * @param solutions the set of existing words that the wordToGuess is randomly chosen from
  */
-class WordleGameState private constructor(
-    private val current_line: Int,
-    private val grid: Array<Array<Tile>>,
-    private val wordOnly: Boolean,
-    private val wordToGuess: String,
-    private val validWords: List<String>,
-    private val solutions: List<String>
-) {
-    /**
-     * This constructor is used to start a game, chose a random word to guess among solutions
-     *
-     * @param wordOnly is random letter submission is allowed
-     * @param solutions the set of existing words that the wordToGuess is randomly chosen from
-     * @param validWords the set of existing english words
-     */
-    constructor(wordOnly: Boolean, solutions: List<String>, validWords: List<String>) : this(
-        0,
-        Array(8) { Array(5) { Tile(nullChar, TileState.EMPTY) } },
-        wordOnly,
-        solutions[Random.nextInt(0, solutions.size)],
-        validWords.toList(),
-        solutions
-    )
+ class WordleGameState {
+        private val currentLine: Int
+        private val grid: Array<Array<Tile>>
+        private val wordOnly: Boolean
+        private val wordToGuess: String
+        private val validWords: List<String>
+        private val solutions: List<String>
+
+    private constructor(
+        currentLine: Int,
+       grid: Array<Array<Tile>>,
+       wordOnly: Boolean,
+        wordToGuess: String,
+       validWords: List<String>,
+        solutions: List<String>,
+    ){
+        this.currentLine = currentLine
+        val generatedArray = Array(grid.size) { i-> Array(grid[0].size) { j->Tile(grid[i][j].letter, grid[i][j].state) } }
+        this.grid = generatedArray
+        this.wordOnly = wordOnly
+        this.wordToGuess = wordToGuess
+        this.validWords = validWords.toList()
+        this.solutions = solutions.toList()
+    }
 
 
-    /**
+    class Builder {
+        private var currentLine = 0
+        private lateinit var grid: Array<Array<Tile>>
+        private var wordOnly = false
+        private lateinit var wordToGuess: String
+        private lateinit var validWords: List<String>
+        private lateinit var solutions: List<String>
+
+        fun currentLine(currentLine: Int) = apply { this.currentLine = currentLine }
+        fun grid(grid: Array<Array<Tile>>) = apply { this.grid = grid }
+        fun wordOnly(wordOnly: Boolean) = apply { this.wordOnly = wordOnly }
+        fun wordToGuess(wordToGuess: String) = apply { this.wordToGuess = wordToGuess }
+        fun validWords(validWords: List<String>) = apply { this.validWords = validWords }
+        fun solutions(solutions: List<String>) = apply { this.solutions = solutions }
+
+        // Build the WordleGameState instance with the given parameters
+        fun build() = WordleGameState(
+            currentLine = currentLine,
+            grid = grid,
+            wordOnly = wordOnly,
+            wordToGuess = wordToGuess,
+            validWords = validWords,
+            solutions = solutions
+        )
+    }
+
+    companion object {
+        /**
+         * This constructor is used to start a game, chose a random word to guess among solutions
+         *
+         * @param wordOnly is random letter submission is allowed
+         * @param solutions the set of existing words that the wordToGuess is randomly chosen from
+         * @param validWords the set of existing english words
+         */
+        fun startGame(
+            wordOnly: Boolean,
+            solutions: List<String>,
+            validWords: List<String>,
+            nbRow: Int, ) = WordleGameState(
+            0,
+            Array(nbRow) { Array(5) { Tile(NULLCHAR, TileState.EMPTY) } },
+            wordOnly,
+            solutions[Random.nextInt(0, solutions.size)],
+            validWords.toList(),
+            solutions
+        )
+    }
+
+/**
      * The state of a tile
      * @param argb contains an advised color, you don't have to keep this one for the graphic interface
      * EMPTY no letter is added, it should contains the null character
@@ -59,20 +108,45 @@ class WordleGameState private constructor(
      * @param Char the letter
      * @param state if that letter at the right position or not
      */
-    class Tile(var letter: Char, var state: TileState)
+    class Tile( val letter: Char,  val state: TileState) {
+        companion object {
+            fun builder(): Builder {
+                return Builder()
+            }
+        }
+
+        class Builder {
+            private var letter: Char = NULLCHAR
+            private var state: TileState = TileState.EMPTY
+
+            fun letter(letter: Char): Builder {
+                this.letter = letter
+                return this
+            }
+
+            fun state(state: TileState): Builder {
+                this.state = state
+                return this
+            }
+
+            fun build(): Tile {
+                return Tile(letter, state)
+            }
+        }
+    }
 
     /**
      * return a list containing all tile in the right order going from left to right then up to down
      */
     fun getTiles(): MutableList<Tile> {
-        return grid.flatten().toMutableList()
+        return getGrid().flatten().toMutableList()
     }
 
     /**
      * manually set the wordToGuess for testing
      */
     fun withSetWordToGuess(word: String): WordleGameState {
-        return WordleGameState(current_line, grid, wordOnly, word, validWords, solutions)
+        return WordleGameState(currentLine, grid, wordOnly, word, validWords, solutions)
     }
 
     /**
@@ -88,12 +162,12 @@ class WordleGameState private constructor(
         // accept only existing words if random letters mode is not activated
         if (wordOnly) {
             if (!validWords.contains(submittedWord)) {
-                return this
+                return deepCopy()
             }
         }
         // the game is over if the grid is full, starts a new game
-        if (current_line >= grid.size) {
-            return WordleGameState(wordOnly, solutions, validWords) // new Game
+        if (currentLine >= grid.size) {
+            return startGame(wordOnly, solutions, validWords,grid.size) // new Game
         } else {
 
             // We need a way to be able to count letter only once
@@ -101,8 +175,8 @@ class WordleGameState private constructor(
             // For a specific letter we don't want to assign more wrong spot that the word contains
             // this letter
             var remainingLetters = wordToGuess
-            val grid = this.grid.clone()
-            val row = grid[current_line]
+            val grid = getGrid()
+            val row = grid[currentLine]
 
             initiateRow(row, submittedWord)
 
@@ -111,7 +185,7 @@ class WordleGameState private constructor(
             removeWrongSpotLetters(remainingLetters, row)
 
             return WordleGameState(
-                current_line + 1, grid, wordOnly, wordToGuess, validWords, solutions
+                currentLine + 1, grid, wordOnly, wordToGuess, validWords, solutions
             )
         }
     }
@@ -134,7 +208,7 @@ class WordleGameState private constructor(
      */
     private fun initiateRow(row: Array<Tile>, submittedWord: String) {
         for (i in 0 until grid[0].size) {
-            row[i].letter = submittedWord[i]
+            row[i] = Tile.builder().letter(submittedWord[i]).state(row[i].state).build()
         }
     }
 
@@ -149,14 +223,16 @@ class WordleGameState private constructor(
         var remainingLetters = remainingLetters
         for (i in 0 until grid[0].size) {
             val tile = row[i]
-
+            val tileB = Tile.builder().letter(row[i].letter).state(row[i].state)
             if (tile.letter == remainingLetters[i]) {// right letter at right position
                 remainingLetters = remainingLetters.replaceFirst(tile.letter, ' ', true)
-                tile.state = TileState.CORRECT
+                tileB.state(TileState.CORRECT)
             } else if (!remainingLetters.contains(tile.letter)) {// word does not contains the letter
-                tile.state = TileState.INCORRECT
+                tileB.state(TileState.INCORRECT)
             }
+            row[i]=tileB.build()
         }
+
         return remainingLetters
     }
 
@@ -171,14 +247,16 @@ class WordleGameState private constructor(
         var remainingLetters = remainingLetters
         for (i in 0 until grid[0].size) {// we loop for wrong spot after so we don't counts the same letter twice
             val tile = row[i]
+            val tileB = Tile.builder().letter(row[i].letter).state(row[i].state)
             if (tile.state != TileState.CORRECT && tile.state != TileState.INCORRECT) {
                 if (remainingLetters.contains(tile.letter)) {
-                    tile.state = TileState.WRONG_SPOT
+                    tileB.state(TileState.WRONG_SPOT)
                     remainingLetters = remainingLetters.replaceFirst(tile.letter, ' ', true)
                 } else {
-                    tile.state = TileState.INCORRECT
+                    tileB.state(TileState.INCORRECT)
                 }
             }
+            row[i]=tileB.build()
         }
         return remainingLetters
     }
@@ -187,6 +265,19 @@ class WordleGameState private constructor(
      * The tiles of the games
      */
     fun getGrid(): Array<Array<Tile>>{
-        return grid.clone()
+        val generatedArray = Array(grid.size) { i-> Array(grid[0].size) { j->Tile(grid[i][j].letter, grid[i][j].state) } }
+        return generatedArray
     }
+
+
+     private fun  deepCopy(): WordleGameState{
+         return WordleGameState(
+             currentLine = currentLine,
+             grid = grid,
+             wordOnly = wordOnly,
+             wordToGuess = wordToGuess,
+             validWords = validWords,
+             solutions = solutions
+         )
+     }
 }
