@@ -76,16 +76,16 @@ class WordleGameActivity() : ComponentActivity() {
      * set up the game according to difficulty level chosen
      */
     private fun setUpGame() {
-        when (intent.getStringExtra(WordleMenu.Companion.Difficulty::class.simpleName)) {
-            WordleMenu.Companion.Difficulty.EASY.name -> wordle =
+        when (intent.getStringExtra(WordleMenuActivity.Companion.Difficulty::class.simpleName)) {
+            WordleMenuActivity.Companion.Difficulty.EASY.name -> wordle =
                 WordleGameState.startGame(false, solutions, easyWords, NB_ROW_EASY)
-            WordleMenu.Companion.Difficulty.MEDIUM.name -> wordle =
+            WordleMenuActivity.Companion.Difficulty.MEDIUM.name -> wordle =
                 WordleGameState.startGame(false, solutions, easyWords, NB_ROW_MEDIUM)
-            WordleMenu.Companion.Difficulty.HARD.name -> wordle =
+            WordleMenuActivity.Companion.Difficulty.HARD.name -> wordle =
                 WordleGameState.startGame(false, solutions, validWords, NB_ROW_MEDIUM)
-            WordleMenu.Companion.Difficulty.VERY_HARD.name -> wordle =
+            WordleMenuActivity.Companion.Difficulty.VERY_HARD.name -> wordle =
                 WordleGameState.startGame(true, solutions, validWords, NB_ROW_MEDIUM)
-            WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name -> wordle =
+            WordleMenuActivity.Companion.Difficulty.VERY_VERY_HARD.name -> wordle =
                 WordleGameState.startGame(true, solutions, validWords, NB_ROW_HARD)
             else -> wordle = WordleGameState.startGame(false, solutions, easyWords, NB_ROW_EASY)
         }
@@ -145,7 +145,7 @@ class WordleGameActivity() : ComponentActivity() {
             items(tiles.size) { i ->
 
                 TileContainer(
-                    Modifier.testTag("wordle_tile_id_" + id.toString()),
+                    Modifier.testTag("wordle_tile_id_$id"),
                     tile = tiles.get(i)
                 )
                 ++id

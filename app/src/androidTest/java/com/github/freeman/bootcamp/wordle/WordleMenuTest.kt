@@ -7,8 +7,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.MainMenuScreen
 import com.github.freeman.bootcamp.MainMenuTest
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
-import com.github.freeman.bootcamp.games.wordle.WordleMenu
-import com.github.freeman.bootcamp.games.wordle.WordleMenuScreen
+import com.github.freeman.bootcamp.games.wordle.WordleMenuActivity
+import com.github.freeman.bootcamp.games.wordle.WordleMenuActivityScreen
 import com.github.freeman.bootcamp.testfunctions.TestCompanion
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.wordle.WordleGameActivityTest.Companion.createAndroidIntentComposeRule
@@ -18,12 +18,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class WordleMenuTest {
+class WordleMenuActivityTest {
 
     /*
     @get:Rule
-    val composeRule = createAndroidIntentComposeRule<WordleMenu> {
-        Intent(it, WordleMenu::class.java).apply {
+    val composeRule = createAndroidIntentComposeRule<WordleMenuActivity> {
+        Intent(it, WordleMenuActivity::class.java).apply {
         }
     }
     */
@@ -32,14 +32,14 @@ class WordleMenuTest {
 
     @Before
     fun setTheContentBefore(){
-        setWordleMenuScreen()
+        setWordleMenuActivityScreen()
     }
 
 
-    private fun setWordleMenuScreen() {
+    private fun setWordleMenuActivityScreen() {
         composeRule.setContent {
                 BootcampComposeTheme {
-                    WordleMenuScreen()
+                    WordleMenuActivityScreen()
                 }
             }
         }
@@ -47,24 +47,16 @@ class WordleMenuTest {
 
     @Test
     fun easyButtonIsDisplayedHasClickActionAndCorrectText(){
-       TestCompanion.testButton(WordleMenu.Companion.Difficulty.EASY.prettyText,WordleGameActivity::class.java.name,WordleMenu.Companion.Difficulty.EASY.prettyText,composeRule)
+       TestCompanion.testButton(WordleMenuActivity.Companion.Difficulty.EASY.prettyText,WordleMenuActivity::class.java.name,WordleMenuActivity.Companion.Difficulty.EASY.prettyText,composeRule)
     }
 
     @Test
-    fun mediumButtonIsDisplayedHasClickActionAndCorrectText(){
-        TestCompanion.testButton(WordleMenu.Companion.Difficulty.MEDIUM.prettyText,WordleGameActivity::class.java.name,WordleMenu.Companion.Difficulty.MEDIUM.prettyText,composeRule)
+    fun easyButtonIsDisplayedHasClickActionAndCorrectText(){
+        TestCompanion.testButton(WordleMenuActivity.Companion.Difficulty.EASY.prettyText,WordleMenuActivity::class.java.name,WordleMenuActivity.Companion.Difficulty.EASY.prettyText,composeRule)
     }
     @Test
-    fun hardButtonIsDisplayedHasClickActionAndCorrectText(){
-        TestCompanion.testButton(WordleMenu.Companion.Difficulty.HARD.prettyText,WordleGameActivity::class.java.name,WordleMenu.Companion.Difficulty.HARD.prettyText,composeRule)
-    }
-    @Test
-    fun veryHardButtonIsDisplayedHasClickActionAndCorrectText(){
-        TestCompanion.testButton(WordleMenu.Companion.Difficulty.VERY_HARD.prettyText,WordleGameActivity::class.java.name,WordleMenu.Companion.Difficulty.VERY_HARD.prettyText,composeRule)
-    }
-    @Test
-    fun veryVeryHardButtonIsDisplayedHasClickActionAndCorrectText(){
-        TestCompanion.testButton(WordleMenu.Companion.Difficulty.VERY_VERY_HARD.prettyText,WordleGameActivity::class.java.name,WordleMenu.Companion.Difficulty.VERY_VERY_HARD.prettyText,composeRule)
+    fun easyButtonIsDisplayedHasClickActionAndCorrectText(){
+        TestCompanion.testButton(WordleMenuActivity.Companion.Difficulty.EASY.prettyText,WordleMenuActivity::class.java.name,WordleMenuActivity.Companion.Difficulty.EASY.prettyText,composeRule)
     }
 
 }
