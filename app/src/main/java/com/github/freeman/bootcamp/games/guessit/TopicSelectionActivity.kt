@@ -99,7 +99,7 @@ fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, gameI
     dbref.child("topics").child(roundNb.toString()).child(turnNb.toString()).child("topic").setValue(topic)
     dbref.child("current").child("current_round").setValue(roundNb)
     dbref.child("current").child("current_turn").setValue(turnNb)
-    dbref.child("current").child("current_timer").setValue(true)
+    dbref.child("current").child("current_timer").setValue("inprogress")
 
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {
         putExtra("gameId", gameId)

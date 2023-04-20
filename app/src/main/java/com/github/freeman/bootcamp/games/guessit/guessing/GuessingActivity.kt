@@ -61,7 +61,7 @@ class GuessingActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbrefGames, gameId)
+                GuessingScreen(dbrefGames)
             }
         }
     }
@@ -194,7 +194,7 @@ fun GuessingBar(
 }
 
 @Composable
-fun GuessingScreen(dbrefGames: DatabaseReference, gameId: String = LocalContext.current.getString(R.string.default_game_id)) {
+fun GuessingScreen(dbrefGames: DatabaseReference) {
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
     var timer by remember { mutableStateOf("") }

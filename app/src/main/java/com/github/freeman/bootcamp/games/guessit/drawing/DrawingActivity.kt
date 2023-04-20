@@ -53,7 +53,7 @@ class DrawingActivity : ComponentActivity() {
         val gameId = intent.getStringExtra("gameId").toString()
         val dbref = Firebase.database.getReference("games/$gameId")
 
-        dbref.child("current/current_timer").setValue("inprogress")
+        //dbref.child("current/current_timer").setValue("inprogress")
 
         setContent {
             DrawingScreen(dbref)

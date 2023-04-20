@@ -21,6 +21,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
+/**
+ * This is the squeletton of any pop up
+ * @param text: The text that will be displayed inside the pop-up
+ */
 @Composable
 fun PopUpScreen(
     text: String
@@ -61,7 +65,8 @@ fun PopUpScreen(
 }
 
 /**
- * The popup screen when a user guesses the correct answer
+ * The pop-up when a user guesses the correct answer
+ * @param gs: The Guess containing the guesser's name and the guesser's proposition
  */
 @Composable
 fun CorrectAnswerPopUp(gs: Guess) {
@@ -83,7 +88,7 @@ fun CorrectAnswerPopUp(gs: Guess) {
 }
 
 /**
- * The popup screen when the timer is over
+ * The pop-up when the timer is over
  */
 @Composable
 fun TimerOverPopUp() {
