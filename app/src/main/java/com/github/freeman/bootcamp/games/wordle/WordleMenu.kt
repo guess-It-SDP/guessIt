@@ -50,55 +50,74 @@ class WordleMenu() : ComponentActivity() {
         }
     }
 
-    /**
-     * Change the activity to the game activity and put the difficulty strong in the extras
-     */
-    private fun launchGame(context: Context, difficulty: String) {
-        context.startActivity(Intent(context, WordleGameActivity::class.java).apply {
-            putExtra(Difficulty::class.simpleName, difficulty)
-        })
-    }
 
-    /**
-     * Creates a button ot launch a game
-     *
-     *@param testTag Tag use to find the object for testing
-     *@param activityLauncher a unit function to launch next scene
-     *@param text The text displayed inside the button
-     */
-    @Composable
-    private fun CreateButton(
-        testTag: String,
-        activityLauncher: (context: Context) -> Unit,
-        text: String
-    ) {
-            val context = LocalContext.current
-            MainMenuButton(
-                testTag = testTag,
-                onClick = { activityLauncher(context) },
-                text = text
-            )
-    }
-
-    /**
-     * Screen of the Wordle menu application.
-     */
-    @Composable
-    private fun WordleMenuScreen() {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .testTag(WordleMenu.WORDLE_MENU_TEST_TAG),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CreateButton(Difficulty.EASY.prettyText, { a: Context -> launchGame(a, Difficulty.EASY.name) }, Difficulty.EASY.prettyText)
-            CreateButton(Difficulty.MEDIUM.prettyText, { a: Context -> launchGame(a, Difficulty.MEDIUM.name) }, Difficulty.MEDIUM.prettyText)
-            CreateButton(Difficulty.HARD.prettyText, { a: Context -> launchGame(a, Difficulty.HARD.name) }, Difficulty.HARD.prettyText)
-            CreateButton(Difficulty.VERY_HARD.prettyText, { a: Context -> launchGame(a, Difficulty.VERY_HARD.name) }, Difficulty.VERY_HARD.prettyText)
-            CreateButton(Difficulty.VERY_HARD.prettyText, { a: Context -> launchGame(a, Difficulty.VERY_VERY_HARD.name) }, Difficulty.VERY_VERY_HARD.prettyText)
-        }
-    }
 
 }
+/**
+ * Change the activity to the game activity and put the difficulty strong in the extras
+ */
+private fun launchGame(context: Context, difficulty: String) {
+    context.startActivity(Intent(context, WordleGameActivity::class.java).apply {
+        putExtra(WordleMenu.Companion.Difficulty::class.simpleName, difficulty)
+    })
+}
 
+/**
+ * Creates a button ot launch a game
+ *
+ *@param testTag Tag use to find the object for testing
+ *@param activityLauncher a unit function to launch next scene
+ *@param text The text displayed inside the button
+ */
+@Composable
+private fun CreateButton(
+    testTag: String,
+    activityLauncher: (context: Context) -> Unit,
+    text: String
+) {
+    val context = LocalContext.current
+    MainMenuButton(
+        testTag = testTag,
+        onClick = { activityLauncher(context) },
+        text = text
+    )
+}
+/**
+ * Screen of the Wordle menu application.
+ */
+@Composable
+fun WordleMenuScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag(WordleMenu.WORDLE_MENU_TEST_TAG),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CreateButton(
+            WordleMenu.Companion.Difficulty.EASY.prettyText,
+            { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.EASY.name) },
+            WordleMenu.Companion.Difficulty.EASY.prettyText
+        )
+        CreateButton(
+            WordleMenu.Companion.Difficulty.MEDIUM.prettyText,
+            { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.MEDIUM.name) },
+            WordleMenu.Companion.Difficulty.MEDIUM.prettyText
+        )
+        CreateButton(
+            WordleMenu.Companion.Difficulty.HARD.prettyText,
+            { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.HARD.name) },
+            WordleMenu.Companion.Difficulty.HARD.prettyText
+        )
+        CreateButton(
+            WordleMenu.Companion.Difficulty.VERY_HARD.prettyText,
+            { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.VERY_HARD.name) },
+            WordleMenu.Companion.Difficulty.VERY_HARD.prettyText
+        )
+        CreateButton(
+            WordleMenu.Companion.Difficulty.VERY_VERY_HARD.prettyText,
+            { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name) },
+            WordleMenu.Companion.Difficulty.VERY_VERY_HARD.prettyText
+        )
+    }
+}

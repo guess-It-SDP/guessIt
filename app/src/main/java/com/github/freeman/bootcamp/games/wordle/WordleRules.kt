@@ -1,7 +1,7 @@
 package com.github.freeman.bootcamp.games.wordle
 
 class WordleRules {
-    private val rulesText = "The rules of Wordle are elegantly simple.\n" +
+    public val rulesText = "The rules of Wordle are elegantly simple.\n" +
             "\n" +
             "Your objective is to guess a secret five-letter word in as few guesses as possible.\n" +
             "\n" +
