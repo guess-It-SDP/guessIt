@@ -55,6 +55,12 @@ class TopicSelectionActivityTest {
     }
 
     @Test
+    fun backButtonIsClickable() {
+        setTopicSelectionScreen()
+        composeRule.onNode(hasTestTag("topicSelectionBackButton")).performClick()
+    }
+
+    @Test
     fun topicButtonHasClickAction() {
         setTopicSelectionScreen()
         for (id in 1..3) {
