@@ -270,6 +270,9 @@ import java.lang.Character.MIN_VALUE as NULLCHAR
     }
 
 
+    /**
+     * only call the constructor to make a copy
+     */
      private fun  deepCopy(): WordleGameState{
          return WordleGameState(
              currentLine = currentLine,
