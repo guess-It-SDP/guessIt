@@ -149,9 +149,6 @@
         <activity
             android:name=".games.wordle.WordleMenu"
             android:exported="true" />
-        <activity
-            android:name=".games.wordle.WordleRulesActivity"
-            android:exported="true" />
 
 </application>
 

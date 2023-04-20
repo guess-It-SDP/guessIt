@@ -13,7 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import com.github.freeman.bootcamp.MainMenuActivity
 import com.github.freeman.bootcamp.MainMenuButton
+import com.github.freeman.bootcamp.MainMenuScreen
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.play
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
@@ -23,7 +25,7 @@ import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
  * The is the class that allow the play to the wordle game.
  * This is and adapter from WordleGameState to android
  */
-class WordleMenuActivity() : ComponentActivity() {
+class WordleMenu() : ComponentActivity() {
     companion object {
 
         /**
@@ -56,7 +58,7 @@ class WordleMenuActivity() : ComponentActivity() {
  */
 private fun launchGame(context: Context, difficulty: String) {
     context.startActivity(Intent(context, WordleGameActivity::class.java).apply {
-        putExtra(WordleMenuActivity.Companion.Difficulty::class.simpleName, difficulty)
+        putExtra(WordleMenu.Companion.Difficulty::class.simpleName, difficulty)
     })
 }
 
@@ -88,34 +90,34 @@ fun WordleMenuScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .testTag(WordleMenuActivity.WORDLE_MENU_TEST_TAG),
+            .testTag(WordleMenu.WORDLE_MENU_TEST_TAG),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CreateButton(
-            WordleMenuActivity.Companion.Difficulty.EASY.prettyText,
-            { a: Context -> launchGame(a, WordleMenuActivity.Companion.Difficulty.EASY.name) },
-            WordleMenuActivity.Companion.Difficulty.EASY.prettyText
+            WordleMenu.Companion.Difficulty.EASY.prettyText,
+            { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.EASY.name) },
+            WordleMenu.Companion.Difficulty.EASY.prettyText
         )
         CreateButton(
-            WordleMenuActivity.Companion.Difficulty.MEDIUM.prettyText,
-            { a: Context -> launchGame(a, WordleMenuActivity.Companion.Difficulty.MEDIUM.name) },
-            WordleMenuActivity.Companion.Difficulty.MEDIUM.prettyText
+            WordleMenu.Companion.Difficulty.MEDIUM.prettyText,
+            { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.MEDIUM.name) },
+            WordleMenu.Companion.Difficulty.MEDIUM.prettyText
         )
         CreateButton(
-            WordleMenuActivity.Companion.Difficulty.HARD.prettyText,
-            { a: Context -> launchGame(a, WordleMenuActivity.Companion.Difficulty.HARD.name) },
-            WordleMenuActivity.Companion.Difficulty.HARD.prettyText
+            WordleMenu.Companion.Difficulty.HARD.prettyText,
+            { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.HARD.name) },
+            WordleMenu.Companion.Difficulty.HARD.prettyText
         )
         CreateButton(
-            WordleMenuActivity.Companion.Difficulty.VERY_HARD.prettyText,
-            { a: Context -> launchGame(a, WordleMenuActivity.Companion.Difficulty.VERY_HARD.name) },
-            WordleMenuActivity.Companion.Difficulty.VERY_HARD.prettyText
+            WordleMenu.Companion.Difficulty.VERY_HARD.prettyText,
+            { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.VERY_HARD.name) },
+            WordleMenu.Companion.Difficulty.VERY_HARD.prettyText
         )
         CreateButton(
-            WordleMenuActivity.Companion.Difficulty.VERY_VERY_HARD.prettyText,
-            { a: Context -> launchGame(a, WordleMenuActivity.Companion.Difficulty.VERY_VERY_HARD.name) },
-            WordleMenuActivity.Companion.Difficulty.VERY_VERY_HARD.prettyText
+            WordleMenu.Companion.Difficulty.VERY_VERY_HARD.prettyText,
+            { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name) },
+            WordleMenu.Companion.Difficulty.VERY_VERY_HARD.prettyText
         )
     }
 }

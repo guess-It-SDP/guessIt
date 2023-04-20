@@ -13,7 +13,7 @@ import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.videocall.VideoCallActivity
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
-import com.github.freeman.bootcamp.games.wordle.WordleMenuActivity
+import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import org.junit.Before
 import org.junit.Rule
@@ -125,7 +125,7 @@ class MainMenuTest {
 
     @Test
     fun wordleButtonIsDisplayedHasClickActionAndCorrectText(){
-        testButton("wordleButton", WordleMenuActivity::class.java.name,MainMenuActivity.WORDLE)
+        testButton("wordleButton", WordleMenu::class.java.name,MainMenuActivity.WORDLE)
     }
 
     @Test

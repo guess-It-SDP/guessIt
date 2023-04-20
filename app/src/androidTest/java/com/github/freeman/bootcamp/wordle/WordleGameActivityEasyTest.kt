@@ -12,7 +12,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
 import com.github.freeman.bootcamp.games.wordle.WordleGameState
-import com.github.freeman.bootcamp.games.wordle.WordleMenuActivity
+import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import junit.framework.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -27,7 +27,7 @@ class WordleGameActivityEasyTest {
     @get:Rule
     val composeRule = createAndroidIntentComposeRule<WordleGameActivity> {
         Intent(it, WordleGameActivity::class.java).apply {
-            putExtra("testing", true).putExtra(WordleMenuActivity.Companion.Difficulty::class.simpleName,WordleMenuActivity.Companion.Difficulty.EASY.name)
+            putExtra("testing", true).putExtra(WordleMenu.Companion.Difficulty::class.simpleName,WordleMenu.Companion.Difficulty.EASY.name)
         }
     }
 

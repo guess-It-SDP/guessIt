@@ -31,7 +31,7 @@ import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
-import com.github.freeman.bootcamp.games.wordle.WordleMenuActivity
+import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
@@ -187,7 +187,7 @@ fun DrawingButton() {
 
 
 fun wordle(context: Context) {
-    context.startActivity(Intent(context, WordleMenuActivity::class.java))
+    context.startActivity(Intent(context, WordleMenu::class.java))
 }
 
 @Composable
