@@ -125,7 +125,7 @@ class WordleGameActivityTest {
             Espresso.closeSoftKeyboard()
             composeRule.onNode(hasText("Submit word")).performClick()
             composeRule.onNode(hasTestTag("wordle_tile_id_" + 0.toString()))
-                .assertBackgroundColor(Color(WordleGameState.TileState.WRONG_SPOT.argb))
+            .assertBackgroundColor(Color(WordleGameState.TileState.WRONG_SPOT.argb))
             composeRule.onNode(hasTestTag("wordle_tile_id_" + 1.toString()))
                 .assertBackgroundColor(Color(WordleGameState.TileState.INCORRECT.argb))
             composeRule.onNode(hasTestTag("wordle_tile_id_" + 2.toString()))

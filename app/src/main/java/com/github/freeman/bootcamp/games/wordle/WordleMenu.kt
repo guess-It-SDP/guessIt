@@ -34,10 +34,14 @@ class WordleMenu() : ComponentActivity() {
          * @param prettyText A nice text for display be careful not to confound with the difficulty level string name
          */
         enum class Difficulty(val prettyText: String) {
-            EASY("Easy"),MEDIUM("Medium"), HARD("Hard"), VERY_HARD("Very Hard"),VERY_VERY_HARD("Very Very Hard")
+            EASY("Easy"), MEDIUM("Medium"), HARD("Hard"), VERY_HARD("Very Hard"), VERY_VERY_HARD("Very Very Hard")
         }
+
+        const val LETTERS = " (letters)"
+        const val WORD_ONLY = " (words only)"
         const val GAME_RULES = "Rules of the Game"
         const val WORDLE_MENU_TEST_TAG = "WordleMenuScreen"
+
     }
 
 
@@ -51,8 +55,8 @@ class WordleMenu() : ComponentActivity() {
     }
 
 
-
 }
+
 /**
  * Change the activity to the game activity and put the difficulty strong in the extras
  */
@@ -82,6 +86,7 @@ private fun CreateButton(
         text = text
     )
 }
+
 /**
  * Screen of the Wordle menu application.
  */
@@ -97,27 +102,34 @@ fun WordleMenuScreen() {
         CreateButton(
             WordleMenu.Companion.Difficulty.EASY.prettyText,
             { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.EASY.name) },
-            WordleMenu.Companion.Difficulty.EASY.prettyText
+            WordleMenu.Companion.Difficulty.EASY.prettyText + lettersOrWordOnly(WordleMenu.Companion.Difficulty.EASY)
         )
         CreateButton(
             WordleMenu.Companion.Difficulty.MEDIUM.prettyText,
             { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.MEDIUM.name) },
-            WordleMenu.Companion.Difficulty.MEDIUM.prettyText
+            WordleMenu.Companion.Difficulty.MEDIUM.prettyText + lettersOrWordOnly(WordleMenu.Companion.Difficulty.MEDIUM)
         )
         CreateButton(
             WordleMenu.Companion.Difficulty.HARD.prettyText,
             { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.HARD.name) },
-            WordleMenu.Companion.Difficulty.HARD.prettyText
+            WordleMenu.Companion.Difficulty.HARD.prettyText + lettersOrWordOnly(WordleMenu.Companion.Difficulty.HARD)
         )
         CreateButton(
             WordleMenu.Companion.Difficulty.VERY_HARD.prettyText,
             { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.VERY_HARD.name) },
-            WordleMenu.Companion.Difficulty.VERY_HARD.prettyText
+            WordleMenu.Companion.Difficulty.VERY_HARD.prettyText + lettersOrWordOnly(WordleMenu.Companion.Difficulty.VERY_HARD)
         )
         CreateButton(
             WordleMenu.Companion.Difficulty.VERY_VERY_HARD.prettyText,
             { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name) },
-            WordleMenu.Companion.Difficulty.VERY_VERY_HARD.prettyText
+            WordleMenu.Companion.Difficulty.VERY_VERY_HARD.prettyText + lettersOrWordOnly(WordleMenu.Companion.Difficulty.VERY_VERY_HARD)
         )
     }
+}
+
+private fun lettersOrWordOnly(difficulty: WordleMenu.Companion.Difficulty): String {
+    if (WordleGameActivity.Companion.difficultyIsWordOnly.getOrDefault(difficulty, false)) {
+        return WordleMenu.WORD_ONLY
+    }
+    return WordleMenu.LETTERS
 }
