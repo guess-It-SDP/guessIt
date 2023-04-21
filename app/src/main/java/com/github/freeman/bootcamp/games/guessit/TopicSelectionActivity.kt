@@ -24,10 +24,7 @@ import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companio
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.topics
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.turnNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
-import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
-import com.google.firebase.auth.ktx.auth
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
@@ -46,6 +43,8 @@ class TopicSelectionActivity : ComponentActivity() {
         }
         val roundNb = intent.getIntExtra("roundNb", 5)
         val turnNb = intent.getIntExtra("roundNb", 5)
+        // inform database that a player is in the topic selection phase
+        dbref.child("current/current_state").setValue("topic selection")
         setContent {
             BootcampComposeTheme {
                 TopicSelectionScreen(dbref, gameId)
@@ -62,12 +61,12 @@ class TopicSelectionActivity : ComponentActivity() {
 }
 
 @Composable
-fun TopicSelectionBackButton() {
+fun TopicSelectionBackButton(dbref: DatabaseReference) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("topicSelectionBackButton"),
         onClick = {
-            backToGameOptions(context)
+            backToWaitingRoom(dbref, context)
         }
     ) {
         Icon(
@@ -77,9 +76,8 @@ fun TopicSelectionBackButton() {
     }
 }
 
-fun backToGameOptions(context: Context) {
-    val intent = Intent(context, GameOptionsActivity::class.java)
-    context.startActivity(intent)
+fun backToWaitingRoom(dbref: DatabaseReference, context: Context) {
+    dbref.child("current/current_state").setValue("waiting for players")
     val activity = (context as? Activity)
     activity?.finish()
 }
@@ -101,6 +99,7 @@ fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, gameI
     dbref.child("topics").child(roundNb.toString()).child(turnNb.toString()).child("topic").setValue(topic)
     dbref.child("current").child("current_round").setValue(roundNb)
     dbref.child("current").child("current_turn").setValue(turnNb)
+    dbref.child("current").child("current_state").setValue("play round")
 
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {
         putExtra("gameId", gameId)
@@ -145,6 +144,6 @@ fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        TopicSelectionBackButton()
+        TopicSelectionBackButton(dbref)
     }
 }
