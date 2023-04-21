@@ -13,12 +13,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -34,10 +32,9 @@ import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Compa
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.pointsReceived
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.turnNb
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.ui.theme.Purple40
 import com.github.freeman.bootcamp.utilities.BitmapHandler
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot

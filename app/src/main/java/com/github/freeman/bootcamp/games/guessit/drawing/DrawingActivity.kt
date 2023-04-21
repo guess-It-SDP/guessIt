@@ -215,7 +215,7 @@ private fun ControlsBar(
     val dbrefTimer = dbref.child("current/current_timer")
 
     Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-        TimerScreen(dbrefTimer,100, 60L)
+        TimerScreen(dbrefTimer,60L)
         MenuItems(
             R.drawable.ic_undo,
             LocalContext.current.getString(R.string.undo),
