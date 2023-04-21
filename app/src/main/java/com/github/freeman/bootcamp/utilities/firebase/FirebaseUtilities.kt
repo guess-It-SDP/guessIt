@@ -115,7 +115,7 @@ object FirebaseUtilities {
             future.complete(false)
         } else {
             // if the email exists, the profile exists too
-            databaseGet(dbRef.child("profiles/${user.uid}/email"))
+            databaseGet(dbRef.child("profiles/${user.uid}/username"))
                 .thenAccept {
                     future.complete(it != "")
                 }

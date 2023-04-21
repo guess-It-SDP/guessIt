@@ -12,6 +12,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
 import com.github.freeman.bootcamp.games.wordle.WordleGameState
+import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import junit.framework.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -19,15 +20,16 @@ import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4::class)
-class WordleGameActivityTest2 {
+class WordleGameActivityEasyTest {
+    private val WORD_SIZE = 5
+    private val NB_COLUMNS = 9
+
     @get:Rule
     val composeRule = createAndroidIntentComposeRule<WordleGameActivity> {
         Intent(it, WordleGameActivity::class.java).apply {
-            putExtra("testing", false)
+            putExtra("testing", true).putExtra(WordleMenu.Companion.Difficulty::class.simpleName,WordleMenu.Companion.Difficulty.EASY.name)
         }
     }
-    private val WORD_SIZE = 5
-    private val NB_COLUMNS = 8
 
     /**
      * Factory method to provide android specific implementation of createComposeRule, for a given
@@ -63,11 +65,11 @@ class WordleGameActivityTest2 {
         return activity ?: throw IllegalStateException("Activity was not set in the ActivityScenarioRule!")
     }
 
-    @Test
-    fun buttonIsDisplayed() {
-       WordleGameActivityTest.buttonIsDisplayed(composeRule)
-    }
 
+    @Test
+    fun buttonIsDisplayed(){
+        WordleGameActivityTest.buttonIsDisplayed(composeRule)
+    }
 
     @Test
     fun textFieldIsDisplayed() {
@@ -76,21 +78,25 @@ class WordleGameActivityTest2 {
 
     @Test
     fun gridIsDisplayed() {
-        WordleGameActivityTest.gridIsDisplayed(composeRule,NB_COLUMNS*WORD_SIZE)
+        WordleGameActivityTest.gridIsDisplayed(composeRule, NB_COLUMNS * WORD_SIZE)
     }
     @Test
     fun addingHelloDoesntCrash() {
-        WordleGameActivityTest.addingHelloDoesntCrash(composeRule,NB_COLUMNS*WORD_SIZE)
+        WordleGameActivityTest.addingHelloDoesntCrash(composeRule, NB_COLUMNS * WORD_SIZE)
     }
 
     @Test
     fun adding6LettersDoesntCrash() {
-        WordleGameActivityTest.adding6LettersDoesntCrash(composeRule,NB_COLUMNS*WORD_SIZE)
+        WordleGameActivityTest.adding6LettersDoesntCrash(composeRule, NB_COLUMNS * WORD_SIZE)
     }
 
     @Test
     fun gridColorisBlackAtStartOfTheGame() {
-        WordleGameActivityTest.gridColorisBlackAtStartOfTheGame(composeRule,NB_COLUMNS*WORD_SIZE)
+        WordleGameActivityTest.gridColorisBlackAtStartOfTheGame(composeRule, NB_COLUMNS * WORD_SIZE)
     }
 
+    @Test
+    fun submitLLLXLtoHelloAddRightColors() {
+        WordleGameActivityTest.submitLLLXLtoHelloAddRightColors(composeRule)
+    }
 }
