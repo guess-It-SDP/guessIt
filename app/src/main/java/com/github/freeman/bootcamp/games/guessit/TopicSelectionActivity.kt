@@ -31,7 +31,8 @@ import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companio
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.turnNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGetList
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
