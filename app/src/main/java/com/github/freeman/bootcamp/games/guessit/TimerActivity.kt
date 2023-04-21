@@ -23,22 +23,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.ui.theme.Purple80
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 
 
 class TimerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val gameId = intent.getStringExtra("gameId").toString()
+        val dbrefTimer = Firebase.database.getReference("games/$gameId/current/current_timer")
+
         setContent {
             BootcampComposeTheme {
-                TimerScreen(100, 100L)
+                TimerScreen(dbrefTimer, 100, 100L)
             }
         }
     }
 }
 
 @Composable
-fun TimerScreen(size: Int, time: Long, color: Color= Purple80) {
+fun TimerScreen(dbrefTimer: DatabaseReference, size: Int, time: Long, color: Color= Purple80) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -46,6 +53,7 @@ fun TimerScreen(size: Int, time: Long, color: Color= Purple80) {
             .testTag("timerScreen")
     ) {
         Timer(
+            dbrefTimer = dbrefTimer,
             totalTime = time * 1000L,
             activeBarColor = color,
             modifier = Modifier
@@ -57,6 +65,7 @@ fun TimerScreen(size: Int, time: Long, color: Color= Purple80) {
 
 @Composable
 fun Timer(
+    dbrefTimer: DatabaseReference,
     totalTime: Long,
     activeBarColor: Color,
     modifier: Modifier = Modifier
@@ -67,13 +76,14 @@ fun Timer(
     var size by remember { mutableStateOf(IntSize.Zero) }
     var value by remember { mutableStateOf(initialValue) }
     var currentTime by remember { mutableStateOf(totalTime) }
-    var isTimerRunning by remember { mutableStateOf(true) }
 
-    LaunchedEffect(key1 = currentTime, key2 = isTimerRunning) {
-        if (currentTime > 0 && isTimerRunning) {
+    LaunchedEffect(key1 = currentTime) {
+        if (currentTime > 0) {
             delay(100L)
             currentTime -= 100L
             value = currentTime / totalTime.toFloat()
+        } else {
+            dbrefTimer.setValue("over")
         }
     }
     Box(

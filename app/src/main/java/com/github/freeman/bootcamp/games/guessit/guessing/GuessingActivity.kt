@@ -24,12 +24,12 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
 import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.games.guessit.CorrectAnswerPopUp
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
+import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.pointsReceived
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.roundNb
@@ -128,10 +128,9 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
                     }
                 }
 
-            Popup {
-                val gs = Guess(guess.guesser, answer)
-                CorrectAnswerScreen(gs = gs)
-            }
+            val gs = Guess(guess.guesser, answer)
+            CorrectAnswerPopUp(gs = gs)
+
         }
 
         Text(text = "${guess.guesser} tries \"${guess.guess}\"")
@@ -199,6 +198,21 @@ fun GuessingBar(
 fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.current.getString(R.string.default_game_id), context: Context) {
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
+    var timer by remember { mutableStateOf("") }
+
+    //the timer of the game
+    timer = ""
+    val dbrefTimer = dbrefGame.child("current/current_timer")
+    dbrefTimer.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                timer = snapshot.getValue<String>()!!
+            }
+        }
+        override fun onCancelled(error: DatabaseError) {
+            TODO("Not yet implemented")
+        }
+    })
 
     //the guesses made by the guessers
     dbrefGame.child("guesses").addValueEventListener(object : ValueEventListener {
@@ -237,15 +251,10 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
         }
 
         override fun onCancelled(error: DatabaseError) {
-            TODO("Not yet implemented")
+            // do nothing
         }
 
     })
-
-    FirebaseUtilities.databaseGet(dbrefAnswer)
-        .thenAccept {
-            answer = it
-        }
 
     //the username of the current user
     var username = ""
@@ -352,67 +361,22 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                     artistId = currentArtist.value)
             }
 
-            GuessingBar(
-                guess = guess,
-                onGuessChange = { guess = it },
-                onSendClick = {
-                    val gs = Guess(guesser = username, guess = guess)
-                    val guessId = guesses.size.toString() //TODO: Change for a more accurate id ?
-                    dbrefGame.child("guesses").child(guessId).setValue(gs)
+            if (timer == "over") {
+                TimerOverPopUp()
+            } else {
+                GuessingBar(
+                    guess = guess,
+                    onGuessChange = { guess = it },
+                    onSendClick = {
+                        val gs = Guess(guesser = username, guess = guess)
+                        val guessId = guesses.size.toString()
+                        dbrefGame.child("guesses").child(guessId).setValue(gs)
 
-                    guess = ""
-                }
-            )
-        }
-    }
-}
+                        guess = ""
+                    }
+                )
+            }
 
-/**
- * The popup screen when a user guesses the correct answer
- */
-@Composable
-fun CorrectAnswerScreen(gs: Guess) {
-    val currentUser = FirebaseAuth.getInstance().currentUser?.uid
-    val guesser = Firebase.database.getReference("profiles/${gs.guesser}").child("uid").get().toString()
-
-    val sb = StringBuilder()
-    if (currentUser.equals(guesser)) {
-        sb.append("You")
-    } else {
-        sb.append(gs.guesser)
-    }
-
-    sb.append(" made a correct guess: \nThe word was \"")
-        .append(gs.guess)
-        .append("\"!")
-
-    val shape = RoundedCornerShape(12.dp)
-
-    Column(
-        modifier = Modifier
-            .testTag("correctAnswerScreen")
-            .background(Color.Transparent)
-            .fillMaxSize()
-            .wrapContentSize(Alignment.Center)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier
-                .testTag("correctAnswerPopup")
-                .size(275.dp, 130.dp)
-                .clip(shape)
-                .background(Purple40),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                modifier = Modifier.testTag("correctAnswerText"),
-                text = sb.toString(),
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center,
-                color = Color.White
-            )
         }
     }
 }

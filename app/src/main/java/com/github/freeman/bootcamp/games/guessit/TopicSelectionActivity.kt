@@ -48,10 +48,12 @@ class TopicSelectionActivity : ComponentActivity() {
         for (i in 0 until NB_TOPICS) {
             topics.add(intent.getStringExtra("topic$i").toString())
         }
+
         val roundNb = intent.getIntExtra("roundNb", 5)
         val turnNb = intent.getIntExtra("roundNb", 5)
         // inform database that a player is in the topic selection phase
         dbref.child("current/current_state").setValue("topic selection")
+
         setContent {
             BootcampComposeTheme {
                 TopicSelectionScreen(dbref, gameId)
@@ -125,6 +127,7 @@ fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, gameI
     dbref.child("topics").child(roundNb.toString()).child(turnNb.toString()).child("topic").setValue(topic)
     dbref.child("current").child("current_round").setValue(roundNb)
     dbref.child("current").child("current_turn").setValue(turnNb)
+    dbref.child("current").child("current_timer").setValue("inprogress")
     dbref.child("current").child("current_state").setValue("play round")
 
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {

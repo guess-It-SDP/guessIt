@@ -21,13 +21,18 @@ import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.black
 import com.github.freeman.bootcamp.colorArray
+import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.turnNb
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.DrawController
@@ -49,6 +54,9 @@ class DrawingActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra("gameId").toString()
         val dbref = Firebase.database.getReference("games/$gameId")
+
+        //dbref.child("current/current_timer").setValue("inprogress")
+
         setContent {
             DrawingScreen(dbref)
         }
@@ -66,6 +74,20 @@ class DrawingActivity : ComponentActivity() {
 fun DrawingScreen(
     dbref: DatabaseReference
 ) {
+    // timer of the artist
+    var timer by remember { mutableStateOf("") }
+    val dbrefTimer = dbref.child("current/current_timer")
+    dbrefTimer.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                timer = snapshot.getValue<String>()!!
+            }
+        }
+        override fun onCancelled(error: DatabaseError) {
+            TODO("Not yet implemented")
+        }
+    })
+
     //the current round and turn (in the round) and topic corresponding
     val dbrefCurrent = dbref.child("Current")
     FirebaseUtilities.databaseGet(dbrefCurrent.child("current_round"))
@@ -96,6 +118,7 @@ fun DrawingScreen(
         Column {
             // Controls bar
             ControlsBar(
+                dbref,
                 drawController,
                 onColorClick =
                 {
@@ -143,23 +166,28 @@ fun DrawingScreen(
                 )
             }
 
-            // Drawing zone
-            DrawBox(
-                drawController = drawController,
-                backgroundColor = Color.White,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f, fill = false),
-                bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
-                    imageBitmap?.let {
-                        dbref.child("topics").child(roundNb.toString()).child(turnNb.toString()).child("drawing")
-                            .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
+            if (timer == "over") {
+                TimerOverPopUp()
+            } else {
+                // Drawing zone
+                DrawBox(
+                    drawController = drawController,
+                    backgroundColor = Color.White,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f, fill = false),
+                    bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
+                        imageBitmap?.let {
+                            dbref.child("topics").child(roundNb.toString()).child(turnNb.toString())
+                                .child("drawing")
+                                .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
+                        }
                     }
+                ) { undoCount, redoCount ->
+                    colorBarVisibility.value = false
+                    undoVisibility.value = undoCount != 0
+                    redoVisibility.value = redoCount != 0
                 }
-            ) { undoCount, redoCount ->
-                colorBarVisibility.value = false
-                undoVisibility.value = undoCount != 0
-                redoVisibility.value = redoCount != 0
             }
         }
     }
@@ -176,6 +204,7 @@ fun DrawingScreen(
 // The controls bar offers buttons that allow to undo, redo, select color and stoke width.
 @Composable
 private fun ControlsBar(
+    dbref: DatabaseReference,
     drawController: DrawController,
     onColorClick: () -> Unit,
     onWidthClick: () -> Unit,
@@ -183,8 +212,10 @@ private fun ControlsBar(
     redoVisibility: MutableState<Boolean>,
     colorValue: MutableState<Color>,
 ) {
+    val dbrefTimer = dbref.child("current/current_timer")
+
     Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-        TimerScreen(100, 60L)
+        TimerScreen(dbrefTimer,100, 60L)
         MenuItems(
             R.drawable.ic_undo,
             LocalContext.current.getString(R.string.undo),

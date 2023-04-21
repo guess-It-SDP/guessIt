@@ -151,6 +151,20 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-308797413">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="39V4C19703010730" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="HUAWEI&#10; POT-LX1" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-30102969">
           <value>
             <AndroidTestResultsTableState>
