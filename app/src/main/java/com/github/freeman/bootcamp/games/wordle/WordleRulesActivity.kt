@@ -8,11 +8,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextLayoutResult
 
 private val MINIMIZED_MAX_LINES = 26;
 class WordleRulesActivity : ComponentActivity() {
-    val rulesText = "The rules of Wordle are elegantly simple.\n" +
+
+    companion object{
+        val WORDLE_RULE_ACTIVITY_TEST_TAG= "wordleRuleActivityTestTag"
+    }
+
+    private val rulesText = "The rules of Wordle are elegantly simple.\n" +
             "\n" +
             "Your objective is to guess a secret five-letter word in as few guesses as possible.\n" +
             "\n" +
@@ -37,7 +43,7 @@ class WordleRulesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ExpandingText(text = rulesText)
+            ExpandingText(Modifier.testTag(WORDLE_RULE_ACTIVITY_TEST_TAG),text = rulesText)
         }
     }
 }

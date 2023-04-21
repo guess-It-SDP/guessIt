@@ -3,20 +3,28 @@ package com.github.freeman.bootcamp.wordle
 import android.content.Context
 import android.content.Intent
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
-import com.github.freeman.bootcamp.games.wordle.WordleGameState
 import com.github.freeman.bootcamp.games.wordle.WordleMenu
-import junit.framework.TestCase
+import com.github.freeman.bootcamp.testfunctions.ToastMatcher
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
+import androidx.compose.ui.test.*
+import androidx.test.espresso.Espresso.*
+import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.test.espresso.matcher.RootMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.*
+import org.hamcrest.CoreMatchers.*
+import org.junit.Test
 
 
 @RunWith(AndroidJUnit4::class)
@@ -27,7 +35,10 @@ class WordleGameActivityVeryVeryHardTest {
     @get:Rule
     val composeRule = createAndroidIntentComposeRule<WordleGameActivity> {
         Intent(it, WordleGameActivity::class.java).apply {
-            putExtra("testing", true).putExtra(WordleMenu.Companion.Difficulty::class.simpleName,WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name)
+            putExtra("testing", true).putExtra(
+                WordleMenu.Companion.Difficulty::class.simpleName,
+                WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name
+            )
         }
     }
 
@@ -37,7 +48,7 @@ class WordleGameActivityVeryVeryHardTest {
      *
      * @param intentFactory A lambda that provides a Context that can used to create an intent. A intent needs to be returned.
      */
-    inline fun <A: ComponentActivity> createAndroidIntentComposeRule(intentFactory: (context: Context) -> Intent) : AndroidComposeTestRule<ActivityScenarioRule<A>, A> {
+    inline fun <A : ComponentActivity> createAndroidIntentComposeRule(intentFactory: (context: Context) -> Intent): AndroidComposeTestRule<ActivityScenarioRule<A>, A> {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val intent = intentFactory(context)
 
@@ -48,7 +59,7 @@ class WordleGameActivityVeryVeryHardTest {
     }
 
     @Test
-    fun test(){
+    fun test() {
         WordleGameActivityTest.Companion.buttonIsDisplayed(composeRule)
     }
 
@@ -62,12 +73,13 @@ class WordleGameActivityVeryVeryHardTest {
 
         scenario.onActivity { activity = it }
 
-        return activity ?: throw IllegalStateException("Activity was not set in the ActivityScenarioRule!")
+        return activity
+            ?: throw IllegalStateException("Activity was not set in the ActivityScenarioRule!")
     }
 
 
     @Test
-    fun buttonIsDisplayed(){
+    fun buttonIsDisplayed() {
         WordleGameActivityTest.buttonIsDisplayed(composeRule)
     }
 
@@ -80,6 +92,7 @@ class WordleGameActivityVeryVeryHardTest {
     fun gridIsDisplayed() {
         WordleGameActivityTest.gridIsDisplayed(composeRule, NB_COLUMNS * WORD_SIZE)
     }
+
     @Test
     fun addingHelloDoesntCrash() {
         WordleGameActivityTest.addingHelloDoesntCrash(composeRule, NB_COLUMNS * WORD_SIZE)
@@ -99,4 +112,5 @@ class WordleGameActivityVeryVeryHardTest {
     fun submitLLLXLtoHelloAddRightColors() {
         WordleGameActivityTest.submitLLLXLtoHelloAddRightColors(composeRule)
     }
+
 }
