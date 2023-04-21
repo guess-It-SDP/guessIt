@@ -28,6 +28,7 @@ import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.CorrectAnswerPopUp
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
+import com.github.freeman.bootcamp.games.guessit.TimerScreen
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.pointsReceived
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.roundNb
@@ -344,6 +345,10 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                             .align(Alignment.Center)
                     )
                 }
+
+                val dbRefTimer = Firebase.database.getReference("games/$gameId").child("current/current_timer")
+                TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.White)
+
                 ScoreScreen(dbrefGame)
             }
 

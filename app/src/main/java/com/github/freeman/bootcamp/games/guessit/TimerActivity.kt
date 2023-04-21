@@ -43,7 +43,7 @@ class TimerActivity : ComponentActivity() {
 
 @Composable
 fun TimerScreen(dbrefTimer: DatabaseReference, time: Long, size: Int = 70, fontSize: TextUnit = 30.sp,
-                color: Color= Purple80) {
+                color: Color= Purple80, textColor: Color = Color.DarkGray) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -54,6 +54,7 @@ fun TimerScreen(dbrefTimer: DatabaseReference, time: Long, size: Int = 70, fontS
             dbrefTimer = dbrefTimer,
             totalTime = time * 1000L,
             activeBarColor = color,
+            textColor = textColor,
             fontSize = fontSize,
             modifier = Modifier
                 .size((0.8*size).dp)
@@ -67,6 +68,7 @@ fun Timer(
     dbrefTimer: DatabaseReference,
     totalTime: Long,
     activeBarColor: Color,
+    textColor: Color,
     fontSize: TextUnit,
     modifier: Modifier = Modifier
 ) {
@@ -93,17 +95,17 @@ fun Timer(
     ) {
         TimerCircles(modifier, activeBarColor, strokeWidth, value)
 
-        TimerText(currentTime, fontSize)
+        TimerText(currentTime, fontSize, textColor)
     }
 }
 
 @Composable
-fun TimerText(currentTime: Long, fontSize: TextUnit) {
+fun TimerText(currentTime: Long, fontSize: TextUnit, textColor: Color) {
     Text(
         text = (currentTime / 1000L).toString(),
         fontSize = fontSize,
         fontWeight = FontWeight.Bold,
-        color = Color.DarkGray
+        color = textColor
     )
 }
 

@@ -8,7 +8,6 @@ import com.github.freeman.bootcamp.games.guessit.TimerScreen
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,7 +27,7 @@ class TimerTest {
         val dbref = Firebase.database.getReference("games/testgameid/current/current_timer")
         composeRule.setContent {
             BootcampComposeTheme {
-                TimerScreen(dbref, 100, 100L)
+                TimerScreen(dbref, 100L)
             }
         }
     }
