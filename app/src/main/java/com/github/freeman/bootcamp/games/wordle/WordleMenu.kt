@@ -67,6 +67,13 @@ private fun launchGame(context: Context, difficulty: String) {
 }
 
 /**
+ * Change the activity to the game activity and put the difficulty strong in the extras
+ */
+private fun launch(context: Context) {
+    context.startActivity(Intent(context, WordleRulesActivity::class.java))
+}
+
+/**
  * Creates a button ot launch a game
  *
  *@param testTag Tag use to find the object for testing
@@ -99,6 +106,11 @@ fun WordleMenuScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        CreateButton(
+            WordleMenu.Companion.GAME_RULES,
+            ::launch,
+            WordleMenu.Companion.GAME_RULES
+        )
         CreateButton(
             WordleMenu.Companion.Difficulty.EASY.prettyText,
             { a: Context -> launchGame(a, WordleMenu.Companion.Difficulty.EASY.name) },
