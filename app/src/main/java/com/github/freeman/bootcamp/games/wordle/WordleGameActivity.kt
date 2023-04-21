@@ -1,7 +1,9 @@
 package com.github.freeman.bootcamp.games.wordle
 
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -26,27 +28,51 @@ import androidx.compose.runtime.remember as remember1
  */
 class WordleGameActivity() : ComponentActivity() {
     private lateinit var wordle: WordleGameState
-    private lateinit var solutionsData: String
-    private lateinit var validWordsData: String
+    private lateinit var solutionsData: String // a textfield containing the possibles word to guess
+    private lateinit var validWordsData: String // a textfield containing word that the player is allowed to submit in wordOnly
+    private lateinit var easysWordsData: String // a textfield containing easy words
     lateinit var solutions: List<String>
     lateinit var validWords: List<String>
+    lateinit var easyWords: List<String>
+    private lateinit var intent: Intent
+    private val NB_ROW_EASY = 9;
+    private val NB_ROW_MEDIUM = 8;
+    private val NB_ROW_HARD = 6;
+    private val NOT_5_LETTERS_PLEASE = "You need to enter 5 letters."
+    private val NOT_WRONG_WORDS_PLEASE = "Please enter a valid word."
+    companion object {
+        val difficultyIsWordOnly = mapOf(
+            WordleMenu.Companion.Difficulty.EASY to false,
+            WordleMenu.Companion.Difficulty.MEDIUM to false,
+            WordleMenu.Companion.Difficulty.HARD to true,
+            WordleMenu.Companion.Difficulty.VERY_HARD to true,
+            WordleMenu.Companion.Difficulty.VERY_VERY_HARD to true
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        intent = getIntent()
+
+        // load the data from the text files
         validWordsData = application.assets.open("wordle_all.txt").bufferedReader().use {
             it.readText()
         }
         solutionsData = application.assets.open("wordle_common.txt").bufferedReader().use {
             it.readText()
         }
+        easysWordsData = application.assets.open("wordle_easy.txt").bufferedReader().use {
+            it.readText()
+        }
         solutions = solutionsData.split("\n").map { it.trim() }
         validWords = validWordsData.split("\n").map { it.trim() }
-        wordle = WordleGameState(false, solutions, validWords)
+        easyWords = validWordsData.split("\n").map { it.trim() }
+
+
+        setUpGame()
+
         val tiles = wordle.getTiles()
-        val testing = getIntent().getBooleanExtra("testing", false)
-        if (testing == true) {
-            //#### for testing #test
-            wordle = wordle.withSetWordToGuess("hello")
-        }
+
         setContent {
             Column() {
                 BootcampComposeTheme {
@@ -60,6 +86,35 @@ class WordleGameActivity() : ComponentActivity() {
     }
 
     /**
+     * set up the game according to difficulty level chosen
+     */
+    private fun setUpGame() {
+        when (intent.getStringExtra(WordleMenu.Companion.Difficulty::class.simpleName)) {
+            WordleMenu.Companion.Difficulty.EASY.name -> wordle =
+                WordleGameState.startGame(WordleGameActivity.Companion.difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.EASY,false), easyWords, validWords, NB_ROW_EASY)
+            WordleMenu.Companion.Difficulty.MEDIUM.name -> wordle =
+                WordleGameState.startGame(WordleGameActivity.Companion.difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.MEDIUM,false), easyWords, validWords, NB_ROW_MEDIUM)
+            WordleMenu.Companion.Difficulty.HARD.name -> wordle =
+                WordleGameState.startGame(WordleGameActivity.Companion.difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.HARD,false), easyWords, validWords, NB_ROW_MEDIUM)
+            WordleMenu.Companion.Difficulty.VERY_HARD.name -> wordle =
+                WordleGameState.startGame(WordleGameActivity.Companion.difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.VERY_HARD,false), solutions, validWords, NB_ROW_MEDIUM)
+            WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name -> wordle =
+                WordleGameState.startGame(WordleGameActivity.Companion.difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.VERY_VERY_HARD,false), solutions, validWords, NB_ROW_HARD)
+            else -> wordle = WordleGameState.startGame(false, solutions, easyWords, NB_ROW_EASY)
+        }
+    }
+
+    /**
+     * used in testing to get hardcoded word hello
+     */
+    private fun testingSetUp() {
+        val testing = getIntent().getBooleanExtra("testing", false)
+        if (testing == true) {
+            wordle = wordle.withSetWordToGuess("hello")
+        }
+    }
+
+    /**
      * submit a word to the game and reset the graphic interface
      */
     @Composable
@@ -67,21 +122,41 @@ class WordleGameActivity() : ComponentActivity() {
         val msg: TextFieldState = remember1 { TextFieldState() }
         GreetingInput(msg)
         Button(onClick = {
+            var difficulty =
+                intent.getStringExtra(WordleMenu.Companion.Difficulty::class.simpleName)
             if (msg.text.length == 5) {
-                wordle = wordle.withSubmittedWord(
-                    msg.text
-                )
-                var tiles = wordle.getTiles()
-                setContent {
-                    Column() {
-                        BootcampComposeTheme {
-                            TileRoof(
-                                tiles
-                            )
-                            WordleButton()
+                if (
+                    difficulty == WordleMenu.Companion.Difficulty.HARD.name
+                    || difficulty == WordleMenu.Companion.Difficulty.VERY_HARD.name
+                    || difficulty == WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name
+                ) {
+                    if (!validWords.contains(msg.text)) {
+                        Toast.makeText(
+                            applicationContext,
+                            NOT_WRONG_WORDS_PLEASE,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                } else {
+
+                    wordle = wordle.withSubmittedWord(
+                        msg.text
+                    )
+                    var tiles = wordle.getTiles()
+                    setContent {
+                        Column() {
+                            BootcampComposeTheme {
+                                TileRoof(
+                                    tiles
+                                )
+                                WordleButton()
+                            }
                         }
                     }
                 }
+
+            } else {
+                Toast.makeText(applicationContext, NOT_5_LETTERS_PLEASE, Toast.LENGTH_LONG).show()
             }
         }) { Text(text = "Submit word", color = Color.Magenta) }
     }
@@ -159,7 +234,7 @@ private fun GreetingInput(msg: TextFieldState = remember1 { TextFieldState() }) 
     OutlinedTextField(
         value = text,
         label = {
-            Text(text = "Enter a 5 letters word to submit" )
+            Text(text = "Enter a 5 letters word to submit")
         },
         onValueChange = {
             text = it

@@ -13,6 +13,7 @@ import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.videocall.VideoCallActivity
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
+import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import org.junit.Before
 import org.junit.Rule
@@ -124,7 +125,7 @@ class MainMenuTest {
 
     @Test
     fun wordleButtonIsDisplayedHasClickActionAndCorrectText(){
-        testButton("wordleButton", WordleGameActivity::class.java.name,MainMenuActivity.WORDLE)
+        testButton("wordleButton", WordleMenu::class.java.name,MainMenuActivity.WORDLE)
     }
 
     @Test
@@ -132,24 +133,23 @@ class MainMenuTest {
         testButton("videoCallButton",VideoCallActivity::class.java.name,MainMenuActivity.VIDEO_CALL)
     }
 
+        /**
+         * Test is a button is displayed, has the right text, is clickable and sends the correct intents
+         */
+        fun testButton(testTag: String, activityClassName: String, text: String) {
+            node(testTag).assertIsDisplayed().assertHasClickAction().assertTextContains(text)
+            intentIsSend(testTag, activityClassName)
+        }
 
-    /**
-     * Test is a button is displayed, has the right text, is clickable and sends the correct intents
-     */
-    private fun testButton(testTag: String, activityClassName: String, text:String){
-        node(testTag).assertIsDisplayed().assertHasClickAction().assertTextContains(text)
-        intentIsSend(testTag,activityClassName)
-    }
-
-    /**
-     * Test that an intend is sent when clicking on a button with given test tag
-     */
-    private fun intentIsSend(testTag: String, activityClassName: String){
-        Intents.init()
-        node(testTag).performClick()
-        Intents.intended(IntentMatchers.hasComponent(activityClassName))
-        Intents.release()
-    }
+        /**
+         * Test that an intend is sent when clicking on a button with given test tag
+         */
+        private fun intentIsSend(testTag: String, activityClassName: String) {
+            Intents.init()
+            node(testTag).performClick()
+            Intents.intended(IntentMatchers.hasComponent(activityClassName))
+            Intents.release()
+        }
 
     /**
      * Return a node from a test Tag

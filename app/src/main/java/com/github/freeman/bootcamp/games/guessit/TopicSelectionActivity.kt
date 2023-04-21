@@ -7,12 +7,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,11 +30,9 @@ import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companio
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.topics
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.turnNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
-import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
-import com.google.firebase.auth.ktx.auth
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGetList
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -44,6 +48,12 @@ class TopicSelectionActivity : ComponentActivity() {
         for (i in 0 until NB_TOPICS) {
             topics.add(intent.getStringExtra("topic$i").toString())
         }
+
+        val roundNb = intent.getIntExtra("roundNb", 5)
+        val turnNb = intent.getIntExtra("roundNb", 5)
+        // inform database that a player is in the topic selection phase
+        dbref.child("current/current_state").setValue("topic selection")
+
         setContent {
             BootcampComposeTheme {
                 TopicSelectionScreen(dbref, gameId)
@@ -59,13 +69,32 @@ class TopicSelectionActivity : ComponentActivity() {
     }
 }
 
+
+private fun refreshTopics(dbref: DatabaseReference, topicList: List<MutableState<String>>) {
+    databaseGet(dbref.child("parameters/category"))
+        .thenAccept { category ->
+
+            val topicsRef = Firebase.database.getReference("topics/$category")
+            databaseGetList(topicsRef)
+                .thenAccept {
+                    topics.clear()
+
+                    for (topic in topicList) {
+                        val newTopic = it.random() as String
+                        topics.add(newTopic)
+                        topic.value = newTopic
+                    }
+                }
+        }
+}
+
 @Composable
-fun TopicSelectionBackButton() {
+fun TopicSelectionBackButton(dbref: DatabaseReference) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("topicSelectionBackButton"),
         onClick = {
-            backToGameOptions(context)
+            backToWaitingRoom(dbref, context)
         }
     ) {
         Icon(
@@ -75,23 +104,22 @@ fun TopicSelectionBackButton() {
     }
 }
 
-fun backToGameOptions(context: Context) {
-    val intent = Intent(context, GameOptionsActivity::class.java)
-    context.startActivity(intent)
+fun backToWaitingRoom(dbref: DatabaseReference, context: Context) {
+    dbref.child("current/current_state").setValue("waiting for players")
     val activity = (context as? Activity)
     activity?.finish()
 }
 
 @Composable
-fun TopicButton(dbref: DatabaseReference, topic: String, id: Int, gameId: String) {
+fun TopicButton(dbref: DatabaseReference, topic: MutableState<String>, id: Int, gameId: String) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("topicButton$id"),
         onClick = {
-            selectTopic(context, dbref, topic, gameId)
+            selectTopic(context, dbref, topic.value, gameId)
         }
     ) {
-        Text(topic)
+        Text(topic.value)
     }
 }
 
@@ -100,6 +128,7 @@ fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, gameI
     dbref.child("current").child("current_round").setValue(roundNb)
     dbref.child("current").child("current_turn").setValue(turnNb)
     dbref.child("current").child("current_timer").setValue("inprogress")
+    dbref.child("current").child("current_state").setValue("play round")
 
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {
         putExtra("gameId", gameId)
@@ -110,14 +139,19 @@ fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, gameI
 fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
     //the current round and turn (in the round)
     val dbrefCurrent = dbref.child("Current")
-    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_round"))
+    databaseGet(dbrefCurrent.child("current_round"))
         .thenAccept {
             roundNb = it.toInt()
         }
-    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_turn"))
+    databaseGet(dbrefCurrent.child("current_turn"))
         .thenAccept {
             turnNb = it.toInt()
         }
+
+    val topic0 = remember { mutableStateOf(topics[0]) }
+    val topic1 = remember { mutableStateOf(topics[1]) }
+    val topic2 = remember { mutableStateOf(topics[2]) }
+    val topicList = listOf(topic0, topic1, topic2)
 
     Column(
         modifier = Modifier
@@ -131,11 +165,27 @@ fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
             text = SELECT_TOPIC
         )
         Spacer(modifier = Modifier.size(40.dp))
-        TopicButton(dbref, topics[0], 1, gameId)
+        TopicButton(dbref, topic0, 1, gameId)
         Spacer(modifier = Modifier.size(20.dp))
-        TopicButton(dbref, topics[1], 2, gameId)
+        TopicButton(dbref, topic1, 2, gameId)
         Spacer(modifier = Modifier.size(20.dp))
-        TopicButton(dbref, topics[2], 3, gameId)
+        TopicButton(dbref, topic2, 3, gameId)
+
+        // refresh button
+        IconButton(
+            modifier = Modifier
+                .weight(weight = 1f, fill = false)
+                .testTag("refreshButton"),
+            onClick = {
+                refreshTopics(dbref, topicList)
+            }) {
+            androidx.compose.material.Icon(
+                modifier = Modifier.size(24.dp),
+                imageVector = Icons.Outlined.Refresh,
+                contentDescription = "Edit Details",
+                tint = MaterialTheme.colors.primary
+            )
+        }
     }
 
     Column(
@@ -144,6 +194,6 @@ fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        TopicSelectionBackButton()
+        TopicSelectionBackButton(dbref)
     }
 }

@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp.games.guessit.drawing
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,7 +25,6 @@ import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.turnNb
-import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.database.DataSnapshot
@@ -38,6 +38,8 @@ import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.DrawController
 import io.ak1.drawbox.rememberDrawController
 import io.ak1.rangvikalp.RangVikalp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 // This class uses two great libraries :
 // - For the drawing zone : DrawBox (https://github.com/akshay2211/DrawBox)
@@ -67,6 +69,7 @@ class DrawingActivity : ComponentActivity() {
 }
 
 // The drawing screen is made of a drawing zone and a controls bar
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun DrawingScreen(
     dbref: DatabaseReference
@@ -103,6 +106,7 @@ fun DrawingScreen(
     val currentWidth = remember { mutableStateOf(DEFAULT_WIDTH) }
     val currentColor = remember { mutableStateOf(DEFAULT_COLOR) }
     val drawController = rememberDrawController()
+    val composableScope = rememberCoroutineScope()
     val firstStroke = remember { mutableStateOf(true) }
     if (firstStroke.value) {
         drawController.changeColor(DEFAULT_COLOR)
@@ -185,6 +189,14 @@ fun DrawingScreen(
                     redoVisibility.value = redoCount != 0
                 }
             }
+        }
+    }
+
+    // Thread that sends the drawing to firebase every 50ms (20fps)
+    composableScope.launch {
+        while (true) {
+            delay(50L)
+            drawController.saveBitmap()
         }
     }
 }

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -116,26 +117,32 @@ fun ProfileCreationScreen(dbref: DatabaseReference, storageRef: StorageReference
                 onUsernameChange = { username = it },
                 onSendClick = {
                     if (username.isEmpty()) {
-                        username = "UnknownPlayer"
+                        Toast.makeText(context, "Please enter a username", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+                        if (Firebase.auth.currentUser?.isAnonymous == false) {
+                            // email (only if authenticated with google)
+                            val userEmail = Firebase.auth.currentUser?.email
+                            dbref.child(userId!!).child("email").setValue(userEmail)
+                        }
+
+                        // username
+                        dbref.child(userId!!).child("username").setValue(username)
+
+                        // default profile picture
+                        val profilePicBitmap = BitmapFactory.decodeResource(
+                            context.resources,
+                            R.raw.default_profile_pic
+                        )
+                        val stream = ByteArrayOutputStream()
+                        profilePicBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+                        val image = stream.toByteArray()
+                        storageRef.child("profiles/$userId/picture/pic.jpg").putBytes(image)
+
+                        // go to main menu after profile created
+                        context.startActivity(Intent(context, MainMenuActivity::class.java))
                     }
-                    val userId = FirebaseAuth.getInstance().currentUser?.uid
-
-                    // email
-                    val userEmail = Firebase.auth.currentUser?.email
-                    dbref.child(userId!!).child("email").setValue(userEmail)
-
-                    // username
-                    dbref.child(userId).child("username").setValue(username)
-
-                    // default profile picture
-                    val profilePicBitmap = BitmapFactory.decodeResource(context.resources, R.raw.default_profile_pic)
-                    val stream = ByteArrayOutputStream()
-                    profilePicBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
-                    val image = stream.toByteArray()
-                    storageRef.child("profiles/$userId/picture/pic.jpg").putBytes(image)
-
-                    // go to main menu after profile created
-                    context.startActivity(Intent(context, MainMenuActivity::class.java))
                 }
             )
         }

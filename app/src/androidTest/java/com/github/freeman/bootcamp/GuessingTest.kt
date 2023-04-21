@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp
 
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -25,7 +26,7 @@ class GuessingTest {
 
         composeRule.setContent {
             BootcampComposeTheme {
-                GuessingScreen(database)
+                GuessingScreen(database, context = LocalContext.current)
             }
         }
     }

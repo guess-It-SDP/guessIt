@@ -5,9 +5,10 @@ import junit.framework.TestCase.assertEquals
 import org.junit.Test
 import java.security.InvalidParameterException
 
+private val NB_ROW = 8
 
 class WordleGameStateTest {
-    var helloWordle = WordleGameState(false, listOf("hello"), listOf("hello"))
+    var helloWordle = WordleGameState.startGame(false, listOf("hello"), listOf("hello"), NB_ROW)
 
     @Test
     fun getTilesWorksWithEmptyTileGrid() {
@@ -121,14 +122,14 @@ class WordleGameStateTest {
     }
     @Test
     fun wordsOnlyRefusesRandomLetter(){
-        var wordle = WordleGameState(true,listOf("hello"),listOf("hello") )
+        var wordle = WordleGameState.startGame(true,listOf("hello"),listOf("hello"), NB_ROW )
         wordle = wordle.withSubmittedWord("ebcde")
         assertEquals('\u0000',wordle.getTiles().get(0).letter)
     }
 
     @Test(expected = InvalidParameterException::class)
     fun submit6LettersThrowIllegalArgumentEx(){
-        var wordle = WordleGameState(true,listOf("hello"),listOf("hello") ).withSubmittedWord("abcdef")
+        var wordle = WordleGameState.startGame(true,listOf("hello"),listOf("hello"), NB_ROW ).withSubmittedWord("abcdef")
     }
 
 }

@@ -97,6 +97,7 @@ fun TopAppbarCreateJoin(context: Context = LocalContext.current) {
 fun CreateGameButton() {
     val context = LocalContext.current
     ElevatedButton(
+        modifier = Modifier.testTag("createGameButton"),
         onClick = { context.startActivity(Intent(context, GameOptionsActivity::class.java)) }
     ) {
         Text("Create a new game")

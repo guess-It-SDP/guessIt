@@ -69,6 +69,23 @@ object FirebaseUtilities {
     }
 
     /**
+     * Gets the value located in the given database reference
+     * @param dbRef database reference
+     * @return a future of the value of type List contained in the database
+     */
+    fun databaseGetList(dbRef: DatabaseReference): CompletableFuture<List<*>> {
+        val future = CompletableFuture<List<*>>()
+        dbRef.get().addOnSuccessListener {
+            if (it.value == null) future.completeExceptionally(NoSuchFieldException())
+            else future.complete(it.value as List<*>?)
+        }.addOnFailureListener {
+            future.completeExceptionally(it)
+        }
+
+        return future
+    }
+
+    /**
      * Gets the value located in the given storage reference
      * @param storageRef storage reference
      * @return a future of the file contained in the storage, in a bitmap format
@@ -98,7 +115,7 @@ object FirebaseUtilities {
             future.complete(false)
         } else {
             // if the email exists, the profile exists too
-            databaseGet(dbRef.child("profiles/${user.uid}/email"))
+            databaseGet(dbRef.child("profiles/${user.uid}/username"))
                 .thenAccept {
                     future.complete(it != "")
                 }
