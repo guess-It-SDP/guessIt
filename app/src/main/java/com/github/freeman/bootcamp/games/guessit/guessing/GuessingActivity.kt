@@ -154,7 +154,7 @@ fun GuessesList(guesses: Array<Guess>, dbrefGame: DatabaseReference, artistId: S
 }
 
 /**
- * The writing bar where guessers can enten their guesses
+ * The writing bar where guessers can enter their guesses
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

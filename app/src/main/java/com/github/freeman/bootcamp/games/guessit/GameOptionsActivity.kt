@@ -277,7 +277,6 @@ fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String
         }
 
         override fun onCancelled(databaseError: DatabaseError) {
-            throw databaseError.toException()
         }
     })
 
@@ -297,7 +296,6 @@ fun fetchTopics(setTopics: (topics: Array<String>) -> Unit) {
         }
 
         override fun onCancelled(databaseError: DatabaseError) {
-            throw databaseError.toException()
         }
     })
 }

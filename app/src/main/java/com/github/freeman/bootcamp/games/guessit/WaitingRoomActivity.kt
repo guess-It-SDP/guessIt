@@ -146,7 +146,8 @@ class WaitingRoomActivity: ComponentActivity() {
                     players.remove(snapshot.key)
                     if (snapshot.key == hostId.value && !players.isEmpty()) {
                         val newHost = players.toList()[0]
-                        database.child("games/$gameId/parameters/host_id").setValue(players.toList()[0])
+                        database.child("games/$gameId/parameters/host_id").setValue(newHost)
+                        database.child("games/$gameId/current/current_artist").setValue(newHost)
                         hostId.value = newHost
                     }
 
@@ -370,10 +371,10 @@ fun PlayerList(
             .testTag("playerList")
     ){
         items(players.toList()) { playerId ->
-            val picture = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
-            val profilePicRef = storageRef.child("profiles/$playerId/picture/pic.jpg")
 
             // gets the profile picture from the database
+            val picture = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
+            val profilePicRef = storageRef.child("profiles/$playerId/picture/pic.jpg")
             LaunchedEffect(Unit) {
                 storageGet(profilePicRef)
                     .thenAccept {
