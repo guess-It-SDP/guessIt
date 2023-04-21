@@ -1,6 +1,7 @@
 package com.github.freeman.bootcamp.games.wordle
 
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,27 +27,39 @@ import androidx.compose.runtime.remember as remember1
  */
 class WordleGameActivity() : ComponentActivity() {
     private lateinit var wordle: WordleGameState
-    private lateinit var solutionsData: String
-    private lateinit var validWordsData: String
+    private lateinit var solutionsData: String // a textfield containing the possibles word to guess
+    private lateinit var validWordsData: String // a textfield containing word that the player is allowed to submit in wordOnly
+    private lateinit var easysWordsData: String // a textfield containing easy words
+    private lateinit var intent: Intent
+    private val NB_ROW_EASY = 9;
+    private val NB_ROW_MEDIUM = 8;
+    private val NB_ROW_HARD = 6;
     lateinit var solutions: List<String>
     lateinit var validWords: List<String>
+    lateinit var easyWords: List<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        intent = getIntent()
+
+        // load the data from the text files
         validWordsData = application.assets.open("wordle_all.txt").bufferedReader().use {
             it.readText()
         }
         solutionsData = application.assets.open("wordle_common.txt").bufferedReader().use {
             it.readText()
         }
+        easysWordsData = application.assets.open("wordle_easy.txt").bufferedReader().use {
+            it.readText()
+        }
         solutions = solutionsData.split("\n").map { it.trim() }
         validWords = validWordsData.split("\n").map { it.trim() }
-        wordle = WordleGameState(false, solutions, validWords)
+        easyWords = validWordsData.split("\n").map { it.trim() }
+
+
+        setUpGame()
+
         val tiles = wordle.getTiles()
-        val testing = getIntent().getBooleanExtra("testing", false)
-        if (testing == true) {
-            //#### for testing #test
-            wordle = wordle.withSetWordToGuess("hello")
-        }
+
         setContent {
             Column() {
                 BootcampComposeTheme {
@@ -56,6 +69,35 @@ class WordleGameActivity() : ComponentActivity() {
                     WordleButton()
                 }
             }
+        }
+    }
+
+    /**
+     * set up the game according to difficulty level chosen
+     */
+    private fun setUpGame() {
+        when (intent.getStringExtra(WordleMenu.Companion.Difficulty::class.simpleName)) {
+            WordleMenu.Companion.Difficulty.EASY.name -> wordle =
+                WordleGameState.startGame(false, solutions, easyWords, NB_ROW_EASY)
+            WordleMenu.Companion.Difficulty.MEDIUM.name -> wordle =
+                WordleGameState.startGame(false, solutions, easyWords, NB_ROW_MEDIUM)
+            WordleMenu.Companion.Difficulty.HARD.name -> wordle =
+                WordleGameState.startGame(false, solutions, validWords, NB_ROW_MEDIUM)
+            WordleMenu.Companion.Difficulty.VERY_HARD.name -> wordle =
+                WordleGameState.startGame(true, solutions, validWords, NB_ROW_MEDIUM)
+            WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name -> wordle =
+                WordleGameState.startGame(true, solutions, validWords, NB_ROW_HARD)
+            else -> wordle = WordleGameState.startGame(false, solutions, easyWords, NB_ROW_EASY)
+        }
+    }
+
+    /**
+     * used in testing to get hardcoded word hello
+     */
+    private fun testingSetUp() {
+        val testing = getIntent().getBooleanExtra("testing", false)
+        if (testing == true) {
+            wordle = wordle.withSetWordToGuess("hello")
         }
     }
 
@@ -159,7 +201,7 @@ private fun GreetingInput(msg: TextFieldState = remember1 { TextFieldState() }) 
     OutlinedTextField(
         value = text,
         label = {
-            Text(text = "Enter a 5 letters word to submit" )
+            Text(text = "Enter a 5 letters word to submit")
         },
         onValueChange = {
             text = it
