@@ -83,8 +83,8 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
             .padding(8.dp)
             .testTag("guessItem")
     ) {
-        if (guess.guess?.lowercase() == answer.lowercase()) {
-            val userId = Firebase.auth.currentUser?.uid
+        val userId = Firebase.auth.currentUser?.uid
+        if (guess.guess?.lowercase() == answer.lowercase() && guess.guesserId == userId) {
             val dbGuesserScoreRef = dbrefGame.child("players/$userId/score")
             val dbArtistScoreRef = dbrefGame.child("players/$artistId/score")
             val correctGuessesRef = dbrefGame.child("current/correct_guesses")
@@ -126,7 +126,7 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
                     }
                 }
 
-            val gs = Guess(guess.guesser, answer)
+            val gs = Guess(guess.guesser, guess.guesserId, answer)
             CorrectAnswerPopUp(gs = gs)
 
         }
@@ -217,7 +217,6 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 val guessesList = snapshot.getValue<ArrayList<Guess>>()!!
-
                 guesses = guessesList.toTypedArray()
             }
         }
@@ -370,7 +369,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                     guess = guess,
                     onGuessChange = { guess = it },
                     onSendClick = {
-                        val gs = Guess(guesser = username, guess = guess)
+                        val gs = Guess(guesser = username, guesserId = uid, guess = guess)
                         val guessId = guesses.size.toString()
                         dbrefGame.child("guesses").child(guessId).setValue(gs)
 
