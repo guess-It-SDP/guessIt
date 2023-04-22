@@ -251,7 +251,7 @@ fun Scoreboard(playerScores: List<Pair<String?, Int>>, modifier: Modifier) {
         ) {
             Text(
                 text = SCORES_TITLE,
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.subtitle1,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .testTag("scoresTitle")

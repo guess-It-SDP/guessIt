@@ -42,8 +42,8 @@ class ScoreActivityTest {
     fun init() {
         gameEnded = false
         composeRule.setContent {
-            val gameId = "TestGameId"
-            val dbRef = Firebase.database.getReference("Games/$gameId")
+            val gameId = "testgameid"
+            val dbRef = Firebase.database.getReference("games/$gameId")
             reinitialise(dbRef, playerIds.toSet())
 
            initFirebaseScores(dbRef, playerIds, scores)
@@ -106,7 +106,7 @@ class ScoreActivityTest {
 // Initialises the player scores of the test game on the Firebase
 fun initFirebaseScores(dbRef: DatabaseReference, playerIds: List<String>, scores: Map<String, Int>) {
     for (id in playerIds) {
-        val dbScoreRef = dbRef.child("Players/$id/score")
+        val dbScoreRef = dbRef.child("players/$id/score")
         FirebaseUtilities.databaseGetLong(dbScoreRef)
             .thenAccept {
                 dbScoreRef.setValue(scores[id])

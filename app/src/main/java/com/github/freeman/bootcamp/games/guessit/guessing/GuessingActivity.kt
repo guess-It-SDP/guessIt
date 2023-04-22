@@ -345,8 +345,10 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                     )
                 }
 
-                val dbRefTimer = Firebase.database.getReference("games/$gameId").child("current/current_timer")
-                TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.White)
+                if (timer != "useless") {
+                    val dbRefTimer = Firebase.database.getReference("games/$gameId").child("current/current_timer")
+                    TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.LightGray)
+                }
 
                 ScoreScreen(dbrefGame)
             }
