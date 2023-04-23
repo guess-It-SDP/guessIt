@@ -13,12 +13,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -30,14 +28,14 @@ import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.CorrectAnswerPopUp
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
+import com.github.freeman.bootcamp.games.guessit.TimerScreen
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.pointsReceived
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.turnNb
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.ui.theme.Purple40
 import com.github.freeman.bootcamp.utilities.BitmapHandler
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -85,8 +83,8 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
             .padding(8.dp)
             .testTag("guessItem")
     ) {
-        if (guess.guess?.lowercase() == answer.lowercase()) {
-            val userId = Firebase.auth.currentUser?.uid
+        val userId = Firebase.auth.currentUser?.uid
+        if (guess.guess?.lowercase() == answer.lowercase() && guess.guesserId == userId) {
             val dbGuesserScoreRef = dbrefGame.child("players/$userId/score")
             val dbArtistScoreRef = dbrefGame.child("players/$artistId/score")
             val correctGuessesRef = dbrefGame.child("current/correct_guesses")
@@ -128,7 +126,7 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
                     }
                 }
 
-            val gs = Guess(guess.guesser, answer)
+            val gs = Guess(guess.guesser, guess.guesserId, answer)
             CorrectAnswerPopUp(gs = gs)
 
         }
@@ -219,7 +217,6 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 val guessesList = snapshot.getValue<ArrayList<Guess>>()!!
-
                 guesses = guessesList.toTypedArray()
             }
         }
@@ -347,6 +344,12 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                             .align(Alignment.Center)
                     )
                 }
+
+                if (timer != "useless") {
+                    val dbRefTimer = Firebase.database.getReference("games/$gameId").child("current/current_timer")
+                    TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.LightGray)
+                }
+
                 ScoreScreen(dbrefGame)
             }
 
@@ -368,7 +371,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                     guess = guess,
                     onGuessChange = { guess = it },
                     onSendClick = {
-                        val gs = Guess(guesser = username, guess = guess)
+                        val gs = Guess(guesser = username, guesserId = uid, guess = guess)
                         val guessId = guesses.size.toString()
                         dbrefGame.child("guesses").child(guessId).setValue(gs)
 

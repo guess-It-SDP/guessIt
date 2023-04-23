@@ -17,10 +17,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.*
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.ui.theme.Purple80
 import com.google.firebase.database.DatabaseReference
@@ -38,14 +35,15 @@ class TimerActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                TimerScreen(dbrefTimer, 100, 100L)
+                TimerScreen(dbrefTimer, 100L)
             }
         }
     }
 }
 
 @Composable
-fun TimerScreen(dbrefTimer: DatabaseReference, size: Int, time: Long, color: Color= Purple80) {
+fun TimerScreen(dbrefTimer: DatabaseReference, time: Long, size: Int = 70, fontSize: TextUnit = 30.sp,
+                color: Color= Purple80, textColor: Color = Color.DarkGray) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -56,6 +54,8 @@ fun TimerScreen(dbrefTimer: DatabaseReference, size: Int, time: Long, color: Col
             dbrefTimer = dbrefTimer,
             totalTime = time * 1000L,
             activeBarColor = color,
+            textColor = textColor,
+            fontSize = fontSize,
             modifier = Modifier
                 .size((0.8*size).dp)
                 .testTag("timer")
@@ -68,6 +68,8 @@ fun Timer(
     dbrefTimer: DatabaseReference,
     totalTime: Long,
     activeBarColor: Color,
+    textColor: Color,
+    fontSize: TextUnit,
     modifier: Modifier = Modifier
 ) {
     val initialValue = 1f
@@ -93,17 +95,17 @@ fun Timer(
     ) {
         TimerCircles(modifier, activeBarColor, strokeWidth, value)
 
-        TimerText(currentTime)
+        TimerText(currentTime, fontSize, textColor)
     }
 }
 
 @Composable
-fun TimerText(currentTime: Long) {
+fun TimerText(currentTime: Long, fontSize: TextUnit, textColor: Color) {
     Text(
         text = (currentTime / 1000L).toString(),
-        fontSize = 40.sp,
+        fontSize = fontSize,
         fontWeight = FontWeight.Bold,
-        color = Color.DarkGray
+        color = textColor
     )
 }
 
