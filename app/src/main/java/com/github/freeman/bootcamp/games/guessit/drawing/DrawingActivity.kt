@@ -25,8 +25,11 @@ import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.turnNb
+import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.videocall.APP_ID
+import com.github.freeman.bootcamp.videocall.VideoScreen
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -34,6 +37,8 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import io.agora.agorauikit_android.AgoraConnectionData
+import io.agora.agorauikit_android.AgoraVideoViewer
 import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.DrawController
 import io.ak1.drawbox.rememberDrawController
@@ -58,8 +63,12 @@ class DrawingActivity : ComponentActivity() {
         //dbref.child("current/current_timer").setValue("inprogress")
 
         setContent {
-            DrawingScreen(dbref)
-        }
+
+
+
+                    DrawingScreen(dbref)
+                }
+
     }
 
     companion object {
@@ -117,6 +126,12 @@ fun DrawingScreen(
     Box(Modifier.testTag(LocalContext.current.getString(R.string.drawing_screen))) {
         Column {
             // Controls bar
+            BootcampComposeTheme {
+                VideoScreen(
+                    roomName = "1",
+                    testing = false
+                )
+            }
             ControlsBar(
                 dbref,
                 drawController,
