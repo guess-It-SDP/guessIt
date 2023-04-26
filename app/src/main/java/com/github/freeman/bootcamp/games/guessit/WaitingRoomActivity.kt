@@ -23,6 +23,7 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -394,12 +395,10 @@ fun PlayerList(
                     id = playerId,
                     picture = picture.value
                 ),
-                hostId = hostId
+                hostId = hostId,
             )
         }
     }
-
-
 }
 
 @Composable
@@ -448,24 +447,31 @@ fun PlayerDisplay(player: PlayerData, hostId: String) {
                 )
             }
 
-            // Todo: Make the button invisible for all but the host
-            // Todo: Disable the button for all but the host
-            ElevatedButton(
-                modifier = Modifier
-                    .testTag("kickButton"),
-                onClick = {
-                    // Todo: Add the functionality to kick a player
-                }) {
-                Image(
-                    painterResource(id = R.drawable.kick_player_boot),
-                    contentDescription ="Kick button icon",
-                    modifier = Modifier.size(20.dp)
-                )
+            //  Only display the kick button if the player in question is not the host
+            if (player.id != hostId) {
+                val currentUserId = Firebase.auth.currentUser?.uid
+                val currentPlayerIsHost = currentUserId == hostId
+                val visibility = if (currentPlayerIsHost) 1f else 0f
 
-                Text(
-                    text= "Kick",
-                    modifier = Modifier.padding(start = 5.dp)
-                )
+                ElevatedButton(
+                    modifier = Modifier
+                        .alpha(visibility) // Make the button visible for only the host
+                        .testTag("kickButton" + player.id),
+                    enabled = currentPlayerIsHost, // Only enable the button for the host
+                    onClick = {
+                        // Todo: Add the functionality to kick a player
+                    }) {
+                    Image(
+                        painterResource(id = R.drawable.kick_player_boot),
+                        contentDescription = "Kick button icon",
+                        modifier = Modifier.size(20.dp)
+                    )
+
+                    Text(
+                        text= "Kick",
+                        modifier = Modifier.padding(start = 5.dp)
+                    )
+                }
             }
         }
     }
@@ -476,7 +482,6 @@ fun StartButton(
     dbRef: DatabaseReference,
     players: MutableCollection<String>
 ) {
-
     var userId = Firebase.auth.uid
     userId = userId ?: "null"
 
@@ -485,8 +490,6 @@ fun StartButton(
     databaseGet(dbRef.child("parameters/host_id")).thenAccept {
         hostId.value = it
     }
-
-
 
     Column (
         modifier = Modifier

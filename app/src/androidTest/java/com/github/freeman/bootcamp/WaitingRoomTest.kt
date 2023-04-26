@@ -194,6 +194,7 @@ class WaitingRoomTest {
                         dbRef = database,
                         storageRef = storage,
                         players = players,
+                        hostId = hostId.value
                     )
 
                     StartButton(
