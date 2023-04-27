@@ -2,6 +2,8 @@ package com.github.freeman.bootcamp
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,34 +28,72 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity
-import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
-import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
 import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.profileExists
 import com.github.freeman.bootcamp.videocall.VideoCallActivity
-import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import java.io.ByteArrayOutputStream
 
 /**
  * This class will be the main screen of the app
  */
 class MainMenuActivity : ComponentActivity() {
     private val backgroundMusicService = BackgroundMusicService()
+    private var userId = Firebase.auth.uid
+    private val dbRef = Firebase.database.reference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val i = Intent(this, backgroundMusicService::class.java)
         startService(i)
         setContent {
+            val context = LocalContext.current
+
+            dbRef.child("profiles/$userId/username").get().addOnCompleteListener {
+                val user = FirebaseAuth.getInstance().currentUser
+                val email = user?.email
+
+                if (it.result.value == "" || it.result.value == null) {
+                    // sign in anonymously
+                    Firebase.auth.signInAnonymously().addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            userId = Firebase.auth.uid.toString()
+
+                            val dbRef = Firebase.database.reference
+                            val storageRef = Firebase.storage.reference
+
+                            // username
+                            dbRef.child("profiles/$userId/username").setValue("Guest")
+
+                            // default profile picture
+                            val profilePicBitmap = BitmapFactory.decodeResource(
+                                context.resources,
+                                R.raw.default_profile_pic
+                            )
+                            val stream = ByteArrayOutputStream()
+                            profilePicBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+                            val image = stream.toByteArray()
+                            storageRef.child("profiles/$userId/picture/pic.jpg").putBytes(image)
+                        }
+                    }
+                }
+            }
+
+
+
+//            if (userId == null) {
+//
+//
+//            }
+
             BootcampComposeTheme {
                 MainMenuScreen()
             }
@@ -99,13 +139,8 @@ fun PlayButton() {
 }
 
 
-fun settings(context: Context, user: FirebaseUser?, dbRef: DatabaseReference) {
-    profileExists(user, dbRef)
-        .thenAccept {
-            if (it) {
-                context.startActivity(Intent(context, SettingsProfileActivity::class.java))
-            }
-        }
+fun settings(context: Context) {
+    context.startActivity(Intent(context, SettingsProfileActivity::class.java))
 }
 
 @Composable
@@ -113,7 +148,7 @@ fun SettingsButton() {
     val context = LocalContext.current
     MainMenuButton(
         testTag = "settingsButton",
-        onClick = { settings(context, Firebase.auth.currentUser, Firebase.database.reference) },
+        onClick = { settings(context) },
         text = SETTINGS
     )
 }

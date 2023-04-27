@@ -109,17 +109,12 @@ object FirebaseUtilities {
      * @param dbRef database reference
      * @return a future containing the boolean
      */
-    fun profileExists(user: FirebaseUser?, dbRef: DatabaseReference): CompletableFuture<Boolean> {
+    fun profileExists(userId: String, dbRef: DatabaseReference): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
-        if (user == null) {
-            future.complete(false)
-        } else {
-            // if the email exists, the profile exists too
-            databaseGet(dbRef.child("profiles/${user.uid}/username"))
-                .thenAccept {
-                    future.complete(it != "")
-                }
-        }
+        databaseGet(dbRef.child("profiles/$userId/username"))
+            .thenAccept {
+                future.complete(it != "" && it != null)
+            }
 
         return future
     }
