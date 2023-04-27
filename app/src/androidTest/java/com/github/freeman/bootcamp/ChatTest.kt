@@ -41,7 +41,7 @@ class ChatTest {
 
     @Test
     fun activateChatButtonIsDisplayed() {
-        composeRule.onNodeWithTag("activateChatButton").assertIsDisplayed()
+        composeRule.onNodeWithTag("chatActivateButton").assertIsDisplayed()
     }
 
 
@@ -52,26 +52,26 @@ class ChatTest {
 
     @Test
     fun chatScreenIsDisplayedAfterActivation() {
-        composeRule.onNodeWithTag("activateChatButton").performClick()
+        composeRule.onNodeWithTag("chatActivateButton").performClick()
         composeRule.onNodeWithTag("chatScreen").assertIsDisplayed()
     }
 
     @Test
     fun bottomBarIsDisplayedAfterActivation() {
-        composeRule.onNodeWithTag("activateChatButton").performClick()
-        composeRule.onNodeWithTag("bottomBar").assertIsDisplayed()
+        composeRule.onNodeWithTag("chatActivateButton").performClick()
+        composeRule.onNodeWithTag("chatBottomBar").assertIsDisplayed()
     }
 
     @Test
     fun backGroundComposableIsDisplayed() {
         composeRule.onNodeWithTag("backGroundComposable").assertIsDisplayed()
-        composeRule.onNodeWithTag("activateChatButton").performClick()
+        composeRule.onNodeWithTag("chatActivateButton").performClick()
         composeRule.onNodeWithTag("backGroundComposable").assertIsDisplayed()
     }
 
     @Test
     fun backButtonDeactivatesChat() {
-        composeRule.onNodeWithTag("activateChatButton").performClick()
+        composeRule.onNodeWithTag("chatActivateButton").performClick()
         composeRule.onNodeWithTag("chatScreen").assertIsDisplayed()
         Espresso.pressBack()
         composeRule.onNodeWithTag("chatScreen").assertDoesNotExist()
@@ -80,9 +80,9 @@ class ChatTest {
 
     @Test
     fun sendingMessageDisplaysInChat() {
-        composeRule.onNodeWithTag("activateChatButton").performClick()
+        composeRule.onNodeWithTag("chatActivateButton").performClick()
         composeRule.onNode(hasSetTextAction()).performTextInput("Bonjour Monde !")
-        composeRule.onNodeWithTag("sendButton").performClick()
+        composeRule.onNodeWithTag("chatSendButton").performClick()
         composeRule.onNodeWithTag("chatMessageItem").onChild().assertIsDisplayed()
     }
     
