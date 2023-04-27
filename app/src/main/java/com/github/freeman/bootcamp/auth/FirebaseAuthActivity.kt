@@ -1,13 +1,8 @@
 package com.github.freeman.bootcamp.auth
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -21,18 +16,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
-import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.profileExists
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.createProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import java.io.ByteArrayOutputStream
 
 
 /**
@@ -77,8 +68,9 @@ class FirebaseAuthActivity : ComponentActivity() {
 
 
             if (signedIn) {
+                // Checks if a profile already exists for the current user. If not, creates one
+
                 val dbRef = Firebase.database.reference
-                val storageRef = Firebase.storage.reference
                 val userId = Firebase.auth.currentUser?.uid
                 val context = LocalContext.current
                 currentUser.value = Firebase.auth.currentUser
@@ -88,31 +80,12 @@ class FirebaseAuthActivity : ComponentActivity() {
                     val user = FirebaseAuth.getInstance().currentUser
                     val email = user?.email
 
+                    // If profile doesn't exist
                     if (it.result.value == "" || it.result.value == null) {
-
-                        // username + email
-                        if (user != null) {
-                            dbRef.child("profiles/$userId/username").setValue(user.displayName)
-                        }
-                        dbRef.child("profiles/$userId/email").setValue(email)
-
-                        // default profile picture
-                        val picBitmap = BitmapFactory.decodeResource(
-                            context.resources,
-                            R.raw.default_profile_pic
-                        )
-
-                        val stream = ByteArrayOutputStream()
-                        picBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
-                        val image = stream.toByteArray()
-                        storageRef.child("profiles/$userId/picture/pic.jpg").putBytes(image)
-
-
+                        createProfile(context, userId!!, user!!.displayName!!, email)
                     }
                 }
             }
-
-
 
             BootcampComposeTheme {
                 AuthenticationForm(
@@ -121,8 +94,6 @@ class FirebaseAuthActivity : ComponentActivity() {
                 )
             }
         }
-
-
     }
 
 
@@ -175,27 +146,11 @@ class FirebaseAuthActivity : ComponentActivity() {
             if (task.isSuccessful) {
                 val userId = Firebase.auth.uid.toString()
 
-                val dbRef = Firebase.database.reference
-                val storageRef = Firebase.storage.reference
-
-                // username
-                dbRef.child("profiles/$userId/username").setValue("Guest")
-
-                // default profile picture
-                val profilePicBitmap = BitmapFactory.decodeResource(
-                    context.resources,
-                    R.raw.default_profile_pic
-                )
-                val stream = ByteArrayOutputStream()
-                profilePicBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
-                val image = stream.toByteArray()
-                storageRef.child("profiles/$userId/picture/pic.jpg").putBytes(image)
+                createProfile(context, userId, "Guest")
 
                 currentUser.value = FirebaseAuth.getInstance().currentUser
                 signedIn = false
 
-//                val activity = (context as? Activity)
-//                activity?.finish()
             }
         }
     }
@@ -215,7 +170,6 @@ fun AuthenticationForm(signInInfo: MutableState<String>, currentUser: MutableSta
             text = signInInfo.value,
         )
 
-        //currentUser.value == null
         if (currentUser.value == null) {
             // if the user is not authenticated
 
@@ -228,7 +182,6 @@ fun AuthenticationForm(signInInfo: MutableState<String>, currentUser: MutableSta
 
 
         } else {
-            //currentUser.value!!.isAnonymous
             if (currentUser.value!!.isAnonymous || signInInfo.value == "Account deleted" || signInInfo.value == "Signed out") {
                 // if the user is authenticated anonymously
 
@@ -240,7 +193,6 @@ fun AuthenticationForm(signInInfo: MutableState<String>, currentUser: MutableSta
                 { Text("Sign in with Google") }
             }
 
-            //!currentUser.value!!.isAnonymous
             else if (!currentUser.value!!.isAnonymous) {
                 // if the user is authenticated with google
 
@@ -259,9 +211,6 @@ fun AuthenticationForm(signInInfo: MutableState<String>, currentUser: MutableSta
                     onClick = {
                         (context as? FirebaseAuthActivity)?.deleteAccount(signInInfo) {
                             (context as? FirebaseAuthActivity)?.signInAnonymously(context, currentUser)
-
-//                            val activity = (context as? Activity)
-//                            activity?.finish()
                         }
                     })
                 { Text("Delete \'Guess It!\' account") }

@@ -1,10 +1,15 @@
 package com.github.freeman.bootcamp.utilities.firebase
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.google.firebase.auth.FirebaseUser
+import com.github.freeman.bootcamp.R
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
+import java.io.ByteArrayOutputStream
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -105,7 +110,7 @@ object FirebaseUtilities {
 
     /**
      * Checks if a Guess It profile exists in the database
-     * @param user the user liked to the profile
+     * @param userId the user linked to the profile
      * @param dbRef database reference
      * @return a future containing the boolean
      */
@@ -117,6 +122,36 @@ object FirebaseUtilities {
             }
 
         return future
+    }
+
+    /**
+     * Creates a profile and stores it into Firebase
+     *
+     * @param context context of the activity
+     * @param userId Id of the user
+     * @param username desired username
+     * @param email desired email
+     */
+    fun createProfile(context: Context, userId: String, username: String, email: String? = null) {
+        val dbRef = Firebase.database.reference
+        val storageRef = Firebase.storage.reference
+
+        // username + email
+        dbRef.child("profiles/$userId/username").setValue(username)
+        if (email != null) {
+            dbRef.child("profiles/$userId/email").setValue(email)
+        }
+
+        // default profile picture
+        val picBitmap = BitmapFactory.decodeResource(
+            context.resources,
+            R.raw.default_profile_pic
+        )
+
+        val stream = ByteArrayOutputStream()
+        picBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+        val image = stream.toByteArray()
+        storageRef.child("profiles/$userId/picture/pic.jpg").putBytes(image)
     }
 
 

@@ -2,8 +2,6 @@ package com.github.freeman.bootcamp
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,10 +21,8 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
-import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
@@ -34,13 +30,11 @@ import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.createProfile
 import com.github.freeman.bootcamp.videocall.VideoCallActivity
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
-import java.io.ByteArrayOutputStream
 
 /**
  * This class will be the main screen of the app
@@ -57,42 +51,21 @@ class MainMenuActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
 
+            // Checks if it is the first time launching the app by looking if a profile exists.
+            // If no profile exists, sign in anonymously and creates a profile
             dbRef.child("profiles/$userId/username").get().addOnCompleteListener {
-                val user = FirebaseAuth.getInstance().currentUser
-                val email = user?.email
 
+                // If no profile exists
                 if (it.result.value == "" || it.result.value == null) {
                     // sign in anonymously
                     Firebase.auth.signInAnonymously().addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
                             userId = Firebase.auth.uid.toString()
-
-                            val dbRef = Firebase.database.reference
-                            val storageRef = Firebase.storage.reference
-
-                            // username
-                            dbRef.child("profiles/$userId/username").setValue("Guest")
-
-                            // default profile picture
-                            val profilePicBitmap = BitmapFactory.decodeResource(
-                                context.resources,
-                                R.raw.default_profile_pic
-                            )
-                            val stream = ByteArrayOutputStream()
-                            profilePicBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
-                            val image = stream.toByteArray()
-                            storageRef.child("profiles/$userId/picture/pic.jpg").putBytes(image)
+                            createProfile(context, userId!!, "Guest")
                         }
                     }
                 }
             }
-
-
-
-//            if (userId == null) {
-//
-//
-//            }
 
             BootcampComposeTheme {
                 MainMenuScreen()
@@ -106,7 +79,6 @@ class MainMenuActivity : ComponentActivity() {
         const val CHAT = "Chat"
         const val GUESSING = "Guessing"
         const val AUDIO_REC = "Audio Recording"
-        const val SIGN_IN = "Sign in"
         const val DRAWING = "Drawing"
         const val WORDLE = "Play Wordle"
         const val VIDEO_CALL = "Video Call"
@@ -235,22 +207,6 @@ fun WordleButton() {
     )
 }
 
-
-fun signIn(context: Context) {
-    context.startActivity(Intent(context, FirebaseAuthActivity::class.java))
-}
-
-@Composable
-fun SignInButton() {
-    val context = LocalContext.current
-    MainMenuButton(
-        testTag = "signInButton",
-        onClick = { signIn(context) },
-        text = SIGN_IN
-    )
-}
-
-
 @OptIn(ExperimentalUnsignedTypes::class)
 fun videoCall(context: Context) {
     context.startActivity(Intent(context, VideoCallActivity::class.java))
@@ -298,9 +254,6 @@ fun MainMenuScreen() {
 
         Spacer(modifier = Modifier.size(6.dp))
         DrawingButton()
-
-        Spacer(modifier = Modifier.size(6.dp))
-        SignInButton()
 
         Spacer(modifier = Modifier.size(6.dp))
         VideoCallButton()
