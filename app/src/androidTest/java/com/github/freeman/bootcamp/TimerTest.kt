@@ -20,8 +20,10 @@ class TimerTest {
     val composeRule = createComposeRule()
 
     @Before
-    private fun setTimerScreen() {
+    fun setTimerScreen() {
         composeRule.setContent {
+            FirebaseEmulator.init()
+
             val context = LocalContext.current
 
             val dbref = Firebase.database.reference
