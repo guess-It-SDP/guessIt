@@ -47,7 +47,7 @@ class EndScoreboardTest {
                 .child(gameId)
             reinitialise(context, dbRef, playerIds.toSet())
 
-            initFirebaseScores(dbRef, playerIds, scores)
+            initFirebaseScores(context, dbRef, playerIds, scores)
             val playersToScores = initPlayersToScores(playerIds, scores)
             val usersToScores = usersToScoresToPair(playerIds, usernames, scores)
 
