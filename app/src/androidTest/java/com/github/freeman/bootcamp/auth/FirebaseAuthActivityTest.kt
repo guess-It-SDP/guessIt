@@ -24,7 +24,6 @@ import org.junit.Test
 
 class FirebaseAuthActivityTest {
     private lateinit var device: UiDevice
-    private lateinit var context: Context
 
     @get:Rule
     val composeRule = createComposeRule()
@@ -35,7 +34,6 @@ class FirebaseAuthActivityTest {
         device = UiDevice.getInstance(instrumentation)
 
         composeRule.setContent {
-            context = LocalContext.current
             MainMenuScreen()
         }
         composeRule.onNodeWithTag("signInButton").performClick()

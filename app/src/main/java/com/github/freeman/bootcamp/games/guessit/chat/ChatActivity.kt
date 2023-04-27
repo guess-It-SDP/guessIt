@@ -133,7 +133,7 @@ fun BottomBar(
                 onValueChange = onMessageChange,
                 modifier = Modifier
                     .weight(1f)
-                    .testTag(context.getString(R.string.chat_bottom_bar)),
+                    .testTag(context.getString(R.string.chat_textfield)),
                 placeholder = { Text(BOTTOMBAR_TEXT) },
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Color.Transparent,
