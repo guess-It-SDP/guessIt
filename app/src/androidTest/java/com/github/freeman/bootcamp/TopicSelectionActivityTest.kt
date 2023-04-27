@@ -20,11 +20,6 @@ import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
 class TopicSelectionActivityTest {
-    private lateinit var context: Context
-    private val gameId = context.getString(R.string.test_game_id)
-    private val dbref = Firebase.database.reference
-        .child(context.getString(R.string.games_path))
-        .child(gameId)
 
     @get:Rule
     val composeRule = createComposeRule()
@@ -85,7 +80,11 @@ class TopicSelectionActivityTest {
 
     private fun setTopicSelectionScreen() {
         composeRule.setContent {
-            context = LocalContext.current
+            val context = LocalContext.current
+            val gameId = context.getString(R.string.test_game_id)
+            val dbref = Firebase.database.reference
+                .child(context.getString(R.string.games_path))
+                .child(gameId)
             BootcampComposeTheme {
                 TopicSelectionScreen(dbref, gameId)
             }
