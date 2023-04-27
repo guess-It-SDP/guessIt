@@ -45,6 +45,12 @@ class VideoCallActivity : ComponentActivity() {
             }
         }
     }
+
+    companion object {
+        const val ENTER_ROOM_NAME = "Enter a room name"
+        const val JOIN_ROOM = "Join"
+        const val EMPTY_ROOM_ERROR = "The room can't be empty"
+    }
 }
 
 @Composable

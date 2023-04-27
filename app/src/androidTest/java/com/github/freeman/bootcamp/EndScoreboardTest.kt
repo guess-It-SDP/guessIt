@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -39,9 +40,12 @@ class EndScoreboardTest {
     fun init() {
         gameEnded = true
         composeRule.setContent {
-            val gameId = "testgameid"
-            val dbRef = Firebase.database.getReference("games/$gameId")
-            reinitialise(dbRef, playerIds.toSet())
+            val context = LocalContext.current
+            val gameId = context.getString(R.string.test_game_id)
+            val dbRef = Firebase.database.reference
+                .child(context.getString(R.string.games_path))
+                .child(gameId)
+            reinitialise(context, dbRef, playerIds.toSet())
 
             initFirebaseScores(dbRef, playerIds, scores)
             val playersToScores = initPlayersToScores(playerIds, scores)

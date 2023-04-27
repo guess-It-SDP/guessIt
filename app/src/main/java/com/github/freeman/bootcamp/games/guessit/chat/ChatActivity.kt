@@ -15,8 +15,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity.Companion.ACTIVATION_BUTTON_TEXT
+import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity.Companion.BOTTOMBAR_TEXT
+import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity.Companion.CHAT_BUTTON_TEXT
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.auth.FirebaseAuth
@@ -34,14 +39,23 @@ class ChatActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val gameId = intent.getStringExtra("gameId")
-        val dbref = Firebase.database.getReference("games/$gameId/chat")
+        val gameId = intent.getStringExtra(getString(R.string.gameId_extra))
+        val dbref = Firebase.database.reference
+            .child(getString(R.string.gameId_extra))
+            .child("$gameId")
+            .child(getString(R.string.chat_path))
 
         setContent {
             BootcampComposeTheme {
                 Main(dbref)
             }
         }
+    }
+
+    companion object {
+        const val BOTTOMBAR_TEXT = "Type a message..."
+        const val CHAT_BUTTON_TEXT = "Send"
+        const val ACTIVATION_BUTTON_TEXT = "chat"
     }
 
 }
@@ -51,7 +65,7 @@ class ChatActivity : ComponentActivity() {
 fun ChatMessageItem(chatMessage: ChatMessage) {
     Row(modifier = Modifier
         .padding(8.dp)
-        .testTag("chatMessageItem")) {
+        .testTag(LocalContext.current.getString(R.string.chat_message_item))) {
         Text(text = "${chatMessage.sender}: ${chatMessage.message}")
     }
 }
@@ -61,7 +75,7 @@ fun ChatMessageItem(chatMessage: ChatMessage) {
 fun ChatMessageList(chatMessages: Array<ChatMessage>) {
     LazyColumn (modifier = Modifier
         .fillMaxWidth()
-        .testTag("chatMessageList")) {
+        .testTag(LocalContext.current.getString(R.string.chat_message_list))) {
         items(chatMessages) { chatMessage ->
             ChatMessageItem(chatMessage = chatMessage)
         }
@@ -80,7 +94,7 @@ fun ChatScreen(
 
         Box(
             modifier = Modifier
-                .testTag("chatScreen")
+                .testTag(LocalContext.current.getString(R.string.chat_screen))
                 .weight(1f)
                 .background(Color.Gray)
         ) {
@@ -102,11 +116,13 @@ fun BottomBar(
     onMessageChange: (String) -> Unit,
     onSendClick: () -> Unit
 ) {
+    val context = LocalContext.current
+
     Surface(
         color = Color.White,
         modifier = Modifier
             .fillMaxWidth()
-            .testTag("bottomBar")
+            .testTag(context.getString(R.string.chat_bottom_bar))
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -117,8 +133,8 @@ fun BottomBar(
                 onValueChange = onMessageChange,
                 modifier = Modifier
                     .weight(1f)
-                    .testTag("textField"),
-                placeholder = { Text("Type a message...") },
+                    .testTag(context.getString(R.string.chat_bottom_bar)),
+                placeholder = { Text(BOTTOMBAR_TEXT) },
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
@@ -127,11 +143,11 @@ fun BottomBar(
             Spacer(modifier = Modifier.width(8.dp))
             Button(
                 modifier = Modifier
-                    .testTag("sendButton"),
+                    .testTag(context.getString(R.string.chat_send_button)),
                 onClick = onSendClick,
                 colors = ButtonDefaults.buttonColors()
             ) {
-                Text(text = "Send")
+                Text(text = CHAT_BUTTON_TEXT)
             }
         }
     }
@@ -159,10 +175,15 @@ fun Main(dbref: DatabaseReference) {
         }
     })
 
+    val context = LocalContext.current
+
     //the username of the current user
     var username = ""
     val uid = FirebaseAuth.getInstance().currentUser?.uid
-    val dbrefUsername = Firebase.database.reference.child("profiles/$uid").child("username")
+    val dbrefUsername = Firebase.database.reference
+        .child(context.getString(R.string.profiles_path))
+        .child("$uid")
+        .child(context.getString(R.string.username_path))
     FirebaseUtilities.databaseGet(dbrefUsername)
         .thenAccept {
             username = it
@@ -200,10 +221,10 @@ fun Main(dbref: DatabaseReference) {
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(10.dp)
-                        .testTag("activateChatButton"),
+                        .testTag(context.getString(R.string.chat_activate_button)),
                     onClick = { chatActive = true }
                 ) {
-                    Text(text = "chat")
+                    Text(text = ACTIVATION_BUTTON_TEXT)
                 }
             }
         }

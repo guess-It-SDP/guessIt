@@ -26,8 +26,10 @@ class DrawingActivityTest {
     val composeRule = createComposeRule()
 
     private fun setContent() {
-        val dbref = Firebase.database.getReference("games/testgameid")
         composeRule.setContent {
+            val dbref = Firebase.database.reference
+                .child(context.getString(R.string.games_path))
+                .child(context.getString(R.string.test_game_id))
             DrawingScreen(dbref)
         }
     }

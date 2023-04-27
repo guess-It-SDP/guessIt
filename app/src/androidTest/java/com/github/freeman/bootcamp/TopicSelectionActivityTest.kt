@@ -1,5 +1,7 @@
 package com.github.freeman.bootcamp
 
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.intent.Intents
@@ -18,8 +20,11 @@ import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
 class TopicSelectionActivityTest {
-    private val gameId = "TestGameId"
-    private val dbref = Firebase.database.getReference("Games/$gameId")
+    private lateinit var context: Context
+    private val gameId = context.getString(R.string.test_game_id)
+    private val dbref = Firebase.database.reference
+        .child(context.getString(R.string.games_path))
+        .child(gameId)
 
     @get:Rule
     val composeRule = createComposeRule()
@@ -80,8 +85,9 @@ class TopicSelectionActivityTest {
 
     private fun setTopicSelectionScreen() {
         composeRule.setContent {
+            context = LocalContext.current
             BootcampComposeTheme {
-                TopicSelectionScreen(dbref, "testgameid")
+                TopicSelectionScreen(dbref, gameId)
             }
         }
     }

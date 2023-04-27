@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp
 
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -8,6 +9,7 @@ import com.github.freeman.bootcamp.games.guessit.TimerScreen
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,18 +19,24 @@ class TimerTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    @Test
-    fun timerScreenIsDisplayed() {
-        setTimerScreen()
-        composeRule.onNodeWithTag("timerScreen").assertIsDisplayed()
-    }
-
+    @Before
     private fun setTimerScreen() {
-        val dbref = Firebase.database.getReference("games/testgameid/current/current_timer")
         composeRule.setContent {
+            val context = LocalContext.current
+
+            val dbref = Firebase.database.reference
+                .child(context.getString(R.string.games_path))
+                .child(context.getString(R.string.test_game_id))
+                .child(context.getString(R.string.current_timer_path))
+
             BootcampComposeTheme {
                 TimerScreen(dbref, 100L)
             }
         }
+    }
+
+    @Test
+    fun timerScreenIsDisplayed() {
+        composeRule.onNodeWithTag("timerScreen").assertIsDisplayed()
     }
 }

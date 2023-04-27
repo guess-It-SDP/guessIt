@@ -1,11 +1,13 @@
 package com.github.freeman.bootcamp.utilities.firebase
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.StorageReference
 import java.util.concurrent.CompletableFuture
+import com.github.freeman.bootcamp.R
 
 /**
  * Utility functions related to Firebase
@@ -109,13 +111,15 @@ object FirebaseUtilities {
      * @param dbRef database reference
      * @return a future containing the boolean
      */
-    fun profileExists(user: FirebaseUser?, dbRef: DatabaseReference): CompletableFuture<Boolean> {
+    fun profileExists(context: Context, user: FirebaseUser?, dbRef: DatabaseReference): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
         if (user == null) {
             future.complete(false)
         } else {
             // if the email exists, the profile exists too
-            databaseGet(dbRef.child("profiles/${user.uid}/username"))
+            databaseGet(dbRef.child(context.getString(R.string.profiles_path))
+                .child(user.uid)
+                .child(context.getString(R.string.username_path)))
                 .thenAccept {
                     future.complete(it != "")
                 }

@@ -1,5 +1,7 @@
 package com.github.freeman.bootcamp
 
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.Espresso
@@ -19,16 +21,18 @@ class ChatTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private fun initDataBase(): DatabaseReference {
-        val chatId = "TestChatId01"
+    private fun initDataBase(current: Context): DatabaseReference {
+        val chatId = "testchatid01"
         FirebaseEmulator.init()
-        return database.get().database.getReference("Chat/$chatId")
+        return database.get().database.reference
+            .child(current.getString(R.string.chat_path))
+            .child(chatId)
     }
 
     @Before
     fun init() {
-        val dbref = initDataBase()
         composeRule.setContent {
+            val dbref = initDataBase(LocalContext.current)
             BootcampComposeTheme {
                 Main(dbref)
             }

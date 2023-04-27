@@ -20,6 +20,10 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity.Companion.CREATE_GAME_BUTTON_TEXT
+import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity.Companion.JOINING_GAME_BUTTON_TEXT
+import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity.Companion.TOPBAR_TEXT
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 /**
@@ -36,24 +40,24 @@ class CreateJoinActivity: ComponentActivity() {
                 Column (
                     modifier = Modifier
                         .fillMaxSize()
-                        .testTag("createJoin"),
+                        .testTag(getString(R.string.createjoin_screen)),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
 
                     Text(
                         modifier = Modifier
-                            .testTag("createJoinText1"),
-                        text = "Let's have fun!",
+                            .testTag(getString(R.string.createjoin_text1)),
+                        text = SCREEN_TEXT_1,
                         fontSize = 30.sp,
                         fontStyle = FontStyle.Italic
                     )
                     Spacer(modifier = Modifier.size(60.dp))
                     Text(
                         modifier = Modifier
-                            .testTag("createJoinText2"),
+                            .testTag(getString(R.string.createjoin_text2)),
                         fontSize = 20.sp,
-                        text = "What do you want to do?",
+                        text = SCREEN_TEXT_2,
                     )
                     Spacer(modifier = Modifier.size(15.dp))
                     CreateGameButton()
@@ -63,16 +67,27 @@ class CreateJoinActivity: ComponentActivity() {
             }
         }
     }
+
+    companion object {
+        const val SCREEN_TEXT_1 = "Let's have fun!"
+        const val SCREEN_TEXT_2 = "What do you want to do?"
+        const val TOPBAR_TEXT = "Guess It!"
+        const val CREATE_GAME_BUTTON_TEXT = "Create a new game"
+        const val JOINING_GAME_BUTTON_TEXT = "Join an existing game"
+        const val NO_ARTIST = "No artist"
+        const val WAITING_TEXT = "Please wait while the artist selects a word to draw."
+        const val SCREEN_TEXT = "Your turn to guess!"
+    }
 }
 
 @Composable
 fun TopAppbarCreateJoin(context: Context = LocalContext.current) {
 
     TopAppBar(
-        modifier = Modifier.testTag("topAppbarCreateJoin"),
+        modifier = Modifier.testTag(context.getString(R.string.createjoin_topbar)),
         title = {
             Text(
-                text = "Guess It!",
+                text = TOPBAR_TEXT,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -86,7 +101,7 @@ fun TopAppbarCreateJoin(context: Context = LocalContext.current) {
             }) {
                 Icon(
                     Icons.Filled.ArrowBack,
-                    contentDescription = "Go back",
+                    contentDescription = context.getString(R.string.createjoin_topbar_icon),
                 )
             }
         }
@@ -97,10 +112,10 @@ fun TopAppbarCreateJoin(context: Context = LocalContext.current) {
 fun CreateGameButton() {
     val context = LocalContext.current
     ElevatedButton(
-        modifier = Modifier.testTag("createGameButton"),
+        modifier = Modifier.testTag(context.getString(R.string.createjoin_creategame)),
         onClick = { context.startActivity(Intent(context, GameOptionsActivity::class.java)) }
     ) {
-        Text("Create a new game")
+        Text(CREATE_GAME_BUTTON_TEXT)
     }
 }
 
@@ -108,8 +123,9 @@ fun CreateGameButton() {
 fun JoinGameButton() {
     val context = LocalContext.current
     ElevatedButton(
+        modifier = Modifier.testTag(context.getString(R.string.createjoin_joininggame)),
         onClick = { context.startActivity(Intent(context, LobbyListActivity::class.java)) }
     ) {
-        Text("Join an existing game")
+        Text(JOINING_GAME_BUTTON_TEXT)
     }
 }

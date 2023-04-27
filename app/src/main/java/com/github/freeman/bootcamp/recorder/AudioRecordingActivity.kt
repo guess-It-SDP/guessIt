@@ -18,6 +18,14 @@ import java.io.File
 
 class AudioRecordingActivity : ComponentActivity() {
 
+    companion object {
+        const val AUDIO_FILE = "audio.mp3"
+        const val START_RECORDING_BUTTON = "Start recording"
+        const val STOP_RECORDING_BUTTON = "Stop recording"
+        const val PLAY_BUTTON = "Play"
+        const val STOP_PLAYING = "Stop playing"
+    }
+
     private val recorder by lazy {
         AndroidAudioRecorder(applicationContext)
     }
@@ -43,27 +51,27 @@ class AudioRecordingActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Button(onClick = {
-                        File(cacheDir, "audio.mp3").also {
+                        File(cacheDir, AUDIO_FILE).also {
                             recorder.start(it)
                             audioFile = it
                         }
                     },modifier = Modifier.testTag("start_recording_button")) {
-                        Text(text = "Start recording")
+                        Text(text = START_RECORDING_BUTTON)
                     }
                     Button(onClick = {
                         recorder.stop()
                     },modifier = Modifier.testTag("stop_recording_button")) {
-                        Text(text = "Stop recording")
+                        Text(text = STOP_RECORDING_BUTTON)
                     }
                     Button(onClick = {
                         player.playFile(audioFile ?: return@Button)
                     },modifier = Modifier.testTag("play_button")) {
-                        Text(text = "Play")
+                        Text(text = PLAY_BUTTON)
                     }
                     Button(onClick = {
                         player.stop()
                     },modifier = Modifier.testTag("stop_button")) {
-                        Text(text = "Stop playing")
+                        Text(text = STOP_PLAYING)
                     }
                 }
             }

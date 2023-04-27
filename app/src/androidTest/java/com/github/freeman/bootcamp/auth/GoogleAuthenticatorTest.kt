@@ -4,6 +4,9 @@ import android.app.Activity
 import com.firebase.ui.auth.IdpResponse
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.firebase.ui.auth.data.model.User
+import com.github.freeman.bootcamp.auth.GoogleAuthenticator.Companion.CANCEL_ERROR
+import com.github.freeman.bootcamp.auth.GoogleAuthenticator.Companion.NULL_USER_ERROR
+import com.github.freeman.bootcamp.auth.GoogleAuthenticator.Companion.OTHER_ERROR
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
 import org.junit.Assert
@@ -35,7 +38,7 @@ class GoogleAuthenticatorTest {
                 {}
             )
         }
-        MatcherAssert.assertThat(error.message, CoreMatchers.`is`("User is null"))
+        MatcherAssert.assertThat(error.message, CoreMatchers.`is`(NULL_USER_ERROR))
     }
 
     @Test
@@ -50,7 +53,7 @@ class GoogleAuthenticatorTest {
             {errorMsg -> onFailureMsg = errorMsg?:"errorMsg is null"}
         )
 
-        MatcherAssert.assertThat(onFailureMsg, CoreMatchers.`is`("User cancelled sign in"))
+        MatcherAssert.assertThat(onFailureMsg, CoreMatchers.`is`(CANCEL_ERROR))
     }
 
     @Test
@@ -74,6 +77,6 @@ class GoogleAuthenticatorTest {
             {errorMsg -> onFailureMsg = errorMsg ?: "errorMsg is null"}
         )
 
-        MatcherAssert.assertThat(onFailureMsg, CoreMatchers.`is`("login error: null"))
+        MatcherAssert.assertThat(onFailureMsg, CoreMatchers.`is`("$OTHER_ERROR null"))
     }
 }

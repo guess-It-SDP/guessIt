@@ -15,9 +15,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.ui.theme.Purple80
 import com.google.firebase.database.DatabaseReference
@@ -30,8 +32,11 @@ class TimerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val gameId = intent.getStringExtra("gameId").toString()
-        val dbrefTimer = Firebase.database.getReference("games/$gameId/current/current_timer")
+        val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
+        val dbrefTimer = Firebase.database.reference
+            .child(getString(R.string.games_path))
+            .child(gameId)
+            .child(getString(R.string.current_timer_path))
 
         setContent {
             BootcampComposeTheme {
@@ -72,6 +77,8 @@ fun Timer(
     fontSize: TextUnit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     val initialValue = 1f
     val strokeWidth = 5.dp
 
@@ -85,7 +92,7 @@ fun Timer(
             currentTime -= 100L
             value = currentTime / totalTime.toFloat()
         } else {
-            dbrefTimer.setValue("over")
+            dbrefTimer.setValue(context.getString(R.string.timer_over))
         }
     }
     Box(

@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp
 
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -8,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -42,11 +44,15 @@ class ScoreActivityTest {
     fun init() {
         gameEnded = false
         composeRule.setContent {
-            val gameId = "testgameid"
-            val dbRef = Firebase.database.getReference("games/$gameId")
-            reinitialise(dbRef, playerIds.toSet())
+            val context = LocalContext.current
 
-           initFirebaseScores(dbRef, playerIds, scores)
+            val gameId = context.getString(R.string.test_game_id)
+            val dbRef = Firebase.database.reference
+                .child(context.getString(R.string.games_path))
+                .child(gameId)
+            reinitialise(context, dbRef, playerIds.toSet())
+
+           initFirebaseScores(context, dbRef, playerIds, scores)
            val playersToScores = initPlayersToScores(playerIds, scores)
            val usersToScores = usersToScoresToPair(playerIds, usernames, scores)
 
@@ -104,9 +110,12 @@ class ScoreActivityTest {
 }
 
 // Initialises the player scores of the test game on the Firebase
-fun initFirebaseScores(dbRef: DatabaseReference, playerIds: List<String>, scores: Map<String, Int>) {
+fun initFirebaseScores(context: Context, dbRef: DatabaseReference, playerIds: List<String>, scores: Map<String, Int>) {
     for (id in playerIds) {
-        val dbScoreRef = dbRef.child("players/$id/score")
+        val dbScoreRef = dbRef
+            .child(context.getString(R.string.players_path))
+            .child(id)
+            .child(context.getString(R.string.score_path))
         FirebaseUtilities.databaseGetLong(dbScoreRef)
             .thenAccept {
                 dbScoreRef.setValue(scores[id])
