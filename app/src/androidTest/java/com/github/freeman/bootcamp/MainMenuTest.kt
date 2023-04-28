@@ -6,13 +6,11 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity
-import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.videocall.VideoCallActivity
-import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
 import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import org.junit.Before
@@ -78,9 +76,11 @@ class MainMenuTest {
     }
 
     @Test
-    fun clickingSettingsDoesNothingBeforeLoggedIn() {
+    fun clickingSettingsSendsIntent() {
+        Intents.init()
         composeRule.onNodeWithTag("settingsButton").performClick()
-        composeRule.onNodeWithTag("settingsButton").assertIsDisplayed()
+        Intents.intended(IntentMatchers.hasComponent(SettingsProfileActivity::class.java.name))
+        Intents.release()
     }
 
     @Test
@@ -128,9 +128,10 @@ class MainMenuTest {
         testButton("wordleButton", WordleMenu::class.java.name,MainMenuActivity.WORDLE)
     }
 
+    @OptIn(ExperimentalUnsignedTypes::class)
     @Test
     fun videoButtonIsDisplayedHasClickActionAndCorrectText(){
-        testButton("videoCallButton",VideoCallActivity::class.java.name,MainMenuActivity.VIDEO_CALL)
+        testButton("videoCallButton", VideoCallActivity::class.java.name,MainMenuActivity.VIDEO_CALL)
     }
 
         /**
