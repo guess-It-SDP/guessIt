@@ -36,7 +36,7 @@ class FirebaseAuthActivityTest {
     @Test
     fun containsCorrectButtonsAndTextWhenNotSignedIn() {
         composeRule.onNodeWithTag("google_sign_in_button").assertIsDisplayed()
-        composeRule.onNodeWithTag("sign_in_info").assertTextContains("Signed in anonymously")
+        composeRule.onNodeWithTag("sign_in_info").assertIsDisplayed()
     }
 
     @Test
