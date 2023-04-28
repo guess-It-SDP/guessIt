@@ -40,6 +40,17 @@ class FirebaseAuthActivityTest {
     }
 
     @Test
+    fun topAppBarAccountIsDisplayed() {
+        composeRule.onNodeWithTag("topAppbarAccount").assertIsDisplayed()
+    }
+
+    @Test
+    fun topAppBarCanBeClicked() {
+        composeRule.onNodeWithTag("topAppbarAccount").performClick()
+        composeRule.waitForIdle()
+    }
+
+    @Test
     fun signInResultsInCorrectLayout() {
         composeRule.onNodeWithTag("google_sign_in_button").performClick()
         device.wait(

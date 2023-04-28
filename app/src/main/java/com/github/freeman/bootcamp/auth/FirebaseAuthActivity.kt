@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp.auth
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +8,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -14,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
@@ -88,6 +96,7 @@ class FirebaseAuthActivity : ComponentActivity() {
             }
 
             BootcampComposeTheme {
+                TopAppbarAccount()
                 AuthenticationForm(
                     signInInfo = signInInfo,
                     currentUser = currentUser
@@ -154,6 +163,34 @@ class FirebaseAuthActivity : ComponentActivity() {
             }
         }
     }
+}
+
+@Composable
+fun TopAppbarAccount(context: Context = LocalContext.current) {
+
+    TopAppBar(
+        modifier = Modifier.testTag("topAppbarAccount"),
+        title = {
+            androidx.compose.material.Text(
+                text = "Account",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        backgroundColor = MaterialTheme.colors.background,
+        elevation = 4.dp,
+        navigationIcon = {
+            IconButton(onClick = {
+                val activity = (context as? Activity)
+                activity?.finish()
+            }) {
+                Icon(
+                    Icons.Filled.ArrowBack,
+                    contentDescription = "Go back",
+                )
+            }
+        }
+    )
 }
 
 @Composable
