@@ -40,66 +40,70 @@ class WaitingRoomTest {
 
     @Before
     fun initScreen() {
-        val userId = Firebase.auth.uid
-
-        val gameId = "test_game_id"
-        val allTopics = ArrayList<String>()
-
-        val firebase = initFirebase()
-        val database = firebase.first
-        val dbRef = database.child("games/$gameId")
-
-        val profileMap1 = mapOf(Pair("email", "test@email.abc"), Pair("username", "test_username"))
-        val profileMap2 = mapOf(Pair("email", "test2@email.abc"), Pair("username", "test_username_2"))
-        val profileMap = mapOf(Pair("test_profile_id_1", profileMap1), Pair("test_profile_id_2", profileMap2))
-
-        val gameData = GameData(
-            Current = Current(
-                correct_guesses = 0,
-                current_artist = "test_artist_id",
-                current_round = 0,
-                current_state = "waiting for players",
-                current_turn = 0,
-                current_timer = "unused"
-            ),
-            Parameters = Parameters(
-                category = "Objects",
-                host_id = "test_host_id",
-                nb_players = 1,
-                nb_rounds = 5
-            ),
-            Players = mapOf(Pair("test_profile_id_1", Player(0, false)), Pair("test_profile_id_2", Player(0, false))),
-            lobby_name = "test's room"
-        )
-
-        database.child("games/test_game_id").setValue(gameData)
-
-        database.child("profiles").setValue(profileMap)
-
-        val storage = firebase.second
-
-        for (i in 0 until GameOptionsActivity.NB_TOPICS) {
-            allTopics.add("test_topic_$i")
-        }
-
         composeRule.setContent {
             val context = LocalContext.current
 
+            val userId = Firebase.auth.uid
+
+            val gameId = context.getString(R.string.test_game_id)
+            val allTopics = ArrayList<String>()
+
+            val firebase = initFirebase()
+            val database = firebase.first
+            val dbRef = database
+                .child(context.getString(R.string.games_path))
+                .child(gameId)
+
+            val profileMap1 = mapOf(Pair("email", "test@email.abc"), Pair("username", "test_username"))
+            val profileMap2 = mapOf(Pair("email", "test2@email.abc"), Pair("username", "test_username_2"))
+            val profileMap = mapOf(Pair("test_profile_id_1", profileMap1), Pair("test_profile_id_2", profileMap2))
+
+            val gameData = GameData(
+                Current = Current(
+                    correct_guesses = 0,
+                    current_artist = "test_artist_id",
+                    current_round = 0,
+                    current_state = "waiting for players",
+                    current_turn = 0,
+                    current_timer = "unused"
+                ),
+                Parameters = Parameters(
+                    category = "Objects",
+                    host_id = "test_host_id",
+                    nb_players = 1,
+                    nb_rounds = 5
+                ),
+                Players = mapOf(Pair("test_profile_id_1", Player(0)), Pair("test_profile_id_2", Player(0))),
+                lobby_name = "test's room"
+            )
+
+            dbRef.setValue(gameData)
+
+            database.child(context.getString(R.string.profiles_path)).setValue(profileMap)
+
+            val storage = firebase.second
+
+
+
+            for (i in 0 until GameOptionsActivity.NB_TOPICS) {
+                allTopics.add("test_topic_$i")
+            }
+
             val hostId = remember { mutableStateOf("") }
-            databaseGet(dbRef.child("parameters/host_id")).thenAccept {
+            databaseGet(dbRef.child(context.getString(R.string.param_host_id_path))).thenAccept {
                 hostId.value = it
             }
 
             val players = remember { mutableStateListOf<String>() }
             allPlayers = remember { mutableStateListOf<String>() }
 
-            val gameStateRef = dbRef.child("current/current_state")
-            val artistRef = dbRef.child("current/current_artist")
+            val gameStateRef = dbRef.child(context.getString(R.string.current_state_path))
+            val artistRef = dbRef.child(context.getString(R.string.current_artist_path))
             val dbListener = gameStateRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         val gameState = snapshot.getValue<String>()!!
-                        if (gameState == "play game") {
+                        if (gameState == context.getString(R.string.state_playgame)) {
                             databaseGet(artistRef)
                                 .thenAccept {
                                     val intent = if (userId == it) {
@@ -109,7 +113,7 @@ class WaitingRoomTest {
                                     }
 
                                     intent.apply {
-                                        putExtra("gameId", gameId)
+                                        putExtra(context.getString(R.string.gameId_extra), gameId)
                                         for (i in allTopics.indices) {
                                             putExtra("topic$i", allTopics[i])
                                         }
@@ -117,7 +121,7 @@ class WaitingRoomTest {
 
                                     context.startActivity(intent)
                                 }
-                        } else if (gameState == "lobby closed") {
+                        } else if (gameState == context.getString(R.string.state_lobbyclosed)) {
                             dbRef.removeValue()
                             val activity = (context as? Activity)
                             activity?.finish()
@@ -130,7 +134,8 @@ class WaitingRoomTest {
                 }
             })
 
-            val playersRef = database.child("games/$gameId/players")
+
+            val playersRef = dbRef.child(context.getString(R.string.players_path))
             val playersListener = playersRef.addChildEventListener(object: ChildEventListener {
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                     if (snapshot.key !in players) {
@@ -138,7 +143,7 @@ class WaitingRoomTest {
                         players.add(snapshot.key!!)
                         allPlayers.add(snapshot.key!!)
 
-                        database.child("games/$gameId/parameters/nb_players").setValue(players.size)
+                        dbRef.child(context.getString(R.string.param_nb_players_path)).setValue(players.size)
                     }
                 }
 
@@ -200,9 +205,11 @@ class WaitingRoomTest {
             BackHandler {
 
                 if (userId == hostId.value && players.size == 1) {
-                    gameStateRef.setValue("lobby closed")
+                    gameStateRef.setValue(context.getString(R.string.state_lobbyclosed))
                 } else {
-                    dbRef.child("players/$userId").removeValue()
+                    dbRef.child(context.getString(R.string.players_path))
+                        .child(userId.toString())
+                        .removeValue()
                 }
 
                 dbRef.removeEventListener(dbListener)

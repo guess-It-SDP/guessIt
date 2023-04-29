@@ -5,11 +5,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.freeman.bootcamp.games.guessit.*
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.database.DatabaseReference
 import org.junit.Before
 import org.junit.Rule
@@ -27,31 +30,32 @@ class LobbyListTest {
 
     @Before
     fun initScreen() {
-
-        val dbRef = initDatabase()
-
-        val gameData = GameData(
-            Current = Current(
-                correct_guesses = 0,
-                current_artist = "test_artist_id",
-                current_round = 0,
-                current_state = "waiting for players",
-                current_turn = 0,
-                current_timer = "unused"
-            ),
-            Parameters = Parameters(
-                category = "Objects",
-                host_id = "test_host_id",
-                nb_players = 1,
-                nb_rounds = 5
-            ),
-            Players = mapOf(Pair("test_player_id", Player(0, false))),
-            lobby_name = "test's room"
-        )
-
-        dbRef.child("games/testgameid").setValue(gameData)
-
         composeRule.setContent {
+            val context = LocalContext.current
+
+            val dbRef = initDatabase()
+
+            val gameData = GameData(
+                Current = Current(
+                    correct_guesses = 0,
+                    current_artist = "test_artist_id",
+                    current_round = 0,
+                    current_state = "waiting for players",
+                    current_turn = 0,
+                    current_timer = "unused"
+                ),
+                Parameters = Parameters(
+                    category = "Objects",
+                    host_id = "test_host_id",
+                    nb_players = 1,
+                    nb_rounds = 5
+                ),
+                Players = mapOf(Pair("test_player_id", Player(0))),
+                lobby_name = "test's room"
+            )
+
+            getGameDBRef(context).setValue(gameData)
+
             BootcampComposeTheme {
                 Column {
                     TopAppbarLobbies()

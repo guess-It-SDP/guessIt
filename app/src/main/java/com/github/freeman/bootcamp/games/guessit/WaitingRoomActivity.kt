@@ -38,9 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.CATEGORY_INFO
+import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.NB_ROUNDS_INFO
+import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.START_GAME
+import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.TOPBAR_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.storageGet
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -60,11 +65,11 @@ class WaitingRoomActivity: ComponentActivity() {
 
         val userId = Firebase.auth.uid
 
-        val gameId = intent.getStringExtra("gameId").toString()
+        val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
         val allTopics = ArrayList<String>()
 
         val database = Firebase.database.reference
-        val dbRef = database.child("games/$gameId")
+        val dbRef = getGameDBRef(this, gameId)
 
         val storage = Firebase.storage.reference
 
@@ -78,13 +83,13 @@ class WaitingRoomActivity: ComponentActivity() {
 
             // get the host id from the database
             val hostId = remember { mutableStateOf("") }
-            databaseGet(dbRef.child("parameters/host_id")).thenAccept {
+            databaseGet(dbRef.child(getString(R.string.param_host_id_path))).thenAccept {
                 hostId.value = it
             }
 
             val players = remember { mutableStateListOf<String>() }
-            val gameStateRef = dbRef.child("current/current_state")
-            val artistRef = dbRef.child("current/current_artist")
+            val gameStateRef = dbRef.child(getString(R.string.current_state_path))
+            val artistRef = dbRef.child(getString(R.string.current_artist_path))
 
             // starts the correct activity depending on who is the artist and the guessers.
             // the host changes the game state in the database and all players listen to it
@@ -93,7 +98,7 @@ class WaitingRoomActivity: ComponentActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         val gameState = snapshot.getValue<String>()!!
-                        if (gameState == "play game") {
+                        if (gameState == getString(R.string.state_playgame)) {
                             databaseGet(artistRef)
                                 .thenAccept {
                                     val intent = if (userId == it) {
@@ -103,7 +108,7 @@ class WaitingRoomActivity: ComponentActivity() {
                                     }
 
                                     intent.apply {
-                                        putExtra("gameId", gameId)
+                                        putExtra(getString(R.string.gameId_extra), gameId)
                                         for (i in allTopics.indices) {
                                             putExtra("topic$i", allTopics[i])
                                         }
@@ -111,7 +116,7 @@ class WaitingRoomActivity: ComponentActivity() {
 
                                     context.startActivity(intent)
                                 }
-                        } else if (gameState == "lobby closed") {
+                        } else if (gameState == getString(R.string.state_lobbyclosed)) {
                             dbRef.removeValue()
                             val activity = (context as? Activity)
                             activity?.finish()
@@ -125,7 +130,7 @@ class WaitingRoomActivity: ComponentActivity() {
             })
 
 
-            val playersRef = database.child("games/$gameId/players")
+            val playersRef = dbRef.child(getString(R.string.players_path))
 
             // changes the number of players in the database when a player joins or leaves the game.
             // also assigns a new host if the current host leaves the game
@@ -134,7 +139,8 @@ class WaitingRoomActivity: ComponentActivity() {
                     if (snapshot.key !in players) {
                         players.add(snapshot.key!!)
 
-                        database.child("games/$gameId/parameters/nb_players").setValue(players.size)
+                        dbRef.child(getString(R.string.param_nb_players_path))
+                            .setValue(players.size)
                     }
 
                 }
@@ -146,12 +152,14 @@ class WaitingRoomActivity: ComponentActivity() {
                     players.remove(snapshot.key)
                     if (snapshot.key == hostId.value && !players.isEmpty()) {
                         val newHost = players.toList()[0]
-                        database.child("games/$gameId/parameters/host_id").setValue(newHost)
-                        database.child("games/$gameId/current/current_artist").setValue(newHost)
+                        dbRef.child(getString(R.string.param_host_id_path))
+                            .setValue(newHost)
+                        dbRef.child(getString(R.string.current_artist_path))
+                            .setValue(newHost)
                         hostId.value = newHost
                     }
 
-                    database.child("games/$gameId/parameters/nb_players").setValue(players.size)
+                    dbRef.child(getString(R.string.param_nb_players_path)).setValue(players.size)
                 }
 
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -197,9 +205,10 @@ class WaitingRoomActivity: ComponentActivity() {
             BackHandler {
 
                 if (userId == hostId.value && players.size == 1) {
-                    gameStateRef.setValue("lobby closed")
+                    gameStateRef.setValue(getString(R.string.state_lobbyclosed))
                 } else {
-                    dbRef.child("players/$userId").removeValue()
+                    dbRef.child(getString(R.string.players_path))
+                        .child(userId.toString()).removeValue()
                 }
 
                 dbRef.removeEventListener(dbListener)
@@ -211,6 +220,13 @@ class WaitingRoomActivity: ComponentActivity() {
         }
 
 
+    }
+
+    companion object {
+        const val TOPBAR_TEXT = "Waiting Room"
+        const val CATEGORY_INFO = "Category :"
+        const val NB_ROUNDS_INFO = "Number of rounds :"
+        const val START_GAME = "Start"
     }
 }
 
@@ -224,14 +240,14 @@ fun TopAppbarWaitingRoom(
     playersListener: ChildEventListener
 ) {
     val userId = Firebase.auth.uid
-    val playersRef = dbRef.child("players")
-    val gameStateRef = dbRef.child("current/current_state")
+    val playersRef = dbRef.child(context.getString(R.string.players_path))
+    val gameStateRef = dbRef.child(context.getString(R.string.current_state_path))
 
     TopAppBar(
         modifier = Modifier.testTag("topAppbarWaitingRoom"),
         title = {
             Text(
-                text = "Waiting Room",
+                text = TOPBAR_TEXT,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -244,9 +260,9 @@ fun TopAppbarWaitingRoom(
                 onClick = {
                     // quit the lobby and updates the database
                     if (userId == hostId.value && players.size == 1) {
-                        gameStateRef.setValue("lobby closed")
+                        gameStateRef.setValue(context.getString(R.string.state_lobbyclosed))
                     } else {
-                        dbRef.child("players/$userId").removeValue()
+                        playersRef.child(userId.toString()).removeValue()
                     }
 
                     dbRef.removeEventListener(dbListener)
@@ -271,19 +287,21 @@ fun RoomInfo(
     modifier: Modifier = Modifier,
     dbRef: DatabaseReference,
 ) {
+    val context = LocalContext.current
+
     val lobbyName = remember { mutableStateOf("") }
     val nbRounds = remember { mutableStateOf(0) }
     val category = remember { mutableStateOf("") }
 
-    databaseGet(dbRef.child("lobby_name")).thenAccept {
+    databaseGet(dbRef.child(context.getString(R.string.lobby_name_path))).thenAccept {
         lobbyName.value = it
     }
 
-    databaseGet(dbRef.child("parameters/nb_rounds")).thenAccept {
+    databaseGet(dbRef.child(context.getString(R.string.param_nb_rounds_path))).thenAccept {
         nbRounds.value = it.toInt()
     }
 
-    databaseGet(dbRef.child("parameters/category")).thenAccept {
+    databaseGet(dbRef.child(context.getString(R.string.param_category_path))).thenAccept {
         category.value = it
     }
 
@@ -323,7 +341,7 @@ fun RoomInfo(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "category :",
+                        text = CATEGORY_INFO,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 20.sp
                     )
@@ -343,7 +361,7 @@ fun RoomInfo(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Number of rounds :",
+                        text = NB_ROUNDS_INFO,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 20.sp
                     )
@@ -368,6 +386,8 @@ fun PlayerList(
     hostId: String,
     gameId: String
 ) {
+    val context = LocalContext.current
+
     LazyColumn (
         modifier = modifier
             .testTag("playerList")
@@ -376,7 +396,10 @@ fun PlayerList(
 
             // gets the profile picture from the database
             val picture = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
-            val profilePicRef = storageRef.child("profiles/$playerId/picture/pic.jpg")
+            val profilePicRef = storageRef
+                .child(context.getString(R.string.profiles_path))
+                .child(playerId)
+                .child(context.getString(R.string.picture_path))
             LaunchedEffect(Unit) {
                 storageGet(profilePicRef)
                     .thenAccept {
@@ -386,7 +409,11 @@ fun PlayerList(
 
             // gets the username from the database
             val username = remember { mutableStateOf("") }
-            databaseGet(dbRef.child("profiles/$playerId/username"))
+            val profileUsernameRef = dbRef
+                .child(context.getString(R.string.profiles_path))
+                .child(playerId)
+                .child(context.getString(R.string.username_path))
+            databaseGet(profileUsernameRef)
                 .thenAccept {
                     username.value = it
                 }
@@ -441,7 +468,6 @@ fun PlayerDisplay(player: PlayerData, hostId: String, dbRef: DatabaseReference, 
             .fillMaxWidth()
             .padding(8.dp)
             .clip(RoundedCornerShape(10.dp))
-            .testTag("playerDisplay")
             .clickable {},
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -514,12 +540,14 @@ fun StartButton(
     dbRef: DatabaseReference,
     players: MutableCollection<String>
 ) {
+    val context = LocalContext.current
+
     var userId = Firebase.auth.uid
     userId = userId ?: "null"
 
 
     val hostId = remember { mutableStateOf("") }
-    databaseGet(dbRef.child("parameters/host_id")).thenAccept {
+    databaseGet(dbRef.child(context.getString(R.string.param_host_id_path))).thenAccept {
         hostId.value = it
     }
 
@@ -536,10 +564,11 @@ fun StartButton(
             // the game can start if two or more players are present
             enabled = userId == hostId.value && players.size >= 2,
             onClick = {
-                dbRef.child("current/current_state").setValue("play game")
+                dbRef.child(context.getString(R.string.current_state_path))
+                    .setValue(context.getString(R.string.state_playgame))
             }
         ) {
-            Text("Start")
+            Text(START_GAME)
         }
     }
 

@@ -100,7 +100,7 @@ fun PlayButton() {
 
 
 fun settings(context: Context, user: FirebaseUser?, dbRef: DatabaseReference) {
-    profileExists(user, dbRef)
+    profileExists(context, user, dbRef)
         .thenAccept {
             if (it) {
                 context.startActivity(Intent(context, SettingsProfileActivity::class.java))
@@ -121,7 +121,7 @@ fun SettingsButton() {
 
 fun chatTest(context: Context) {
     context.startActivity(Intent(context, ChatActivity::class.java).apply {
-        putExtra("gameId", "testgameid")
+        putExtra(context.getString(R.string.gameId_extra), context.getString(R.string.test_game_id))
     })
 }
 
@@ -138,7 +138,7 @@ fun ChatButton() {
 
 fun guessing(context: Context, gameId: String) {
     context.startActivity(Intent(context, GuessingActivity::class.java).apply {
-        putExtra("gameId", gameId)
+        putExtra(context.getString(R.string.gameId_extra), gameId)
     })
 }
 
@@ -148,7 +148,7 @@ fun GuessingButton() {
     MainMenuButton(
         testTag = "guessingButton",
         // TODO: Add the correct game ID and correct answer
-        onClick = { guessing(context, "testgameid") },
+        onClick = { guessing(context, context.getString(R.string.test_game_id)) },
         text = GUESSING
     )
 }
@@ -171,7 +171,7 @@ fun AudioRecordingButton() {
 
 fun drawing(context: Context, gameId: String) {
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {
-        putExtra("gameId", gameId)
+        putExtra(context.getString(R.string.gameId_extra), gameId)
     })
 }
 
@@ -180,7 +180,7 @@ fun DrawingButton() {
     val context = LocalContext.current
     MainMenuButton(
         testTag = "drawingButton",
-        onClick = { drawing(context, "testgameid") },
+        onClick = { drawing(context, context.getString(R.string.test_game_id)) },
         text = DRAWING
     )
 }
@@ -242,7 +242,7 @@ fun MainMenuScreen() {
     ) {
         Text(
             modifier = Modifier.testTag("gameName"),
-            text = "Guess It!",
+            text = LocalContext.current.getString(R.string.app_name),
             fontSize = 40.sp
         )
 
@@ -274,3 +274,5 @@ fun MainMenuScreen() {
         WordleButton()
     }
 }
+
+

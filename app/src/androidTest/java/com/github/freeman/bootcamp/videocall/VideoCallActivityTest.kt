@@ -9,6 +9,9 @@ import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
+import com.github.freeman.bootcamp.videocall.VideoCallActivity.Companion.EMPTY_ROOM_ERROR
+import com.github.freeman.bootcamp.videocall.VideoCallActivity.Companion.ENTER_ROOM_NAME
+import com.github.freeman.bootcamp.videocall.VideoCallActivity.Companion.JOIN_ROOM
 import junit.framework.TestCase.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -48,13 +51,13 @@ class VideoCallActivityTest {
 
     @Test
     fun roomScreenTextFieldIsCorrectAndDisplayed() {
-        roomScreenTextField().assertTextContains("Enter a room name")
+        roomScreenTextField().assertTextContains(ENTER_ROOM_NAME)
             .assertIsDisplayed()
     }
 
     @Test
     fun roomScreenButtonTextIsCorrectAndDisplayedAndClickable() {
-        roomScreenButton().assertTextContains("Join")
+        roomScreenButton().assertTextContains(JOIN_ROOM)
             .assertIsDisplayed()
             .assertHasClickAction()
     }
@@ -69,7 +72,7 @@ class VideoCallActivityTest {
         roomScreenButton().assertIsDisplayed()
         roomScreenTextField().assertIsDisplayed()
         composeTestRule.onNode(hasTestTag("room_screen_error_field")).assertIsDisplayed()
-            .assertTextContains("The room can't be empty")
+            .assertTextContains(EMPTY_ROOM_ERROR)
     }
     /*
     @Test
