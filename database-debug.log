@@ -6,3 +6,4 @@ namespace sdp-guess-it-default-rtdb, but the emulator is configured for sdp-gues
 opt-out of single project mode add/set the single_project_mode: false property in 
 the firebase.json emulators config. 
 10:50:38.338 [NamespaceSystem-akka.actor.default-dispatcher-11] INFO com.firebase.core.namespace.NamespaceActor - sdp-guess-it-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 18ms, init: 0ms
+11:03:24.738 [Thread-0] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.

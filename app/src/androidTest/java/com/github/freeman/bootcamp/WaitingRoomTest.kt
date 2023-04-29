@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
@@ -27,6 +28,7 @@ import org.junit.Rule
 import org.junit.Test
 
 class WaitingRoomTest {
+    lateinit var allPlayers: SnapshotStateList<String>
 
     private fun initFirebase(): Pair<DatabaseReference, StorageReference> {
         FirebaseEmulator.init()
@@ -38,7 +40,6 @@ class WaitingRoomTest {
 
     @Before
     fun initScreen() {
-
         val userId = Firebase.auth.uid
 
         val gameId = "test_game_id"
@@ -77,13 +78,9 @@ class WaitingRoomTest {
 
         val storage = firebase.second
 
-
-
         for (i in 0 until GameOptionsActivity.NB_TOPICS) {
             allTopics.add("test_topic_$i")
         }
-
-
 
         composeRule.setContent {
             val context = LocalContext.current
@@ -94,8 +91,7 @@ class WaitingRoomTest {
             }
 
             val players = remember { mutableStateListOf<String>() }
-
-
+            allPlayers = remember { mutableStateListOf<String>() }
 
             val gameStateRef = dbRef.child("current/current_state")
             val artistRef = dbRef.child("current/current_artist")
@@ -134,17 +130,16 @@ class WaitingRoomTest {
                 }
             })
 
-
             val playersRef = database.child("games/$gameId/players")
             val playersListener = playersRef.addChildEventListener(object: ChildEventListener {
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                     if (snapshot.key !in players) {
                         Toast.makeText(context, "player added", Toast.LENGTH_SHORT).show()
                         players.add(snapshot.key!!)
+                        allPlayers.add(snapshot.key!!)
 
                         database.child("games/$gameId/parameters/nb_players").setValue(players.size)
                     }
-
                 }
 
                 override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
@@ -154,13 +149,13 @@ class WaitingRoomTest {
                 override fun onChildRemoved(snapshot: DataSnapshot) {
                     Toast.makeText(context, "player removed", Toast.LENGTH_SHORT).show()
                     players.remove(snapshot.key)
+                    allPlayers.remove(snapshot.key)
                     if (snapshot.key == hostId.value && !players.isEmpty()) {
                         val newHost = players.toList()[0]
                         database.child("games/$gameId/parameters/host_id").setValue(players.toList()[0])
                         hostId.value = newHost
                     }
                     database.child("games/$gameId/parameters/nb_players").setValue(players.size)
-
                 }
 
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -172,10 +167,7 @@ class WaitingRoomTest {
                 }
             })
 
-
             BootcampComposeTheme {
-
-
                 Column{
                     TopAppbarWaitingRoom(
                         dbRef = dbRef,
@@ -218,8 +210,6 @@ class WaitingRoomTest {
 
                 val activity = (context as? Activity)
                 activity?.finish()
-
-
             }
         }
     }
@@ -232,7 +222,6 @@ class WaitingRoomTest {
     @Test
     fun waitingRoomTopAppBarBackIsClickable() {
         composeRule.onNodeWithTag("topAppBarBack").performClick()
-
     }
 
     @Test
@@ -240,12 +229,10 @@ class WaitingRoomTest {
         composeRule.onNodeWithTag("roomInfo").assertIsDisplayed()
     }
 
-
     @Test
     fun playerListIsDisplayed() {
         composeRule.onNodeWithTag("playerList").assertIsDisplayed()
     }
-
 
     @OptIn(ExperimentalTestApi::class)
     @Test
@@ -266,5 +253,39 @@ class WaitingRoomTest {
 
         composeRule.onNodeWithTag("startButton").performClick()
         composeRule.onNodeWithTag("startButton").assertHasClickAction()
+    }
+
+    // Note: the kick buttons are displayed for everyone, but are only visible to the host
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun kickButtonsAreDisplayed() {
+        var i = 1
+        for (p in allPlayers) {
+            composeRule.waitUntilExactlyOneExists((hasTestTag("kickButton" + allPlayers[i-1])), 10000)
+            composeRule.onNodeWithTag("kickButton" + allPlayers[i-1]).assertIsDisplayed()
+            i += 1
+        }
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun kickButtonsAreClickable() {
+        var i = 1
+        for (p in allPlayers) {
+            composeRule.waitUntilExactlyOneExists((hasTestTag("kickButton" + allPlayers[i-1])), 10000)
+            composeRule.onNodeWithTag("kickButton" + allPlayers[i-1]).performClick()
+            i += 1
+        }
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun kickButtonsAreDisabled() {
+        var i = 1
+        for (p in allPlayers) {
+            composeRule.waitUntilExactlyOneExists((hasTestTag("kickButton" + allPlayers[i-1])), 10000)
+            composeRule.onNodeWithTag("kickButton" + allPlayers[i-1]).assertIsNotEnabled()
+            i += 1
+        }
     }
 }

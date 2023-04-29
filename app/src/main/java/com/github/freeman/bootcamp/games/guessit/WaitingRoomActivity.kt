@@ -271,7 +271,6 @@ fun RoomInfo(
     modifier: Modifier = Modifier,
     dbRef: DatabaseReference,
 ) {
-
     val lobbyName = remember { mutableStateOf("") }
     val nbRounds = remember { mutableStateOf(0) }
     val category = remember { mutableStateOf("") }
@@ -495,7 +494,9 @@ fun PlayerDisplay(player: PlayerData, hostId: String, dbRef: DatabaseReference, 
                     Image(
                         painterResource(id = R.drawable.kick_player_boot),
                         contentDescription = "Kick button icon",
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier
+                            .size(20.dp)
+                            .testTag("kickBoot$playerId")
                     )
 
                     Text(
