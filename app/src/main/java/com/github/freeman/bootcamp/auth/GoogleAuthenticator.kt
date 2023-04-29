@@ -15,6 +15,13 @@ import java.util.function.Consumer
  */
 class GoogleAuthenticator : Authenticator {
 
+    companion object {
+        const val LOGIN_ERROR = "login error"
+        const val NULL_USER_ERROR = "User is null"
+        const val CANCEL_ERROR = "User cancelled sign in"
+        const val OTHER_ERROR = "login error:"
+    }
+
     /**
      * Creates a sign in intent and launches it using the given launcher
      *
@@ -39,21 +46,21 @@ class GoogleAuthenticator : Authenticator {
         onFailure: Consumer<String?>?
     ) {
         if (result == null) {
-            onFailure!!.accept("login error")
+            onFailure!!.accept(LOGIN_ERROR)
         } else if (result.resultCode == Activity.RESULT_OK) {
             // Successfully signed in
             val user = FirebaseAuth.getInstance().currentUser
-                ?: throw IllegalStateException("User is null")
+                ?: throw IllegalStateException(NULL_USER_ERROR)
             onSuccess!!.accept(user.email)
             //context.startActivity(Intent(context, ProfileCreationActivity::class.java)
         } else if (result.resultCode == Activity.RESULT_CANCELED) {
             // Sign in was cancelled by the user
-            onFailure!!.accept("User cancelled sign in")
+            onFailure!!.accept(CANCEL_ERROR)
         } else {
             val error = result.idpResponse!!.error
             // Handle the error here
             // ...
-            onFailure!!.accept("login error: $error")
+            onFailure!!.accept("$OTHER_ERROR $error")
         }
     }
 

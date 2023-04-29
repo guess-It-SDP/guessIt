@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NB_TOPICS
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.SELECT_TOPIC
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.roundNb
@@ -31,8 +32,10 @@ import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companio
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.turnNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGetList
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -42,17 +45,16 @@ class TopicSelectionActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val gameId = intent.getStringExtra("gameId").toString()
-        dbref = Firebase.database.getReference("games/$gameId")
+        val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
+        dbref = getGameDBRef(this, gameId)
         topics.clear()
         for (i in 0 until NB_TOPICS) {
             topics.add(intent.getStringExtra("topic$i").toString())
         }
 
-        val roundNb = intent.getIntExtra("roundNb", 5)
-        val turnNb = intent.getIntExtra("roundNb", 5)
         // inform database that a player is in the topic selection phase
-        dbref.child("current/current_state").setValue("topic selection")
+        dbref.child(getString(R.string.current_state_path))
+            .setValue(getString(R.string.state_topicselection))
 
         setContent {
             BootcampComposeTheme {
@@ -70,11 +72,13 @@ class TopicSelectionActivity : ComponentActivity() {
 }
 
 
-private fun refreshTopics(dbref: DatabaseReference, topicList: List<MutableState<String>>) {
-    databaseGet(dbref.child("parameters/category"))
+private fun refreshTopics(context: Context, dbref: DatabaseReference, topicList: List<MutableState<String>>) {
+    databaseGet(dbref.child(context.getString(R.string.param_category_path)))
         .thenAccept { category ->
 
-            val topicsRef = Firebase.database.getReference("topics/$category")
+            val topicsRef = Firebase.database.reference
+                .child(context.getString(R.string.topics_path))
+                .child(category)
             databaseGetList(topicsRef)
                 .thenAccept {
                     topics.clear()
@@ -105,7 +109,8 @@ fun TopicSelectionBackButton(dbref: DatabaseReference) {
 }
 
 fun backToWaitingRoom(dbref: DatabaseReference, context: Context) {
-    dbref.child("current/current_state").setValue("waiting for players")
+    dbref.child(context.getString(R.string.current_state_path))
+        .setValue(context.getString(R.string.state_waitingforplayers))
     val activity = (context as? Activity)
     activity?.finish()
 }
@@ -124,26 +129,35 @@ fun TopicButton(dbref: DatabaseReference, topic: MutableState<String>, id: Int, 
 }
 
 fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, gameId: String) {
-    dbref.child("topics").child(roundNb.toString()).child(turnNb.toString()).child("topic").setValue(topic)
-    dbref.child("current").child("current_round").setValue(roundNb)
-    dbref.child("current").child("current_turn").setValue(turnNb)
-    dbref.child("current").child("current_timer").setValue("inprogress")
-    dbref.child("current").child("current_state").setValue("play round")
+    dbref.child(context.getString(R.string.topics_path))
+        .child(roundNb.toString())
+        .child(turnNb.toString())
+        .child(context.getString(R.string.topic_path))
+        .setValue(topic)
+    dbref.child(context.getString(R.string.current_round_path))
+        .setValue(roundNb)
+    dbref.child(context.getString(R.string.current_turn_path))
+        .setValue(turnNb)
+    dbref.child(context.getString(R.string.current_timer_path))
+        .setValue(context.getString(R.string.timer_inprogress))
+    dbref.child(context.getString(R.string.current_state_path))
+        .setValue(context.getString(R.string.state_playround))
 
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {
-        putExtra("gameId", gameId)
+        putExtra(context.getString(R.string.gameId_extra), gameId)
     })
 }
 
 @Composable
 fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
+    val context = LocalContext.current
+
     //the current round and turn (in the round)
-    val dbrefCurrent = dbref.child("Current")
-    databaseGet(dbrefCurrent.child("current_round"))
+    databaseGet(dbref.child(context.getString(R.string.current_round_path)))
         .thenAccept {
             roundNb = it.toInt()
         }
-    databaseGet(dbrefCurrent.child("current_turn"))
+    databaseGet(dbref.child(context.getString(R.string.current_turn_path)))
         .thenAccept {
             turnNb = it.toInt()
         }
@@ -177,7 +191,7 @@ fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
                 .weight(weight = 1f, fill = false)
                 .testTag("refreshButton"),
             onClick = {
-                refreshTopics(dbref, topicList)
+                refreshTopics(context, dbref, topicList)
             }) {
             androidx.compose.material.Icon(
                 modifier = Modifier.size(24.dp),

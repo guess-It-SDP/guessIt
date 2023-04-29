@@ -29,6 +29,11 @@ import com.github.freeman.bootcamp.games.guessit.CorrectAnswerPopUp
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.GUESSING_BOTTOMBAR_BUTTON_TEXT
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.GUESSING_BOTTOMBAR_TEXT
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.NO_ARTIST
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.SCREEN_TEXT
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.WAITING_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.pointsReceived
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.roundNb
@@ -36,6 +41,7 @@ import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Compa
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -55,17 +61,23 @@ class GuessingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val gameId = intent.getStringExtra("gameId").toString()
-        dbrefGame = Firebase.database.getReference("games/$gameId")
+        val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
+        dbrefGame = getGameDBRef(this, gameId)
 
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbrefGame, gameId, LocalContext.current)
+                GuessingScreen(dbrefGame, this)
             }
         }
     }
 
     companion object {
+        const val GUESSING_BOTTOMBAR_TEXT = "Type a guess..."
+        const val GUESSING_BOTTOMBAR_BUTTON_TEXT = "OK"
+        const val NO_ARTIST = "No artist"
+        const val WAITING_TEXT = "Please wait while the artist selects a word to draw."
+        const val SCREEN_TEXT = "Your turn to guess!"
+
         var pointsReceived = false
         lateinit var answer: String
         var roundNb = 0
@@ -78,6 +90,8 @@ class GuessingActivity : ComponentActivity() {
  */
 @Composable
 fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artistId: String) {
+    val context = LocalContext.current
+
     Row(
         modifier = Modifier
             .padding(8.dp)
@@ -85,9 +99,15 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
     ) {
         val userId = Firebase.auth.currentUser?.uid
         if (guess.guess?.lowercase() == answer.lowercase() && guess.guesserId == userId) {
-            val dbGuesserScoreRef = dbrefGame.child("players/$userId/score")
-            val dbArtistScoreRef = dbrefGame.child("players/$artistId/score")
-            val correctGuessesRef = dbrefGame.child("current/correct_guesses")
+            val dbGuesserScoreRef = dbrefGame
+                .child(context.getString(R.string.players_path))
+                .child(userId.toString())
+                .child(context.getString(R.string.score_path))
+            val dbArtistScoreRef = dbrefGame
+                .child(context.getString(R.string.players_path))
+                .child(artistId)
+                .child(context.getString(R.string.score_path))
+            val correctGuessesRef = dbrefGame.child(context.getString(R.string.current_correct_guesses_path))
 
             // Increase the points of the artist if they haven't already received points this round
             FirebaseUtilities.databaseGetLong(correctGuessesRef)
@@ -174,7 +194,7 @@ fun GuessingBar(
                 value = guess,
                 onValueChange = onGuessChange,
                 modifier = Modifier.weight(1f),
-                placeholder = { Text("Type a guess...") },
+                placeholder = { Text(GUESSING_BOTTOMBAR_TEXT) },
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
@@ -186,21 +206,21 @@ fun GuessingBar(
                 onClick = onSendClick,
                 colors = ButtonDefaults.buttonColors()
             ) {
-                Text(text = "OK")
+                Text(text = GUESSING_BOTTOMBAR_BUTTON_TEXT)
             }
         }
     }
 }
 
 @Composable
-fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.current.getString(R.string.default_game_id), context: Context) {
+fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
     var timer by remember { mutableStateOf("") }
 
     //the timer of the game
     timer = ""
-    val dbrefTimer = dbrefGame.child("current/current_timer")
+    val dbrefTimer = dbrefGame.child(context.getString(R.string.current_timer_path))
     dbrefTimer.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
@@ -213,7 +233,8 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
     })
 
     //the guesses made by the guessers
-    dbrefGame.child("guesses").addValueEventListener(object : ValueEventListener {
+    dbrefGame.child(context.getString(R.string.guesses_path))
+        .addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 val guessesList = snapshot.getValue<ArrayList<Guess>>()!!
@@ -227,19 +248,22 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
     })
 
     //the current round and turn (in the round)
-    val dbrefCurrent = dbrefGame.child("current")
-    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_round"))
+    FirebaseUtilities.databaseGet(dbrefGame.child(context.getString(R.string.current_round_path)))
         .thenAccept {
             roundNb = it.toInt()
         }
-    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_turn"))
+    FirebaseUtilities.databaseGet(dbrefGame.child(context.getString(R.string.current_turn_path)))
         .thenAccept {
             turnNb = it.toInt()
         }
 
     //the correct answer of the round
     answer = ""
-    val dbrefAnswer = dbrefGame.child("topics/$roundNb/$turnNb/topic")
+    val dbrefAnswer = dbrefGame
+        .child(context.getString(R.string.topics_path))
+        .child(roundNb.toString())
+        .child(turnNb.toString())
+        .child(context.getString(R.string.topic_path))
     dbrefAnswer.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
@@ -256,7 +280,10 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
     //the username of the current user
     var username = ""
     val uid = FirebaseAuth.getInstance().currentUser?.uid
-    val dbrefUsername = Firebase.database.reference.child("profiles/$uid").child("username")
+    val dbrefUsername = Firebase.database.reference
+        .child(context.getString(R.string.profiles_path))
+        .child("$uid")
+        .child(context.getString(R.string.username_path))
     FirebaseUtilities.databaseGet(dbrefUsername)
         .thenAccept {
             username = it
@@ -264,15 +291,19 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
 
     // Fetch the ID of the current artist
     val currentArtist = remember {
-        mutableStateOf("No artist")
+        mutableStateOf(NO_ARTIST)
     }
-    FirebaseUtilities.databaseGet(dbrefGame.child("current/current_artist"))
+    FirebaseUtilities.databaseGet(dbrefGame.child(context.getString(R.string.current_artist_path)))
         .thenAccept {
             currentArtist.value = it
         }
 
     //The drawing sent by the drawer to the guessers
-    val dbrefImages = dbrefGame.child("topics/$roundNb/$turnNb/drawing")
+    val dbrefImages = dbrefGame
+        .child(context.getString(R.string.topics_path))
+        .child(roundNb.toString())
+        .child(turnNb.toString())
+        .child(context.getString(R.string.drawing_path))
     var bitmap by remember { mutableStateOf(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888).asImageBitmap()) }
     dbrefImages.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -288,16 +319,16 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
 
     // Stores and updates the current state of the game (used to know if the artist is picking a word to draw)
     var topicSelection by remember { mutableStateOf(false) }
-    val dbrefCurrentState = dbrefGame.child("current/current_state")
+    val dbrefCurrentState = dbrefGame.child(context.getString(R.string.current_state_path))
     dbrefCurrentState.addValueEventListener(object: ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 val currentState = snapshot.getValue<String>()!!
-                if (currentState == "waiting for players") {
+                if (currentState == context.getString(R.string.state_waitingforplayers)) {
                     val activity = context as? Activity
                     activity?.finish()
                 } else {
-                    topicSelection = currentState == "topic selection"
+                    topicSelection = currentState == context.getString(R.string.state_topicselection)
                 }
             }
         }
@@ -313,7 +344,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                 .testTag("guessingScreen")
         ) {
             Text(
-                    text = "Your turn to guess!",
+                    text = SCREEN_TEXT,
                     modifier = Modifier
                         .padding(8.dp)
                         .align(Alignment.CenterHorizontally)
@@ -330,7 +361,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
             ) {
                 if (topicSelection) {
                     Text(
-                        text = "Please wait while the artist selects a word to draw.",
+                        text = WAITING_TEXT,
                         modifier = Modifier
                             .align(Alignment.Center),
                         color = Color.White
@@ -345,8 +376,8 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                     )
                 }
 
-                if (timer != "useless") {
-                    val dbRefTimer = Firebase.database.getReference("games/$gameId").child("current/current_timer")
+                if (timer != context.getString(R.string.timer_unused)) {
+                    val dbRefTimer = dbrefGame.child(context.getString(R.string.current_timer_path))
                     TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.LightGray)
                 }
 
@@ -364,7 +395,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                     artistId = currentArtist.value)
             }
 
-            if (timer == "over") {
+            if (timer == context.getString(R.string.timer_over)) {
                 TimerOverPopUp()
             } else {
                 GuessingBar(
@@ -373,7 +404,10 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                     onSendClick = {
                         val gs = Guess(guesser = username, guesserId = uid, guess = guess)
                         val guessId = guesses.size.toString()
-                        dbrefGame.child("guesses").child(guessId).setValue(gs)
+                        dbrefGame
+                            .child(context.getString(R.string.guesses_path))
+                            .child(guessId)
+                            .setValue(gs)
 
                         guess = ""
                     }

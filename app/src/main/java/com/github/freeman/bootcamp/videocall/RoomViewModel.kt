@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.freeman.bootcamp.videocall.VideoCallActivity.Companion.EMPTY_ROOM_ERROR
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ class RoomViewModel: ViewModel() {
     fun onJoinRoom() {
         if(roomName.value.text.isBlank()) { //We did not enter a room if the text is blank
             _roomName.value = roomName.value.copy(
-                error = "The room can't be empty"
+                error = EMPTY_ROOM_ERROR
             )
             return
         }

@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp.games.guessit
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,9 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.FINAL_SCORES_TITLE
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.SCORES_TITLE
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.WINNER_TITLE
@@ -25,6 +28,7 @@ import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.size
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.turnEnded
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -37,8 +41,7 @@ class ScoreActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val gameId = "testgameid"
-        val dbRef = Firebase.database.getReference("games/$gameId")
+        val dbRef = getGameDBRef(this)
         setContent {
             BootcampComposeTheme {
                 ScoreScreen(dbRef)
@@ -87,7 +90,11 @@ fun fetchUserNames(playerIds: List<Pair<String, Int>>): Map<String, MutableState
     // Get the usernames of all players in this game
     for (entry in playerIds) {
         val id = entry.first
-        FirebaseUtilities.databaseGet(dbRef.child("profiles/$id/username"))
+        val drefUsername = dbRef
+            .child(LocalContext.current.getString(R.string.profiles_path))
+            .child(id)
+            .child(LocalContext.current.getString(R.string.username_path))
+        FirebaseUtilities.databaseGet(drefUsername)
             .thenAccept {
                 usernames[id]?.value = it
             }
@@ -127,19 +134,21 @@ fun updateScoreMap(playersToScores: Map<String, MutableState<Int>>, id: String, 
  * This function is to be called between turns to set variables back to their default values or
  * to change the artist
   */
-fun reinitialise(dbRef: DatabaseReference, playerIds: Set<String>) {
+fun reinitialise(context: Context, dbRef: DatabaseReference, playerIds: Set<String>) {
+
     // Reset the number of guesses to 0
-    dbRef.child("current/correct_guesses").setValue(0)
+    dbRef.child(context.getString(R.string.current_correct_guesses_path)).setValue(0)
 
     // Choose a new artist. Todo: create a mechanism for switching the artist in a fair manner
     if (playerIds.isNotEmpty()) {
         val randInt = playerIds.indices.random()
         val newArtist = playerIds.toList()[randInt]
-        dbRef.child("current/current_artist").setValue(newArtist)
+        dbRef.child(context.getString(R.string.current_artist_path))
+            .setValue(newArtist)
     }
 
     // Delete all the guesses
-    dbRef.child("guesses").removeValue()
+    dbRef.child(context.getString(R.string.guesses_path)).removeValue()
 }
 
 @Composable
@@ -148,10 +157,11 @@ fun ScoreScreen(
     testingPlayersToScores: HashMap<String, MutableState<Int>> = HashMap<String, MutableState<Int>>(),
     testingUsersToScores:  List<Pair<String?, Int>> = listOf()
 ) {
+    val context = LocalContext.current
 
     // Get the Ids of all players in this game (IDs = playerIds.value.keys)
     val playerIds = remember { mutableStateOf(mapOf<String, Map<String, Int>>()) }
-    FirebaseUtilities.databaseGetMap(dbRef.child("players"))
+    FirebaseUtilities.databaseGetMap(dbRef.child(context.getString(R.string.players_path)))
         .thenAccept {
             playerIds.value = it as HashMap<String, Map<String, Int>>
         }
@@ -164,7 +174,10 @@ fun ScoreScreen(
 
     // Observe the points of all players to update the scoreboard
     for (id in playerIds.value.keys) {
-        dbRef.child("/players/$id").addChildEventListener(object : ChildEventListener {
+        dbRef
+            .child(context.getString(R.string.players_path))
+            .child(id)
+            .addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 updateScoreMap(playersToScores, id, snapshot)
             }
@@ -223,7 +236,7 @@ fun ScoreScreen(
     }
 
     if (turnEnded) {
-        reinitialise(dbRef, playerIds.value.keys)
+        reinitialise(context, dbRef, playerIds.value.keys)
         turnEnded = false
     }
 

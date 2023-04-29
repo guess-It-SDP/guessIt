@@ -10,12 +10,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextLayoutResult
+import com.github.freeman.bootcamp.games.wordle.WordleRulesActivity.Companion.MINIMIZED_MAX_LINES
+import com.github.freeman.bootcamp.games.wordle.WordleRulesActivity.Companion.SHOW_LESS
+import com.github.freeman.bootcamp.games.wordle.WordleRulesActivity.Companion.SHOW_MORE
 
-private val MINIMIZED_MAX_LINES = 26;
 class WordleRulesActivity : ComponentActivity() {
 
     companion object{
-        val WORDLE_RULE_ACTIVITY_TEST_TAG= "wordleRuleActivityTestTag"
+        const val WORDLE_RULE_ACTIVITY_TEST_TAG= "wordleRuleActivityTestTag"
+        const val SHOW_LESS = "Show Less"
+        const val SHOW_MORE = "... Show More"
+        const val MINIMIZED_MAX_LINES = 26
     }
 
     private val rulesText = "The rules of Wordle are elegantly simple.\n" +
@@ -65,11 +70,11 @@ fun ExpandingText(modifier: Modifier = Modifier, text: String) {
 
         when {
             isExpanded -> {
-                finalText = "$text Show Less"
+                finalText = "$text $SHOW_LESS"
             }
             !isExpanded && textLayoutResult.hasVisualOverflow -> {
                 val lastCharIndex = textLayoutResult.getLineEnd(MINIMIZED_MAX_LINES - 1)
-                val showMoreString = "... Show More"
+                val showMoreString = SHOW_MORE
                 val adjustedText = text
                     .substring(startIndex = 0, endIndex = lastCharIndex)
                     .dropLast(showMoreString.length)

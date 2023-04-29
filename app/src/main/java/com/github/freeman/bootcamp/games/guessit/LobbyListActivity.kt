@@ -28,8 +28,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.DEFAULT_ID
+import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.DEFAULT_LOBBY
+import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.DEFAULT_NB_PLAYER
+import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.DEFAULT_NB_ROUND
+import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.START_SCORE
+import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.TOPBAR_TEXT
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -64,6 +72,16 @@ class LobbyListActivity: ComponentActivity() {
             }
         }
     }
+
+    companion object {
+        const val TOPBAR_TEXT = "Lobbies"
+        const val DEFAULT_ID = "default id"
+        const val DEFAULT_LOBBY = "default lobby"
+        const val DEFAULT_NB_PLAYER = 0
+        const val DEFAULT_NB_ROUND = 0
+        const val START_SCORE = 0
+    }
+
 }
 
 @Composable
@@ -73,7 +91,7 @@ fun TopAppbarLobbies(context: Context = LocalContext.current) {
         modifier = Modifier.testTag("topAppbarLobbies"),
         title = {
             Text(
-                text = "Lobbies",
+                text = TOPBAR_TEXT,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -98,12 +116,14 @@ fun TopAppbarLobbies(context: Context = LocalContext.current) {
 fun ListItem(
     modifier: Modifier = Modifier,
     dbRef: DatabaseReference,
-    lobby: Lobby = Lobby("default id", "default lobby", 0, 0),
+    lobby: Lobby = Lobby(DEFAULT_ID, DEFAULT_LOBBY, DEFAULT_NB_PLAYER, DEFAULT_NB_ROUND),
     backgroundColor: Color = Color.LightGray,
     onItemClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+
     val nbPlayer = remember { mutableStateOf(lobby.nbPlayer) }
-    val nbPlayerRef = dbRef.child("games/${lobby.id}/parameters/nb_players")
+    val nbPlayerRef = getGameDBRef(context, lobby.id).child(context.getString(R.string.param_nb_players_path))
 
 
     // changes dynamically the number of players in a lobby
@@ -163,10 +183,10 @@ fun ListItem(
 
 @Composable
 fun LobbyList(database: DatabaseReference) {
-    val dbRef = database.child("games")
+    val context = LocalContext.current
+    val dbRef = database.child(context.getString(R.string.games_path))
     val userId = Firebase.auth.uid
     val lobbies = remember { mutableStateListOf<Lobby>() }
-    val context = LocalContext.current
 
     // automatically fetches data from available lobbies in database
     dbRef.addChildEventListener(object: ChildEventListener {
@@ -224,12 +244,21 @@ fun LobbyList(database: DatabaseReference) {
                     backgroundColor = Color.White,
                     onItemClick = {
                         // joins a lobby
-                        databaseGet(dbRef.child("${lobby.id}/parameters/nb_players"))
+                        val dbrefNbPlayers = dbRef
+                            .child(lobby.id)
+                            .child(context.getString(R.string.param_nb_players_path))
+
+                        databaseGet(dbrefNbPlayers)
                             .thenAccept {
-                                dbRef.child("${lobby.id}/players/$userId/score").setValue(0)
+                                dbRef
+                                    .child(lobby.id)
+                                    .child(context.getString(R.string.players_path))
+                                    .child(userId.toString())
+                                    .child(context.getString(R.string.score_path))
+                                    .setValue(START_SCORE)
 
                                 val intent = Intent(context, WaitingRoomActivity::class.java)
-                                    .putExtra("gameId", lobby.id)
+                                    .putExtra(context.getString(R.string.gameId_extra), lobby.id)
                                 context.startActivity(intent)
                             }
                     },

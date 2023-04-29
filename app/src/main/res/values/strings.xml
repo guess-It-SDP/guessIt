@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BootcampCompose</string>
+    <string name="app_name">Guess It!</string>
     <string name="title_activity_settings">SettingsActivity</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -20,9 +20,72 @@
     <string name="stroke_width">Stroke Width button</string>
     <string name="drawing_done">Drawing done button</string>
 
+    <!-- Strings used in ChatActivity -->
+    <string name="chat_message_item">chatMessageItem</string>
+    <string name="chat_message_list">chatMessageList</string>
+    <string name="chat_screen">chatScreen</string>
+    <string name="chat_bottom_bar">chatBottomBar</string>
+    <string name="chat_textfield">chatTextfield</string>
+    <string name="chat_send_button">chatSendButton</string>
+    <string name="chat_activate_button">chatActivateButton</string>
+
+    <!-- Strings used in CreateJoinActivity -->
+    <string name="createjoin_screen">createJoin</string>
+    <string name="createjoin_text1">createJoinText1</string>
+    <string name="createjoin_text2">createJoinText2</string>
+    <string name="createjoin_topbar">topAppbarCreateJoin</string>
+    <string name="createjoin_topbar_icon">Go back</string>
+    <string name="createjoin_creategame">createGameButton</string>
+    <string name="createjoin_joininggame">joiningGameButton</string>
+
     <!-- Useful for now as there are no game lobbies -->
     <string name="default_game_id">1</string>
 
     <string name="web_client_id">690006943045-qccs8s58p6ck2r3llb7e7kv6najg8485.apps.googleusercontent.com</string>
 
+    <!-- Strings used for navigate in the database tree -->
+    <string name="current_path">current</string>
+    <string name="current_timer_path">current/current_timer</string>
+    <string name="current_artist_path">current/current_artist</string>
+    <string name="current_state_path">current/current_state</string>
+    <string name="current_correct_guesses_path">current/correct_guesses</string>
+    <string name="games_path">games</string>
+    <string name="current_round_path">current/current_round</string>
+    <string name="current_turn_path">current/current_turn</string>
+    <string name="param_nb_players_path">parameters/nb_players</string>
+    <string name="param_nb_rounds_path">parameters/nb_rounds</string>
+    <string name="param_category_path">parameters/category</string>
+    <string name="param_host_id_path">parameters/host_id</string>
+    <string name="topics_path">topics</string>
+    <string name="topic_path">topic</string>
+    <string name="drawing_path">drawing</string>
+    <string name="chat_path">chat</string>
+    <string name="profiles_path">profiles</string>
+    <string name="username_path">username</string>
+    <string name="guesses_path">guesses</string>
+    <string name="players_path">players</string>
+    <string name="score_path">score</string>
+    <string name="uid_path">uid</string>
+    <string name="email_path">email</string>
+    <string name="lobby_name_path">lobby_name</string>
+    <string name="picture_path">picture/pic.jpg</string>
+
+    <!-- Strings used for extra between activities -->
+    <string name="gameId_extra">gameId</string>
+    <string name="gameId_testing">testing</string>
+
+    <!-- current_state states -->
+    <string name="state_waitingforplayers">waiting for players</string>
+    <string name="state_topicselection">topic selection</string>
+    <string name="state_playround">play round</string>
+    <string name="state_playgame">play game</string>
+    <string name="state_lobbyclosed">lobby closed</string>
+
+    <!-- current_timer states -->
+    <string name="timer_over">over</string>
+    <string name="timer_unused">unused</string>
+    <string name="timer_inprogress">inprogress</string>
+
+    <!-- Test Strings -->
+    <string name="test_game_id">testgameid</string>
 </resources>

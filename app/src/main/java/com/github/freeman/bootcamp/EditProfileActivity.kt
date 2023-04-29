@@ -39,6 +39,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
+import com.github.freeman.bootcamp.EditProfileActivity.Companion.DONE
+import com.github.freeman.bootcamp.EditProfileActivity.Companion.EMPTY_ERROR
+import com.github.freeman.bootcamp.EditProfileActivity.Companion.ENTER_VALUE
+import com.github.freeman.bootcamp.EditProfileActivity.Companion.SET_VALUE
+import com.github.freeman.bootcamp.EditProfileActivity.Companion.TOPBAR_TEXT
+import com.github.freeman.bootcamp.EditProfileActivity.Companion.USER_NAME
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.auth.ktx.auth
@@ -60,21 +66,23 @@ class EditProfileActivity : ComponentActivity() {
             val dbRef = Firebase.database.reference
             val storageRef = Firebase.storage.reference
             val userId = Firebase.auth.currentUser?.uid
-            val dbUserRef = dbRef.child("profiles/$userId")
-            val storageUserRef = storageRef.child("profiles/$userId")
+            val dbUserRef = dbRef.child(getString(R.string.profiles_path))
+                .child(userId.toString())
+            val storageUserRef = storageRef.child(getString(R.string.profiles_path))
+                .child(userId.toString())
 
             val displayName = remember { mutableStateOf("") }
             val profilePicBitmap = remember { mutableStateOf<Bitmap?>(null) }
 
             // get name from database
-            FirebaseUtilities.databaseGet(dbUserRef.child("username"))
+            FirebaseUtilities.databaseGet(dbUserRef.child(getString(R.string.username_path)))
                 .thenAccept {
                     displayName.value = it
                 }
 
             // get User's image from firebase storage
             LaunchedEffect(Unit) {
-                FirebaseUtilities.storageGet(storageUserRef.child("picture/pic.jpg"))
+                FirebaseUtilities.storageGet(storageUserRef.child(getString(R.string.picture_path)))
                     .thenAccept {
                         profilePicBitmap.value = it
                     }
@@ -92,6 +100,15 @@ class EditProfileActivity : ComponentActivity() {
             }
 
         }
+    }
+
+    companion object {
+        const val TOPBAR_TEXT = "Profile"
+        const val SET_VALUE = "Set value"
+        const val ENTER_VALUE = "Enter value"
+        const val DONE = "Enter value"
+        const val EMPTY_ERROR = "Field can not be empty"
+        const val USER_NAME = "NAME"
     }
 
 }
@@ -132,7 +149,10 @@ fun EditUserDetails(context: Context = LocalContext.current, displayName: Mutabl
             EditDialog(
                 text = displayName,
                 updateData = { name ->
-                    dbRef.child("profiles/$userId/username").setValue(name)
+                    dbRef.child(context.getString(R.string.profiles_path))
+                        .child(userId.toString())
+                        .child(context.getString(R.string.username_path))
+                        .setValue(name)
                 },
                 show = showNameDialog
             )
@@ -156,7 +176,11 @@ fun EditUserDetails(context: Context = LocalContext.current, displayName: Mutabl
                     ActivityResultContracts.GetContent()) { uri: Uri? ->
                         imageUri = uri
                         image.value = readBytes(context, imageUri!!)!!
-                        val uploadTask = storageRef.child("profiles/$userId/picture/pic.jpg").putBytes(image.value)
+                        val uploadTask = storageRef
+                            .child(context.getString(R.string.profiles_path))
+                            .child(userId.toString())
+                            .child(context.getString(R.string.picture_path))
+                            .putBytes(image.value)
                         uploadTask.addOnFailureListener {
                             // Handle unsuccessful uploads
                         }.addOnSuccessListener {
@@ -197,7 +221,7 @@ fun TopAppbarEditProfile(context: Context = LocalContext.current) {
         modifier = Modifier.testTag("topAppbarEditProfile"),
         title = {
             Text(
-                text = "Profile",
+                text = TOPBAR_TEXT,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -248,7 +272,7 @@ private fun EditDialog(text: MutableState<String>, updateData: (String) -> Unit,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Set value",
+                            text = SET_VALUE,
                             style = TextStyle(
                                 fontSize = 24.sp,
                                 fontFamily = FontFamily.Default,
@@ -296,7 +320,7 @@ private fun EditDialog(text: MutableState<String>, updateData: (String) -> Unit,
                                     .height(20.dp)
                             )
                         },
-                        placeholder = { Text(text = "Enter value") },
+                        placeholder = { Text(text = ENTER_VALUE) },
                         value = txtField.value,
                         onValueChange = {
                             txtField.value = it
@@ -309,7 +333,7 @@ private fun EditDialog(text: MutableState<String>, updateData: (String) -> Unit,
                         Button(
                             onClick = {
                                 if (txtField.value.isEmpty()) {
-                                    txtFieldError.value = "Field can not be empty"
+                                    txtFieldError.value = EMPTY_ERROR
                                     return@Button
                                 }
                                 updateData(txtField.value)
@@ -322,7 +346,7 @@ private fun EditDialog(text: MutableState<String>, updateData: (String) -> Unit,
                                 .height(50.dp)
                                 .testTag("doneButton")
                         ) {
-                            Text(text = "Done")
+                            Text(text = DONE)
                         }
                     }
                 }
@@ -411,7 +435,7 @@ private fun prepareEditableItemsData(displayName: MutableState<String>, showName
     editablesList.add(
         EditableData(
             icon = appIcons.Person,
-            title = "Name",
+            title = USER_NAME,
             subTitle = displayName,
             clickAction = {
                 showNameDialog.value = true
