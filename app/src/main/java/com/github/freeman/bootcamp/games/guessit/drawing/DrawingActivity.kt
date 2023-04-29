@@ -28,6 +28,7 @@ import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Compani
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.turnNb
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -54,9 +55,7 @@ class DrawingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
-        val dbref = Firebase.database.getReference(getString(R.string.games_path) + "/$gameId")
-
-        //dbref.child("current/current_timer").setValue("inprogress")
+        val dbref = getGameDBRef(this, gameId)
 
         setContent {
             DrawingScreen(dbref)
@@ -290,9 +289,6 @@ private fun RowScope.MenuItems(
 @Composable
 fun DrawingScreenPreview() {
     val context = LocalContext.current
-
-    val dbref = Firebase.database
-        .getReference(context.getString(R.string.games_path))
-        .child(context.getString(R.string.test_game_id))
+    val dbref = getGameDBRef(context)
     DrawingScreen(dbref)
 }

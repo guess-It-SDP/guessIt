@@ -24,6 +24,7 @@ import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity.Companion.BOT
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity.Companion.CHAT_BUTTON_TEXT
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -32,17 +33,14 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import kotlin.random.Random
 
 // Any activities should work with the following code for chat
 class ChatActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val gameId = intent.getStringExtra(getString(R.string.gameId_extra))
-        val dbref = Firebase.database.reference
-            .child(getString(R.string.gameId_extra))
-            .child("$gameId")
+        val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
+        val dbref = getGameDBRef(this, gameId)
             .child(getString(R.string.chat_path))
 
         setContent {

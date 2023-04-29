@@ -28,6 +28,7 @@ import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.size
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.turnEnded
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -40,10 +41,7 @@ class ScoreActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val gameId = getString(R.string.test_game_id)
-        val dbRef = Firebase.database.reference
-            .child(getString(R.string.games_path))
-            .child(gameId)
+        val dbRef = getGameDBRef(this)
         setContent {
             BootcampComposeTheme {
                 ScoreScreen(dbRef)

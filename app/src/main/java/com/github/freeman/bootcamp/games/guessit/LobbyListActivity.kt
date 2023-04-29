@@ -37,6 +37,7 @@ import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.STA
 import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.TOPBAR_TEXT
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -122,10 +123,7 @@ fun ListItem(
     val context = LocalContext.current
 
     val nbPlayer = remember { mutableStateOf(lobby.nbPlayer) }
-    val nbPlayerRef = dbRef
-        .child(context.getString(R.string.games_path))
-        .child(lobby.id)
-        .child(context.getString(R.string.param_nb_players_path))
+    val nbPlayerRef = getGameDBRef(context, lobby.id).child(context.getString(R.string.param_nb_players_path))
 
 
     // changes dynamically the number of players in a lobby

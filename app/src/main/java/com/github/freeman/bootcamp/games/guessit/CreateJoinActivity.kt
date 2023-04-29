@@ -74,9 +74,6 @@ class CreateJoinActivity: ComponentActivity() {
         const val TOPBAR_TEXT = "Guess It!"
         const val CREATE_GAME_BUTTON_TEXT = "Create a new game"
         const val JOINING_GAME_BUTTON_TEXT = "Join an existing game"
-        const val NO_ARTIST = "No artist"
-        const val WAITING_TEXT = "Please wait while the artist selects a word to draw."
-        const val SCREEN_TEXT = "Your turn to guess!"
     }
 }
 

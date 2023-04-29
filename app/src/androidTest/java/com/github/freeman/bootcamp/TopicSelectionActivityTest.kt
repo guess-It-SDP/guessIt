@@ -11,6 +11,8 @@ import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companio
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionScreen
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import org.junit.Rule
@@ -82,9 +84,7 @@ class TopicSelectionActivityTest {
         composeRule.setContent {
             val context = LocalContext.current
             val gameId = context.getString(R.string.test_game_id)
-            val dbref = Firebase.database.reference
-                .child(context.getString(R.string.games_path))
-                .child(gameId)
+            val dbref = getGameDBRef(context)
             BootcampComposeTheme {
                 TopicSelectionScreen(dbref, gameId)
             }

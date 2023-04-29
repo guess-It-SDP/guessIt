@@ -42,6 +42,7 @@ import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.T
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.storageGet
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ChildEventListener
@@ -69,9 +70,7 @@ class WaitingRoomActivity: ComponentActivity() {
         val allTopics = ArrayList<String>()
 
         val database = Firebase.database.reference
-        val dbRef = database
-            .child(getString(R.string.games_path))
-            .child(gameId)
+        val dbRef = getGameDBRef(this, gameId)
 
         val storage = Firebase.storage.reference
 

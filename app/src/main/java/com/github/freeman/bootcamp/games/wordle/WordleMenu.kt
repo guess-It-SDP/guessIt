@@ -82,16 +82,14 @@ private fun launch(context: Context) {
  *@param text The text displayed inside the button
  */
 @Composable
-private fun CreateButton(
-    testTag: String,
-    activityLauncher: (context: Context) -> Unit,
-    text: String
+private fun DifficultyButton(
+    difficulty: Difficulty,
 ) {
     val context = LocalContext.current
     MainMenuButton(
-        testTag = testTag,
-        onClick = { activityLauncher(context) },
-        text = text
+        testTag = difficulty.prettyText,
+        onClick = { launchGame(context, difficulty.name) } ,
+        text = difficulty.prettyText + lettersOrWordOnly(difficulty)
     )
 }
 
@@ -107,36 +105,19 @@ fun WordleMenuScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CreateButton(
-            GAME_RULES,
-            ::launch,
-            GAME_RULES
+
+        val context = LocalContext.current
+
+        MainMenuButton(
+            testTag = GAME_RULES,
+            onClick = { (::launch)(context) },
+            text = GAME_RULES
         )
-        CreateButton(
-            Difficulty.EASY.prettyText,
-            { a: Context -> launchGame(a, Difficulty.EASY.name) },
-            Difficulty.EASY.prettyText + lettersOrWordOnly(Difficulty.EASY)
-        )
-        CreateButton(
-            Difficulty.MEDIUM.prettyText,
-            { a: Context -> launchGame(a, Difficulty.MEDIUM.name) },
-            Difficulty.MEDIUM.prettyText + lettersOrWordOnly(Difficulty.MEDIUM)
-        )
-        CreateButton(
-            Difficulty.HARD.prettyText,
-            { a: Context -> launchGame(a, Difficulty.HARD.name) },
-            Difficulty.HARD.prettyText + lettersOrWordOnly(Difficulty.HARD)
-        )
-        CreateButton(
-            Difficulty.VERY_HARD.prettyText,
-            { a: Context -> launchGame(a, Difficulty.VERY_HARD.name) },
-            Difficulty.VERY_HARD.prettyText + lettersOrWordOnly(Difficulty.VERY_HARD)
-        )
-        CreateButton(
-            Difficulty.VERY_VERY_HARD.prettyText,
-            { a: Context -> launchGame(a, Difficulty.VERY_VERY_HARD.name) },
-            Difficulty.VERY_VERY_HARD.prettyText + lettersOrWordOnly(Difficulty.VERY_VERY_HARD)
-        )
+        DifficultyButton(Difficulty.EASY)
+        DifficultyButton(Difficulty.MEDIUM)
+        DifficultyButton(Difficulty.HARD)
+        DifficultyButton(Difficulty.VERY_HARD)
+        DifficultyButton(Difficulty.VERY_VERY_HARD)
     }
 }
 

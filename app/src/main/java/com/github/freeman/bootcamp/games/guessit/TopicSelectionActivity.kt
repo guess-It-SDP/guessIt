@@ -32,8 +32,10 @@ import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companio
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.turnNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGetList
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -44,9 +46,7 @@ class TopicSelectionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
-        dbref = Firebase.database.reference
-            .child(getString(R.string.games_path))
-            .child(gameId)
+        dbref = getGameDBRef(this, gameId)
         topics.clear()
         for (i in 0 until NB_TOPICS) {
             topics.add(intent.getStringExtra("topic$i").toString())

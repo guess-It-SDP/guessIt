@@ -41,6 +41,7 @@ import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Compa
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -61,13 +62,11 @@ class GuessingActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
-        dbrefGame = Firebase.database.reference
-            .child(getString(R.string.games_path))
-            .child(gameId)
+        dbrefGame = getGameDBRef(this, gameId)
 
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbrefGame, gameId, LocalContext.current)
+                GuessingScreen(dbrefGame, this)
             }
         }
     }
@@ -214,7 +213,7 @@ fun GuessingBar(
 }
 
 @Composable
-fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.current.getString(R.string.default_game_id), context: Context) {
+fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
     var timer by remember { mutableStateOf("") }
@@ -378,10 +377,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                 }
 
                 if (timer != context.getString(R.string.timer_unused)) {
-                    val dbRefTimer = Firebase.database.reference
-                        .child(context.getString(R.string.games_path))
-                        .child(gameId)
-                        .child(context.getString(R.string.current_timer_path))
+                    val dbRefTimer = dbrefGame.child(context.getString(R.string.current_timer_path))
                     TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.LightGray)
                 }
 

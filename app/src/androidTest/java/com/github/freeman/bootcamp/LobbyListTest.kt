@@ -11,6 +11,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.freeman.bootcamp.games.guessit.*
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.database.DatabaseReference
 import org.junit.Before
 import org.junit.Rule
@@ -52,9 +54,7 @@ class LobbyListTest {
                 lobby_name = "test's room"
             )
 
-            dbRef.child(context.getString(R.string.games_path))
-                .child(context.getString(R.string.test_game_id))
-                .setValue(gameData)
+            getGameDBRef(context).setValue(gameData)
 
             BootcampComposeTheme {
                 Column {

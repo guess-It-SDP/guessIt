@@ -16,8 +16,7 @@ import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.gameEnd
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.reinitialise
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -41,10 +40,7 @@ class EndScoreboardTest {
         gameEnded = true
         composeRule.setContent {
             val context = LocalContext.current
-            val gameId = context.getString(R.string.test_game_id)
-            val dbRef = Firebase.database.reference
-                .child(context.getString(R.string.games_path))
-                .child(gameId)
+            val dbRef = getGameDBRef(context)
             reinitialise(context, dbRef, playerIds.toSet())
 
             initFirebaseScores(context, dbRef, playerIds, scores)

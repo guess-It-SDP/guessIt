@@ -8,6 +8,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.StorageReference
 import java.util.concurrent.CompletableFuture
 import com.github.freeman.bootcamp.R
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 /**
  * Utility functions related to Firebase
@@ -126,6 +128,18 @@ object FirebaseUtilities {
         }
 
         return future
+    }
+
+    /**
+     * Get the DatabaseReference of a gameId ("testgameid" by default)
+     * @param context the current local context
+     * @param gameId the game id of which we want the reference
+     */
+    fun getGameDBRef(context: Context, gameId: String = context.getString(R.string.test_game_id)): DatabaseReference {
+        val dbRef = Firebase.database.reference
+            .child(context.getString(R.string.games_path))
+            .child(gameId)
+        return dbRef
     }
 
 

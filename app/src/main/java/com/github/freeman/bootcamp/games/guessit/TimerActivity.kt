@@ -33,10 +33,7 @@ class TimerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
-        val dbrefTimer = Firebase.database.reference
-            .child(getString(R.string.games_path))
-            .child(gameId)
-            .child(getString(R.string.current_timer_path))
+        val dbrefTimer = Firebase.database.reference.child(getString(R.string.games_path)).child(gameId).child(getString(R.string.current_timer_path))
 
         setContent {
             BootcampComposeTheme {
