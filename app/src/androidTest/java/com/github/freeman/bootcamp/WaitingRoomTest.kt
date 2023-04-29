@@ -67,7 +67,7 @@ class WaitingRoomTest {
                 nb_players = 1,
                 nb_rounds = 5
             ),
-            Players = mapOf(Pair("test_profile_id_1", Player(0)), Pair("test_profile_id_2", Player(0))),
+            Players = mapOf(Pair("test_profile_id_1", Player(0, false)), Pair("test_profile_id_2", Player(0, false))),
             lobby_name = "test's room"
         )
 
@@ -194,7 +194,8 @@ class WaitingRoomTest {
                         dbRef = database,
                         storageRef = storage,
                         players = players,
-                        hostId = hostId.value
+                        hostId = hostId.value,
+                        gameId = gameId
                     )
 
                     StartButton(

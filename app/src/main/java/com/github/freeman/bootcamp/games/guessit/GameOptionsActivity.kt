@@ -248,7 +248,7 @@ fun next(context: Context, database: DatabaseReference) {
                         nb_players = 1,
                         nb_rounds = selection
                     ),
-                    Players = mapOf(Pair(userId, Player(0))),
+                    Players = mapOf(Pair(userId, Player(0, false))),
                     lobby_name = "$it's room"
                 )
 

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -181,7 +182,8 @@ class WaitingRoomActivity: ComponentActivity() {
                         dbRef = database,
                         storageRef = storage,
                         players = players,
-                        hostId = hostId.value
+                        hostId = hostId.value,
+                        gameId = gameId
                     )
 
                     StartButton(
@@ -364,7 +366,8 @@ fun PlayerList(
     dbRef: DatabaseReference,
     storageRef: StorageReference,
     players: MutableCollection<String>,
-    hostId: String
+    hostId: String,
+    gameId: String
 ) {
     LazyColumn (
         modifier = modifier
@@ -396,13 +399,43 @@ fun PlayerList(
                     picture = picture.value
                 ),
                 hostId = hostId,
+                dbRef = dbRef,
+                gameId = gameId,
+                context = LocalContext.current
             )
         }
     }
 }
 
 @Composable
-fun PlayerDisplay(player: PlayerData, hostId: String) {
+fun PlayerDisplay(player: PlayerData, hostId: String, dbRef: DatabaseReference, gameId: String,
+                  context: Context) {
+    val playerId = player.id
+    val currentUserId = Firebase.auth.currentUser?.uid
+    val kickedRef = dbRef.child("games/$gameId/players/$playerId/kicked")
+    kickedRef.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                val kicked = snapshot.getValue<Boolean>()
+                if (kicked != null && kicked) {
+                    // Remove the given player from the player list if the player is kicked
+                    dbRef.child("games/$gameId/players/$playerId").removeValue()
+
+                    // Send the kicked player back to the lobby list
+                    if (currentUserId == playerId) {
+                        Toast.makeText(context, "You have been kicked by host", Toast.LENGTH_SHORT).show()
+                        val activity = (context as? Activity)
+                        activity?.finish()
+                    }
+                }
+            }
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            // No particular action needs to be taken in this case
+        }
+    })
+
     Row(
         modifier = Modifier
             .testTag("playerDisplay")
@@ -423,7 +456,6 @@ fun PlayerDisplay(player: PlayerData, hostId: String) {
                 .size(100.dp)
                 .padding(10.dp)
                 .clip(CircleShape)
-
         )
 
         // user's name
@@ -448,18 +480,17 @@ fun PlayerDisplay(player: PlayerData, hostId: String) {
             }
 
             //  Only display the kick button if the player in question is not the host
-            if (player.id != hostId) {
-                val currentUserId = Firebase.auth.currentUser?.uid
+            if (playerId != hostId) {
                 val currentPlayerIsHost = currentUserId == hostId
                 val visibility = if (currentPlayerIsHost) 1f else 0f
 
                 ElevatedButton(
                     modifier = Modifier
                         .alpha(visibility) // Make the button visible for only the host
-                        .testTag("kickButton" + player.id),
+                        .testTag("kickButton$playerId"),
                     enabled = currentPlayerIsHost, // Only enable the button for the host
                     onClick = {
-                        // Todo: Add the functionality to kick a player
+                        kickedRef.setValue(true)
                     }) {
                     Image(
                         painterResource(id = R.drawable.kick_player_boot),

@@ -27,5 +27,6 @@ data class Parameters(
 )
 
 data class Player(
-    val score: Int
+    val score: Int,
+    val kicked: Boolean
 )

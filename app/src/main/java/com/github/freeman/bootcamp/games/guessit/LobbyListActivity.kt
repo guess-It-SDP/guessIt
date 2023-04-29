@@ -226,7 +226,8 @@ fun LobbyList(database: DatabaseReference) {
                         // joins a lobby
                         databaseGet(dbRef.child("${lobby.id}/parameters/nb_players"))
                             .thenAccept {
-                                dbRef.child("${lobby.id}/players/$userId/score").setValue(0)
+                                val player = Player(0, false)
+                                dbRef.child("${lobby.id}/players/$userId").setValue(player)
 
                                 val intent = Intent(context, WaitingRoomActivity::class.java)
                                     .putExtra("gameId", lobby.id)
