@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.CATEGORY_INFO
+import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.KICKED
 import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.NB_ROUNDS_INFO
 import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.START_GAME
 import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.TOPBAR_TEXT
@@ -227,6 +228,7 @@ class WaitingRoomActivity: ComponentActivity() {
         const val CATEGORY_INFO = "Category :"
         const val NB_ROUNDS_INFO = "Number of rounds :"
         const val START_GAME = "Start"
+        const val KICKED = "You have been kicked by host"
     }
 }
 
@@ -438,18 +440,29 @@ fun PlayerDisplay(player: PlayerData, hostId: String, dbRef: DatabaseReference, 
                   context: Context) {
     val playerId = player.id
     val currentUserId = Firebase.auth.currentUser?.uid
-    val kickedRef = dbRef.child("games/$gameId/players/$playerId/kicked")
+    val kickedRef = dbRef
+        .child(context.getString(R.string.games_path))
+        .child(gameId)
+        .child(context.getString(R.string.players_path))
+        .child(playerId)
+        .child(context.getString(R.string.kicked_path))
+
     kickedRef.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 val kicked = snapshot.getValue<Boolean>()
                 if (kicked != null && kicked) {
                     // Remove the given player from the player list if the player is kicked
-                    dbRef.child("games/$gameId/players/$playerId").removeValue()
+                    dbRef
+                        .child(context.getString(R.string.games_path))
+                        .child(gameId)
+                        .child(context.getString(R.string.players_path))
+                        .child(playerId)
+                        .removeValue()
 
                     // Send the kicked player back to the lobby list
                     if (currentUserId == playerId) {
-                        Toast.makeText(context, "You have been kicked by host", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, KICKED, Toast.LENGTH_SHORT).show()
                         val activity = (context as? Activity)
                         activity?.finish()
                     }

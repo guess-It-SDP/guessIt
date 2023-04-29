@@ -11,7 +11,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.freeman.bootcamp.games.guessit.*
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.database.DatabaseReference
 import org.junit.Before
@@ -50,7 +49,7 @@ class LobbyListTest {
                     nb_players = 1,
                     nb_rounds = 5
                 ),
-                Players = mapOf(Pair("test_player_id", Player(0))),
+                Players = mapOf(Pair("test_player_id", Player(0, false))),
                 lobby_name = "test's room"
             )
 
