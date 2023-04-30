@@ -144,6 +144,7 @@ class DrawingActivityTest {
 //    }
 @Test
 fun videoScreenIsDisplayed() {
+    Thread.sleep(1_000*60) // TODO don't do that
     composeRule.onNodeWithTag("agora_video_view").assertIsDisplayed()
 }
 
