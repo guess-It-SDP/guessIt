@@ -37,6 +37,7 @@ import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.videocall.VideoScreen
+import com.github.freeman.bootcamp.videocall.VideoScreen2
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -325,7 +326,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
             )
 
             BootcampComposeTheme {
-                VideoScreen(
+                VideoScreen2(
                     roomName = "1",
                     testing = false
                 )

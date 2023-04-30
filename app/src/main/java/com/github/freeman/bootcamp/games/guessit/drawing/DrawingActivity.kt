@@ -30,6 +30,7 @@ import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.videocall.APP_ID
 import com.github.freeman.bootcamp.videocall.VideoScreen
+import com.github.freeman.bootcamp.videocall.VideoScreen2
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -127,7 +128,7 @@ fun DrawingScreen(
         Column {
             // Controls bar
             BootcampComposeTheme {
-                VideoScreen(
+                VideoScreen2(
                     roomName = "1",
                     testing = false
                 )
