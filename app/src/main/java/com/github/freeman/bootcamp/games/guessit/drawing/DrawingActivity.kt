@@ -129,7 +129,7 @@ fun DrawingScreen(
             // Controls bar
             BootcampComposeTheme {
                 VideoScreen2(
-                    roomName = "1",
+                    roomName = "127",
                     testing = false
                 )
             }
