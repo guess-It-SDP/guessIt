@@ -127,4 +127,9 @@ class DrawingActivityTest {
 //            }
 //        })
 //    }
+@Test
+fun videoScreenIsDisplayed() {
+    composeRule.onNodeWithTag("agora_video_view").assertIsDisplayed()
+}
+
 }

@@ -71,4 +71,9 @@ class GuessingTest {
         composeRule.onNodeWithTag("guessButton").performClick()
         composeRule.onNodeWithTag("popUpScreen").assertIsDisplayed()
     }
+
+    @Test
+    fun videoScreenIsDisplayed() {
+        composeRule.onNodeWithTag("agora_video_view").assertIsDisplayed()
+    }
 }
