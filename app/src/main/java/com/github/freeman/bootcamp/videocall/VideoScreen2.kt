@@ -77,7 +77,7 @@ fun VideoScreen2(
                     agoraView = it
                 }
             },
-            modifier = Modifier.height(100.dp).testTag("agora_video_view")
+            modifier = Modifier.height(100.dp).testTag("agora_video_view2")
         )
     }
 }
