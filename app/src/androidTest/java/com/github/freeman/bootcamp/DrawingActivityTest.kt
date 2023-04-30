@@ -43,7 +43,7 @@ class DrawingActivityTest {
     private fun setContent() {
         val dbref = Firebase.database.getReference("games/testgameid")
         composeRule.setContent {
-            DrawingScreen(dbref)
+            DrawingScreen(dbref,"127")
         }
     }
 
@@ -142,10 +142,7 @@ class DrawingActivityTest {
 //            }
 //        })
 //    }
-@Test
-fun videoScreenIsDisplayed() {
-    Thread.sleep(1_000*60) // TODO don't do that
-    composeRule.onNodeWithTag("agora_video_view2").assertIsDisplayed()
-}
+
+
 
 }

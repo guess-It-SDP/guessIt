@@ -67,7 +67,7 @@ class DrawingActivity : ComponentActivity() {
 
 
 
-                    DrawingScreen(dbref)
+                    DrawingScreen(dbref, gameId)
                 }
 
     }
@@ -82,7 +82,8 @@ class DrawingActivity : ComponentActivity() {
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun DrawingScreen(
-    dbref: DatabaseReference
+    dbref: DatabaseReference,
+    gameId: String
 ) {
     // timer of the artist
     var timer by remember { mutableStateOf("") }
@@ -129,7 +130,7 @@ fun DrawingScreen(
             // Controls bar
             BootcampComposeTheme {
                 VideoScreen2(
-                    roomName = "127",
+                    roomName = gameId,
                     testing = false
                 )
             }
@@ -300,5 +301,5 @@ private fun RowScope.MenuItems(
 @Composable
 fun DrawingScreenPreview() {
     val dbref = Firebase.database.getReference("games/testgameid")
-    DrawingScreen(dbref)
+    DrawingScreen(dbref, "127")
 }

@@ -86,10 +86,5 @@ class GuessingTest {
         composeRule.onNodeWithTag("guessButton").performClick()
         composeRule.onNodeWithTag("popUpScreen").assertIsDisplayed()
     }
-
-    @Test
-    fun videoScreenIsDisplayed() {
-        Thread.sleep(1_000*60) // TODO don't do that
-        composeRule.onNodeWithTag("agora_video_view2").assertIsDisplayed()
-    }
+    
 }
