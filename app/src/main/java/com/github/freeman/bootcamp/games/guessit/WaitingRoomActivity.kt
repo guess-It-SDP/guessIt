@@ -51,9 +51,16 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 
 /**
- * A screen where players wait until the host starts the game
+ *  A screen where players wait until the host starts the game.
+ *  When the activity is created, it retrieves the user's ID and the game ID from the intent that
+ *  started it. It also initializes a list of all topics that will be used in the game.
+ *  It displays a top app bar with information about the room, a list of players currently in the
+ *  room, and a "Start" button. The activity listens to changes in the game state and updates the
+ *  UI accordingly. When the game state changes to "play game", the activity starts the appropriate
+ *  activity depending on whether the user is the artist or a guesser. If the game state changes
+ *  to "lobby closed", the activity removes the game from the database and finishes.
  */
-class WaitingRoomActivity: ComponentActivity() {
+class WaitingRoomActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,8 +101,7 @@ class WaitingRoomActivity: ComponentActivity() {
                     if (snapshot.exists()) {
                         val gameState = snapshot.getValue<String>()!!
                         if (gameState == "play game") {
-                            databaseGet(artistRef)
-                                .thenAccept {
+                            databaseGet(artistRef).thenAccept {
                                     val intent = if (userId == it) {
                                         Intent(context, TopicSelectionActivity::class.java)
                                     } else {
@@ -129,7 +135,7 @@ class WaitingRoomActivity: ComponentActivity() {
 
             // changes the number of players in the database when a player joins or leaves the game.
             // also assigns a new host if the current host leaves the game
-            val playersListener = playersRef.addChildEventListener(object: ChildEventListener {
+            val playersListener = playersRef.addChildEventListener(object : ChildEventListener {
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                     if (snapshot.key !in players) {
                         players.add(snapshot.key!!)
@@ -164,7 +170,7 @@ class WaitingRoomActivity: ComponentActivity() {
 
             BootcampComposeTheme {
 
-                Column{
+                Column {
                     TopAppbarWaitingRoom(
                         dbRef = dbRef,
                         hostId = hostId,
@@ -185,8 +191,7 @@ class WaitingRoomActivity: ComponentActivity() {
                     )
 
                     StartButton(
-                        dbRef = dbRef,
-                        players = players
+                        dbRef = dbRef, players = players
                     )
                 }
             }
@@ -212,6 +217,14 @@ class WaitingRoomActivity: ComponentActivity() {
     }
 }
 
+/**
+ * Creates a top app bar for the waiting room screen of a game lobby. The app bar contains a title,
+ * a back button with an arrow icon, and some functionality related to leaving the lobby. When the
+ * back button is clicked, the function updates the database by removing the user from the players
+ * list if they are not the host or ending the game if they are the host and the only player
+ * remaining. It also removes the database listeners and finishes the current activity
+ * (the waiting room screen) by calling the finish() method on the current activity.
+ */
 @Composable
 fun TopAppbarWaitingRoom(
     context: Context = LocalContext.current,
@@ -225,45 +238,37 @@ fun TopAppbarWaitingRoom(
     val playersRef = dbRef.child("players")
     val gameStateRef = dbRef.child("current/current_state")
 
-    TopAppBar(
-        modifier = Modifier.testTag("topAppbarWaitingRoom"),
-        title = {
-            Text(
-                text = "Waiting Room",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        },
-        backgroundColor = MaterialTheme.colors.background,
-        elevation = 4.dp,
-        navigationIcon = {
-            IconButton(
-                modifier = Modifier.testTag("topAppBarBack"),
-                onClick = {
-                    // quit the lobby and updates the database
-                    if (userId == hostId.value && players.size == 1) {
-                        gameStateRef.setValue("lobby closed")
-                    } else {
-                        dbRef.child("players/$userId").removeValue()
-                    }
-
-                    dbRef.removeEventListener(dbListener)
-                    playersRef.removeEventListener(playersListener)
-
-                    val activity = (context as? Activity)
-                    activity?.finish()
-                }
-            )
-            {
-                Icon(
-                    Icons.Filled.ArrowBack,
-                    contentDescription = "Go back",
-                )
+    TopAppBar(modifier = Modifier.testTag("topAppbarWaitingRoom"), title = {
+        Text(
+            text = "Waiting Room", maxLines = 1, overflow = TextOverflow.Ellipsis
+        )
+    }, backgroundColor = MaterialTheme.colors.background, elevation = 4.dp, navigationIcon = {
+        IconButton(modifier = Modifier.testTag("topAppBarBack"), onClick = {
+            // quit the lobby and updates the database
+            if (userId == hostId.value && players.size == 1) {
+                gameStateRef.setValue("lobby closed")
+            } else {
+                dbRef.child("players/$userId").removeValue()
             }
+
+            dbRef.removeEventListener(dbListener)
+            playersRef.removeEventListener(playersListener)
+
+            val activity = (context as? Activity)
+            activity?.finish()
+        }) {
+            Icon(
+                Icons.Filled.ArrowBack,
+                contentDescription = "Go back",
+            )
         }
-    )
+    })
 }
 
+/**
+ * The function retrieves the name of the lobby, the selected category,
+ * and the number of rounds from the Firebase Realtime Database and display it.
+ */
 @Composable
 fun RoomInfo(
     modifier: Modifier = Modifier,
@@ -302,40 +307,34 @@ fun RoomInfo(
 
             // Lobby name
             Text(
-                text = lobbyName.value,
-                fontWeight = FontWeight.Bold,
-                fontSize = 25.sp
+                text = lobbyName.value, fontWeight = FontWeight.Bold, fontSize = 25.sp
             )
 
-            Column (
+            Column(
                 modifier = modifier
                     .padding(16.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
-            ){
+            ) {
 
                 // selected category
-                Row (
+                Row(
                     modifier = modifier
                         .padding(5.dp)
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "category :",
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 20.sp
+                        text = "category :", fontWeight = FontWeight.SemiBold, fontSize = 20.sp
                     )
 
                     Text(
-                        text = category.value,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 20.sp
+                        text = category.value, fontWeight = FontWeight.Normal, fontSize = 20.sp
                     )
                 }
 
                 // selected number of rounds
-                Row (
+                Row(
                     modifier = modifier
                         .padding(5.dp)
                         .fillMaxWidth(),
@@ -358,6 +357,9 @@ fun RoomInfo(
     }
 }
 
+/**
+ * It creates a list of players with their usernames and profile pictures.
+ */
 @Composable
 fun PlayerList(
     modifier: Modifier = Modifier,
@@ -366,33 +368,35 @@ fun PlayerList(
     players: MutableCollection<String>
 ) {
 
-    LazyColumn (
-        modifier = modifier
-            .testTag("playerList")
-    ){
+    LazyColumn(
+        modifier = modifier.testTag("playerList")
+    ) {
         items(players.toList()) { playerId ->
 
             // gets the profile picture from the database
-            val picture = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
+            val picture = remember {
+                mutableStateOf<Bitmap?>(
+                    Bitmap.createBitmap(
+                        1, 1, Bitmap.Config.ARGB_8888
+                    )
+                )
+            }
             val profilePicRef = storageRef.child("profiles/$playerId/picture/pic.jpg")
             LaunchedEffect(Unit) {
-                storageGet(profilePicRef)
-                    .thenAccept {
+                storageGet(profilePicRef).thenAccept {
                         picture.value = it
                     }
             }
 
             // gets the username from the database
             val username = remember { mutableStateOf("") }
-            databaseGet(dbRef.child("profiles/$playerId/username"))
-                .thenAccept {
+            databaseGet(dbRef.child("profiles/$playerId/username")).thenAccept {
                     username.value = it
                 }
 
             PlayerDisplay(
                 player = PlayerData(
-                    name = username.value,
-                    picture = picture.value
+                    name = username.value, picture = picture.value
                 )
             )
         }
@@ -401,6 +405,9 @@ fun PlayerList(
 
 }
 
+/**
+ * takes a PlayerData object as input and displays the player's name and profile picture in a row.
+ */
 @Composable
 fun PlayerDisplay(player: PlayerData) {
     Row(
@@ -438,22 +445,21 @@ fun PlayerDisplay(player: PlayerData) {
                     .padding(start = 16.dp)
             ) {
                 Text(
-                    text = player.name,
-                    style = TextStyle(
+                    text = player.name, style = TextStyle(
                         fontSize = 22.sp,
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    ), maxLines = 1, overflow = TextOverflow.Ellipsis
                 )
             }
         }
     }
 }
 
+/**
+ * used to display a button that can be clicked to start the game
+ */
 @Composable
 fun StartButton(
-    dbRef: DatabaseReference,
-    players: MutableCollection<String>
+    dbRef: DatabaseReference, players: MutableCollection<String>
 ) {
 
     var userId = Firebase.auth.uid
@@ -467,22 +473,18 @@ fun StartButton(
 
 
 
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
 
-    ){
-        ElevatedButton(
-            modifier = Modifier
-                .testTag("startButton"),
+    ) {
+        ElevatedButton(modifier = Modifier.testTag("startButton"),
             // the game can start if two or more players are present
-            enabled = userId == hostId.value && players.size >= 2,
-            onClick = {
+            enabled = userId == hostId.value && players.size >= 2, onClick = {
                 dbRef.child("current/current_state").setValue("play game")
-            }
-        ) {
+            }) {
             Text("Start")
         }
     }
@@ -496,6 +498,5 @@ fun StartButton(
  * @param picture player's profile picture
  */
 data class PlayerData(
-    val name: String,
-    val picture: Bitmap?
+    val name: String, val picture: Bitmap?
 )

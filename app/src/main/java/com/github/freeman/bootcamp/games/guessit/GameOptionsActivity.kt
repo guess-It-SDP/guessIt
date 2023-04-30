@@ -264,7 +264,7 @@ fun next(context: Context, database: DatabaseReference) {
     var userId = Firebase.auth.uid
     userId = userId ?: "null"
     val dbref = database.child("games/")
-    val gameId = dbref.push().key
+    val gameId = dbref.push().key // Generates a unique key for the new game.
 
     if (categorySize <= 0) {
         Toast.makeText(context, "Please first select a category", Toast.LENGTH_SHORT).show()
