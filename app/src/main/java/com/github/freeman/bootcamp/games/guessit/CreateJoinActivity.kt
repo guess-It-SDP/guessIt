@@ -93,6 +93,10 @@ fun TopAppbarCreateJoin(context: Context = LocalContext.current) {
     )
 }
 
+/**
+ * Sends the user in the GameOptionsActivity, from this activity the player can chose which settings
+ * he wants to use in his future game.
+ */
 @Composable
 fun CreateGameButton() {
     val context = LocalContext.current
