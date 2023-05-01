@@ -21,25 +21,18 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.SIGN_IN
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
-import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity
-import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
-import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
 import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.profileExists
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.createProfile
 import com.github.freeman.bootcamp.videocall.VideoCallActivity
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
@@ -48,12 +41,37 @@ import com.google.firebase.ktx.Firebase
  */
 class MainMenuActivity : ComponentActivity() {
     private val backgroundMusicService = BackgroundMusicService()
+    private var userId = Firebase.auth.uid
+    private val dbRef = Firebase.database.reference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val i = Intent(this, backgroundMusicService::class.java)
         startService(i)
         setContent {
+            val context = LocalContext.current
+
+            // Checks if it is the first time launching the app by looking if a profile exists.
+            // If no profile exists, sign in anonymously and creates a profile
+            dbRef
+                .child(getString(R.string.profiles_path))
+                .child(userId!!)
+                .child(getString(R.string.username_path))
+                .get()
+                .addOnCompleteListener {
+
+                // If no profile exists
+                if (it.result.value == "" || it.result.value == null) {
+                    // sign in anonymously
+                    Firebase.auth.signInAnonymously().addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            userId = Firebase.auth.uid.toString()
+                            createProfile(context, userId!!, "Guest")
+                        }
+                    }
+                }
+            }
+
             BootcampComposeTheme {
                 MainMenuScreen()
             }
@@ -66,7 +84,6 @@ class MainMenuActivity : ComponentActivity() {
         const val CHAT = "Chat"
         const val GUESSING = "Guessing"
         const val AUDIO_REC = "Audio Recording"
-        const val SIGN_IN = "Sign in"
         const val DRAWING = "Drawing"
         const val WORDLE = "Play Wordle"
         const val VIDEO_CALL = "Video Call"
@@ -99,13 +116,8 @@ fun PlayButton() {
 }
 
 
-fun settings(context: Context, user: FirebaseUser?, dbRef: DatabaseReference) {
-    profileExists(context, user, dbRef)
-        .thenAccept {
-            if (it) {
-                context.startActivity(Intent(context, SettingsProfileActivity::class.java))
-            }
-        }
+fun settings(context: Context) {
+    context.startActivity(Intent(context, SettingsProfileActivity::class.java))
 }
 
 @Composable
@@ -113,7 +125,7 @@ fun SettingsButton() {
     val context = LocalContext.current
     MainMenuButton(
         testTag = "settingsButton",
-        onClick = { settings(context, Firebase.auth.currentUser, Firebase.database.reference) },
+        onClick = { settings(context) },
         text = SETTINGS
     )
 }
@@ -200,22 +212,6 @@ fun WordleButton() {
     )
 }
 
-
-fun signIn(context: Context) {
-    context.startActivity(Intent(context, FirebaseAuthActivity::class.java))
-}
-
-@Composable
-fun SignInButton() {
-    val context = LocalContext.current
-    MainMenuButton(
-        testTag = "signInButton",
-        onClick = { signIn(context) },
-        text = SIGN_IN
-    )
-}
-
-
 @OptIn(ExperimentalUnsignedTypes::class)
 fun videoCall(context: Context) {
     context.startActivity(Intent(context, VideoCallActivity::class.java))
@@ -263,9 +259,6 @@ fun MainMenuScreen() {
 
         Spacer(modifier = Modifier.size(6.dp))
         DrawingButton()
-
-        Spacer(modifier = Modifier.size(6.dp))
-        SignInButton()
 
         Spacer(modifier = Modifier.size(6.dp))
         VideoCallButton()
