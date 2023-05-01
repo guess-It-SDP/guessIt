@@ -346,12 +346,13 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                                 testing = false
                             )
                         }
+
                         Image(
                             bitmap = bitmap,
                             contentDescription = "drawn image",
                             modifier = Modifier
                                 .fillMaxWidth()
-                                //.align(Alignment.Center)
+                             //   .align(Alignment.Center)
                         )
                     }
                 }

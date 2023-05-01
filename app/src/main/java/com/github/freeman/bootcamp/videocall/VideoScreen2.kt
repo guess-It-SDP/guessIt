@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -78,7 +79,7 @@ fun VideoScreen2(
                     agoraView = it
                 }
             },
-            modifier = Modifier.width(50.dp).height(300.dp).testTag("agora_video_view2")
+            modifier = Modifier.fillMaxWidth(0.2f).fillMaxSize(0.70f).testTag("agora_video_view2")
         )
     }
 }
