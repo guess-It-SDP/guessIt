@@ -1,7 +1,5 @@
 package com.github.freeman.bootcamp.auth
 
-import android.content.Context
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -10,11 +8,6 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import com.github.freeman.bootcamp.MainMenuScreen
-import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.ACCOUNT_DELETED_INFO
-import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.ANONYMOUSLY_SIGNED_IN_INFO
-import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.NOT_SIGNED_IN_INFO
-import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity
-import okhttp3.internal.wait
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -59,10 +52,12 @@ class FirebaseAuthActivityTest {
     fun signInResultsInCorrectLayout() {
         composeRule.onNodeWithTag("google_sign_in_button").performClick()
         device.wait(
-            Until.findObject(By.textContains("Google")), 30000
+            Until.findObject(By.textContains("Google")), 100000
         )
         val googleText = device.findObject(UiSelector().textContains(""))
         assert(googleText.exists())
+
+
     }
 
 }

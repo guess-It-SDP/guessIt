@@ -11,9 +11,7 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.CompletableFuture
-import com.github.freeman.bootcamp.R
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
+
 
 /**
  * Utility functions related to Firebase
@@ -140,9 +138,17 @@ object FirebaseUtilities {
         val storageRef = Firebase.storage.reference
 
         // username + email
-        dbRef.child("profiles/$userId/username").setValue(username)
+        dbRef
+            .child(context.getString(R.string.profiles_path))
+            .child(userId)
+            .child(context.getString(R.string.username_path))
+            .setValue(username)
         if (email != null) {
-            dbRef.child("profiles/$userId/email").setValue(email)
+            dbRef
+                .child(context.getString(R.string.profiles_path))
+                .child(userId)
+                .child(context.getString(R.string.email_path))
+                .setValue(email)
         }
 
         // default profile picture
@@ -154,7 +160,11 @@ object FirebaseUtilities {
         val stream = ByteArrayOutputStream()
         picBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
         val image = stream.toByteArray()
-        storageRef.child("profiles/$userId/picture/pic.jpg").putBytes(image)
+        storageRef
+            .child(context.getString(R.string.profiles_path))
+            .child(userId)
+            .child(context.getString(R.string.picture_path))
+            .putBytes(image)
     }
 
     /**
