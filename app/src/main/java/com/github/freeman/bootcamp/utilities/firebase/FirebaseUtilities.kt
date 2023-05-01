@@ -11,6 +11,9 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.CompletableFuture
+import com.github.freeman.bootcamp.R
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 /**
  * Utility functions related to Firebase
@@ -152,6 +155,18 @@ object FirebaseUtilities {
         picBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
         val image = stream.toByteArray()
         storageRef.child("profiles/$userId/picture/pic.jpg").putBytes(image)
+    }
+
+    /**
+     * Get the DatabaseReference of a gameId ("testgameid" by default)
+     * @param context the current local context
+     * @param gameId the game id of which we want the reference
+     */
+    fun getGameDBRef(context: Context, gameId: String = context.getString(R.string.test_game_id)): DatabaseReference {
+        val dbRef = Firebase.database.reference
+            .child(context.getString(R.string.games_path))
+            .child(gameId)
+        return dbRef
     }
 
 

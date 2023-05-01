@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.freeman.bootcamp.EditProfileActivity.Companion.USER_NAME
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import org.junit.Before
 import org.junit.Rule
@@ -25,7 +26,7 @@ class EditProfileActivityTest {
     @Before
     fun init() {
         composeRule.setContent {
-            val displayName = remember { mutableStateOf("Chris P. Bacon") }
+            val displayName = remember { mutableStateOf("Chris P Bacon") }
             val profilePicBitmap = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
 
             BootcampComposeTheme(darkTheme = false) {
@@ -48,13 +49,13 @@ class EditProfileActivityTest {
 
     @Test
     fun customDialogIsDisplayed() {
-        composeRule.onNodeWithText("Name").performClick()
+        composeRule.onNodeWithText(USER_NAME).performClick()
         composeRule.onNodeWithTag("customDialog").assertIsDisplayed()
     }
 
     @Test
     fun customDialogIsStillDisplayedAfterEmptyTextInput() {
-        composeRule.onNodeWithText("Name").performClick()
+        composeRule.onNodeWithText(USER_NAME).performClick()
         composeRule.onNodeWithTag("dialogTextField").performTextClearance()
         composeRule.onNodeWithTag("doneButton").performClick()
         composeRule.onNodeWithTag("customDialog").assertIsDisplayed()

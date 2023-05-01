@@ -1,5 +1,7 @@
 package com.github.freeman.bootcamp.auth
 
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -8,13 +10,17 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import com.github.freeman.bootcamp.MainMenuScreen
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.ACCOUNT_DELETED_INFO
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.ANONYMOUSLY_SIGNED_IN_INFO
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.NOT_SIGNED_IN_INFO
+import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity
+import okhttp3.internal.wait
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class FirebaseAuthActivityTest {
     private lateinit var device: UiDevice
-
 
     @get:Rule
     val composeRule = createComposeRule()
@@ -26,7 +32,6 @@ class FirebaseAuthActivityTest {
 
         composeRule.setContent {
             MainMenuScreen()
-
         }
         device.waitForIdle()
         composeRule.onNodeWithTag("settingsButton").performClick()

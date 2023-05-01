@@ -25,6 +25,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.ANONYMOUS_SIGN_IN_BUTTON
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.GOOGLE_SIGN_IN_BUTTON
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.GOOGLE_SIGN_OUT_BUTTON
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.PROFILE_CREATION_BUTTON
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.PROFILE_DELETION_BUTTON
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.createProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -65,12 +71,12 @@ class FirebaseAuthActivity : ComponentActivity() {
             val currentUser = remember { mutableStateOf( FirebaseAuth.getInstance().currentUser) }
 
             signInInfo.value = if (currentUser.value == null) {
-                "Not signed in"
+                NOT_SIGNED_IN_INFO
             } else {
                 if (currentUser.value!!.isAnonymous) {
-                    "Signed in anonymously"
+                    ANONYMOUSLY_SIGNED_IN_INFO
                 } else {
-                    "Signed in as : " + currentUser.value!!.email
+                    "$GOOGLE_SIGN_IN_INFO ${currentUser.email}"
                 }
             }
 
@@ -103,6 +109,23 @@ class FirebaseAuthActivity : ComponentActivity() {
                 )
             }
         }
+
+    }
+
+    companion object {
+        const val GOOGLE_SIGN_IN_BUTTON = "Sign in with Google"
+        const val ANONYMOUS_SIGN_IN_BUTTON = "Sign in as guest"
+        const val PROFILE_CREATION_BUTTON = "Create \'Guess It!\' profile"
+        const val PROFILE_DELETION_BUTTON = "Delete \'Guess It!\' account"
+        const val GOOGLE_SIGN_OUT_BUTTON = "Sign out from Google authentication"
+
+        const val NOT_SIGNED_IN_INFO = "Not signed in"
+        const val ANONYMOUSLY_SIGNED_IN_INFO = "Signed in anonymously"
+        const val GOOGLE_SIGN_IN_INFO = "Signed in as :"
+        const val ACCOUNT_DELETED_INFO = "Account deleted"
+        const val SIGNED_OUT_INFO = "Signed out"
+
+        const val AUTH_FAILURE_TOAST = "Authentication failed"
     }
 
 
@@ -112,16 +135,21 @@ class FirebaseAuthActivity : ComponentActivity() {
     fun deleteAccount(signInInfo: MutableState<String>, onDeleted: () -> Unit = {}) {
         //delete profile from 'Realtime Database' Firebase
         val uid = Firebase.auth.currentUser?.uid
-        val dbrefProfile = Firebase.database.getReference("profiles/$uid")
+        val dbrefProfile = Firebase.database.reference
+            .child(getString(R.string.profiles_path))
+            .child(uid.toString())
         dbrefProfile.removeValue()
 
         //delete profile pic from 'Storage' Firebase
-        val stgref = Firebase.storage.getReference("profiles/$uid/picture/pic.jpg")
+        val stgref = Firebase.storage.reference
+            .child(getString(R.string.profiles_path))
+            .child(uid.toString())
+            .child(getString(R.string.picture_path))
         stgref.delete()
 
         //delete account from 'Authentication' Firebase
         authenticator.delete(this) {
-            signInInfo.value = "Account deleted"
+            signInInfo.value = ACCOUNT_DELETED_INFO
             onDeleted()
         }
     }
@@ -140,7 +168,7 @@ class FirebaseAuthActivity : ComponentActivity() {
      */
     fun signOutOfGoogleAccount(context: Context, signInInfo: MutableState<String>, currentUser: MutableState<FirebaseUser?>) {
         authenticator.signOut(this) {
-            signInInfo.value = "Signed out"
+            signInInfo.value = SIGNED_OUT_INFO
             signInAnonymously(context, currentUser)
             signedIn = false
 
@@ -215,7 +243,7 @@ fun AuthenticationForm(signInInfo: MutableState<String>, currentUser: MutableSta
                 onClick = {
                     (context as? FirebaseAuthActivity)?.signIntoGoogleAccount(signInInfo)
                 })
-            { Text("Sign in with Google") }
+            { Text(GOOGLE_SIGN_IN_BUTTON) }
 
 
         } else {

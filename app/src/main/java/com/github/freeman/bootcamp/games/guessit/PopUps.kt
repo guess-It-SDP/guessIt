@@ -9,11 +9,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
+import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.guessing.Guess
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.ui.theme.Purple40
@@ -70,8 +72,13 @@ fun PopUpScreen(
  */
 @Composable
 fun CorrectAnswerPopUp(gs: Guess) {
+    val context = LocalContext.current
+
     val currentUser = FirebaseAuth.getInstance().currentUser?.uid
-    val guesser = Firebase.database.getReference("profiles/${gs.guesser}").child("uid").get().toString()
+    val guesser = Firebase.database.reference
+        .child(context.getString(R.string.profiles_path))
+        .child(gs.guesser.toString())
+        .child(context.getString(R.string.uid_path)).get().toString()
 
     val sb = StringBuilder()
     if (currentUser.equals(guesser)) {

@@ -27,11 +27,13 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.CATEGORIES_SELECTION
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.DEFAULT_CATEGORY_SIZE
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NB_ROUNDS
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NEXT
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.ROUNDS_SELECTION
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.TOAST_TEXT
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.categories
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.categorySize
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedCategory
@@ -68,6 +70,8 @@ class GameOptionsActivity : ComponentActivity() {
         const val NEXT = "Next"
         const val NB_TOPICS = 3
         const val DEFAULT_CATEGORY_SIZE = 0
+        const val TOAST_TEXT = "Please first select a category"
+
         val categories = listOf("Animals", "People", "Objects")
         var selectedCategory = categories[0]
         val NB_ROUNDS = listOf("1", "3", "5", "7", "9")
@@ -146,6 +150,9 @@ fun CategoriesDisplay() {
 @Composable
 fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> Unit,
                            setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
+
+    val context = LocalContext.current
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
@@ -157,7 +164,7 @@ fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> U
                 onClick = {
                     selectedCategory = categories[index]
                     setSelected(index)
-                    fetchFromDB(setSize, setTopics)
+                    fetchFromDB(context, setSize, setTopics)
                 },
                 shape = when (index) {
                     0 -> RoundedCornerShape(
@@ -223,14 +230,18 @@ fun NextButton(dbRef: DatabaseReference) {
 fun next(context: Context, database: DatabaseReference) {
     var userId = Firebase.auth.uid
     userId = userId ?: "null"
-    val dbref = database.child("games/")
+    val dbref = database.child(context.getString(R.string.games_path))
     val gameId = dbref.push().key
 
     if (categorySize <= 0) {
-        Toast.makeText(context, "Please first select a category", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, TOAST_TEXT, Toast.LENGTH_SHORT).show()
     } else {
 
-        FirebaseUtilities.databaseGet(database.child("profiles/$userId/username"))
+        val dbrefUsername = database
+            .child(context.getString(R.string.profiles_path))
+            .child(userId)
+            .child(context.getString(R.string.username_path))
+        FirebaseUtilities.databaseGet(dbrefUsername)
             .thenAccept {
 
                 val gameData = GameData(
@@ -238,9 +249,9 @@ fun next(context: Context, database: DatabaseReference) {
                         correct_guesses = 0,
                         current_artist = userId,
                         current_round = 0,
-                        current_state = "waiting for players",
+                        current_state = context.getString(R.string.state_waitingforplayers),
                         current_turn = 0,
-                        current_timer = "useless"
+                        current_timer = context.getString(R.string.timer_unused)
                     ),
                     Parameters = Parameters(
                         category = selectedCategory,
@@ -248,14 +259,14 @@ fun next(context: Context, database: DatabaseReference) {
                         nb_players = 1,
                         nb_rounds = selection
                     ),
-                    Players = mapOf(Pair(userId, Player(0))),
+                    Players = mapOf(Pair(userId, Player(0, false))),
                     lobby_name = "$it's room"
                 )
 
                 dbref.child(gameId!!).setValue(gameData)
 
                 context.startActivity(Intent(context, WaitingRoomActivity::class.java).apply {
-                    putExtra("gameId", gameId)
+                    putExtra(context.getString(R.string.gameId_extra), gameId)
                     for (i in 0 until selectedTopics.size) {
                         putExtra("topic$i", selectedTopics[i])
                     }
@@ -267,8 +278,10 @@ fun next(context: Context, database: DatabaseReference) {
     }
 }
 
-fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
-    val dbrefTopics = Firebase.database.getReference("topics/$selectedCategory")
+fun fetchFromDB(context: Context, setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
+    val dbrefTopics = Firebase.database.reference
+        .child(context.getString(R.string.topics_path))
+        .child(selectedCategory)
 
     // Fetch the number of topics present in the given category
     dbrefTopics.addValueEventListener(object : ValueEventListener {
@@ -281,11 +294,13 @@ fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String
         }
     })
 
-    fetchTopics(setTopics)
+    fetchTopics(context, setTopics)
 }
 
-fun fetchTopics(setTopics: (topics: Array<String>) -> Unit) {
-    val dbrefTopics = Firebase.database.getReference("topics/$selectedCategory")
+fun fetchTopics(context: Context, setTopics: (topics: Array<String>) -> Unit) {
+    val dbrefTopics = Firebase.database.reference
+        .child(context.getString(R.string.topics_path))
+        .child(selectedCategory)
 
     // Fetches topics from the database
     dbrefTopics.addValueEventListener(object : ValueEventListener {

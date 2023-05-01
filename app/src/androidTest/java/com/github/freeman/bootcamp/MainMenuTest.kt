@@ -5,6 +5,12 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.AUDIO_REC
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
@@ -32,29 +38,29 @@ class MainMenuTest {
 
     @Test
     fun mainMenuScreenIsDisplayed() {
-        composeRule.onNode(hasTestTag("mainMenuScreen")).assertIsDisplayed()
+        composeRule.onNodeWithTag("mainMenuScreen").assertIsDisplayed()
     }
 
     @Test
     fun mainMenuScreenHasGameName() {
-        composeRule.onNode(hasTestTag("gameName")).assertTextContains("Guess It!")
+        composeRule.onNodeWithTag("gameName").assertTextContains("Guess It!")
     }
 
     @Test
     fun playButtonTextIsCorrect() {
-        composeRule.onNode(hasTestTag("playButton")).assertTextContains("Play game")
+        composeRule.onNodeWithTag("playButton").assertTextContains(PLAY)
     }
 
     @Test
     fun playButtonHasClickAction() {
-        composeRule.onNode(hasTestTag("playButton")).assertHasClickAction()
+        composeRule.onNodeWithTag("playButton").assertHasClickAction()
     }
 
     @Test
     fun playIntentIsSent() {
         Intents.init()
 
-        composeRule.onNode(hasTestTag("playButton")).performClick()
+        composeRule.onNodeWithTag("playButton").performClick()
         Intents.intended(IntentMatchers.hasComponent(CreateJoinActivity::class.java.name))
 
         Intents.release()
@@ -62,12 +68,12 @@ class MainMenuTest {
 
     @Test
     fun settingsButtonTextIsCorrect() {
-        composeRule.onNode(hasTestTag("settingsButton")).assertTextContains("Settings")
+        composeRule.onNodeWithTag("settingsButton").assertTextContains(SETTINGS)
     }
 
     @Test
     fun settingsButtonHasClickAction() {
-        composeRule.onNode(hasTestTag("settingsButton")).assertHasClickAction()
+        composeRule.onNodeWithTag("settingsButton").assertHasClickAction()
     }
 
     @Test
@@ -87,7 +93,7 @@ class MainMenuTest {
     fun chatTestIntentIsSent() {
         Intents.init()
 
-        composeRule.onNodeWithText("Chat").performClick()
+        composeRule.onNodeWithText(CHAT).performClick()
         Intents.intended(IntentMatchers.hasComponent(ChatActivity::class.java.name))
 
         Intents.release()
@@ -97,7 +103,7 @@ class MainMenuTest {
     fun guessingIntentIsSent() {
         Intents.init()
 
-        composeRule.onNodeWithText("Guessing").performClick()
+        composeRule.onNodeWithText(GUESSING).performClick()
         Intents.intended(IntentMatchers.hasComponent(GuessingActivity::class.java.name))
 
         Intents.release()
@@ -107,7 +113,7 @@ class MainMenuTest {
     fun audioRecIntentIsSent() {
         Intents.init()
 
-        composeRule.onNodeWithText("Audio Recording").performClick()
+        composeRule.onNodeWithText(AUDIO_REC).performClick()
         Intents.intended(IntentMatchers.hasComponent(AudioRecordingActivity::class.java.name))
 
         Intents.release()
@@ -117,7 +123,7 @@ class MainMenuTest {
     fun drawingIntentIsSent() {
         Intents.init()
 
-        composeRule.onNodeWithText("Drawing").performClick()
+        composeRule.onNodeWithText(DRAWING).performClick()
         Intents.intended(IntentMatchers.hasComponent(DrawingActivity::class.java.name))
 
         Intents.release()

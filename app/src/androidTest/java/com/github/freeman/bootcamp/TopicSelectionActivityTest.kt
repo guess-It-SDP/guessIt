@@ -1,5 +1,7 @@
 package com.github.freeman.bootcamp
 
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.intent.Intents
@@ -9,6 +11,8 @@ import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companio
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionScreen
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import org.junit.Rule
@@ -18,8 +22,6 @@ import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
 class TopicSelectionActivityTest {
-    private val gameId = "TestGameId"
-    private val dbref = Firebase.database.getReference("Games/$gameId")
 
     @get:Rule
     val composeRule = createComposeRule()
@@ -80,8 +82,11 @@ class TopicSelectionActivityTest {
 
     private fun setTopicSelectionScreen() {
         composeRule.setContent {
+            val context = LocalContext.current
+            val gameId = context.getString(R.string.test_game_id)
+            val dbref = getGameDBRef(context)
             BootcampComposeTheme {
-                TopicSelectionScreen(dbref, "testgameid")
+                TopicSelectionScreen(dbref, gameId)
             }
         }
     }
