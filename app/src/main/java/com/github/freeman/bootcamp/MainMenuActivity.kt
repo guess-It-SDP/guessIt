@@ -53,7 +53,12 @@ class MainMenuActivity : ComponentActivity() {
 
             // Checks if it is the first time launching the app by looking if a profile exists.
             // If no profile exists, sign in anonymously and creates a profile
-            dbRef.child("profiles/$userId/username").get().addOnCompleteListener {
+            dbRef
+                .child(getString(R.string.profiles_path))
+                .child(userId!!)
+                .child(getString(R.string.username_path))
+                .get()
+                .addOnCompleteListener {
 
                 // If no profile exists
                 if (it.result.value == "" || it.result.value == null) {
