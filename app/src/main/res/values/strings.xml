@@ -65,6 +65,7 @@
     <string name="guesses_path">guesses</string>
     <string name="players_path">players</string>
     <string name="score_path">score</string>
+    <string name="kicked_path">kicked</string>
     <string name="uid_path">uid</string>
     <string name="email_path">email</string>
     <string name="lobby_name_path">lobby_name</string>

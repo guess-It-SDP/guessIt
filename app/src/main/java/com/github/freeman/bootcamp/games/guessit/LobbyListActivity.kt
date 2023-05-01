@@ -125,7 +125,6 @@ fun ListItem(
     val nbPlayer = remember { mutableStateOf(lobby.nbPlayer) }
     val nbPlayerRef = getGameDBRef(context, lobby.id).child(context.getString(R.string.param_nb_players_path))
 
-
     // changes dynamically the number of players in a lobby
     nbPlayerRef.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -138,7 +137,6 @@ fun ListItem(
             // do nothing
         }
     })
-
 
     Column(
         modifier = modifier
@@ -176,7 +174,6 @@ fun ListItem(
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp
             )
-
         }
     }
 }
@@ -208,7 +205,6 @@ fun LobbyList(database: DatabaseReference) {
 
                 }
             }
-
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
@@ -220,7 +216,6 @@ fun LobbyList(database: DatabaseReference) {
                     lobbies.remove(lobby)
                 }
             }
-
         }
 
         override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -256,6 +251,12 @@ fun LobbyList(database: DatabaseReference) {
                                     .child(userId.toString())
                                     .child(context.getString(R.string.score_path))
                                     .setValue(START_SCORE)
+                                dbRef
+                                    .child(lobby.id)
+                                    .child(context.getString(R.string.players_path))
+                                    .child(userId.toString())
+                                    .child("kicked")
+                                    .setValue(false)
 
                                 val intent = Intent(context, WaitingRoomActivity::class.java)
                                     .putExtra(context.getString(R.string.gameId_extra), lobby.id)
