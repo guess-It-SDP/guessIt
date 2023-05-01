@@ -325,13 +325,6 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                     fontWeight = FontWeight.Bold
             )
 
-            BootcampComposeTheme {
-                VideoScreen2(
-                    roomName = gameId,
-                    testing = false
-                )
-            }
-
             Box(
                     modifier = Modifier
                         .height(400.dp)
@@ -346,13 +339,21 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                         color = Color.White
                     )
                 } else {
-                    Image(
-                        bitmap = bitmap,
-                        contentDescription = "drawn image",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                    )
+                    Row() {
+                        BootcampComposeTheme {
+                            VideoScreen2(
+                                roomName = gameId,
+                                testing = false
+                            )
+                        }
+                        Image(
+                            bitmap = bitmap,
+                            contentDescription = "drawn image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                //.align(Alignment.Center)
+                        )
+                    }
                 }
 
                 if (timer != "useless") {

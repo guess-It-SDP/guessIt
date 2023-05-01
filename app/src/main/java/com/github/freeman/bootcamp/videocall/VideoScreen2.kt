@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -70,14 +71,14 @@ fun VideoScreen2(
                     it, connectionData = AgoraConnectionData(
                         appId = APP_ID,
 
-                    ), style = AgoraVideoViewer.Style.FLOATING,
+                    ), style = AgoraVideoViewer.Style.GRID,
                     agoraSettings = agoraSettings
                 ).also {
                     it.join(roomName)
                     agoraView = it
                 }
             },
-            modifier = Modifier.height(100.dp).testTag("agora_video_view2")
+            modifier = Modifier.width(50.dp).height(300.dp).testTag("agora_video_view2")
         )
     }
 }

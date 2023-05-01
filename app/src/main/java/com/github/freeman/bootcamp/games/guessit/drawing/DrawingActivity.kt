@@ -128,12 +128,6 @@ fun DrawingScreen(
     Box(Modifier.testTag(LocalContext.current.getString(R.string.drawing_screen))) {
         Column {
             // Controls bar
-            BootcampComposeTheme {
-                VideoScreen2(
-                    roomName = gameId,
-                    testing = false
-                )
-            }
             ControlsBar(
                 dbref,
                 drawController,
@@ -187,23 +181,32 @@ fun DrawingScreen(
                 TimerOverPopUp()
             } else {
                 // Drawing zone
-                DrawBox(
-                    drawController = drawController,
-                    backgroundColor = Color.White,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f, fill = false),
-                    bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
-                        imageBitmap?.let {
-                            dbref.child("topics").child(roundNb.toString()).child(turnNb.toString())
-                                .child("drawing")
-                                .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
-                        }
+                Row() {
+                    BootcampComposeTheme {
+                        VideoScreen2(
+                            roomName = gameId,
+                            testing = false
+                        )
                     }
-                ) { undoCount, redoCount ->
-                    colorBarVisibility.value = false
-                    undoVisibility.value = undoCount != 0
-                    redoVisibility.value = redoCount != 0
+                    DrawBox(
+                        drawController = drawController,
+                        backgroundColor = Color.White,
+                        modifier = Modifier
+                            .fillMaxSize(),
+                          //  .weight(1f, fill = false),
+                        bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
+                            imageBitmap?.let {
+                                dbref.child("topics").child(roundNb.toString())
+                                    .child(turnNb.toString())
+                                    .child("drawing")
+                                    .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
+                            }
+                        }
+                    ) { undoCount, redoCount ->
+                        colorBarVisibility.value = false
+                        undoVisibility.value = undoCount != 0
+                        redoVisibility.value = redoCount != 0
+                    }
                 }
             }
         }
