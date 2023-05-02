@@ -64,7 +64,7 @@ class DrawingActivity : ComponentActivity() {
         val dbref = getGameDBRef(this, gameId)
 
         setContent {
-            DrawingScreen(dbref)
+            DrawingScreen(dbref,gameId)
         }
     }
 
