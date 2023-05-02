@@ -248,7 +248,7 @@ fun TopAppbarEditProfile(context: Context = LocalContext.current) {
 
 // Dialog that edits any field given in argument
 @Composable
-private fun EditDialog(text: MutableState<String>, updateData: (String) -> Unit, show: MutableState<Boolean>) {
+fun EditDialog(text: MutableState<String>, setValue: String = SET_VALUE, enterValue: String = ENTER_VALUE, show: MutableState<Boolean>, updateData: (String) -> Unit) {
 
     val txtFieldError = remember { mutableStateOf("") }
     val txtField = remember { mutableStateOf(text.value) }
@@ -272,7 +272,7 @@ private fun EditDialog(text: MutableState<String>, updateData: (String) -> Unit,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = SET_VALUE,
+                            text = setValue,
                             style = TextStyle(
                                 fontSize = 24.sp,
                                 fontFamily = FontFamily.Default,
@@ -320,7 +320,7 @@ private fun EditDialog(text: MutableState<String>, updateData: (String) -> Unit,
                                     .height(20.dp)
                             )
                         },
-                        placeholder = { Text(text = ENTER_VALUE) },
+                        placeholder = { Text(text = enterValue) },
                         value = txtField.value,
                         onValueChange = {
                             txtField.value = it

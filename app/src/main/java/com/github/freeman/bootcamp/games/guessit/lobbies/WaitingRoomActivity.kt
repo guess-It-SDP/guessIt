@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp.games.guessit
+package com.github.freeman.bootcamp.games.guessit.lobbies
 
 import android.app.Activity
 import android.content.Context
@@ -38,11 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.CATEGORY_INFO
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.KICKED
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.NB_ROUNDS_INFO
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.START_GAME
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.TOPBAR_TEXT
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
+import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.CATEGORY_INFO
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.KICKED
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.NB_ROUNDS_INFO
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.START_GAME
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.TOPBAR_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
@@ -67,6 +69,7 @@ class WaitingRoomActivity: ComponentActivity() {
         val userId = Firebase.auth.uid
 
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
+
         val allTopics = ArrayList<String>()
 
         val database = Firebase.database.reference

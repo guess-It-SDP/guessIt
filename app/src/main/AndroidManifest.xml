@@ -18,13 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BootcampCompose"
         tools:targetApi="31" >
-        <activity
-            android:name=".auth.ProfileCreationActivity"
-            android:exported="false" >
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+
         <activity
             android:name=".games.guessit.TimerActivity"
             android:exported="false" >
@@ -107,21 +101,28 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".games.guessit.CreateJoinActivity"
+            android:name=".games.guessit.lobbies.CreateJoinActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".games.guessit.LobbyListActivity"
+            android:name=".games.guessit.lobbies.LobbyListActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".games.guessit.WaitingRoomActivity"
+            android:name=".games.guessit.lobbies.WaitingRoomActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".games.guessit.lobbies.CreatePublicPrivateActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
