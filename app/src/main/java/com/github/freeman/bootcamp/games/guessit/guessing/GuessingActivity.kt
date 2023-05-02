@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.CorrectAnswerPopUp
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
@@ -313,6 +314,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
             modifier = Modifier
                 .background(Color.White)
                 .testTag("guessingScreen")
+                .fillMaxWidth()
         ) {
 
             Text(
@@ -321,13 +323,13 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                         .padding(0.dp)
                         .align(Alignment.CenterHorizontally)
                         .testTag("guessText"),
-                    fontSize = 8.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
             )
 
             Box(
                     modifier = Modifier
-                        .height(400.dp)
+                        .fillMaxSize()
                         .fillMaxWidth()
                         .background(Color.DarkGray)
             ) {
@@ -339,22 +341,42 @@ fun GuessingScreen(dbrefGame: DatabaseReference, gameId: String = LocalContext.c
                         color = Color.White
                     )
                 } else {
-                    Row() {
-                        BootcampComposeTheme {
-                            VideoScreen2(
-                                roomName = gameId,
-                                testing = false
+                    /*
+                    BoxWithConstraints(
+                        modifier = Modifier.fillMaxWidth()
+                     ) {
+                     */
+
+                     //   val boxWidth = this.maxWidth
+                       Row(
+                            modifier = Modifier
+                                .fillMaxSize(0.80f)
+                                .fillMaxWidth()
+                                .background(Color.Red)
+                                , horizontalArrangement = Arrangement.Center
+
+                        ) {
+                           BootcampComposeTheme {
+                               VideoScreen2(
+                                   roomName = gameId,
+                                   testing = false
+                               )}
+                            Image(
+                                bitmap = bitmap,
+                                contentDescription = "drawn image",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                //  .align(Alignment.End)
                             )
                         }
+                      //  Row() {
 
-                        Image(
-                            bitmap = bitmap,
-                            contentDescription = "drawn image",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                             //   .align(Alignment.Center)
-                        )
-                    }
+                          //  }
+                 //   }
+
+
+
+
                 }
 
                 if (timer != "useless") {
