@@ -13,6 +13,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import org.junit.Before
 import org.junit.Rule
@@ -80,6 +81,17 @@ class SettingsProfileActivityTest {
     }
 
     @Test
+    fun accountLaunchesSignInActivity() {
+        Intents.init()
+
+        composeRule.onNodeWithText("Manage Account").performClick()
+
+        Intents.intended(IntentMatchers.hasComponent(FirebaseAuthActivity::class.java.name))
+
+        Intents.release()
+    }
+
+    @Test
     fun helpButtonHasClickAction() {
         composeRule.onNodeWithText("Help").assertHasClickAction()
     }
@@ -87,6 +99,16 @@ class SettingsProfileActivityTest {
     @Test
     fun gameStatsButtonHasClickAction() {
         composeRule.onNodeWithText("Game Stats").assertHasClickAction()
+    }
+
+    @Test
+    fun settingsButtonHasClickAction() {
+        composeRule.onNodeWithText("Parameters").assertHasClickAction()
+    }
+
+    @Test
+    fun accountButtonHasClickAction() {
+        composeRule.onNodeWithText("Manage Account").assertHasClickAction()
     }
 
 

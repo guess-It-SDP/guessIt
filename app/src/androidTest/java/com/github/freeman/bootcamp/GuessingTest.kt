@@ -5,6 +5,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.SCREEN_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingScreen
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
@@ -40,8 +41,15 @@ class GuessingTest {
         val database = FirebaseSingletons.database.get().database.getReference("games/$guessGameId/guesses")
 
         composeRule.setContent {
+            val context = LocalContext.current
+            val guessGameId = context.getString(R.string.test_game_id)
+            val database = FirebaseSingletons.database.get().database.reference
+                .child(context.getString(R.string.games_path))
+                .child(guessGameId)
+                .child(context.getString(R.string.guesses_path))
+
             BootcampComposeTheme {
-                GuessingScreen(database, context = LocalContext.current)
+                GuessingScreen(database, context = context)
             }
         }
     }
@@ -53,7 +61,7 @@ class GuessingTest {
 
     @Test
     fun guessingScreenContainsCorrectText() {
-        composeRule.onNodeWithTag("guessText").assertTextContains("Your turn to guess!")
+        composeRule.onNodeWithTag("guessText").assertTextContains(SCREEN_TEXT)
     }
 
     @Test
@@ -69,7 +77,7 @@ class GuessingTest {
     @Test
     fun guessingPreviewDisplaysGuessingScreen() {
         composeRule.onNodeWithTag("guessingScreen").assertIsDisplayed()
-        composeRule.onNodeWithTag("guessText").assertTextContains("Your turn to guess!")
+        composeRule.onNodeWithTag("guessText").assertTextContains(SCREEN_TEXT)
         composeRule.onNodeWithTag("guessesList").assertIsDisplayed()
         composeRule.onNodeWithTag("guessingBar").assertIsDisplayed()
     }
@@ -86,5 +94,4 @@ class GuessingTest {
         composeRule.onNodeWithTag("guessButton").performClick()
         composeRule.onNodeWithTag("popUpScreen").assertIsDisplayed()
     }
-    
 }

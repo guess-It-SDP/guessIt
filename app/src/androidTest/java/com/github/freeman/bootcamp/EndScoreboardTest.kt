@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -15,8 +16,7 @@ import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.gameEnd
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.reinitialise
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -39,11 +39,11 @@ class EndScoreboardTest {
     fun init() {
         gameEnded = true
         composeRule.setContent {
-            val gameId = "testgameid"
-            val dbRef = Firebase.database.getReference("games/$gameId")
-            reinitialise(dbRef, playerIds.toSet())
+            val context = LocalContext.current
+            val dbRef = getGameDBRef(context)
+            reinitialise(context, dbRef, playerIds.toSet())
 
-            initFirebaseScores(dbRef, playerIds, scores)
+            initFirebaseScores(context, dbRef, playerIds, scores)
             val playersToScores = initPlayersToScores(playerIds, scores)
             val usersToScores = usersToScoresToPair(playerIds, usernames, scores)
 

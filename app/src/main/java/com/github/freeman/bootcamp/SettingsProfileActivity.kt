@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Settings
@@ -35,6 +36,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.github.freeman.bootcamp.SettingsActivity.Companion.SETTINGS_TITLE
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.auth.ktx.auth
@@ -63,8 +66,10 @@ class SettingsProfileActivity : ComponentActivity() {
             val dbRef = Firebase.database.reference
             val storageRef = Firebase.storage.reference
             val userId = Firebase.auth.currentUser?.uid
-            val dbUserRef = dbRef.child("profiles/$userId")
-            val storageUserRef = storageRef.child("profiles/$userId")
+            val dbUserRef = dbRef.child(getString(R.string.profiles_path))
+                    .child(userId.toString())
+            val storageUserRef = storageRef.child(getString(R.string.profiles_path))
+                    .child(userId.toString())
 
             val displayName = remember { mutableStateOf("") }
             val email = remember { mutableStateOf("") }
@@ -72,21 +77,21 @@ class SettingsProfileActivity : ComponentActivity() {
 
 
             // get name from database
-            FirebaseUtilities.databaseGet(dbUserRef.child("username"))
+            FirebaseUtilities.databaseGet(dbUserRef.child(getString(R.string.username_path)))
                 .thenAccept {
-                    displayName.value = it
+                    displayName.value = it ?: "Guest"
                 }
 
             // get email from database
-            FirebaseUtilities.databaseGet(dbUserRef.child("email"))
+            FirebaseUtilities.databaseGet(dbUserRef.child(getString(R.string.email_path)))
                 .thenAccept {
-                    email.value = it
+                    email.value = it ?: ""
                 }
 
 
             // get User's image from firebase storage
             LaunchedEffect(Unit) {
-                FirebaseUtilities.storageGet(storageUserRef.child("picture/pic.jpg"))
+                FirebaseUtilities.storageGet(storageUserRef.child(getString(R.string.picture_path)))
                     .thenAccept {
                         profilePicBitmap.value = it
                     }
@@ -119,7 +124,7 @@ fun TopAppbarSettings(context: Context = LocalContext.current) {
         modifier = Modifier.testTag("topAppbarProfile"),
         title = {
             Text(
-                text = "Settings",
+                text = SETTINGS_TITLE,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -352,6 +357,17 @@ private fun prepareOptionsData(context: Context) {
             clickAction = {
                 context.startActivity(Intent(context, SettingsActivity::class.java)
                 )
+            }
+        )
+    )
+
+    optionsList.add(
+        OptionsData(
+            icon = appIcons.AccountCircle,
+            title = "Manage Account",
+            subTitle = "Sign in or sign out from your Google account",
+            clickAction = {
+                context.startActivity(Intent(context, FirebaseAuthActivity::class.java))
             }
         )
     )

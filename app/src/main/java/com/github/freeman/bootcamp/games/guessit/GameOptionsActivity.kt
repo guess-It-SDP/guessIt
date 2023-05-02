@@ -27,11 +27,13 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.CATEGORIES_SELECTION
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.DEFAULT_CATEGORY_SIZE
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NB_ROUNDS
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NEXT
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.ROUNDS_SELECTION
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.TOAST_TEXT
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.categories
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.categorySize
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedCategory
@@ -71,6 +73,8 @@ class GameOptionsActivity : ComponentActivity() {
         const val NEXT = "Next"
         const val NB_TOPICS = 3
         const val DEFAULT_CATEGORY_SIZE = 0
+        const val TOAST_TEXT = "Please first select a category"
+
         val categories = listOf("Animals", "People", "Objects")
         var selectedCategory = categories[0]
         val NB_ROUNDS = listOf("1", "3", "5", "7", "9")
@@ -104,9 +108,7 @@ fun RoundsDisplay() {
  * MutableState object.
  */
 @Composable
-fun RoundsRadioButtons(
-    mItems: List<String>, selected: String, setSelected: (selected: String) -> Unit
-) {
+fun RoundsRadioButtons(mItems: List<String>, selected: String, setSelected: (selected: String) -> Unit) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -118,9 +120,12 @@ fun RoundsRadioButtons(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     RadioButton(
-                        selected = selected == item, onClick = {
+                        selected = selected == item,
+                        onClick = {
                             setSelected(item)
-                        }, enabled = true, colors = RadioButtonDefaults.colors(
+                        },
+                        enabled = true,
+                        colors = RadioButtonDefaults.colors(
                             selectedColor = Color.Blue
                         )
                     )
@@ -150,21 +155,9 @@ fun CategoriesDisplay() {
 
     categorySize = size
 
-
     if (topics.isNotEmpty() && categorySize > 0) {
         selectedTopics.clear()
         val allTopics = topics.toMutableList()
-        /*
-        val indices = mutableListOf<Int>()
-       for (i in 1..categorySize) {
-           var randomNb = (0..categorySize).random()
-           while (indices.contains(randomNb)) {
-               randomNb = (0..categorySize).random()
-           }
-           indices.add(randomNb)
-       }
-        selectedTopics.addAll(listOf(allTopics[indices[0]], allTopics[indices[1]], allTopics[indices[2]]))
-         */
         val selectedIndices = allTopics.indices.shuffled().take(categorySize)
         selectedTopics.addAll(selectedIndices.map { allTopics[it] })
     }
@@ -175,12 +168,11 @@ fun CategoriesDisplay() {
  * chose which topics he wants to use in his next Game.
  */
 @Composable
-fun CategoriesRadioButtons(
-    selectedIndex: Int,
-    setSelected: (selected: Int) -> Unit,
-    setSize: (topics: Int) -> Unit,
-    setTopics: (topics: Array<String>) -> Unit
-) {
+fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> Unit,
+                           setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
+
+    val context = LocalContext.current
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
@@ -192,8 +184,9 @@ fun CategoriesRadioButtons(
                 onClick = {
                     selectedCategory = categories[index]
                     setSelected(index)
-                    fetchFromDB(setSize, setTopics)
-                }, shape = when (index) {
+                    fetchFromDB(context, setSize, setTopics)
+                },
+                shape = when (index) {
                     0 -> RoundedCornerShape(
                         topStart = cornerRadius,
                         topEnd = 0.dp,
@@ -207,27 +200,34 @@ fun CategoriesRadioButtons(
                         bottomEnd = cornerRadius
                     )
                     else -> RoundedCornerShape(
-                        topStart = 0.dp, topEnd = 0.dp, bottomStart = 0.dp, bottomEnd = 0.dp
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomStart = 0.dp,
+                        bottomEnd = 0.dp
                     )
-                }, border = BorderStroke(
+                },
+                border = BorderStroke(
                     1.dp, if (selectedIndex == index) {
                         Color.Blue
                     } else {
                         Color.Blue.copy(alpha = 0.75f)
                     }
-                ), colors = if (selectedIndex == index) {
+                ),
+                colors = if (selectedIndex == index) {
                     ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color.Blue.copy(alpha = 0.15f), contentColor = Color.Blue
+                        containerColor = Color.Blue.copy(alpha = 0.15f),
+                        contentColor = Color.Blue
                     )
                 } else {
                     ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color.Blue.copy(alpha = 0.02f), contentColor = Color.Blue
+                        containerColor = Color.Blue.copy(alpha = 0.02f),
+                        contentColor = Color.Blue
                     )
                 }
             ) {
                 Text(
-                    text = item, modifier = Modifier.testTag("categoryButtonText$item")
-                )
+                    text = item,
+                    modifier = Modifier.testTag("categoryButtonText$item"))
             }
         }
     }
@@ -237,9 +237,12 @@ fun CategoriesRadioButtons(
 @Composable
 fun NextButton(dbRef: DatabaseReference) {
     val context = LocalContext.current
-    ElevatedButton(modifier = Modifier.testTag("nextButton"), onClick = {
-        next(context, dbRef)
-    }) {
+    ElevatedButton(
+        modifier = Modifier.testTag("nextButton"),
+        onClick = {
+            next(context, dbRef)
+        }
+    ) {
         Text(NEXT)
     }
 }
@@ -263,59 +266,58 @@ fun NextButton(dbRef: DatabaseReference) {
 fun next(context: Context, database: DatabaseReference) {
     var userId = Firebase.auth.uid
     userId = userId ?: "null"
-    val dbref = database.child("games/")
-    val gameId = dbref.push().key // Generates a unique key for the new game.
+    val dbref = database.child(context.getString(R.string.games_path))
+    val gameId = dbref.push().key
 
     if (categorySize <= 0) {
-        Toast.makeText(context, "Please first select a category", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, TOAST_TEXT, Toast.LENGTH_SHORT).show()
     } else {
 
-        FirebaseUtilities.databaseGet(database.child("profiles/$userId/username")).thenAccept {
+        val dbrefUsername = database
+            .child(context.getString(R.string.profiles_path))
+            .child(userId)
+            .child(context.getString(R.string.username_path))
+        FirebaseUtilities.databaseGet(dbrefUsername)
+            .thenAccept {
 
-            val gameData = GameData(
-                Current = Current( // holds data about the current round of the game
-                    correct_guesses = 0,
-                    current_artist = userId,
-                    current_round = 0,
-                    current_state = "waiting for players",
-                    current_turn = 0,
-                    current_timer = "useless"
-                ), Parameters = Parameters( // holds information about the game's parameters
-                    category = selectedCategory,
-                    host_id = userId,
-                    nb_players = 1,
-                    nb_rounds = selection
-                ), Players = mapOf(
-                    Pair(
-                        userId, Player(0)
-                    )
-                ), // link each player's ID to their score.
-                lobby_name = "$it's room"
-            )
+                val gameData = GameData(
+                    Current = Current(
+                        correct_guesses = 0,
+                        current_artist = userId,
+                        current_round = 0,
+                        current_state = context.getString(R.string.state_waitingforplayers),
+                        current_turn = 0,
+                        current_timer = context.getString(R.string.timer_unused)
+                    ),
+                    Parameters = Parameters(
+                        category = selectedCategory,
+                        host_id = userId,
+                        nb_players = 1,
+                        nb_rounds = selection
+                    ),
+                    Players = mapOf(Pair(userId, Player(0, false))),
+                    lobby_name = "$it's room"
+                )
 
-            dbref.child(gameId!!).setValue(gameData)
+                dbref.child(gameId!!).setValue(gameData)
 
-            context.startActivity(Intent(context, WaitingRoomActivity::class.java).apply {
-                putExtra("gameId", gameId)
-                for (i in 0 until selectedTopics.size) {
-                    putExtra("topic$i", selectedTopics[i])
-                }
-            })
-            val activity = (context as? Activity)
-            activity?.finish()
-        }
+                context.startActivity(Intent(context, WaitingRoomActivity::class.java).apply {
+                    putExtra(context.getString(R.string.gameId_extra), gameId)
+                    for (i in 0 until selectedTopics.size) {
+                        putExtra("topic$i", selectedTopics[i])
+                    }
+                })
+                val activity = (context as? Activity)
+                activity?.finish()
+            }
 
     }
 }
 
-/**
- * Fetch the number of topics present in the given category then call fetch Topics to fetch to topics
- *
- * @param callback function that allows to change the size of the topics that will be used
- * @param callback function that allows to change to topics with given values
- */
-fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
-    val dbrefTopics = Firebase.database.getReference("topics/$selectedCategory")
+fun fetchFromDB(context: Context, setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
+    val dbrefTopics = Firebase.database.reference
+        .child(context.getString(R.string.topics_path))
+        .child(selectedCategory)
 
     // Fetch the number of topics present in the given category
     dbrefTopics.addValueEventListener(object : ValueEventListener {
@@ -328,16 +330,13 @@ fun fetchFromDB(setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String
         }
     })
 
-    fetchTopics(setTopics)
+    fetchTopics(context, setTopics)
 }
 
-/**
- * Fetches topics from the database and do it again each time the data changes.
- *
- * @param callback function that allows to change to topics with given values
- */
-fun fetchTopics(setTopics: (topics: Array<String>) -> Unit) {
-    val dbrefTopics = Firebase.database.getReference("topics/$selectedCategory")
+fun fetchTopics(context: Context, setTopics: (topics: Array<String>) -> Unit) {
+    val dbrefTopics = Firebase.database.reference
+        .child(context.getString(R.string.topics_path))
+        .child(selectedCategory)
 
     // Fetches topics from the database
     dbrefTopics.addValueEventListener(object : ValueEventListener {
@@ -356,11 +355,15 @@ fun fetchTopics(setTopics: (topics: Array<String>) -> Unit) {
 @Composable
 fun GameOptionsBackButton() {
     val context = LocalContext.current
-    ElevatedButton(modifier = Modifier.testTag("gameOptionsBackButton"), onClick = {
-        backToMainMenu(context)
-    }) {
+    ElevatedButton(
+        modifier = Modifier.testTag("gameOptionsBackButton"),
+        onClick = {
+            backToMainMenu(context)
+        }
+    ) {
         Icon(
-            imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow icon"
+            imageVector = Icons.Default.ArrowBack,
+            contentDescription = "Back arrow icon"
         )
     }
 }
@@ -391,20 +394,23 @@ fun GameOptionsScreen(dbRef: DatabaseReference) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            modifier = Modifier.testTag("categoriesSelection"), text = CATEGORIES_SELECTION
+            modifier = Modifier.testTag("categoriesSelection"),
+            text = CATEGORIES_SELECTION
         )
         Spacer(modifier = Modifier.size(10.dp))
         CategoriesDisplay()
         Spacer(modifier = Modifier.size(50.dp))
         Text(
-            modifier = Modifier.testTag("roundsSelection"), text = ROUNDS_SELECTION
+            modifier = Modifier.testTag("roundsSelection"),
+            text = ROUNDS_SELECTION
         )
         RoundsDisplay()
         NextButton(dbRef)
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {

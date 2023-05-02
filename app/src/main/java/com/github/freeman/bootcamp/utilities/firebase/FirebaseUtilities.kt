@@ -1,11 +1,17 @@
 package com.github.freeman.bootcamp.utilities.firebase
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.google.firebase.auth.FirebaseUser
+import com.github.freeman.bootcamp.R
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
+import java.io.ByteArrayOutputStream
 import java.util.concurrent.CompletableFuture
+
 
 /**
  * Utility functions related to Firebase
@@ -105,23 +111,72 @@ object FirebaseUtilities {
 
     /**
      * Checks if a Guess It profile exists in the database
-     * @param user the user liked to the profile
+     * @param userId the user linked to the profile
      * @param dbRef database reference
      * @return a future containing the boolean
      */
-    fun profileExists(user: FirebaseUser?, dbRef: DatabaseReference): CompletableFuture<Boolean> {
+    fun profileExists(userId: String, dbRef: DatabaseReference): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
-        if (user == null) {
-            future.complete(false)
-        } else {
-            // if the email exists, the profile exists too
-            databaseGet(dbRef.child("profiles/${user.uid}/username"))
-                .thenAccept {
-                    future.complete(it != "")
-                }
-        }
+        databaseGet(dbRef.child("profiles/$userId/username"))
+            .thenAccept {
+                future.complete(it != "" && it != null)
+            }
 
         return future
+    }
+
+    /**
+     * Creates a profile and stores it into Firebase
+     *
+     * @param context context of the activity
+     * @param userId Id of the user
+     * @param username desired username
+     * @param email desired email
+     */
+    fun createProfile(context: Context, userId: String, username: String, email: String? = null) {
+        val dbRef = Firebase.database.reference
+        val storageRef = Firebase.storage.reference
+
+        // username + email
+        dbRef
+            .child(context.getString(R.string.profiles_path))
+            .child(userId)
+            .child(context.getString(R.string.username_path))
+            .setValue(username)
+        if (email != null) {
+            dbRef
+                .child(context.getString(R.string.profiles_path))
+                .child(userId)
+                .child(context.getString(R.string.email_path))
+                .setValue(email)
+        }
+
+        // default profile picture
+        val picBitmap = BitmapFactory.decodeResource(
+            context.resources,
+            R.raw.default_profile_pic
+        )
+
+        val stream = ByteArrayOutputStream()
+        picBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+        val image = stream.toByteArray()
+        storageRef
+            .child(context.getString(R.string.profiles_path))
+            .child(userId)
+            .child(context.getString(R.string.picture_path))
+            .putBytes(image)
+    }
+
+    /**
+     * Get the DatabaseReference of a gameId ("testgameid" by default)
+     * @param context the current local context
+     * @param gameId the game id of which we want the reference
+     */
+    fun getGameDBRef(context: Context, gameId: String = context.getString(R.string.test_game_id)): DatabaseReference {
+        val dbRef = Firebase.database.reference
+            .child(context.getString(R.string.games_path))
+            .child(gameId)
+        return dbRef
     }
 
 

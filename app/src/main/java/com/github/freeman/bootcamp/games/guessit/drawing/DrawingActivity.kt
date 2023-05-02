@@ -2,6 +2,7 @@ package com.github.freeman.bootcamp.games.guessit.drawing
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.provider.Settings.Global.getString
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
@@ -31,6 +32,7 @@ import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.videocall.APP_ID
 import com.github.freeman.bootcamp.videocall.VideoScreen
 import com.github.freeman.bootcamp.videocall.VideoScreen2
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -58,18 +60,12 @@ class DrawingActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val gameId = intent.getStringExtra("gameId").toString()
-        val dbref = Firebase.database.getReference("games/$gameId")
-
-        //dbref.child("current/current_timer").setValue("inprogress")
+        val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
+        val dbref = getGameDBRef(this, gameId)
 
         setContent {
-
-
-
-                    DrawingScreen(dbref, gameId)
-                }
-
+            DrawingScreen(dbref)
+        }
     }
 
     companion object {
@@ -85,9 +81,11 @@ fun DrawingScreen(
     dbref: DatabaseReference,
     gameId: String
 ) {
+    val context = LocalContext.current
+
     // timer of the artist
     var timer by remember { mutableStateOf("") }
-    val dbrefTimer = dbref.child("current/current_timer")
+    val dbrefTimer = dbref.child(context.getString(R.string.current_timer_path))
     dbrefTimer.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
@@ -100,12 +98,11 @@ fun DrawingScreen(
     })
 
     //the current round and turn (in the round) and topic corresponding
-    val dbrefCurrent = dbref.child("Current")
-    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_round"))
+    FirebaseUtilities.databaseGet(dbref.child(context.getString(R.string.current_round_path)))
         .thenAccept {
             roundNb = it.toInt()
         }
-    FirebaseUtilities.databaseGet(dbrefCurrent.child("current_turn"))
+    FirebaseUtilities.databaseGet(dbref.child(context.getString(R.string.current_turn_path)))
         .thenAccept {
             turnNb = it.toInt()
         }
@@ -125,7 +122,7 @@ fun DrawingScreen(
         firstStroke.value = false
     }
 
-    Box(Modifier.testTag(LocalContext.current.getString(R.string.drawing_screen))) {
+    Box(Modifier.testTag(context.getString(R.string.drawing_screen))) {
         Column {
             // Controls bar
             ControlsBar(
@@ -173,40 +170,33 @@ fun DrawingScreen(
                         activeTrackColor = MaterialTheme.colors.primary,
                         inactiveTrackColor = MaterialTheme.colors.secondary
                     ),
-                    modifier = Modifier.testTag(LocalContext.current.getString(R.string.width_slider))
+                    modifier = Modifier.testTag(context.getString(R.string.width_slider))
                 )
             }
 
-            if (timer == "over") {
+            if (timer == context.getString(R.string.timer_over)) {
                 TimerOverPopUp()
             } else {
                 // Drawing zone
-                Row() {
-                    BootcampComposeTheme {
-                        VideoScreen2(
-                            roomName = gameId,
-                            testing = false
-                        )
-                    }
-                    DrawBox(
-                        drawController = drawController,
-                        backgroundColor = Color.White,
-                        modifier = Modifier
-                            .fillMaxSize(),
-                          //  .weight(1f, fill = false),
-                        bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
-                            imageBitmap?.let {
-                                dbref.child("topics").child(roundNb.toString())
-                                    .child(turnNb.toString())
-                                    .child("drawing")
-                                    .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
-                            }
+                DrawBox(
+                    drawController = drawController,
+                    backgroundColor = Color.White,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f, fill = false),
+                    bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
+                        imageBitmap?.let {
+                            dbref.child(context.getString(R.string.topics_path))
+                                .child(roundNb.toString())
+                                .child(turnNb.toString())
+                                .child(context.getString(R.string.drawing_path))
+                                .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
                         }
-                    ) { undoCount, redoCount ->
-                        colorBarVisibility.value = false
-                        undoVisibility.value = undoCount != 0
-                        redoVisibility.value = redoCount != 0
                     }
+                ) { undoCount, redoCount ->
+                    colorBarVisibility.value = false
+                    undoVisibility.value = undoCount != 0
+                    redoVisibility.value = redoCount != 0
                 }
             }
         }
@@ -232,7 +222,9 @@ private fun ControlsBar(
     redoVisibility: MutableState<Boolean>,
     colorValue: MutableState<Color>,
 ) {
-    val dbrefTimer = dbref.child("current/current_timer")
+    val context = LocalContext.current
+
+    val dbrefTimer = dbref.child(context.getString(R.string.current_timer_path))
 
     Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
         TimerScreen(dbrefTimer,60L)
@@ -252,7 +244,7 @@ private fun ControlsBar(
         }
         MenuItems(
             R.drawable.ic_color,
-            LocalContext.current.getString(R.string.stroke_color),
+            context.getString(R.string.stroke_color),
             colorValue.value
         ) {
             onColorClick()
@@ -303,6 +295,7 @@ private fun RowScope.MenuItems(
 @Preview(showBackground = true)
 @Composable
 fun DrawingScreenPreview() {
-    val dbref = Firebase.database.getReference("games/testgameid")
-    DrawingScreen(dbref, "127")
+    val context = LocalContext.current
+    val dbref = getGameDBRef(context)
+    DrawingScreen(dbref,"127")
 }

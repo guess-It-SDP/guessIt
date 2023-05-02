@@ -26,10 +26,10 @@ import java.lang.Character.MIN_VALUE as NULLCHAR
 
     private constructor(
         currentLine: Int,
-       grid: Array<Array<Tile>>,
-       wordOnly: Boolean,
+        grid: Array<Array<Tile>>,
+        wordOnly: Boolean,
         wordToGuess: String,
-       validWords: List<String>,
+        validWords: List<String>,
         solutions: List<String>,
     ){
         this.currentLine = currentLine
@@ -69,6 +69,11 @@ import java.lang.Character.MIN_VALUE as NULLCHAR
     }
 
     companion object {
+        const val RGB_BLACK = 0xFF000000
+        const val RGB_GREEN = 0xFF00FF00
+        const val RGB_YELLOW = 0xFFFFFF00
+        const val RGB_RED = 0xFFFF0000
+
         /**
          * This constructor is used to start a game, chose a random word to guess among solutions
          *
@@ -99,7 +104,7 @@ import java.lang.Character.MIN_VALUE as NULLCHAR
      * INCORRECT the word does not contains the letter
      */
     enum class TileState(val argb: Long) {
-        EMPTY(0xFF000000), CORRECT(0xFF00FF00), WRONG_SPOT(0xFFFFFF00), INCORRECT(0xFFFF0000)
+        EMPTY(RGB_BLACK), CORRECT(RGB_GREEN), WRONG_SPOT(RGB_YELLOW), INCORRECT(RGB_RED)
     }
 
     /**

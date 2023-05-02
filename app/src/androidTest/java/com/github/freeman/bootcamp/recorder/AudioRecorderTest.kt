@@ -4,6 +4,10 @@ package com.github.freeman.bootcamp.recorder
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.rule.GrantPermissionRule
+import com.github.freeman.bootcamp.recorder.AudioRecordingActivity.Companion.PLAY_BUTTON
+import com.github.freeman.bootcamp.recorder.AudioRecordingActivity.Companion.START_RECORDING_BUTTON
+import com.github.freeman.bootcamp.recorder.AudioRecordingActivity.Companion.STOP_PLAYING
+import com.github.freeman.bootcamp.recorder.AudioRecordingActivity.Companion.STOP_RECORDING_BUTTON
 import org.junit.Rule
 import org.junit.Test
 
@@ -16,21 +20,21 @@ class AudioRecordingTest {
 
     @Test
     fun playButtonTextIsCorrect() {
-        node("play_button").assertTextContains("Play")
+        node("play_button").assertTextContains(PLAY_BUTTON)
     }
     @Test
     fun stopButtonTextIsCorrect() {
-        node("stop_button").assertTextContains("Stop playing")
+        node("stop_button").assertTextContains(STOP_PLAYING)
     }
 
     @Test
     fun startRecordingButtonTextIsCorrect() {
-        node("start_recording_button").assertTextContains("Start recording")
+        node("start_recording_button").assertTextContains(START_RECORDING_BUTTON)
     }
 
     @Test
     fun stopRecordingButtonTextIsCorrect(){
-        node("stop_recording_button").assertTextContains("Stop recording")
+        node("stop_recording_button").assertTextContains(STOP_RECORDING_BUTTON)
     }
 
     @Test

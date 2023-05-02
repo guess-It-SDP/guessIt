@@ -10,6 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.videocall.VideoCallActivity.Companion.ENTER_ROOM_NAME
+import com.github.freeman.bootcamp.videocall.VideoCallActivity.Companion.JOIN_ROOM
 import kotlinx.coroutines.flow.collectLatest
 
 /**
@@ -39,7 +41,7 @@ fun RoomScreen(
             modifier = Modifier.fillMaxWidth().testTag("room_screen_text_field"),
             isError = viewModel.roomName.value.error != null,
             placeholder = {
-                Text(text = "Enter a room name")
+                Text(text = ENTER_ROOM_NAME)
             }
         )
         viewModel.roomName.value.error?.let {
@@ -49,7 +51,7 @@ fun RoomScreen(
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = viewModel::onJoinRoom,
             modifier = Modifier.fillMaxWidth().testTag("room_screen_button")) {
-            Text(text = "Join")
+            Text(text = JOIN_ROOM)
         }
     }
 }
