@@ -69,7 +69,7 @@ class GuessingActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbrefGame, this)
+                GuessingScreen(dbrefGame, this,gameId)
             }
         }
     }
@@ -216,7 +216,7 @@ fun GuessingBar(
 }
 
 @Composable
-fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
+fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String) {
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
     var timer by remember { mutableStateOf("") }
@@ -370,13 +370,21 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
                         color = Color.White
                     )
                 } else {
-                    Image(
-                        bitmap = bitmap,
-                        contentDescription = "drawn image",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                    )
+                    Row() {
+                        BootcampComposeTheme { // Video conversation zone
+                            VideoScreen2(
+                                roomName = gameId,
+                                testing = false
+                            )
+                        }
+                        Image(
+                            bitmap = bitmap,
+                            contentDescription = "drawn image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                              //  .align(Alignment.Center)
+                        )
+                    }
                 }
 
                 if (timer != context.getString(R.string.timer_unused)) {

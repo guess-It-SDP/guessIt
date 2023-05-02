@@ -49,7 +49,7 @@ class GuessingTest {
                 .child(context.getString(R.string.guesses_path))
 
             BootcampComposeTheme {
-                GuessingScreen(database, context = context)
+                GuessingScreen(database, context = context,guessGameId)
             }
         }
     }

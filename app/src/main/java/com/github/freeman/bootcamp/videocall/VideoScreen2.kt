@@ -79,7 +79,7 @@ fun VideoScreen2(
                     agoraView = it
                 }
             },
-            modifier = Modifier.fillMaxWidth(0.2f).fillMaxSize(0.70f).testTag("agora_video_view2")
+            modifier = Modifier.fillMaxWidth(0.2f).fillMaxSize().testTag("agora_video_view2")
         )
     }
 }
