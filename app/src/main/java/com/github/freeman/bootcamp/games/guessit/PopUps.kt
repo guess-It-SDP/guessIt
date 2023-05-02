@@ -23,7 +23,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 /**
- * This is the squeletton of any pop up
+ * This is the skeleton of any pop up
  * @param text: The text that will be displayed inside the pop-up
  */
 @Composable
