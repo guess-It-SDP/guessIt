@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.guessing.Guess
-import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.ui.theme.Purple40
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
@@ -88,7 +87,7 @@ fun CorrectAnswerPopUp(gs: Guess) {
     }
 
     sb.append(" made a correct guess: \n\nThe word was \"")
-        .append(gs.guess)
+        .append(gs.message)
         .append("\"!")
 
     PopUpScreen(text = sb.toString())
