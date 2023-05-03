@@ -10,6 +10,7 @@ import com.github.freeman.bootcamp.recorder.AudioRecordingActivity.Companion.STO
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity.Companion.STOP_RECORDING_BUTTON
 import org.junit.Rule
 import org.junit.Test
+import java.lang.Thread.sleep
 
 class AudioRecordingTest {
     @get:Rule
@@ -55,6 +56,17 @@ class AudioRecordingTest {
     fun stopRecordingHasClickAction() {
         node("stop_recording_button").assertHasClickAction()
     }
+
+    /*
+    @Test
+    fun playButtonClicked() {
+        node("play_button").performClick()
+        sleep(1000)
+        node("stop_button").performClick()
+    }
+    */
+
+
 
     private fun node(testTag: String): SemanticsNodeInteraction {
         return composeRule.onNodeWithTag(testTag)
