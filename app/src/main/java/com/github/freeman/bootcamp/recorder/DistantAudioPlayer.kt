@@ -11,7 +11,7 @@ interface DistantAudioPlayer {
      * @param file a file to cache the audio content
      * @param id the id of the file located in the position referred in the database
      */
-    fun playFile(file: File, id: String)
+    fun playFile(file: File?, id: String)
 
     /**
      * Stop the file that is currently being played

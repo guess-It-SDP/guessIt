@@ -9,6 +9,7 @@ import com.github.freeman.bootcamp.di.AppModule
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.SCREEN_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingScreen
+import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -107,4 +108,6 @@ class GuessingTest {
     fun videoScreenForTestProvided(){
         composeRule.onNodeWithTag("agora_video_view2").assertIsDisplayed()
     }
+
+
 }

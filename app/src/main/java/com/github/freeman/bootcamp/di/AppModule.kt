@@ -27,8 +27,8 @@ class AudioRecorderImpl @Inject constructor(context: Context)
 class AudioPlayerImpl @Inject constructor(context: Context)
     :DistantAudioPlayer{
     val myPlayer = AndroidAudioPlayer(context);
-    override fun playFile(file: File, id: String) {
-        myPlayer.playFile(file,id)
+    override fun playFile(file: File?, id: String) {
+     file ?:   myPlayer.playFile(file,id)
     }
     override fun stop() {
         myPlayer.stop()

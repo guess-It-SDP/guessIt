@@ -31,9 +31,12 @@ class AndroidAudioPlayer(
      * @param file a file to cache the audio content
      * @param id the id of the file located in the position referred in the database
      */
-    override fun playFile(file: File, id: String) {
-        References.voiceNotesStorageRef.child(id).getFile(file!!.toUri()).addOnSuccessListener {
-            this.playFile(file!!)
+    override fun playFile(file: File?, id: String) {
+        if(file != null) {
+            References.voiceNotesStorageRef.child(id).getFile(file!!.toUri()).addOnSuccessListener {
+                this.playFile(file!!)
+
+            }
         }
     }
 

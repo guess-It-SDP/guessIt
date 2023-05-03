@@ -2,9 +2,12 @@ package com.github.freeman.bootcamp.di
 
 import android.content.Context
 import com.github.freeman.bootcamp.recorder.AndroidAudioPlayer
+import com.github.freeman.bootcamp.recorder.DistantAudioPlayer
 import com.github.freeman.bootcamp.recorder.DistantAudioRecorder
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import javax.inject.Singleton
@@ -14,18 +17,11 @@ import javax.inject.Singleton
     components = [SingletonComponent::class],
     replaces = [AppModule::class]
 )
-abstract class FakeAnalyticsModule {
+class FakeAppModule {
+    @Provides
+    fun provideAudioRecorder(@ApplicationContext context: Context):DistantAudioRecorder = FakeAudioRecorder()
 
-    @Singleton
-    @Binds
-    abstract fun provideAudioRecorder(
-        fakeAudioPlayer: FakeAudioPlayer
-    ): DistantAudioRecorder
-
-    @Singleton
-    @Binds
-    abstract fun provideAudioPlayer(
-        fakeAudioPlayer: FakeAudioPlayer
-    ): DistantAudioRecorder
+    @Provides
+    fun provideAudioPlayer(@ApplicationContext context: Context):DistantAudioPlayer = FakeAudioPlayer()
 
 }

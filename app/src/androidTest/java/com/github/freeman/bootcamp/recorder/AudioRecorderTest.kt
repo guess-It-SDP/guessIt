@@ -22,19 +22,14 @@ import javax.inject.Inject
 class AudioRecordingTest {
 
 
-    @get:Rule
-    var permissionRule = GrantPermissionRule.grant(android.Manifest.permission.RECORD_AUDIO)
-
-    @get:Rule
-    val composeRule =  createAndroidComposeRule<AudioRecordingActivity>()
-
-    @get:Rule
+    @get:Rule(order= 0)
     var hiltRule = HiltAndroidRule(this)
 
-    @Before
-    fun init() {
-        hiltRule.inject()
-    }
+    @get:Rule(order =1 )
+    var permissionRule = GrantPermissionRule.grant(android.Manifest.permission.RECORD_AUDIO)
+
+    @get:Rule(order=2)
+    val composeRule =  createAndroidComposeRule<AudioRecordingActivity>()
 
 
     @Test
@@ -75,15 +70,23 @@ class AudioRecordingTest {
         node("stop_recording_button").assertHasClickAction()
     }
 
-    /*
     @Test
-    fun playButtonClicked() {
+    fun clickPlay(){
         node("play_button").performClick()
-        sleep(1000)
+    }
+
+    @Test
+    fun clickRecord(){
+        node("start_recording_button").performClick()
+    }
+    @Test
+    fun clickStopPlay(){
         node("stop_button").performClick()
     }
-    */
-
+    @Test
+    fun clickStopRecord(){
+        node("stop_recording_button").performClick()
+    }
 
 
     private fun node(testTag: String): SemanticsNodeInteraction {

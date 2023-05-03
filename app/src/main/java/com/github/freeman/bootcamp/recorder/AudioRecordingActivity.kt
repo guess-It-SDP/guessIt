@@ -112,13 +112,19 @@ class AudioRecordingActivity : ComponentActivity() {
                         Text(text = START_RECORDING_BUTTON)
                     }
                     Button(onClick = {
-                        recorder.stop(audioFile!!, id!!)
+                        if(audioFile != null && id != null) {
+                            recorder.stop(audioFile!!, id!!)
+                        }
                     }, modifier = Modifier.testTag("stop_recording_button")) {
                         Text(text = STOP_RECORDING_BUTTON)
                     }
                     Button(onClick = {
                         audioFile2 = File(cacheDir, AUDIO_FILE2)
-                        player.playFile(audioFile2!!, id!!)
+                        if(audioFile2 != null) {
+                            if(id != null){
+                            player.playFile(audioFile2!!, id!!)
+                                }
+                        }
 
 
                     }, modifier = Modifier.testTag("play_button")) {
