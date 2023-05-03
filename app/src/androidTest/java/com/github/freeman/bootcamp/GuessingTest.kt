@@ -5,18 +5,26 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
+import com.github.freeman.bootcamp.di.AppModule
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.SCREEN_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingScreen
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.testing.TestInstallIn
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import javax.inject.Inject
+
 
 @RunWith(AndroidJUnit4::class)
 class GuessingTest {
+
+
     @get:Rule
     val composeRule = createComposeRule()
 
@@ -93,5 +101,10 @@ class GuessingTest {
         composeRule.onNode(hasSetTextAction()).performTextInput(answer)
         composeRule.onNodeWithTag("guessButton").performClick()
         composeRule.onNodeWithTag("popUpScreen").assertIsDisplayed()
+    }
+
+    @Test
+    fun videoScreenForTestProvided(){
+        composeRule.onNodeWithTag("agora_video_view2").assertIsDisplayed()
     }
 }

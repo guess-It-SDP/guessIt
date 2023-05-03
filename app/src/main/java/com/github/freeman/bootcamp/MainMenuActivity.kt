@@ -35,6 +35,7 @@ import com.github.freeman.bootcamp.videocall.VideoCallActivity
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.HiltAndroidApp
 
 /**
  * This class will be the main screen of the app
@@ -55,7 +56,7 @@ class MainMenuActivity : ComponentActivity() {
             // If no profile exists, sign in anonymously and creates a profile
             dbRef
                 .child(getString(R.string.profiles_path))
-                .child(userId!!)
+                .child(userId.toString())
                 .child(getString(R.string.username_path))
                 .get()
                 .addOnCompleteListener {

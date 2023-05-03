@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.di.AppModule
 import com.github.freeman.bootcamp.games.guessit.CorrectAnswerPopUp
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
@@ -66,8 +65,6 @@ import javax.inject.Singleton
  */
 class GuessingActivity : ComponentActivity() {
     private lateinit var dbrefGame: DatabaseReference
-    @Inject
-    lateinit var appModule: AppModule
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,7 +74,7 @@ class GuessingActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbrefGame, this,gameId,appModule)
+                GuessingScreen(dbrefGame, this,gameId)
             }
         }
     }
@@ -225,7 +222,7 @@ fun GuessingBar(
 
 
 @Composable
-fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String, appModule: AppModule) {
+fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String) {
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
     var timer by remember { mutableStateOf("") }
@@ -381,8 +378,8 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String
                 } else {
                     Row() {
                         BootcampComposeTheme { // Video conversation zone
+                        VideoScreen2(roomName = gameId, testing = false)
 
-                           appModule.provideVideoScreenProvider().provideVideosScreenView(roomName = gameId)
                         }
                         Image(
                             bitmap = bitmap,

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,17 +18,22 @@ import androidx.compose.ui.platform.testTag
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toFile
 import androidx.core.net.toUri
+import com.github.freeman.bootcamp.di.AppModule
+import com.github.freeman.bootcamp.di.AppModule_ProvideAudioPlayerFactory.provideAudioPlayer
+import com.github.freeman.bootcamp.di.AppModule_ProvideAudioRecorderFactory.provideAudioRecorder
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.References
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
+import javax.inject.Inject
 
 
 /**
@@ -39,6 +45,7 @@ import java.util.*
  * clicked, the audio file is downloaded from Firebase storage and played using the player property.
  * Finally, when the "Stop playing" button is clicked, the player stops playing the audio file.
  */
+@AndroidEntryPoint
 class AudioRecordingActivity : ComponentActivity() {
     var id: String? = null
 
@@ -56,6 +63,7 @@ class AudioRecordingActivity : ComponentActivity() {
     }
 
 
+    /*
     private val recorder by lazy {
         AndroidAudioRecorder(applicationContext)
     }
@@ -63,6 +71,8 @@ class AudioRecordingActivity : ComponentActivity() {
     private val player by lazy {
         AndroidAudioPlayer(applicationContext)
     }
+    */
+
 
     private var audioFile: File? = null
     private var audioFile2: File? = null
@@ -77,6 +87,8 @@ class AudioRecordingActivity : ComponentActivity() {
         val voiceNoteRef = storageRef.child("Audio/voiceNote")
         setContent {
             val context = LocalContext.current
+            var recorder :DistantAudioRecorder = provideAudioRecorder(AppModule(), LocalContext.current)
+            var player :DistantAudioPlayer = provideAudioPlayer(AppModule(), LocalContext.current)
             BootcampComposeTheme {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -101,7 +113,7 @@ class AudioRecordingActivity : ComponentActivity() {
                     }
                     Button(onClick = {
                         audioFile2 = File(cacheDir, AUDIO_FILE2)
-                            player.playFile(audioFile2!!, id!!)
+                        player.playFile(audioFile2!!, id!!)
 
 
                     }, modifier = Modifier.testTag("play_button")) {

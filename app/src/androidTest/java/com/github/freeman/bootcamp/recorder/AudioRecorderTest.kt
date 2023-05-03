@@ -4,20 +4,38 @@ package com.github.freeman.bootcamp.recorder
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.rule.GrantPermissionRule
+import com.github.freeman.bootcamp.di.AppModule
+import com.github.freeman.bootcamp.di.AppModule_ProvideAudioRecorderFactory.provideAudioRecorder
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity.Companion.PLAY_BUTTON
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity.Companion.START_RECORDING_BUTTON
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity.Companion.STOP_PLAYING
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity.Companion.STOP_RECORDING_BUTTON
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.lang.Thread.sleep
+import javax.inject.Inject
 
+@HiltAndroidTest
 class AudioRecordingTest {
+
+
     @get:Rule
     var permissionRule = GrantPermissionRule.grant(android.Manifest.permission.RECORD_AUDIO)
 
     @get:Rule
     val composeRule =  createAndroidComposeRule<AudioRecordingActivity>()
+
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
+    @Before
+    fun init() {
+        hiltRule.inject()
+    }
+
 
     @Test
     fun playButtonTextIsCorrect() {
