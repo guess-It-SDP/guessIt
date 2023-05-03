@@ -109,6 +109,7 @@ class GameOptionsActivityTest {
             }
         }
         composeRule.onNodeWithTag("createGameButton").performClick()
+        composeRule.onNodeWithTag("publicLobbyButton").performClick()
         composeRule.onNodeWithTag("gameOptionsScreen").assertIsDisplayed()
     }
 

@@ -47,7 +47,7 @@ class CreatePublicPrivateActivity: ComponentActivity() {
 
 
 @Composable
-private fun TopAppbarPublicPrivate(context: Context = LocalContext.current) {
+fun TopAppbarPublicPrivate(context: Context = LocalContext.current) {
 
     TopAppBar(
         modifier = Modifier.testTag("topAppbarPublicPrivate"),
@@ -61,7 +61,9 @@ private fun TopAppbarPublicPrivate(context: Context = LocalContext.current) {
         backgroundColor = MaterialTheme.colors.background,
         elevation = 4.dp,
         navigationIcon = {
-            IconButton(onClick = {
+            IconButton(
+                modifier = Modifier.testTag("topAppbarPublicPrivateButton"),
+                onClick = {
                 val activity = (context as? Activity)
                 activity?.finish()
             }) {
@@ -75,7 +77,7 @@ private fun TopAppbarPublicPrivate(context: Context = LocalContext.current) {
 }
 
 @Composable
-private fun MainScreen() {
+fun MainScreen() {
     Column (
         modifier = Modifier
             .fillMaxSize()
