@@ -19,14 +19,20 @@ import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.videocall.VideoCallActivity
 import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class MainMenuTest {
-    @get:Rule
+    @get:Rule(order= 0)
+    var hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order= 1)
     val composeRule = createComposeRule()
 
     @Before

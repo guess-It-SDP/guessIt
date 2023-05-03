@@ -5,7 +5,6 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.rule.GrantPermissionRule
 import com.github.freeman.bootcamp.di.AppModule
-import com.github.freeman.bootcamp.di.AppModule_ProvideAudioRecorderFactory.provideAudioRecorder
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity.Companion.PLAY_BUTTON
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity.Companion.START_RECORDING_BUTTON
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity.Companion.STOP_PLAYING
