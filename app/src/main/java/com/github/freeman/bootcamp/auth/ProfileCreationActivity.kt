@@ -77,7 +77,7 @@ fun UsernameBar(
         OutlinedTextField(
             modifier = Modifier.testTag("usernameTextField"),
             value = username,
-            onValueChange = onUsernameChange,
+            onValueChange = {if (it.length <= 20) onUsernameChange},
             label = { Text(
                 modifier = Modifier.testTag("usernameLabel"),
                 text = ENTER_USERNAME_LABEL) },
@@ -85,7 +85,8 @@ fun UsernameBar(
                 modifier = Modifier.testTag("usernamePlaceholder"),
                 text = ENTER_USERNAME_PLACEHOLDER,
                 color = Color.LightGray)
-            }
+            },
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.width(8.dp))

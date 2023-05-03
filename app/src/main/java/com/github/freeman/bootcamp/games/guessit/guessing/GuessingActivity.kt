@@ -8,14 +8,14 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -42,6 +42,7 @@ import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
+import com.github.freeman.bootcamp.utilities.rememberImeState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -178,13 +179,15 @@ fun GuessesList(guesses: Array<Guess>, dbrefGame: DatabaseReference, artistId: S
 fun GuessingBar(
     guess: String,
     onGuessChange: (String) -> Unit,
-    onSendClick: () -> Unit
+    onSendClick: () -> Unit,
+    scrollState: ScrollState
 ) {
     Surface(
         color = Color.White,
         modifier = Modifier
             .fillMaxWidth()
             .testTag("guessingBar")
+            .verticalScroll(scrollState)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -212,8 +215,18 @@ fun GuessingBar(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
+    val imeState = rememberImeState()
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(key1 = imeState.value) {
+        if (imeState.value){
+            scrollState.animateScrollTo(scrollState.maxValue)
+        }
+    }
+
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
     var timer by remember { mutableStateOf("") }
@@ -337,6 +350,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
         }
     })
 
+
     MaterialTheme {
         Column(
             modifier = Modifier
@@ -357,14 +371,14 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
                     modifier = Modifier
                         .height(400.dp)
                         .fillMaxWidth()
-                        .background(Color.DarkGray)
+                        .background(Color.White)
             ) {
                 if (topicSelection) {
                     Text(
                         text = WAITING_TEXT,
                         modifier = Modifier
                             .align(Alignment.Center),
-                        color = Color.White
+                        color = Color.DarkGray
                     )
                 } else {
                     Image(
@@ -373,12 +387,13 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.Center)
+                            //.verticalScroll(scrollState)
                     )
                 }
 
                 if (timer != context.getString(R.string.timer_unused)) {
                     val dbRefTimer = dbrefGame.child(context.getString(R.string.current_timer_path))
-                    TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.LightGray)
+                    TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.DarkGray)
                 }
 
                 ScoreScreen(dbrefGame)
@@ -410,7 +425,8 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
                             .setValue(gs)
 
                         guess = ""
-                    }
+                    },
+                    scrollState,
                 )
             }
 

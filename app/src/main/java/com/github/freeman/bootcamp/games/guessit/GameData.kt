@@ -14,7 +14,7 @@ data class Current(
     val correct_guesses: Int,
     val current_artist: String,
     val current_round: Int,
-    val current_state: String,
+    val current_state: String, //can be : "waiting for players", "topic selection", "play round", "play game", "lobby closed"
     val current_turn: Int,
     val current_timer: String //can be : "over", "inprogress", "unused"
 )
