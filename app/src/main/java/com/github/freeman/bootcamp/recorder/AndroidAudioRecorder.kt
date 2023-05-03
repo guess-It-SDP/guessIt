@@ -9,6 +9,9 @@ import com.github.freeman.bootcamp.utilities.firebase.References
 import java.io.File
 import java.io.FileOutputStream
 
+/**
+ * Cache audio from the mic and sends it to the Database.
+ */
 class AndroidAudioRecorder(
     private val context: Context
 ):DistantAudioRecorder {
@@ -21,6 +24,11 @@ class AndroidAudioRecorder(
         } else MediaRecorder()
     }
 
+
+    /**
+     * Cache an audio file recorded from the mic
+     * @param outputFile the file used to store the audio
+     */
     override fun start(outputFile: File) {
         createRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
@@ -36,6 +44,11 @@ class AndroidAudioRecorder(
         }
     }
 
+    /**
+     * Select the cached audio file and sends it to the database to the reffered id.
+     * @param audioFile the file where the audio is chached
+     * @param id the id where the file will be refered in the storage Database
+     */
     override fun stop(audioFile: File, id : String) {
         recorder?.stop()
         recorder?.reset()

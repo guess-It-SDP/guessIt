@@ -30,6 +30,15 @@ import java.nio.file.Paths
 import java.util.*
 
 
+/**
+ * First requests the user for permission to record audio
+ * Consists of four buttons: "Start recording", "Stop recording", "Play", and "Stop playing".
+ * When the "Start recording" button is clicked, the recorder property starts recording audio
+ * to a file named AUDIO_FILE. When the "Stop recording" button is clicked, the recorder stops
+ * recording and saves the recorded audio file to Firebase storage. When the "Play" button is
+ * clicked, the audio file is downloaded from Firebase storage and played using the player property.
+ * Finally, when the "Stop playing" button is clicked, the player stops playing the audio file.
+ */
 class AudioRecordingActivity : ComponentActivity() {
     var id: String? = null
 
@@ -56,14 +65,12 @@ class AudioRecordingActivity : ComponentActivity() {
     }
 
     private var audioFile: File? = null
-    private var audioFile2: File?  = null
+    private var audioFile2: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.RECORD_AUDIO),
-            0
+            this, arrayOf(Manifest.permission.RECORD_AUDIO), 0
         )
 
         val storageRef = Firebase.storage.reference
@@ -84,26 +91,27 @@ class AudioRecordingActivity : ComponentActivity() {
                         }
 
 
-                    },modifier = Modifier.testTag("start_recording_button")) {
+                    }, modifier = Modifier.testTag("start_recording_button")) {
                         Text(text = START_RECORDING_BUTTON)
                     }
                     Button(onClick = {
-                        recorder.stop(audioFile!!,id!!)
-                    },modifier = Modifier.testTag("stop_recording_button")) {
+                        recorder.stop(audioFile!!, id!!)
+                    }, modifier = Modifier.testTag("stop_recording_button")) {
                         Text(text = STOP_RECORDING_BUTTON)
                     }
                     Button(onClick = {
-                        audioFile2 =  File(cacheDir, AUDIO_FILE2)
-                        voiceNoteRef.getFile(audioFile2!!.toUri()).addOnSuccessListener {  player.playFile(audioFile2!!,id!!)
+                        audioFile2 = File(cacheDir, AUDIO_FILE2)
+                        voiceNoteRef.getFile(audioFile2!!.toUri()).addOnSuccessListener {
+                            player.playFile(audioFile2!!, id!!)
                         }
 
 
-                    },modifier = Modifier.testTag("play_button")) {
+                    }, modifier = Modifier.testTag("play_button")) {
                         Text(text = PLAY_BUTTON)
                     }
                     Button(onClick = {
                         player.stop()
-                    },modifier = Modifier.testTag("stop_button")) {
+                    }, modifier = Modifier.testTag("stop_button")) {
                         Text(text = STOP_PLAYING)
                     }
                 }
