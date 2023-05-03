@@ -24,7 +24,7 @@ android {
         versionName "1.0"
 
        // testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunner "package com.github.freeman.bootcamp.di.MyTestRunner"
+        testInstrumentationRunner "com.github.freeman.bootcamp.di.MyTestRunner"
         vectorDrawables {
             useSupportLibrary true
         }
