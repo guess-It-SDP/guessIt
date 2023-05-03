@@ -63,6 +63,11 @@ class AudioRecordingActivity : ComponentActivity() {
     }
 
 
+    @Inject
+    lateinit var recorder :DistantAudioRecorder
+
+    @Inject
+    lateinit var player :DistantAudioPlayer
     /*
     private val recorder by lazy {
         AndroidAudioRecorder(applicationContext)
@@ -87,8 +92,8 @@ class AudioRecordingActivity : ComponentActivity() {
         val voiceNoteRef = storageRef.child("Audio/voiceNote")
         setContent {
             val context = LocalContext.current
-            var recorder :DistantAudioRecorder = provideAudioRecorder(AppModule(), LocalContext.current)
-            var player :DistantAudioPlayer = provideAudioPlayer(AppModule(), LocalContext.current)
+       //     var recorder :DistantAudioRecorder = provideAudioRecorder(AppModule(), LocalContext.current)
+        //    var player :DistantAudioPlayer = provideAudioPlayer(AppModule(), LocalContext.current)
             BootcampComposeTheme {
                 Column(
                     modifier = Modifier.fillMaxSize(),
