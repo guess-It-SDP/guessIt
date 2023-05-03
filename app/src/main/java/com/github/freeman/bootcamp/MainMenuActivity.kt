@@ -55,7 +55,7 @@ class MainMenuActivity : ComponentActivity() {
             // If no profile exists, sign in anonymously and creates a profile
             dbRef
                 .child(getString(R.string.profiles_path))
-                .child(userId!!)
+                .child(userId.toString())
                 .child(getString(R.string.username_path))
                 .get()
                 .addOnCompleteListener {
