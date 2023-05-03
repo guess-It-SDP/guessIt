@@ -129,13 +129,20 @@ class GameOptionsActivityTest {
         // assertFalse(selectedTopics.isEmpty())
     }
 
+    @Test
+    fun passwordInputIsDisplayed() {
+        setGameOptionsScreen()
+
+        composeRule.onNodeWithTag("passwordInput").assertIsDisplayed()
+    }
+
     private fun setGameOptionsScreen() {
         val dbRef = initDatabase()
         dbRef.child("profiles/null/email").setValue("test@mail.abc")
         dbRef.child("profiles/null/username").setValue("test_username")
         composeRule.setContent {
             BootcampComposeTheme {
-                GameOptionsScreen(dbRef, "public")
+                GameOptionsScreen(dbRef, "private")
             }
         }
     }

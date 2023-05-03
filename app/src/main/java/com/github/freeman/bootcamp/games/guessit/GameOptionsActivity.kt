@@ -349,7 +349,9 @@ fun GameOptionsBackButton() {
 private fun PasswordInput(password: MutableState<String>) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier
+            .padding(8.dp)
+            .testTag("passwordInput")
     ) {
         TextField(
             value = password.value,
@@ -357,7 +359,7 @@ private fun PasswordInput(password: MutableState<String>) {
                 password.value = it
             },
             modifier = Modifier
-                .testTag("passwordInput"),
+                .testTag("passwordInputTextField"),
             placeholder = { Text(PASSWORD_PLACEHOLDER) },
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = Color.Transparent,
