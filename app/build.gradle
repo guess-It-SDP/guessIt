@@ -4,6 +4,10 @@ plugins {
     id 'com.google.gms.google-services'
     id 'org.jetbrains.kotlin.android'
     id 'jacoco'
+
+    // dependencies injections with dagger hilt
+    id "dagger.hilt.android.plugin"
+
 }
 
 android {
@@ -63,7 +67,7 @@ android {
         }
     }
 }
-
+apply plugin: 'kotlin-kapt' // necessary for  kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.10.0'
@@ -145,6 +149,17 @@ dependencies {
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     implementation("io.coil-kt:coil-compose:2.3.0")
 
+
+    //Navigation Compose
+    implementation "androidx.hilt:hilt-navigation-compose:$hilt_navigation_compose_version"
+    //Hilt
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+    // Hilt Android testing dependencies
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
+
+
 }
 
 tasks.withType(Test) {
@@ -158,6 +173,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'crea
         html.required = true
     }
 
+
     def fileFilter = [
             '**/R.class',
             '**/R$*.class',
@@ -165,7 +181,31 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'crea
             '**/Manifest*.*',
             '**/*Test*.*',
             'android/**/*.*',
+            '**/com/android/**',
+            '**/androidx/**',
+            '**/org/jetbrains/**',
+            '**/kotlin/**',
+            '**/META-INF/**',
+            // Wrapper activities
+            '**/wrapper/**',
+            // HILT
+            '**/di/**.*',
+            '**/*Hilt*.*',
+            'hilt_aggregated_deps/**',
+            '**/*_Factory.class',
+            '**/*_MembersInjector.class',
+            '**/*Injector*.*',
+            '**/*Module*.*',
+            '**/*Component*.*',
+            '**/*Dagger*.*',
+            '**/*$Lambda*.*',
+            '**/*$Companion*.*',
+            '**/*$*_Factory*.*',
+            '**/*_Provide*Factory*.*',
+            '**Dagger**',
+            '**Hilt**',
     ]
+
     def debugTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
     def mainSrc = "$project.projectDir/src/main/java"
 
