@@ -34,7 +34,7 @@ import java.util.*
  * First requests the user for permission to record audio
  * Consists of four buttons: "Start recording", "Stop recording", "Play", and "Stop playing".
  * When the "Start recording" button is clicked, the recorder property starts recording audio
- * to a file named AUDIO_FILE. When the "Stop recording" button is clicked, the recorder stops
+ * to a file in cache. When the "Stop recording" button is clicked, the recorder stops
  * recording and saves the recorded audio file to Firebase storage. When the "Play" button is
  * clicked, the audio file is downloaded from Firebase storage and played using the player property.
  * Finally, when the "Stop playing" button is clicked, the player stops playing the audio file.
@@ -101,9 +101,7 @@ class AudioRecordingActivity : ComponentActivity() {
                     }
                     Button(onClick = {
                         audioFile2 = File(cacheDir, AUDIO_FILE2)
-                        voiceNoteRef.getFile(audioFile2!!.toUri()).addOnSuccessListener {
                             player.playFile(audioFile2!!, id!!)
-                        }
 
 
                     }, modifier = Modifier.testTag("play_button")) {
