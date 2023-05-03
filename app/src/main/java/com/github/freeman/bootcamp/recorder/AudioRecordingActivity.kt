@@ -17,9 +17,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toFile
 import androidx.core.net.toUri
-import com.bumptech.glide.Glide
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.utilities.firebase.References
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -27,10 +27,11 @@ import java.io.File
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
-
+import java.util.*
 
 
 class AudioRecordingActivity : ComponentActivity() {
+    var id: String? = null
 
     fun downloadFile(url: URL, fileName: String) {
         url.openStream().use { Files.copy(it, Paths.get(fileName)) }
@@ -76,6 +77,7 @@ class AudioRecordingActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Button(onClick = {
+                        id = UUID.randomUUID().toString()
                         File(cacheDir, AUDIO_FILE).also {
                             recorder.start(it)
                             audioFile = it
@@ -86,16 +88,13 @@ class AudioRecordingActivity : ComponentActivity() {
                         Text(text = START_RECORDING_BUTTON)
                     }
                     Button(onClick = {
-                        recorder.stop()
-                        if(audioFile!= null) {
-                            voiceNoteRef.putFile(audioFile!!.toUri())
-                        }
+                        recorder.stop(audioFile!!,id!!)
                     },modifier = Modifier.testTag("stop_recording_button")) {
                         Text(text = STOP_RECORDING_BUTTON)
                     }
                     Button(onClick = {
                         audioFile2 =  File(cacheDir, AUDIO_FILE2)
-                        voiceNoteRef.getFile(audioFile2!!.toUri()).addOnSuccessListener {  player.playFile(audioFile2!!)
+                        voiceNoteRef.getFile(audioFile2!!.toUri()).addOnSuccessListener {  player.playFile(audioFile2!!,id!!)
                         }
 
 

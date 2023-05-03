@@ -4,12 +4,14 @@ import android.content.Context
 import android.media.MediaRecorder
 import android.os.Build
 import android.provider.MediaStore.Audio.Media
+import androidx.core.net.toUri
+import com.github.freeman.bootcamp.utilities.firebase.References
 import java.io.File
 import java.io.FileOutputStream
 
 class AndroidAudioRecorder(
     private val context: Context
-): AudioRecorder {
+):DistantAudioRecorder {
 
     private var recorder: MediaRecorder? = null
 
@@ -34,9 +36,12 @@ class AndroidAudioRecorder(
         }
     }
 
-    override fun stop() {
+    override fun stop(audioFile: File, id : String) {
         recorder?.stop()
         recorder?.reset()
         recorder = null
+        if(audioFile!= null) {
+            References.voiceNotesStorageRef.child(id).putFile(audioFile!!.toUri())
+        }
     }
 }
