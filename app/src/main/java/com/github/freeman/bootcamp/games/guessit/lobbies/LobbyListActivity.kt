@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.EditDialog
 import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.PRIVATE_TYPE_TEXT
 import com.github.freeman.bootcamp.games.guessit.lobbies.LobbyListActivity.Companion.DEFAULT_ID
 import com.github.freeman.bootcamp.games.guessit.lobbies.LobbyListActivity.Companion.DEFAULT_LOBBY
 import com.github.freeman.bootcamp.games.guessit.lobbies.LobbyListActivity.Companion.DEFAULT_NB_PLAYER
@@ -77,6 +78,7 @@ class LobbyListActivity: ComponentActivity() {
                         }
                     }
 
+                    // Shows the dialog when a private lobby is clicked
                     if (enterPassword.value) {
                         val context = LocalContext.current
                         val userId = Firebase.auth.uid
@@ -196,13 +198,13 @@ fun ListItem(
             Column (
                 horizontalAlignment = Alignment.End
             ) {
-                if(lobby.type == "private") {
+                if(lobby.type == PRIVATE_TYPE_TEXT) {
                     Icon(
                         Icons.Filled.Lock,
-                        contentDescription = "private"
+                        contentDescription = PRIVATE_TYPE_TEXT
                     )
                 } else {
-                    // This empty text is to place the players text on the bottom
+                    // This empty text is to place the "players" text on the bottom
                     Text(
                         text = "",
                         fontWeight = FontWeight.Normal,
@@ -282,16 +284,12 @@ fun LobbyList(database: DatabaseReference, enterPassword: MutableState<Boolean>,
                     lobby = lobby,
                     backgroundColor = Color.White,
                     onItemClick = {
-                        if (lobby.type == "private") {
+                        if (lobby.type == PRIVATE_TYPE_TEXT) {
                             defaultLobby.value = lobby
                             enterPassword.value = true
                         } else {
                             joinLobby(context, dbRef, userId.toString(), lobby)
                         }
-
-
-                        // joins a lobby
-//                        joinLobby(context, dbRef, userId.toString(), lobby)
                     },
                 )
             }
@@ -299,6 +297,14 @@ fun LobbyList(database: DatabaseReference, enterPassword: MutableState<Boolean>,
     }
 }
 
+/**
+ * Makes a player join a lobby
+ *
+ * @param context current context of the app
+ * @param dbRef database reference
+ * @param userId firebase auth id of the user
+ * @param lobby the lobby to join
+ */
 fun joinLobby(context: Context, dbRef: DatabaseReference, userId: String, lobby: Lobby) {
         dbRef
             .child(lobby.id)

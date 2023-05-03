@@ -37,6 +37,8 @@ import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.c
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedCategory
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedTopics
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selection
+import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.PRIVATE_TYPE_TEXT
+import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.TYPE_TEXT
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
@@ -50,13 +52,17 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.util.*
 
+/**
+ * Displays a screen where a player that wants to create a lobby will use in order
+ * to choose different options for the game
+ */
 class GameOptionsActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val dbRef = Firebase.database.reference
-        val lobbyType = intent.getStringExtra("type").toString()
+        val lobbyType = intent.getStringExtra(TYPE_TEXT).toString()
 
         setContent {
             BootcampComposeTheme {
@@ -391,7 +397,7 @@ fun GameOptionsScreen(dbRef: DatabaseReference, lobbyType: String) {
         )
         RoundsDisplay()
 
-        if (lobbyType == "private") {
+        if (lobbyType == PRIVATE_TYPE_TEXT) {
             PasswordInput(password)
         }
         NextButton(dbRef, lobbyType, password.value)
