@@ -98,7 +98,7 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
             .testTag("guessItem")
     ) {
         val userId = Firebase.auth.currentUser?.uid
-        if (guess.guess?.lowercase() == answer.lowercase() && guess.guesserId == userId) {
+        if (guess.message?.lowercase() == answer.lowercase() && guess.guesserId == userId) {
             val dbGuesserScoreRef = dbrefGame
                 .child(context.getString(R.string.players_path))
                 .child(userId.toString())
@@ -151,7 +151,11 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
 
         }
 
-        Text(text = "${guess.guesser} tries \"${guess.guess}\"")
+        if (!(guess.message?.lowercase() == GuessingActivity.answer.lowercase() && guess.guesserId == userId)) {
+            Text(text = "${guess.guesser} : ${guess.message}")
+        } else {
+            Text(text = "${guess.guesser} : ****")
+        }
     }
 }
 
@@ -402,7 +406,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
                     guess = guess,
                     onGuessChange = { guess = it },
                     onSendClick = {
-                        val gs = Guess(guesser = username, guesserId = uid, guess = guess)
+                        val gs = Guess(guesser = username, guesserId = uid, message = guess)
                         val guessId = guesses.size.toString()
                         dbrefGame
                             .child(context.getString(R.string.guesses_path))
