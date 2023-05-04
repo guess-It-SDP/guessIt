@@ -345,7 +345,9 @@ private fun prepareOptionsData(context: Context) {
             icon = appIcons.PlayArrow,
             title = "Game Stats",
             subTitle = "Check your Game statistics",
-            clickAction = {  }
+            clickAction = {
+                context.startActivity(Intent(context, SettingsActivity::class.java))
+            }
         )
     )
 
@@ -355,8 +357,7 @@ private fun prepareOptionsData(context: Context) {
             title = "Parameters",
             subTitle = "App parameters",
             clickAction = {
-                context.startActivity(Intent(context, SettingsActivity::class.java)
-                )
+                context.startActivity(Intent(context, SettingsActivity::class.java))
             }
         )
     )
