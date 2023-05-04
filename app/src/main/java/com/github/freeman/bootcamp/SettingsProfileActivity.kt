@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.SettingsActivity.Companion.SETTINGS_TITLE
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
+import com.github.freeman.bootcamp.games.guessit.StatsActivity
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.auth.ktx.auth
@@ -345,7 +346,9 @@ private fun prepareOptionsData(context: Context) {
             icon = appIcons.PlayArrow,
             title = "Game Stats",
             subTitle = "Check your Game statistics",
-            clickAction = {  }
+            clickAction = {
+                context.startActivity(Intent(context, StatsActivity::class.java))
+            }
         )
     )
 
@@ -355,8 +358,7 @@ private fun prepareOptionsData(context: Context) {
             title = "Parameters",
             subTitle = "App parameters",
             clickAction = {
-                context.startActivity(Intent(context, SettingsActivity::class.java)
-                )
+                context.startActivity(Intent(context, SettingsActivity::class.java))
             }
         )
     )
