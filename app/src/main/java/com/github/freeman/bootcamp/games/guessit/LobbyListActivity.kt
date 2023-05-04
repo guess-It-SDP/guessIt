@@ -115,7 +115,6 @@ fun TopAppbarLobbies(context: Context = LocalContext.current) {
 @Composable
 fun ListItem(
     modifier: Modifier = Modifier,
-    dbRef: DatabaseReference,
     lobby: Lobby = Lobby(DEFAULT_ID, DEFAULT_LOBBY, DEFAULT_NB_PLAYER, DEFAULT_NB_ROUND),
     backgroundColor: Color = Color.LightGray,
     onItemClick: () -> Unit = {}
@@ -240,7 +239,6 @@ fun LobbyList(database: DatabaseReference) {
             items(lobbies.toList()) { lobby ->
                 ListItem(
                     lobby = lobby,
-                    dbRef = dbRef,
                     backgroundColor = Color.White,
                     onItemClick = {
                         // joins a lobby
