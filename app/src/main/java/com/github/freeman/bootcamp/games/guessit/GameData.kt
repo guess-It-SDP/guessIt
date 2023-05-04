@@ -20,6 +20,8 @@ data class Current(
 )
 
 data class Parameters(
+    val type: String,
+    val password: String,
     val category: String,
     val host_id: String,
     val nb_players: Int,
@@ -27,5 +29,6 @@ data class Parameters(
 )
 
 data class Player(
-    val score: Int
+    val score: Int,
+    val kicked: Boolean
 )

@@ -1,10 +1,11 @@
-package com.github.freeman.bootcamp.games.guessit
+package com.github.freeman.bootcamp.games.guessit.lobbies
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -23,11 +24,13 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,21 +38,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.CATEGORY_INFO
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.NB_ROUNDS_INFO
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.START_GAME
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.TOPBAR_TEXT
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
+import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.CATEGORY_INFO
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.KICKED
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.NB_ROUNDS_INFO
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.START_GAME
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.TOPBAR_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.storageGet
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
@@ -67,6 +69,7 @@ class WaitingRoomActivity: ComponentActivity() {
         val userId = Firebase.auth.uid
 
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
+
         val allTopics = ArrayList<String>()
 
         val database = Firebase.database.reference
@@ -191,6 +194,8 @@ class WaitingRoomActivity: ComponentActivity() {
                         dbRef = database,
                         storageRef = storage,
                         players = players,
+                        hostId = hostId.value,
+                        gameId = gameId
                     )
 
                     StartButton(
@@ -226,6 +231,7 @@ class WaitingRoomActivity: ComponentActivity() {
         const val CATEGORY_INFO = "Category :"
         const val NB_ROUNDS_INFO = "Number of rounds :"
         const val START_GAME = "Start"
+        const val KICKED = "You have been kicked by host"
     }
 }
 
@@ -381,7 +387,9 @@ fun PlayerList(
     modifier: Modifier = Modifier,
     dbRef: DatabaseReference,
     storageRef: StorageReference,
-    players: MutableCollection<String>
+    players: MutableCollection<String>,
+    hostId: String,
+    gameId: String
 ) {
     val context = LocalContext.current
 
@@ -418,17 +426,58 @@ fun PlayerList(
             PlayerDisplay(
                 player = PlayerData(
                     name = username.value,
+                    id = playerId,
                     picture = picture.value
-                )
+                ),
+                hostId = hostId,
+                dbRef = dbRef,
+                gameId = gameId,
+                context = LocalContext.current
             )
         }
     }
-
-
 }
 
 @Composable
-fun PlayerDisplay(player: PlayerData) {
+fun PlayerDisplay(player: PlayerData, hostId: String, dbRef: DatabaseReference, gameId: String,
+                  context: Context) {
+    val playerId = player.id
+    val currentUserId = Firebase.auth.currentUser?.uid
+    val kickedRef = dbRef
+        .child(context.getString(R.string.games_path))
+        .child(gameId)
+        .child(context.getString(R.string.players_path))
+        .child(playerId)
+        .child(context.getString(R.string.kicked_path))
+
+    kickedRef.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                val kicked = snapshot.getValue<Boolean>()
+                if (kicked != null && kicked) {
+                    // Remove the given player from the player list if the player is kicked
+                    dbRef
+                        .child(context.getString(R.string.games_path))
+                        .child(gameId)
+                        .child(context.getString(R.string.players_path))
+                        .child(playerId)
+                        .removeValue()
+
+                    // Send the kicked player back to the lobby list
+                    if (currentUserId == playerId) {
+                        Toast.makeText(context, KICKED, Toast.LENGTH_SHORT).show()
+                        val activity = (context as? Activity)
+                        activity?.finish()
+                    }
+                }
+            }
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            // No particular action needs to be taken in this case
+        }
+    })
+
     Row(
         modifier = Modifier
             .testTag("playerDisplay")
@@ -448,7 +497,6 @@ fun PlayerDisplay(player: PlayerData) {
                 .size(100.dp)
                 .padding(10.dp)
                 .clip(CircleShape)
-
         )
 
         // user's name
@@ -471,6 +519,34 @@ fun PlayerDisplay(player: PlayerData) {
                     overflow = TextOverflow.Ellipsis
                 )
             }
+
+            //  Only display the kick button if the player in question is not the host
+            if (playerId != hostId) {
+                val currentPlayerIsHost = currentUserId == hostId
+                val visibility = if (currentPlayerIsHost) 1f else 0f
+
+                ElevatedButton(
+                    modifier = Modifier
+                        .alpha(visibility) // Make the button visible for only the host
+                        .testTag("kickButton$playerId"),
+                    enabled = currentPlayerIsHost, // Only enable the button for the host
+                    onClick = {
+                        kickedRef.setValue(true)
+                    }) {
+                    Image(
+                        painterResource(id = R.drawable.kick_player_boot),
+                        contentDescription = "Kick button icon",
+                        modifier = Modifier
+                            .size(20.dp)
+                            .testTag("kickBoot$playerId")
+                    )
+
+                    Text(
+                        text= "Kick",
+                        modifier = Modifier.padding(start = 5.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -490,8 +566,6 @@ fun StartButton(
     databaseGet(dbRef.child(context.getString(R.string.param_host_id_path))).thenAccept {
         hostId.value = it
     }
-
-
 
     Column (
         modifier = Modifier
@@ -524,5 +598,6 @@ fun StartButton(
  */
 data class PlayerData(
     val name: String,
+    val id: String,
     val picture: Bitmap?
 )

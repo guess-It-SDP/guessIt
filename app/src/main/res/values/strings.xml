@@ -65,6 +65,7 @@
     <string name="guesses_path">guesses</string>
     <string name="players_path">players</string>
     <string name="score_path">score</string>
+    <string name="kicked_path">kicked</string>
     <string name="uid_path">uid</string>
     <string name="email_path">email</string>
     <string name="lobby_name_path">lobby_name</string>
@@ -72,6 +73,8 @@
 
     <!-- Strings used for extra between activities -->
     <string name="gameId_extra">gameId</string>
+    <string name="type_extra">type</string>
+    <string name="password_extra">password</string>
     <string name="gameId_testing">testing</string>
 
     <!-- current_state states -->

@@ -1,9 +1,10 @@
-package com.github.freeman.bootcamp.games.guessit
+package com.github.freeman.bootcamp.games.guessit.lobbies
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -15,28 +16,31 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.freeman.bootcamp.EditDialog
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.DEFAULT_ID
-import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.DEFAULT_LOBBY
-import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.DEFAULT_NB_PLAYER
-import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.DEFAULT_NB_ROUND
-import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.START_SCORE
-import com.github.freeman.bootcamp.games.guessit.LobbyListActivity.Companion.TOPBAR_TEXT
+import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.PRIVATE_TYPE_TEXT
+import com.github.freeman.bootcamp.games.guessit.lobbies.LobbyListActivity.Companion.DEFAULT_ID
+import com.github.freeman.bootcamp.games.guessit.lobbies.LobbyListActivity.Companion.DEFAULT_LOBBY
+import com.github.freeman.bootcamp.games.guessit.lobbies.LobbyListActivity.Companion.DEFAULT_NB_PLAYER
+import com.github.freeman.bootcamp.games.guessit.lobbies.LobbyListActivity.Companion.DEFAULT_NB_ROUND
+import com.github.freeman.bootcamp.games.guessit.lobbies.LobbyListActivity.Companion.DEFAULT_PASSWORD
+import com.github.freeman.bootcamp.games.guessit.lobbies.LobbyListActivity.Companion.DEFAULT_TYPE
+import com.github.freeman.bootcamp.games.guessit.lobbies.LobbyListActivity.Companion.START_SCORE
+import com.github.freeman.bootcamp.games.guessit.lobbies.LobbyListActivity.Companion.TOPBAR_TEXT
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ChildEventListener
@@ -59,6 +63,10 @@ class LobbyListActivity: ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
+                val password = remember { mutableStateOf("") }
+                val enterPassword = remember { mutableStateOf(false) }
+                val lobby = remember { mutableStateOf(Lobby("", "", 0, 0, "", "")) }
+
                 Column {
                     TopAppbarLobbies()
 
@@ -66,7 +74,28 @@ class LobbyListActivity: ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = Color(0xFFF1F1F1)
                     ) {
-                        LobbyList(dbRef)
+                        if (!enterPassword.value) {
+                            LobbyList(dbRef, enterPassword, lobby)
+                        }
+                    }
+
+                    // Shows the dialog when a private lobby is clicked
+                    if (enterPassword.value) {
+                        val context = LocalContext.current
+                        val userId = Firebase.auth.uid
+                        EditDialog(
+                            text = password,
+                            setValue = ENTER_PASSWORD_TEXT,
+                            enterValue = PASSWORD_TEXT,
+                            show = enterPassword,
+                            keyboardType = KeyboardType.NumberPassword
+                        ) {
+                            if (lobby.value.password == it) {
+                                joinLobby(context, dbRef.child(context.getString(R.string.games_path)), userId.toString(), lobby.value)
+                            } else {
+                                Toast.makeText(context, WRONG_PASSWORD_TEXT, Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
                 }
             }
@@ -79,7 +108,12 @@ class LobbyListActivity: ComponentActivity() {
         const val DEFAULT_LOBBY = "default lobby"
         const val DEFAULT_NB_PLAYER = 0
         const val DEFAULT_NB_ROUND = 0
+        const val DEFAULT_TYPE = "public"
+        const val DEFAULT_PASSWORD = ""
         const val START_SCORE = 0
+        const val ENTER_PASSWORD_TEXT = "Enter password"
+        const val PASSWORD_TEXT = "password"
+        const val WRONG_PASSWORD_TEXT = "Wrong password !"
     }
 
 }
@@ -115,7 +149,7 @@ fun TopAppbarLobbies(context: Context = LocalContext.current) {
 @Composable
 fun ListItem(
     modifier: Modifier = Modifier,
-    lobby: Lobby = Lobby(DEFAULT_ID, DEFAULT_LOBBY, DEFAULT_NB_PLAYER, DEFAULT_NB_ROUND),
+    lobby: Lobby = Lobby(DEFAULT_ID, DEFAULT_LOBBY, DEFAULT_NB_PLAYER, DEFAULT_NB_ROUND, DEFAULT_TYPE, DEFAULT_PASSWORD),
     backgroundColor: Color = Color.LightGray,
     onItemClick: () -> Unit = {}
 ) {
@@ -123,7 +157,6 @@ fun ListItem(
 
     val nbPlayer = remember { mutableStateOf(lobby.nbPlayer) }
     val nbPlayerRef = getGameDBRef(context, lobby.id).child(context.getString(R.string.param_nb_players_path))
-
 
     // changes dynamically the number of players in a lobby
     nbPlayerRef.addValueEventListener(object : ValueEventListener {
@@ -137,7 +170,6 @@ fun ListItem(
             // do nothing
         }
     })
-
 
     Column(
         modifier = modifier
@@ -170,18 +202,36 @@ fun ListItem(
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "players : ${nbPlayer.value}/5",
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp
-            )
+            Column (
+                horizontalAlignment = Alignment.End
+            ) {
+                if(lobby.type == PRIVATE_TYPE_TEXT) {
+                    Icon(
+                        Icons.Filled.Lock,
+                        contentDescription = PRIVATE_TYPE_TEXT
+                    )
+                } else {
+                    // This empty text is to place the "players" text on the bottom
+                    Text(
+                        text = "",
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "players : ${nbPlayer.value}",
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp
+                )
+            }
 
         }
     }
 }
 
 @Composable
-fun LobbyList(database: DatabaseReference) {
+fun LobbyList(database: DatabaseReference, enterPassword: MutableState<Boolean>, defaultLobby: MutableState<Lobby>) {
     val context = LocalContext.current
     val dbRef = database.child(context.getString(R.string.games_path))
     val userId = Firebase.auth.uid
@@ -197,17 +247,18 @@ fun LobbyList(database: DatabaseReference) {
                     val lobbyName = gameInfo["lobby_name"] as String
                     val nbPlayer = ((gameInfo["parameters"] as HashMap<*, *>)["nb_players"] as Long).toInt()
                     val nbRounds = ((gameInfo["parameters"] as HashMap<*, *>)["nb_rounds"] as Long).toInt()
+                    val type = ((gameInfo["parameters"] as HashMap<*, *>)["type"] as String)
+                    val password = ((gameInfo["parameters"] as HashMap<*, *>)["password"] as String)
 
                     if (nbPlayer == 0) {
                         dbRef.child(id).removeValue()
                     } else {
-                        lobbies.add(Lobby(id, lobbyName, nbPlayer, nbRounds))
+                        lobbies.add(Lobby(id, lobbyName, nbPlayer, nbRounds, type, password))
                     }
                 } catch (_: Exception) {
 
                 }
             }
-
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
@@ -219,7 +270,6 @@ fun LobbyList(database: DatabaseReference) {
                     lobbies.remove(lobby)
                 }
             }
-
         }
 
         override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -241,29 +291,45 @@ fun LobbyList(database: DatabaseReference) {
                     lobby = lobby,
                     backgroundColor = Color.White,
                     onItemClick = {
-                        // joins a lobby
-                        val dbrefNbPlayers = dbRef
-                            .child(lobby.id)
-                            .child(context.getString(R.string.param_nb_players_path))
-
-                        databaseGet(dbrefNbPlayers)
-                            .thenAccept {
-                                dbRef
-                                    .child(lobby.id)
-                                    .child(context.getString(R.string.players_path))
-                                    .child(userId.toString())
-                                    .child(context.getString(R.string.score_path))
-                                    .setValue(START_SCORE)
-
-                                val intent = Intent(context, WaitingRoomActivity::class.java)
-                                    .putExtra(context.getString(R.string.gameId_extra), lobby.id)
-                                context.startActivity(intent)
-                            }
+                        if (lobby.type == PRIVATE_TYPE_TEXT) {
+                            defaultLobby.value = lobby
+                            enterPassword.value = true
+                        } else {
+                            joinLobby(context, dbRef, userId.toString(), lobby)
+                        }
                     },
                 )
             }
         }
     }
+}
+
+/**
+ * Makes a player join a lobby
+ *
+ * @param context current context of the app
+ * @param dbRef database reference
+ * @param userId firebase auth id of the user
+ * @param lobby the lobby to join
+ */
+fun joinLobby(context: Context, dbRef: DatabaseReference, userId: String, lobby: Lobby) {
+        dbRef
+            .child(lobby.id)
+            .child(context.getString(R.string.players_path))
+            .child(userId)
+            .child(context.getString(R.string.score_path))
+            .setValue(START_SCORE)
+        dbRef
+            .child(lobby.id)
+            .child(context.getString(R.string.players_path))
+            .child(userId)
+            .child("kicked")
+            .setValue(false)
+
+        val intent = Intent(context, WaitingRoomActivity::class.java)
+            .putExtra(context.getString(R.string.gameId_extra), lobby.id)
+        context.startActivity(intent)
+
 }
 
 /**
@@ -278,5 +344,7 @@ data class Lobby(
     val id: String,
     val name: String,
     val nbPlayer: Int,
-    val nbRounds: Int
+    val nbRounds: Int,
+    val type: String,
+    val password: String
 )

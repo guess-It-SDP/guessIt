@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp.games.guessit
+package com.github.freeman.bootcamp.games.guessit.lobbies
 
 import android.app.Activity
 import android.content.Context
@@ -21,9 +21,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity.Companion.CREATE_GAME_BUTTON_TEXT
-import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity.Companion.JOINING_GAME_BUTTON_TEXT
-import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity.Companion.TOPBAR_TEXT
+import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity.Companion.CREATE_GAME_BUTTON_TEXT
+import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity.Companion.JOINING_GAME_BUTTON_TEXT
+import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity.Companion.TOPBAR_TEXT
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 /**
@@ -110,7 +110,7 @@ fun CreateGameButton() {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag(context.getString(R.string.createjoin_creategame)),
-        onClick = { context.startActivity(Intent(context, GameOptionsActivity::class.java)) }
+        onClick = { context.startActivity(Intent(context, CreatePublicPrivateActivity::class.java)) }
     ) {
         Text(CREATE_GAME_BUTTON_TEXT)
     }
