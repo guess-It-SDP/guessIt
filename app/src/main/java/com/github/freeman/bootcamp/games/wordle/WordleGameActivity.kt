@@ -185,6 +185,7 @@ class WordleGameActivity : ComponentActivity() {
         ) {
             GreetingInput(msg)
             IconButton(
+                modifier = Modifier.testTag("submitWordButton"),
                 onClick = {
                     val tx = msg.text.lowercase().replace("\\s".toRegex(), "")
                     if (submit(tx)) {
