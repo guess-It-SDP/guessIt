@@ -8,10 +8,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.TopAppBar
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ElevatedButton
@@ -19,14 +17,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.ACCOUNT_DELETED_INFO
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.CANCEL_BUTTON
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.DELETE_BUTTON
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.DELETION_WARNING_TEXT
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.DELETION_WARNING_TITLE
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.GOOGLE_SIGN_IN_BUTTON
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.GOOGLE_SIGN_OUT_BUTTON
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.PROFILE_DELETION_BUTTON
@@ -131,13 +139,18 @@ class FirebaseAuthActivity : ComponentActivity() {
 
         const val DEFAULT_NAME = "Guest"
         const val SCREEN_TITLE = "Account"
-    }
 
+        const val DELETE_BUTTON = "Delete"
+        const val CANCEL_BUTTON = "Cancel"
+        const val DELETION_WARNING_TITLE = "Warning"
+        const val DELETION_WARNING_TEXT = "This action will completely delete your account with all data of your previous games.\n\nAre you sure you want to continue?"
+    }
 
     /**
      * Deletes the 'Guess It!' account from the device
      */
     fun deleteAccount(signInInfo: MutableState<String>, onDeleted: () -> Unit = {}) {
+
         //delete profile from 'Realtime Database' Firebase
         val uid = Firebase.auth.currentUser?.uid
         val dbrefProfile = Firebase.database.reference
@@ -226,9 +239,80 @@ fun TopAppbarAccount(context: Context = LocalContext.current) {
     )
 }
 
+/**
+ * An alert which pops up when a user clicks to the account deletion button to be sure he/she want to continue
+ * @param signInInfo the sign in info (authenticated as, not signed in, etc) which will be displayed on the screen
+ * @param currentUser the current user of the app
+ * @param show true if the warning need to be shown, becomes false when it needs to be closed
+ */
+@Composable
+fun WarningDeletion(signInInfo: MutableState<String>, currentUser: MutableState<FirebaseUser?>, show: MutableState<Boolean>) {
+    val context = LocalContext.current
+
+    AlertDialog(
+        title = {
+            Text(
+                text = DELETION_WARNING_TITLE,
+                style = TextStyle(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        },
+        text = {
+            Text(DELETION_WARNING_TEXT)
+        },
+        onDismissRequest = {
+            show.value = false },
+        confirmButton = {
+            Button(
+                onClick = {
+                    (context as? FirebaseAuthActivity)?.deleteAccount(signInInfo) {
+                        (context as? FirebaseAuthActivity)?.signInAnonymously(context, currentUser)
+                    }
+                    show.value = false
+                },
+                shape = RoundedCornerShape(50.dp),
+                modifier = Modifier
+                    .testTag("deleteButton")
+            ) {
+                Text(
+                    text = DELETE_BUTTON,
+                    color = Color.White
+                )
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = {
+                    show.value = false
+                },
+                shape = RoundedCornerShape(50.dp),
+                modifier = Modifier
+                    .testTag("cancelButton")
+            ) {
+                Text(
+                    text = CANCEL_BUTTON,
+                    color = Color.White
+                )
+            }
+        }
+    )
+}
+
+/**
+ * Display authentication info and authentication buttons depending on the user authentication state
+ * @param signInInfo the sign in info that will be displayed
+ * @param currentUser the current user, can be anonymous
+ */
 @Composable
 fun AuthenticationForm(signInInfo: MutableState<String>, currentUser: MutableState<FirebaseUser?>) {
     val context = LocalContext.current
+    val alertOpen = remember { mutableStateOf(false) }
+
+    if (alertOpen.value) {
+        WarningDeletion(signInInfo, currentUser, alertOpen)
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -279,9 +363,7 @@ fun AuthenticationForm(signInInfo: MutableState<String>, currentUser: MutableSta
                 ElevatedButton(
                     modifier = Modifier.testTag("delete_button"),
                     onClick = {
-                        (context as? FirebaseAuthActivity)?.deleteAccount(signInInfo) {
-                            (context as? FirebaseAuthActivity)?.signInAnonymously(context, currentUser)
-                        }
+                        alertOpen.value = true
                     })
                 { Text(PROFILE_DELETION_BUTTON) }
             }

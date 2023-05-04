@@ -56,8 +56,8 @@ class FirebaseAuthActivityTest {
         )
         val googleText = device.findObject(UiSelector().textContains(""))
         assert(googleText.exists())
-
-
     }
+
+
 
 }
