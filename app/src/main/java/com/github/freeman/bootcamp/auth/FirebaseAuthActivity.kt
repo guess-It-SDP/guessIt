@@ -250,6 +250,7 @@ fun WarningDeletion(signInInfo: MutableState<String>, currentUser: MutableState<
     val context = LocalContext.current
 
     AlertDialog(
+        modifier = Modifier.testTag("deletionAlertDialog"),
         title = {
             Text(
                 text = DELETION_WARNING_TITLE,
