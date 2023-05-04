@@ -31,7 +31,7 @@ class StatsTest {
     val composeRule = createComposeRule()
 
     @Before
-    fun startMainActivityFromHomeScreen() {
+    fun startStatsActivityFromHomeScreen() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         device = UiDevice.getInstance(instrumentation)
 
