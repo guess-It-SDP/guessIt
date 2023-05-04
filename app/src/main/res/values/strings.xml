@@ -81,6 +81,8 @@
 
     <!-- Strings used for extra between activities -->
     <string name="gameId_extra">gameId</string>
+    <string name="type_extra">type</string>
+    <string name="password_extra">password</string>
     <string name="gameId_testing">testing</string>
 
     <!-- current_state states -->
