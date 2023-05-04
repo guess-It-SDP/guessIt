@@ -27,6 +27,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
         <activity
             android:name=".games.guessit.TimerActivity"
             android:exported="false">
@@ -109,22 +110,29 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".games.guessit.CreateJoinActivity"
-            android:exported="false">
+            android:name=".games.guessit.lobbies.CreateJoinActivity"
+            android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".games.guessit.LobbyListActivity"
-            android:exported="false">
+            android:name=".games.guessit.lobbies.LobbyListActivity"
+            android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".games.guessit.WaitingRoomActivity"
-            android:exported="false">
+            android:name=".games.guessit.lobbies.WaitingRoomActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".games.guessit.lobbies.CreatePublicPrivateActivity"
+            android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
