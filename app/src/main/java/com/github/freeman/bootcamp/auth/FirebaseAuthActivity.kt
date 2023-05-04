@@ -254,6 +254,7 @@ fun WarningDeletion(signInInfo: MutableState<String>, currentUser: MutableState<
         title = {
             Text(
                 text = DELETION_WARNING_TITLE,
+                modifier = Modifier.testTag("deletionAlertTitle"),
                 style = TextStyle(
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
@@ -261,7 +262,10 @@ fun WarningDeletion(signInInfo: MutableState<String>, currentUser: MutableState<
             )
         },
         text = {
-            Text(DELETION_WARNING_TEXT)
+            Text(
+                text = DELETION_WARNING_TEXT,
+                modifier = Modifier.testTag("deletionAlertText")
+            )
         },
         onDismissRequest = {
             show.value = false },

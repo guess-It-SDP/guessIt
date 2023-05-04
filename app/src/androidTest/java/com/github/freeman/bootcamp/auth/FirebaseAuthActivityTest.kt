@@ -88,6 +88,15 @@ class FirebaseAuthActivityTest {
         composeRule.onNodeWithTag("deletionAlertDialog").assertIsDisplayed()
         composeRule.onNodeWithTag("deleteButton").assertIsDisplayed()
         composeRule.onNodeWithTag("cancelButton").assertIsDisplayed()
+        composeRule.onNodeWithTag("deletionAlertTitle").assertIsDisplayed()
+        composeRule.onNodeWithTag("deletionAlertText").assertIsDisplayed()
+    }
+
+    @Test
+    fun deletionWarningContainsCorrectText() {
+        initDeletionWarning()
+        composeRule.onNodeWithTag("deletionAlertTitle").assertTextContains(FirebaseAuthActivity.DELETION_WARNING_TITLE)
+        composeRule.onNodeWithTag("deletionAlertText").assertTextContains(FirebaseAuthActivity.DELETION_WARNING_TEXT)
     }
 
     @Test
@@ -100,8 +109,8 @@ class FirebaseAuthActivityTest {
     @Test
     fun cancelDeletionButtonContainsCorrectText() {
         initDeletionWarning()
-        composeRule.onNodeWithTag("cancelButton").assertHasClickAction()
         composeRule.onNodeWithTag("cancelButton").assertTextContains(CANCEL_BUTTON)
+        composeRule.onNodeWithTag("cancelButton").assertHasClickAction()
     }
 
 }
