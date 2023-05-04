@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -34,6 +35,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -248,7 +250,14 @@ fun TopAppbarEditProfile(context: Context = LocalContext.current) {
 
 // Dialog that edits any field given in argument
 @Composable
-fun EditDialog(text: MutableState<String>, setValue: String = SET_VALUE, enterValue: String = ENTER_VALUE, show: MutableState<Boolean>, updateData: (String) -> Unit) {
+fun EditDialog(
+    text: MutableState<String>,
+    setValue: String = SET_VALUE,
+    enterValue: String = ENTER_VALUE,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    show: MutableState<Boolean>,
+    updateData: (String) -> Unit
+) {
 
     val txtFieldError = remember { mutableStateOf("") }
     val txtField = remember { mutableStateOf(text.value) }
@@ -293,6 +302,7 @@ fun EditDialog(text: MutableState<String>, setValue: String = SET_VALUE, enterVa
                     Spacer(modifier = Modifier.height(20.dp))
 
                     TextField(
+                        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
                         modifier = Modifier
                             .testTag("dialogTextField")
                             .fillMaxWidth()

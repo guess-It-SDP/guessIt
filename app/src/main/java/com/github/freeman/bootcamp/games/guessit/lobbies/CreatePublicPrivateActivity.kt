@@ -18,13 +18,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.PRIVATE_BUTTON_TEXT
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.PRIVATE_TYPE_TEXT
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.PUBLIC_BUTTON_TEXT
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.PUBLIC_TYPE_TEXT
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.TOPBAR_TEXT
-import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.TYPE_TEXT
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 /**
@@ -47,7 +47,6 @@ class CreatePublicPrivateActivity: ComponentActivity() {
         const val TOPBAR_TEXT = "Create a lobby"
         const val PUBLIC_BUTTON_TEXT = "Public lobby"
         const val PRIVATE_BUTTON_TEXT = "Private lobby"
-        const val TYPE_TEXT = "type"
         const val PUBLIC_TYPE_TEXT = "public"
         const val PRIVATE_TYPE_TEXT = "private"
     }
@@ -108,7 +107,7 @@ private fun PublicLobbyButton() {
         onClick = {
             context.startActivity(
                 Intent(context, GameOptionsActivity::class.java)
-                    .putExtra(TYPE_TEXT, PUBLIC_TYPE_TEXT)
+                    .putExtra(context.getString(R.string.type_extra), PUBLIC_TYPE_TEXT)
             )
         }
     ) {
@@ -124,7 +123,7 @@ private fun PrivateLobbyButton() {
         onClick = {
             context.startActivity(
                 Intent(context, GameOptionsActivity::class.java)
-                    .putExtra(TYPE_TEXT, PRIVATE_TYPE_TEXT)
+                    .putExtra(context.getString(R.string.type_extra), PRIVATE_TYPE_TEXT)
             )
         }
     ) {

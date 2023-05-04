@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.icons.Icons
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.R
@@ -38,7 +40,6 @@ import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.s
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedTopics
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selection
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.PRIVATE_TYPE_TEXT
-import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.TYPE_TEXT
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
@@ -62,7 +63,7 @@ class GameOptionsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val dbRef = Firebase.database.reference
-        val lobbyType = intent.getStringExtra(TYPE_TEXT).toString()
+        val lobbyType = intent.getStringExtra(getString(R.string.type_extra)).toString()
 
         setContent {
             BootcampComposeTheme {
@@ -365,6 +366,8 @@ private fun PasswordInput(password: MutableState<String>) {
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword)
+
         )
     }
 

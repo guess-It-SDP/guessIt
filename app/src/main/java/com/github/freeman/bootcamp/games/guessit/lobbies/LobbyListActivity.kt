@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,7 +83,13 @@ class LobbyListActivity: ComponentActivity() {
                     if (enterPassword.value) {
                         val context = LocalContext.current
                         val userId = Firebase.auth.uid
-                        EditDialog(password, ENTER_PASSWORD_TEXT, PASSWORD_TEXT, enterPassword) {
+                        EditDialog(
+                            text = password,
+                            setValue = ENTER_PASSWORD_TEXT,
+                            enterValue = PASSWORD_TEXT,
+                            show = enterPassword,
+                            keyboardType = KeyboardType.NumberPassword
+                        ) {
                             if (lobby.value.password == it) {
                                 joinLobby(context, dbRef.child(context.getString(R.string.games_path)), userId.toString(), lobby.value)
                             } else {
