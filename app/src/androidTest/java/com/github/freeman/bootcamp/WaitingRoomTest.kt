@@ -15,6 +15,10 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.freeman.bootcamp.games.guessit.*
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
+import com.github.freeman.bootcamp.games.guessit.lobbies.PlayerList
+import com.github.freeman.bootcamp.games.guessit.lobbies.RoomInfo
+import com.github.freeman.bootcamp.games.guessit.lobbies.StartButton
+import com.github.freeman.bootcamp.games.guessit.lobbies.TopAppbarWaitingRoom
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
@@ -71,7 +75,9 @@ class WaitingRoomTest {
                     category = "Objects",
                     host_id = "test_host_id",
                     nb_players = 1,
-                    nb_rounds = 5
+                    nb_rounds = 5,
+                    type = "public",
+                    password = ""
                 ),
                 Players = mapOf(Pair("test_profile_id_1", Player(0, false)), Pair("test_profile_id_2", Player(0, false))),
                 lobby_name = "test's room"

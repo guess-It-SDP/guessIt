@@ -10,21 +10,20 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.R
@@ -32,6 +31,7 @@ import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.C
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.DEFAULT_CATEGORY_SIZE
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NB_ROUNDS
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NEXT
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.PASSWORD_PLACEHOLDER
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.ROUNDS_SELECTION
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.TOAST_TEXT
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.categories
@@ -39,6 +39,8 @@ import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.c
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedCategory
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedTopics
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selection
+import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.PRIVATE_TYPE_TEXT
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.auth.ktx.auth
@@ -51,8 +53,10 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.util.*
 
+
 /**
- * Here the player can chose different settings for the game he wants to create.
+ * Displays a screen where a player that wants to create a lobby will use in order
+ * to choose different options for the game
  */
 class GameOptionsActivity : ComponentActivity() {
 
@@ -60,9 +64,11 @@ class GameOptionsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val dbRef = Firebase.database.reference
+        val lobbyType = intent.getStringExtra(getString(R.string.type_extra)).toString()
+
         setContent {
             BootcampComposeTheme {
-                GameOptionsScreen(dbRef)
+                GameOptionsScreen(dbRef, lobbyType)
             }
         }
     }
@@ -74,6 +80,7 @@ class GameOptionsActivity : ComponentActivity() {
         const val NB_TOPICS = 3
         const val DEFAULT_CATEGORY_SIZE = 0
         const val TOAST_TEXT = "Please first select a category"
+        const val PASSWORD_PLACEHOLDER = "Enter a password"
 
         val categories = listOf("Animals", "People", "Objects")
         var selectedCategory = categories[0]
@@ -290,6 +297,8 @@ fun next(context: Context, database: DatabaseReference) {
                         current_timer = context.getString(R.string.timer_unused)
                     ),
                     Parameters = Parameters(
+                        type = lobbyType,
+                        password = password,
                         category = selectedCategory,
                         host_id = userId,
                         nb_players = 1,
@@ -306,6 +315,8 @@ fun next(context: Context, database: DatabaseReference) {
                     for (i in 0 until selectedTopics.size) {
                         putExtra("topic$i", selectedTopics[i])
                     }
+                    putExtra(context.getString(R.string.type_extra), lobbyType)
+                    putExtra(context.getString(R.string.password_extra), password)
                 })
                 val activity = (context as? Activity)
                 activity?.finish()
@@ -374,6 +385,34 @@ fun GameOptionsBackButton() {
  * activity and returns the user to the previous one in the activity stack (in this case, the main menu activity).
  * If it's not, nothing happens.
  */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PasswordInput(password: MutableState<String>) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(8.dp)
+            .testTag("passwordInput")
+    ) {
+        TextField(
+            value = password.value,
+            onValueChange = {
+                password.value = it
+            },
+            modifier = Modifier
+                .testTag("passwordInputTextField"),
+            placeholder = { Text(PASSWORD_PLACEHOLDER) },
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword)
+
+        )
+    }
+
+}
+
 fun backToMainMenu(context: Context) {
     val activity = (context as? Activity)
     activity?.finish()
@@ -385,7 +424,9 @@ fun backToMainMenu(context: Context) {
  * @param dbRef a particular location in the database
  */
 @Composable
-fun GameOptionsScreen(dbRef: DatabaseReference) {
+fun GameOptionsScreen(dbRef: DatabaseReference, lobbyType: String) {
+    val password = remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -405,7 +446,11 @@ fun GameOptionsScreen(dbRef: DatabaseReference) {
             text = ROUNDS_SELECTION
         )
         RoundsDisplay()
-        NextButton(dbRef)
+
+        if (lobbyType == PRIVATE_TYPE_TEXT) {
+            PasswordInput(password)
+        }
+        NextButton(dbRef, lobbyType, password.value)
     }
 
     Column(

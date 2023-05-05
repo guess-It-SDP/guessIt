@@ -70,9 +70,19 @@
     <string name="email_path">email</string>
     <string name="lobby_name_path">lobby_name</string>
     <string name="picture_path">picture/pic.jpg</string>
+    <string name="stats_path">stats</string>
+    <string name="stats_nb_games_played_path">nb_games_played</string>
+    <string name="stats_best_score_path">best_score</string>
+    <string name="stats_nb_correct_guesses_path">nb_correct_guesses</string>
+    <string name="stats_percentage_first_guesser_path">percentage_first_guesser</string>
+    <string name="stats_percentage_guesser_path">percentage_guesser</string>
+    <string name="stats_percentage_somebody_guessed_path">percentage_somebody_guessed</string>
+
 
     <!-- Strings used for extra between activities -->
     <string name="gameId_extra">gameId</string>
+    <string name="type_extra">type</string>
+    <string name="password_extra">password</string>
     <string name="gameId_testing">testing</string>
 
     <!-- current_state states -->
