@@ -21,8 +21,9 @@
     <string name="drawing_done">Drawing done button</string>
 
     <!-- Strings used in DrawHatActivity -->
-    <string name="draw_hat_screen">Draw Hat screen</string>
+    <string name="draw_hat_screen">Draw hat screen</string>
     <string name="hat">hat</string>
+    <string name="toggleEraser">Toggle eraser</string>
 
     <!-- Strings used in ChatActivity -->
     <string name="chat_message_item">chatMessageItem</string>

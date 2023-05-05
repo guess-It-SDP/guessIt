@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -18,7 +19,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import com.github.freeman.bootcamp.DrawHatActivity.Companion.HAT_HELP
 import com.github.freeman.bootcamp.games.guessit.drawing.*
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.auth.ktx.auth
@@ -41,6 +44,11 @@ class DrawHatActivity : AppCompatActivity() {
                 DrawHatScreen(storageRef)
             }
         }
+    }
+
+    companion object {
+        val HAT_HELP = "Welcome! Draw and upload any hat for your in-game video filter by clicking" +
+                " the upload symbol in the right corner."
     }
 }
 
@@ -174,63 +182,73 @@ private fun DrawHatControlsBar(
     val context = LocalContext.current
     val isToggled = remember { mutableStateOf(false) }
 
-    Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-        MenuItems(
-            R.drawable.ic_undo,
-            LocalContext.current.getString(R.string.undo),
-            if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
-        ) {
-            if (undoVisibility.value) drawController.unDo()
-        }
-        MenuItems(
-            R.drawable.ic_redo,
-            LocalContext.current.getString(R.string.redo),
-            if (redoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
-        ) {
-            if (redoVisibility.value) drawController.reDo()
-        }
-        MenuItems(
-            R.drawable.ic_color,
-            context.getString(R.string.stroke_color),
-            colorValue.value
-        ) {
-            onColorClick()
-        }
-        MenuItems(
-            R.drawable.ic_width,
-            LocalContext.current.getString(R.string.stroke_width),
-            MaterialTheme.colors.primary
-        ) {
-            onWidthClick()
-        }
-        // "Erases" by drawing over the image in white
-        ToggleButton(
-            R.drawable.kick_player_boot,
-            R.drawable.dinos,
-            "Test",
-            MaterialTheme.colors.primary,
-            onClick = {
-                // Toggle the eraser on or off
-                if (!isToggled.value) {
-                    drawController.changeColor(Color.White)
-                    drawController.changeStrokeWidth(DEFAULT_ERASE_WIDTH)
-                    isToggled.value = !isToggled.value
-                    onEraseClick()
-                } else {
-                    drawController.changeColor(currentColor.value)
-                    drawController.changeStrokeWidth(currentWidth.value)
-                    isToggled.value = !isToggled.value
-                }
-            },
-            isToggled = isToggled
+    Column() {
+        Text(
+            text = HAT_HELP,
+            modifier = Modifier
+                .padding(10.dp)
+                .align(Alignment.CenterHorizontally),
+            fontSize = 20.sp,
         )
 
-        MenuItems(
-            R.drawable.ic_sharp_arrow_circle_up,
-            LocalContext.current.getString(R.string.drawing_done),
-            MaterialTheme.colors.primary
-        ) {
-            drawController.saveBitmap()
+        Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
+            MenuItems(
+                R.drawable.ic_undo,
+                LocalContext.current.getString(R.string.undo),
+                if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+            ) {
+                if (undoVisibility.value) drawController.unDo()
+            }
+            MenuItems(
+                R.drawable.ic_redo,
+                LocalContext.current.getString(R.string.redo),
+                if (redoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+            ) {
+                if (redoVisibility.value) drawController.reDo()
+            }
+            MenuItems(
+                R.drawable.ic_color,
+                context.getString(R.string.stroke_color),
+                colorValue.value
+            ) {
+                onColorClick()
+            }
+            MenuItems(
+                R.drawable.ic_width,
+                LocalContext.current.getString(R.string.stroke_width),
+                MaterialTheme.colors.primary
+            ) {
+                onWidthClick()
+            }
+            // Erases by drawing over the image in white
+            ToggleButton(
+                R.drawable.black_eraser,
+                R.drawable.white_eraser,
+                context.getString(R.string.toggleEraser),
+                MaterialTheme.colors.primary,
+                onClick = {
+                    // Toggle the eraser on or off
+                    if (!isToggled.value) {
+                        drawController.changeColor(Color.White)
+                        drawController.changeStrokeWidth(DEFAULT_ERASE_WIDTH)
+                        isToggled.value = !isToggled.value
+                        onEraseClick()
+                    } else {
+                        drawController.changeColor(currentColor.value)
+                        drawController.changeStrokeWidth(currentWidth.value)
+                        isToggled.value = !isToggled.value
+                    }
+                },
+                isToggled = isToggled
+            )
+
+            MenuItems(
+                R.drawable.ic_sharp_arrow_circle_up,
+                LocalContext.current.getString(R.string.drawing_done),
+                MaterialTheme.colors.primary
+            ) {
+                drawController.saveBitmap()
+            }
         }
     }
 }
