@@ -20,9 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.black
-import com.github.freeman.bootcamp.colorArray
-import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.turnNb
@@ -48,6 +45,7 @@ import io.ak1.drawbox.rememberDrawController
 import io.ak1.rangvikalp.RangVikalp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 
 // This class uses two great libraries :
 // - For the drawing zone : DrawBox (https://github.com/akshay2211/DrawBox)

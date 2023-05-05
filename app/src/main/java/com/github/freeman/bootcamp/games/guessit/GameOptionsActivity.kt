@@ -242,12 +242,12 @@ fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> U
 }
 
 @Composable
-fun NextButton(dbRef: DatabaseReference) {
+fun NextButton(dbRef: DatabaseReference, lobbyType: String, password: String) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("nextButton"),
         onClick = {
-            next(context, dbRef)
+            next(context, dbRef,lobbyType, password)
         }
     ) {
         Text(NEXT)
@@ -270,7 +270,7 @@ fun NextButton(dbRef: DatabaseReference) {
  *@param context Information about application environnement.
  *@param database A particular location inside the database.
  */
-fun next(context: Context, database: DatabaseReference) {
+fun next(context: Context, database: DatabaseReference, lobbyType: String, password: String) {
     var userId = Firebase.auth.uid
     userId = userId ?: "null"
     val dbref = database.child(context.getString(R.string.games_path))
