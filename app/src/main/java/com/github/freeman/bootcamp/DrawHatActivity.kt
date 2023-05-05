@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -15,15 +16,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.DrawHatActivity.Companion.HAT_HELP
+import com.github.freeman.bootcamp.DrawHatActivity.Companion.YOUR_HAT
 import com.github.freeman.bootcamp.games.guessit.drawing.*
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
@@ -47,8 +53,9 @@ class DrawHatActivity : AppCompatActivity() {
     }
 
     companion object {
-        val HAT_HELP = "Welcome! Draw and upload any hat for your in-game video filter by clicking" +
-                " the upload symbol in the right corner."
+        const val HAT_HELP = "Welcome! Please draw and upload any hat for your in-game video filter" +
+                " by clicking the upload symbol in the right corner."
+        const val YOUR_HAT = "Your hat"
     }
 }
 
@@ -63,6 +70,15 @@ fun DrawHatScreen(storageRef: StorageReference) {
     val userId = Firebase.auth.currentUser?.uid
     val hatRef = storageRef.child(context.getString(R.string.profiles_path))
         .child(userId.toString()).child(context.getString(R.string.hat))
+
+    // Fetch the user's current hat
+    val hat = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
+    LaunchedEffect(Unit) {
+        FirebaseUtilities.storageGet(hatRef)
+            .thenAccept {
+                hat.value = it
+            }
+    }
 
     val undoVisibility = remember { mutableStateOf(false) }
     val redoVisibility = remember { mutableStateOf(false) }
@@ -80,6 +96,41 @@ fun DrawHatScreen(storageRef: StorageReference) {
 
     Box(Modifier.testTag(context.getString(R.string.draw_hat_screen))) {
         Column {
+            Row {
+                Column (
+                    modifier = Modifier.padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .border(width = 2.dp, color = Color.Black)
+                    ) {
+                        // The user's last hat
+                        Image(
+                            painter = rememberAsyncImagePainter(hat.value),
+                            contentScale = ContentScale.Crop,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    Text(
+                        text = YOUR_HAT,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+
+                Text(
+                    text = HAT_HELP,
+                    modifier = Modifier
+                        .padding(10.dp),
+                    fontSize = 20.sp,
+                )
+            }
+
             // Controls bar
             DrawHatControlsBar(
                 drawController,
@@ -182,73 +233,63 @@ private fun DrawHatControlsBar(
     val context = LocalContext.current
     val isToggled = remember { mutableStateOf(false) }
 
-    Column() {
-        Text(
-            text = HAT_HELP,
-            modifier = Modifier
-                .padding(10.dp)
-                .align(Alignment.CenterHorizontally),
-            fontSize = 20.sp,
+    Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
+        MenuItems(
+            R.drawable.ic_undo,
+            LocalContext.current.getString(R.string.undo),
+            if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+        ) {
+            if (undoVisibility.value) drawController.unDo()
+        }
+        MenuItems(
+            R.drawable.ic_redo,
+            LocalContext.current.getString(R.string.redo),
+            if (redoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+        ) {
+            if (redoVisibility.value) drawController.reDo()
+        }
+        MenuItems(
+            R.drawable.ic_color,
+            context.getString(R.string.stroke_color),
+            colorValue.value
+        ) {
+            onColorClick()
+        }
+        MenuItems(
+            R.drawable.ic_width,
+            LocalContext.current.getString(R.string.stroke_width),
+            MaterialTheme.colors.primary
+        ) {
+            onWidthClick()
+        }
+        // Erases by drawing over the image in white
+        ToggleButton(
+            R.drawable.black_eraser,
+            R.drawable.white_eraser,
+            context.getString(R.string.toggleEraser),
+            MaterialTheme.colors.primary,
+            onClick = {
+                // Toggle the eraser on or off
+                if (!isToggled.value) {
+                    drawController.changeColor(Color.White)
+                    drawController.changeStrokeWidth(DEFAULT_ERASE_WIDTH)
+                    isToggled.value = !isToggled.value
+                    onEraseClick()
+                } else {
+                    drawController.changeColor(currentColor.value)
+                    drawController.changeStrokeWidth(currentWidth.value)
+                    isToggled.value = !isToggled.value
+                }
+            },
+            isToggled = isToggled
         )
 
-        Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-            MenuItems(
-                R.drawable.ic_undo,
-                LocalContext.current.getString(R.string.undo),
-                if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
-            ) {
-                if (undoVisibility.value) drawController.unDo()
-            }
-            MenuItems(
-                R.drawable.ic_redo,
-                LocalContext.current.getString(R.string.redo),
-                if (redoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
-            ) {
-                if (redoVisibility.value) drawController.reDo()
-            }
-            MenuItems(
-                R.drawable.ic_color,
-                context.getString(R.string.stroke_color),
-                colorValue.value
-            ) {
-                onColorClick()
-            }
-            MenuItems(
-                R.drawable.ic_width,
-                LocalContext.current.getString(R.string.stroke_width),
-                MaterialTheme.colors.primary
-            ) {
-                onWidthClick()
-            }
-            // Erases by drawing over the image in white
-            ToggleButton(
-                R.drawable.black_eraser,
-                R.drawable.white_eraser,
-                context.getString(R.string.toggleEraser),
-                MaterialTheme.colors.primary,
-                onClick = {
-                    // Toggle the eraser on or off
-                    if (!isToggled.value) {
-                        drawController.changeColor(Color.White)
-                        drawController.changeStrokeWidth(DEFAULT_ERASE_WIDTH)
-                        isToggled.value = !isToggled.value
-                        onEraseClick()
-                    } else {
-                        drawController.changeColor(currentColor.value)
-                        drawController.changeStrokeWidth(currentWidth.value)
-                        isToggled.value = !isToggled.value
-                    }
-                },
-                isToggled = isToggled
-            )
-
-            MenuItems(
-                R.drawable.ic_sharp_arrow_circle_up,
-                LocalContext.current.getString(R.string.drawing_done),
-                MaterialTheme.colors.primary
-            ) {
-                drawController.saveBitmap()
-            }
+        MenuItems(
+            R.drawable.ic_sharp_arrow_circle_up,
+            LocalContext.current.getString(R.string.drawing_done),
+            MaterialTheme.colors.primary
+        ) {
+            drawController.saveBitmap()
         }
     }
 }
