@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp.games.guessit
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,9 +24,9 @@ import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.FINAL_SCORES_TITLE
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.SCORES_TITLE
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.WINNER_TITLE
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.gameEnded
+import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.gameOverRecap
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.size
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.turnEnded
+import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.scoreRecap
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
@@ -33,6 +34,7 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
@@ -54,8 +56,8 @@ class ScoreActivity : ComponentActivity() {
         const val SCORES_TITLE = "Scores"
         const val FINAL_SCORES_TITLE = "Final Scores"
         const val WINNER_TITLE = "And the winner is… "
-        var turnEnded = false
-        var gameEnded = false
+        var scoreRecap = false
+        var gameOverRecap = false
     }
 }
 
@@ -130,27 +132,6 @@ fun updateScoreMap(playersToScores: Map<String, MutableState<Int>>, id: String, 
     }
 }
 
-/***
- * This function is to be called between turns to set variables back to their default values or
- * to change the artist
-  */
-fun reinitialise(context: Context, dbRef: DatabaseReference, playerIds: Set<String>) {
-
-    // Reset the number of guesses to 0
-    dbRef.child(context.getString(R.string.current_correct_guesses_path)).setValue(0)
-
-    // Choose a new artist. Todo: create a mechanism for switching the artist in a fair manner
-    if (playerIds.isNotEmpty()) {
-        val randInt = playerIds.indices.random()
-        val newArtist = playerIds.toList()[randInt]
-        dbRef.child(context.getString(R.string.current_artist_path))
-            .setValue(newArtist)
-    }
-
-    // Delete all the guesses
-    dbRef.child(context.getString(R.string.guesses_path)).removeValue()
-}
-
 @Composable
 fun ScoreScreen(
     dbRef: DatabaseReference,
@@ -214,16 +195,43 @@ fun ScoreScreen(
         usersToScores = testingUsersToScores
     }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(size.dp),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.Top
-    ) {
-        Spacer(modifier = Modifier.weight(1f))
+    FirebaseUtilities.databaseGet(dbRef.child(context.getString(R.string.current_state_path)))
+        .thenAccept {
+            gameOverRecap = it == context.getString(R.string.state_gameover)
+            scoreRecap = it == context.getString(R.string.state_scorerecap)
+        }
 
-        if (!gameEnded) {
+    if (gameOverRecap) {
+        EndScoreboard(usersToScores)
+    } else if (scoreRecap) {
+        Scoreboard(
+            playerScores = usersToScores,
+            modifier = Modifier.fillMaxSize()
+        )
+        dbRef.child(context.getString(R.string.current_state_path))
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        if (snapshot.getValue<String>()!! != context.getString(R.string.state_scorerecap)) {
+                            val activity = context as? Activity
+                            activity?.finish()
+                        }
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    // do nothing
+                }
+            })
+    } else {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(size.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.Top
+        ) {
+            Spacer(modifier = Modifier.weight(1f))
+
             val nbPlayers = usersToScores.size
             Scoreboard(
                 playerScores = usersToScores,
@@ -233,15 +241,6 @@ fun ScoreScreen(
                     .testTag("scoreboard")
             )
         }
-    }
-
-    if (turnEnded) {
-        reinitialise(context, dbRef, playerIds.value.keys)
-        turnEnded = false
-    }
-
-    if (gameEnded) {
-        EndScoreboard(usersToScores)
     }
 }
 
@@ -278,7 +277,9 @@ fun Scoreboard(playerScores: List<Pair<String?, Int>>, modifier: Modifier) {
                         Text(
                             text = name,
                             style = MaterialTheme.typography.body2,
-                            modifier = Modifier.weight(1f).testTag(name)
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag(name)
                         )
 
                         Text(
@@ -310,7 +311,9 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
                 text = FINAL_SCORES_TITLE,
                 color = Color.White,
                 style = MaterialTheme.typography.h4,
-                modifier = Modifier.align(Alignment.CenterHorizontally).testTag("endScoresTitle")
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .testTag("endScoresTitle")
             )
 
             Spacer(modifier = Modifier.height(2.dp))
@@ -336,7 +339,9 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
                             text = name,
                             color = Color.White,
                             style = MaterialTheme.typography.body1,
-                            modifier = Modifier.weight(1f).testTag("end$name")
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("end$name")
                         )
 
                         Text(

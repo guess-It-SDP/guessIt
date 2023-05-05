@@ -1,6 +1,7 @@
 package com.github.freeman.bootcamp.games.guessit.drawing
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Bundle
 import android.provider.Settings.Global.getString
 import androidx.activity.ComponentActivity
@@ -202,6 +203,25 @@ fun DrawingScreen(
             drawController.saveBitmap()
         }
     }
+
+    // Listener that closes activity depending on game state
+    dbref.child(context.getString(R.string.current_state_path))
+        .addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val currentState = snapshot.getValue<String>()!!
+                    if (currentState != context.getString(R.string.state_newturn)
+                        && currentState != context.getString(R.string.state_topicselection)
+                        && currentState != context.getString(R.string.state_playturn)) {
+                        val activity = context as? Activity
+                        activity?.finish()
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                // do nothing
+            }
+        })
 }
 
 // The controls bar offers buttons that allow to undo, redo, select color and stoke width.

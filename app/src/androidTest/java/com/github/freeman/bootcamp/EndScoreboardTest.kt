@@ -12,7 +12,7 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.gameEnded
+import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.gameOverRecap
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.reinitialise
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
@@ -37,7 +37,7 @@ class EndScoreboardTest {
 
     @Before
     fun init() {
-        gameEnded = true
+        gameOverRecap = true
         composeRule.setContent {
             val context = LocalContext.current
             val dbRef = getGameDBRef(context)

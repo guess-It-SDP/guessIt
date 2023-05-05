@@ -317,14 +317,17 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
         }
     })
 
-    // Stores and updates the current state of the game (used to know if the artist is picking a word to draw)
+    // Stores and updates a boolean used to know if the artist is picking a word to draw
+    // Finishes the activity if necessary
     var topicSelection by remember { mutableStateOf(false) }
     val dbrefCurrentState = dbrefGame.child(context.getString(R.string.current_state_path))
     dbrefCurrentState.addValueEventListener(object: ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 val currentState = snapshot.getValue<String>()!!
-                if (currentState == context.getString(R.string.state_waitingforplayers)) {
+                if (currentState != context.getString(R.string.state_newturn)
+                    && currentState != context.getString(R.string.state_topicselection)
+                    && currentState != context.getString(R.string.state_playturn)) {
                     val activity = context as? Activity
                     activity?.finish()
                 } else {
