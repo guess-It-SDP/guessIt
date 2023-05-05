@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp
+package com.github.freeman.bootcamp.games.guessit.drawing
 
 import androidx.compose.ui.graphics.Color
 

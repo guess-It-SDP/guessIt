@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp.games.guessit
+package com.github.freeman.bootcamp.games.guessit.lobbies
 
 import android.app.Activity
 import android.content.Context
@@ -38,11 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.CATEGORY_INFO
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.KICKED
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.NB_ROUNDS_INFO
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.START_GAME
-import com.github.freeman.bootcamp.games.guessit.WaitingRoomActivity.Companion.TOPBAR_TEXT
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
+import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.CATEGORY_INFO
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.KICKED
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.NB_ROUNDS_INFO
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.START_GAME
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.TOPBAR_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
@@ -57,7 +59,14 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 
 /**
- * A screen where players wait until the host starts the game
+ *  A screen where players wait until the host starts the game.
+ *  When the activity is created, it retrieves the user's ID and the game ID from the intent that
+ *  started it. It also initializes a list of all topics that will be used in the game.
+ *  It displays a top app bar with information about the room, a list of players currently in the
+ *  room, and a "Start" button. The activity listens to changes in the game state and updates the
+ *  UI accordingly. When the game state changes to "play game", the activity starts the appropriate
+ *  activity depending on whether the user is the artist or a guesser. If the game state changes
+ *  to "lobby closed", the activity removes the game from the database and finishes.
  */
 class WaitingRoomActivity: ComponentActivity() {
 
@@ -67,6 +76,7 @@ class WaitingRoomActivity: ComponentActivity() {
         val userId = Firebase.auth.uid
 
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
+
         val allTopics = ArrayList<String>()
 
         val database = Firebase.database.reference
@@ -232,6 +242,14 @@ class WaitingRoomActivity: ComponentActivity() {
     }
 }
 
+/**
+ * Creates a top app bar for the waiting room screen of a game lobby. The app bar contains a title,
+ * a back button with an arrow icon, and some functionality related to leaving the lobby. When the
+ * back button is clicked, the function updates the database by removing the user from the players
+ * list if they are not the host or ending the game if they are the host and the only player
+ * remaining. It also removes the database listeners and finishes the current activity
+ * (the waiting room screen) by calling the finish() method on the current activity.
+ */
 @Composable
 fun TopAppbarWaitingRoom(
     context: Context = LocalContext.current,
@@ -284,6 +302,10 @@ fun TopAppbarWaitingRoom(
     )
 }
 
+/**
+ * The function retrieves the name of the lobby, the selected category,
+ * and the number of rounds from the Firebase Realtime Database and display it.
+ */
 @Composable
 fun RoomInfo(
     modifier: Modifier = Modifier,
@@ -363,7 +385,7 @@ fun RoomInfo(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = NB_ROUNDS_INFO,
+                        text = "Number of rounds :",
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 20.sp
                     )
@@ -379,6 +401,9 @@ fun RoomInfo(
     }
 }
 
+/**
+ * It creates a list of players with their usernames and profile pictures.
+ */
 @Composable
 fun PlayerList(
     modifier: Modifier = Modifier,
@@ -435,6 +460,9 @@ fun PlayerList(
     }
 }
 
+/**
+ * takes a PlayerData object as input and displays the player's name and profile picture in a row.
+ */
 @Composable
 fun PlayerDisplay(player: PlayerData, hostId: String, dbRef: DatabaseReference, gameId: String,
                   context: Context) {
@@ -481,6 +509,7 @@ fun PlayerDisplay(player: PlayerData, hostId: String, dbRef: DatabaseReference, 
             .fillMaxWidth()
             .padding(8.dp)
             .clip(RoundedCornerShape(10.dp))
+            .testTag("playerDisplay")
             .clickable {},
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -548,6 +577,9 @@ fun PlayerDisplay(player: PlayerData, hostId: String, dbRef: DatabaseReference, 
     }
 }
 
+/**
+ * used to display a button that can be clicked to start the game
+ */
 @Composable
 fun StartButton(
     dbRef: DatabaseReference,

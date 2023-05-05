@@ -18,7 +18,7 @@ class PopUpsTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-     private val guess = Guess(guesser = "Me", guesserId = "ID", guess = "ThePerfectWord")
+     private val guess = Guess(guesser = "Me", guesserId = "ID", message = "ThePerfectWord")
 
     private fun setPopUp(type: String) {
         composeRule.setContent {
@@ -50,7 +50,7 @@ class PopUpsTest {
 
         val sb = StringBuilder()
         sb.append(guess.guesser).append(" made a correct guess: \n\nThe word was \"")
-            .append(guess.guess)
+            .append(guess.message)
             .append("\"!")
 
         composeRule.onNodeWithTag("popUpText").assertTextContains(sb.toString())

@@ -23,10 +23,10 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
-import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
+import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity
 import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
@@ -55,7 +55,7 @@ class MainMenuActivity : ComponentActivity() {
             // If no profile exists, sign in anonymously and creates a profile
             dbRef
                 .child(getString(R.string.profiles_path))
-                .child(userId!!)
+                .child(userId.toString())
                 .child(getString(R.string.username_path))
                 .get()
                 .addOnCompleteListener {
