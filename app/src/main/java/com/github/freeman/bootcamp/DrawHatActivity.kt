@@ -4,17 +4,19 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Slider
-import androidx.compose.material.SliderDefaults
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.github.freeman.bootcamp.games.guessit.drawing.*
@@ -33,12 +35,7 @@ import java.io.File
 class DrawHatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val storageRef = Firebase.storage.reference
-        val userId = Firebase.auth.currentUser?.uid
-        val hatRef = storageRef.child(getString(R.string.profiles_path))
-            .child(userId.toString()).child(getString(R.string.hat))
-
         setContent {
             BootcampComposeTheme {
                 DrawHatScreen(storageRef)
@@ -91,6 +88,12 @@ fun DrawHatScreen(storageRef: StorageReference) {
                 undoVisibility,
                 redoVisibility,
                 currentColor,
+                onEraseClick = {
+                    undoVisibility.value = false
+                    redoVisibility.value = false
+                },
+                currentColor,
+                currentWidth
             )
 
             // Color picker that appears when clicking on one of the two color selection buttons
@@ -164,8 +167,12 @@ private fun DrawHatControlsBar(
     undoVisibility: MutableState<Boolean>,
     redoVisibility: MutableState<Boolean>,
     colorValue: MutableState<Color>,
+    onEraseClick: () -> Unit,
+    currentColor: MutableState<Color>,
+    currentWidth: MutableState<Float>,
 ) {
     val context = LocalContext.current
+    val isToggled = remember { mutableStateOf(false) }
 
     Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
         MenuItems(
@@ -196,6 +203,28 @@ private fun DrawHatControlsBar(
         ) {
             onWidthClick()
         }
+        // "Erases" by drawing over the image in white
+        ToggleButton(
+            R.drawable.kick_player_boot,
+            R.drawable.dinos,
+            "Test",
+            MaterialTheme.colors.primary,
+            onClick = {
+                // Toggle the eraser on or off
+                if (!isToggled.value) {
+                    drawController.changeColor(Color.White)
+                    drawController.changeStrokeWidth(DEFAULT_ERASE_WIDTH)
+                    isToggled.value = !isToggled.value
+                    onEraseClick()
+                } else {
+                    drawController.changeColor(currentColor.value)
+                    drawController.changeStrokeWidth(currentWidth.value)
+                    isToggled.value = !isToggled.value
+                }
+            },
+            isToggled = isToggled
+        )
+
         MenuItems(
             R.drawable.ic_sharp_arrow_circle_up,
             LocalContext.current.getString(R.string.drawing_done),
@@ -203,5 +232,36 @@ private fun DrawHatControlsBar(
         ) {
             drawController.saveBitmap()
         }
+    }
+}
+
+@Composable
+fun RowScope.ToggleButton(
+    @DrawableRes resOffId: Int,
+    @DrawableRes resOnId: Int,
+    desc: String,
+    colorTint: Color,
+    border: Boolean = false,
+    onClick: () -> Unit,
+    isToggled: MutableState<Boolean>,
+) {
+    val modifier = Modifier.size(24.dp)
+    IconButton(
+        onClick = onClick, modifier = Modifier.weight(1f, true)
+    ) {
+        Icon(
+            painter = if (isToggled.value) {
+                painterResource(resOnId)
+            } else {
+                painterResource(resOffId)
+            },
+            contentDescription = desc,
+            tint = colorTint,
+            modifier = if (border) modifier.border(
+                0.5.dp,
+                Color.Black,
+                shape = CircleShape
+            ) else modifier
+        )
     }
 }
