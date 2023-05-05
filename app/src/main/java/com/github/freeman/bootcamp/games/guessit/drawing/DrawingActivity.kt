@@ -2,6 +2,7 @@ package com.github.freeman.bootcamp.games.guessit.drawing
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.provider.Settings.Global.getString
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
@@ -19,24 +20,32 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.turnNb
+import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.github.freeman.bootcamp.videocall.APP_ID
+import com.github.freeman.bootcamp.videocall.VideoScreen
+import com.github.freeman.bootcamp.videocall.VideoScreen2
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
+import io.agora.agorauikit_android.AgoraConnectionData
+import io.agora.agorauikit_android.AgoraVideoViewer
 import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.DrawController
 import io.ak1.drawbox.rememberDrawController
 import io.ak1.rangvikalp.RangVikalp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 
 // This class uses two great libraries :
 // - For the drawing zone : DrawBox (https://github.com/akshay2211/DrawBox)
@@ -53,7 +62,7 @@ class DrawingActivity : ComponentActivity() {
         val dbref = getGameDBRef(this, gameId)
 
         setContent {
-            DrawingScreen(dbref)
+            DrawingScreen(dbref,gameId)
         }
     }
 
@@ -67,7 +76,8 @@ class DrawingActivity : ComponentActivity() {
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun DrawingScreen(
-    dbref: DatabaseReference
+    dbref: DatabaseReference,
+    gameId: String
 ) {
     val context = LocalContext.current
 
@@ -165,26 +175,34 @@ fun DrawingScreen(
             if (timer == context.getString(R.string.timer_over)) {
                 TimerOverPopUp()
             } else {
-                // Drawing zone
-                DrawBox(
-                    drawController = drawController,
-                    backgroundColor = Color.White,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f, fill = false),
-                    bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
-                        imageBitmap?.let {
-                            dbref.child(context.getString(R.string.topics_path))
-                                .child(roundNb.toString())
-                                .child(turnNb.toString())
-                                .child(context.getString(R.string.drawing_path))
-                                .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
-                        }
+                Row() {
+                    BootcampComposeTheme { // Video conversation zone
+                        VideoScreen2(
+                            roomName = gameId,
+                            testing = false
+                        )
                     }
-                ) { undoCount, redoCount ->
-                    colorBarVisibility.value = false
-                    undoVisibility.value = undoCount != 0
-                    redoVisibility.value = redoCount != 0
+                    // Drawing zone
+                    DrawBox(
+                        drawController = drawController,
+                        backgroundColor = Color.White,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f, fill = false),
+                        bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
+                            imageBitmap?.let {
+                                dbref.child(context.getString(R.string.topics_path))
+                                    .child(roundNb.toString())
+                                    .child(turnNb.toString())
+                                    .child(context.getString(R.string.drawing_path))
+                                    .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
+                            }
+                        }
+                    ) { undoCount, redoCount ->
+                        colorBarVisibility.value = false
+                        undoVisibility.value = undoCount != 0
+                        redoVisibility.value = redoCount != 0
+                    }
                 }
             }
         }
@@ -285,5 +303,5 @@ private fun RowScope.MenuItems(
 fun DrawingScreenPreview() {
     val context = LocalContext.current
     val dbref = getGameDBRef(context)
-    DrawingScreen(dbref)
+    DrawingScreen(dbref,"127")
 }

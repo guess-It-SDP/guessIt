@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.CorrectAnswerPopUp
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
@@ -43,6 +44,8 @@ import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.github.freeman.bootcamp.utilities.rememberImeState
+import com.github.freeman.bootcamp.videocall.VideoScreen
+import com.github.freeman.bootcamp.videocall.VideoScreen2
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -67,7 +70,7 @@ class GuessingActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbrefGame, this)
+                GuessingScreen(dbrefGame, this,gameId)
             }
         }
     }
@@ -221,7 +224,7 @@ fun GuessingBar(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
+fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String) {
     val imeState = rememberImeState()
     val scrollState = rememberScrollState()
 
@@ -385,14 +388,21 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
                         color = Color.DarkGray
                     )
                 } else {
-                    Image(
-                        bitmap = bitmap,
-                        contentDescription = "drawn image",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                            //.verticalScroll(scrollState)
-                    )
+                    Row() {
+                        BootcampComposeTheme { // Video conversation zone
+                            VideoScreen2(
+                                roomName = gameId,
+                                testing = false
+                            )
+                        }
+                        Image(
+                            bitmap = bitmap,
+                            contentDescription = "drawn image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                              //  .align(Alignment.Center)
+                        )
+                    }
                 }
 
                 if (timer != context.getString(R.string.timer_unused)) {
