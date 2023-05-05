@@ -18,10 +18,18 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.BootcampCompose"
-        tools:targetApi="31" >
+        tools:targetApi="31">
+        <activity
+            android:name=".games.guessit.StatsActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
         <activity
             android:name=".games.guessit.TimerActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -37,7 +45,7 @@
 
         <activity
             android:name=".MainMenuActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -50,72 +58,79 @@
         </activity>
         <activity
             android:name=".videocall.VideoCallActivity"
-            android:exported="true" >  </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".games.guessit.drawing.DrawingActivity"
-            android:exported="true" >
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".games.guessit.GameOptionsActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".SettingsProfileActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".games.guessit.chat.ChatActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".EditProfileActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".games.guessit.guessing.GuessingActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".auth.FirebaseAuthActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".games.guessit.lobbies.CreateJoinActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".games.guessit.CreateJoinActivity"
+            android:name=".games.guessit.lobbies.LobbyListActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".games.guessit.LobbyListActivity"
+            android:name=".games.guessit.lobbies.WaitingRoomActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".games.guessit.WaitingRoomActivity"
+            android:name=".games.guessit.lobbies.CreatePublicPrivateActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
@@ -132,7 +147,7 @@
             android:name=".SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
-            android:theme="@style/Theme.BootcampCompose.NoActionBar" >
+            android:theme="@style/Theme.BootcampCompose.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -146,8 +161,6 @@
         <activity
             android:name=".games.wordle.WordleRulesActivity"
             android:exported="true" />
-
-</application>
-
+    </application>
 
 </manifest>

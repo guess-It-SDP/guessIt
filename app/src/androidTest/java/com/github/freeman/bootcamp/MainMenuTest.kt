@@ -11,10 +11,10 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
-import com.github.freeman.bootcamp.games.guessit.CreateJoinActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
+import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.videocall.VideoCallActivity
 import com.github.freeman.bootcamp.games.wordle.WordleMenu

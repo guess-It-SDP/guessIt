@@ -20,6 +20,8 @@ data class Current(
 )
 
 data class Parameters(
+    val type: String,
+    val password: String,
     val category: String,
     val host_id: String,
     val nb_players: Int,
