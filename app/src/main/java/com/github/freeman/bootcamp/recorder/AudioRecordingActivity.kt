@@ -42,10 +42,6 @@ import java.util.*
 class AudioRecordingActivity : ComponentActivity() {
     var id: String? = null
 
-    fun downloadFile(url: URL, fileName: String) {
-        url.openStream().use { Files.copy(it, Paths.get(fileName)) }
-    }
-
     companion object {
         const val AUDIO_FILE = "audio.mp3"
         const val AUDIO_FILE2 = "audio2.mp3"
@@ -72,11 +68,9 @@ class AudioRecordingActivity : ComponentActivity() {
         ActivityCompat.requestPermissions(
             this, arrayOf(Manifest.permission.RECORD_AUDIO), 0
         )
-
-        val storageRef = Firebase.storage.reference
-        val voiceNoteRef = storageRef.child("Audio/voiceNote")
+        
         setContent {
-            val context = LocalContext.current
+
             BootcampComposeTheme {
                 Column(
                     modifier = Modifier.fillMaxSize(),
