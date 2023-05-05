@@ -162,6 +162,10 @@
         <activity
             android:name=".games.wordle.WordleRulesActivity"
             android:exported="true" />
+        <activity
+            android:name=".facedetection.FaceDetectionActivity"
+            android:exported="true" />
+
 
 </application>
 
