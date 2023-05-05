@@ -20,8 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.black
-import com.github.freeman.bootcamp.colorArray
 import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.roundNb
@@ -39,15 +37,13 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
-import io.agora.agorauikit_android.AgoraConnectionData
-import io.agora.agorauikit_android.AgoraVideoViewer
 import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.DrawController
 import io.ak1.drawbox.rememberDrawController
 import io.ak1.rangvikalp.RangVikalp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 
 // This class uses two great libraries :
 // - For the drawing zone : DrawBox (https://github.com/akshay2211/DrawBox)

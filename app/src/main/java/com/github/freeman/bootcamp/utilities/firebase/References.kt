@@ -8,5 +8,7 @@ import com.google.firebase.storage.ktx.storage
  * Contains the references to the audio file folder in the storage of the Firebase Database.
  */
 object References {
-    val voiceNotesStorageRef = Firebase.storage.reference.child("Audio")
+    val AUDIO = "audio"
+
+    val voiceNotesStorageRef = Firebase.storage.reference.child(AUDIO)
 }

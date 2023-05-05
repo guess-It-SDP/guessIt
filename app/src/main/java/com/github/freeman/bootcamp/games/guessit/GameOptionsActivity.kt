@@ -378,6 +378,12 @@ fun GameOptionsBackButton() {
     }
 }
 
+/**
+ * It first checks if the context passed to the function is an instance of an Activity.
+ * If it is, it calls the finish() method on the activity, which finishes the current
+ * activity and returns the user to the previous one in the activity stack (in this case, the main menu activity).
+ * If it's not, nothing happens.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PasswordInput(password: MutableState<String>) {
@@ -405,6 +411,7 @@ private fun PasswordInput(password: MutableState<String>) {
     }
 
 }
+
 fun backToMainMenu(context: Context) {
     val activity = (context as? Activity)
     activity?.finish()

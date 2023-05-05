@@ -11,16 +11,22 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity.Companion.SUBMISSION_TEXTFIELD
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.ui.theme.Purple40
 import androidx.compose.runtime.remember as remember1
 
 /**
@@ -120,50 +126,83 @@ class WordleGameActivity : ComponentActivity() {
     }
 
     /**
-     * submit a word to the game and reset the graphic interface
+     * Submit a word, used in WordleButton()
+     * @return true if the entry text is valid, false otherwise
      */
-    @Composable
-    private fun WordleButton() {
-        val msg: TextFieldState = remember1 { TextFieldState() }
-        GreetingInput(msg)
-        Button(onClick = {
-            val difficulty =
-                int.getStringExtra(WordleMenu.Companion.Difficulty::class.simpleName)
-            if (msg.text.length == 5) {
-                if (
-                    difficulty == WordleMenu.Companion.Difficulty.HARD.name
-                    || difficulty == WordleMenu.Companion.Difficulty.VERY_HARD.name
-                    || difficulty == WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name
-                ) {
-                    if (!validWords.contains(msg.text)) {
-                        Toast.makeText(
-                            applicationContext,
-                            NOT_WRONG_WORDS_PLEASE,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                } else {
+    private fun submit(text: String): Boolean {
+        val difficulty =
+            int.getStringExtra(WordleMenu.Companion.Difficulty::class.simpleName)
+        if (text.length == 5) {
+            if (
+                difficulty == WordleMenu.Companion.Difficulty.HARD.name
+                || difficulty == WordleMenu.Companion.Difficulty.VERY_HARD.name
+                || difficulty == WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name
+            ) {
+                if (!validWords.contains(text)) {
+                    Toast.makeText(
+                        applicationContext,
+                        NOT_WRONG_WORDS_PLEASE,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            } else {
 
-                    wordle = wordle.withSubmittedWord(
-                        msg.text
-                    )
-                    val tiles = wordle.getTiles()
-                    setContent {
-                        Column {
-                            BootcampComposeTheme {
-                                TileRoof(
-                                    tiles
-                                )
-                                WordleButton()
-                            }
+                wordle = wordle.withSubmittedWord(
+                    text
+                )
+                val tiles = wordle.getTiles()
+                setContent {
+                    Column {
+                        BootcampComposeTheme {
+                            TileRoof(
+                                tiles
+                            )
+                            WordleButton()
                         }
                     }
                 }
-
-            } else {
-                Toast.makeText(applicationContext, NOT_5_LETTERS_PLEASE, Toast.LENGTH_LONG).show()
             }
-        }) { Text(text = SUBMISSION_BUTTON, color = Color.Magenta) }
+            return true
+        } else {
+            Toast.makeText(applicationContext, NOT_5_LETTERS_PLEASE, Toast.LENGTH_LONG).show()
+            return false
+        }
+    }
+
+    /**
+     * submit a word to the game and reset the graphic interface
+     */
+    @OptIn(ExperimentalComposeUiApi::class)
+    @Composable
+    private fun WordleButton() {
+        val msg: TextFieldState = remember1 { TextFieldState() }
+        val keyboardController = LocalSoftwareKeyboardController.current
+
+        Row(
+            modifier = Modifier.padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            GreetingInput(msg)
+            IconButton(
+                modifier = Modifier.testTag("submitWordButton"),
+                onClick = {
+                    val tx = msg.text.lowercase().replace("\\s".toRegex(), "")
+                    if (submit(tx)) {
+                        keyboardController?.hide()
+                        msg.text = ""
+                    }
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.CheckCircle,
+                    contentDescription = "Submit word",
+                    tint = Purple40
+                )
+            }
+        }
+
+
     }
 
     /**
@@ -221,6 +260,40 @@ class WordleGameActivity : ComponentActivity() {
             Text(text = tile.letter.toString())
         }
     }
+
+    /**
+     * text-field where the player enters a word to try to guess the hidden wordToGuess
+     * @param msg to save the input
+     */
+    @OptIn(ExperimentalComposeUiApi::class)
+    @Composable
+    private fun GreetingInput(msg: TextFieldState = remember1 { TextFieldState() }) {
+        var text by remember1 { mutableStateOf(TextFieldValue("")) }
+
+        val keyboardController = LocalSoftwareKeyboardController.current
+
+        OutlinedTextField(
+            value = text,
+            label = {
+                Text(text = SUBMISSION_TEXTFIELD)
+            },
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    val tx = msg.text.lowercase().replace("\\s".toRegex(), "")
+                    if (submit(tx)) {
+                        keyboardController?.hide()
+                        msg.text = ""
+                    }
+                }
+            ),
+            //onImeActionPerformed = {},
+            onValueChange = {
+                text = it
+                msg.text = it.text
+            },
+            singleLine = true
+        )
+    }
 }
 
 // this class is to store the value of the text field
@@ -229,22 +302,5 @@ private class TextFieldState {
     var text: String by mutableStateOf("")
 }
 
-/**
- * text-field where the player enters a word to try to guess the hidden wordToGuess
- * @param msg to save the input
- */
-@Composable
-private fun GreetingInput(msg: TextFieldState = remember1 { TextFieldState() }) {
-    var text by remember1 { mutableStateOf(TextFieldValue("")) }
-    OutlinedTextField(
-        value = text,
-        label = {
-            Text(text = SUBMISSION_TEXTFIELD)
-        },
-        onValueChange = {
-            text = it
-            msg.text = it.text
-        }
-    )
-}
+
 

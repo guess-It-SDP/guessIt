@@ -88,8 +88,6 @@ class AudioRecordingActivity : ComponentActivity() {
             this, arrayOf(Manifest.permission.RECORD_AUDIO), 0
         )
 
-        val storageRef = Firebase.storage.reference
-        val voiceNoteRef = storageRef.child("Audio/voiceNote")
         setContent {
             val context = LocalContext.current
        //     var recorder :DistantAudioRecorder = provideAudioRecorder(AppModule(), LocalContext.current)
