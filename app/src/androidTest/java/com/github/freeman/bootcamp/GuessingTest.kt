@@ -4,6 +4,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.SCREEN_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingScreen
@@ -19,9 +20,25 @@ class GuessingTest {
     @get:Rule
     val composeRule = createComposeRule()
 
+    @get:Rule
+    var permissionRule = GrantPermissionRule.grant(
+        android.Manifest.permission.RECORD_AUDIO,
+        android.Manifest.permission.INTERNET,
+        android.Manifest.permission.ACCESS_NETWORK_STATE,
+        android.Manifest.permission.RECORD_AUDIO,
+        android.Manifest.permission.READ_PHONE_STATE,
+        android.Manifest.permission.INTERNET,
+        android.Manifest.permission.CAMERA,
+        android.Manifest.permission.MODIFY_AUDIO_SETTINGS,
+        android.Manifest.permission.ACCESS_WIFI_STATE,
+        android.Manifest.permission.READ_EXTERNAL_STORAGE,
+    )
+
     @Before
     fun initScreenWithDatabase() {
         FirebaseEmulator.init()
+        val guessGameId = "GameTestGuessesId"
+        val database = FirebaseSingletons.database.get().database.getReference("games/$guessGameId/guesses")
 
         composeRule.setContent {
             val context = LocalContext.current
@@ -32,7 +49,7 @@ class GuessingTest {
                 .child(context.getString(R.string.guesses_path))
 
             BootcampComposeTheme {
-                GuessingScreen(database, context = context)
+                GuessingScreen(database, context = context,guessGameId)
             }
         }
     }

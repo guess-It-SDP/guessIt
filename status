@@ -1,0 +1,248 @@
+[33mcommit 47e23a8901d375a2ea3d7272c324a149e7ce06bd[m[33m ([m[1;36mHEAD -> [m[1;32mgameMenu[m[33m, [m[1;31morigin/gameMenu[m[33m)[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Thu Mar 30 21:31:17 2023 +0200
+
+    buttons in worlde activity are now private
+    
+    This will prevent buttons to be accessible by someone else as it could
+    causes errors.
+
+[33mcommit ca0e75dd2f95a264fd051a68cba21ed750b56258[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Thu Mar 30 20:52:30 2023 +0200
+
+    wordle classes code is cleaner
+    
+    The classes WordleGameState and activity have more functions and are
+    more commented.
+    
+    This will make the code easier to understand.
+
+[33mcommit aa1211864662cdc2d3f558f36e16a71343e1cb59[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Mon Mar 27 15:37:25 2023 +0200
+
+    right database is loaded for the world game and more tests added
+
+[33mcommit 5d55bac91d633acfd6c91db8b887af5d5bbe2339[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Mon Mar 27 02:32:44 2023 +0200
+
+    trying to fix some issues on the CI with lint
+
+[33mcommit 51f1dde7cc1080051517c99ccc655ad7dbb628b7[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Mon Mar 27 01:42:54 2023 +0200
+
+    added a Wordle Game            this is a game that look like a mastermind but with word and letters
+
+[33mcommit 80a90f1e5a92f886f4d67a5e4cf8639f9271b704[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Mon Mar 27 01:22:35 2023 +0200
+
+    checkpoint need to access wordle from main menu
+
+[33mcommit dde7b69fea9fea9e1dd2949bb0a12c75bf467030[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Sun Mar 26 21:57:30 2023 +0200
+
+    I can't get mockk to work I can not use depencies for testing
+
+[33mcommit ea33699001db1ad73e322c3c98d8388699231d22[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Sun Mar 26 21:42:25 2023 +0200
+
+     bug 6 files found with path 'META-INF/LICENSE.md'.
+
+[33mcommit 0523097a3f0c0ab305472a589a7dc07a1f520661[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Sun Mar 26 21:34:20 2023 +0200
+
+    checkpoint
+
+[33mcommit c1048fcf1d2b0c6e32fdf51198003c7debef745d[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Sun Mar 26 00:14:06 2023 +0100
+
+    checkpoint WordleGameStateTest in progress
+
+[33mcommit e0bdb0887a3d53124679819fb39f3ca3d5f8b1e3[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Sun Mar 26 00:04:52 2023 +0100
+
+    checkpoint WordleGameTestInProgress
+
+[33mcommit b093dd77c80359fcf3b7ce84a419e7b796ab5d58[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Sat Mar 25 22:14:36 2023 +0100
+
+    checkpoint, need to write test for WordleGameState
+
+[33mcommit 358c8ad1040f9ab55e2d51a7b253cd028f8d6dd1[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Sat Mar 25 20:20:02 2023 +0100
+
+    checkpoint, loading valid words does not work
+
+[33mcommit 914e9458b2fa1543b3c218d19cf2cc1761814632[m[33m ([m[1;31morigin/wordle[m[33m, [m[1;32mwordle[m[33m)[m
+Merge: a0c32b0 7e2d2aa
+Author: ctaverni <79528494+ctaverni@users.noreply.github.com>
+Date:   Fri Mar 24 10:10:57 2023 +0100
+
+    Merge pull request #52 from guess-It-SDP/timer
+    
+    Timer
+
+[33mcommit 7e2d2aab617cc912e978c0a94144351437b58e81[m[33m ([m[1;31morigin/timer[m[33m)[m
+Merge: 1f56fe0 a0c32b0
+Author: ctaverni <79528494+ctaverni@users.noreply.github.com>
+Date:   Fri Mar 24 09:59:20 2023 +0100
+
+    Merge branch 'main' into timer
+
+[33mcommit 1f56fe045d6377e3f67e99ed94ee269b373fd51b[m
+Author: ctaverni <clara.tavernier@epfl.ch>
+Date:   Tue Mar 21 20:54:16 2023 +0100
+
+    Modularize to pass codeclimate test #2
+
+[33mcommit a0c32b0d4e70d0fdee34524c27c43682238d9542[m
+Merge: dbb5592 4288070
+Author: Dan S <100197723+GitC0der@users.noreply.github.com>
+Date:   Tue Mar 21 19:48:30 2023 +0100
+
+    Merge pull request #51 from guess-It-SDP/topicSelection
+    
+    Complete round selection and (limited) topic selection added
+
+[33mcommit aabc12f1f10a18e5709d2f5e23ba6fb2d3d41245[m
+Author: ctaverni <clara.tavernier@epfl.ch>
+Date:   Tue Mar 21 18:10:54 2023 +0100
+
+    Modularize to pass codeclimate test
+
+[33mcommit 2c8766006ac71fd8598b83add6cf33e574c29b14[m
+Author: ctaverni <clara.tavernier@epfl.ch>
+Date:   Tue Mar 21 16:33:20 2023 +0100
+
+    Fix a mistake in tests
+
+[33mcommit 73c440e86e50b50ac5726f20c8b3d38a8a41bd3f[m
+Author: ctaverni <clara.tavernier@epfl.ch>
+Date:   Tue Mar 21 16:28:09 2023 +0100
+
+    Make functionnal timer, add it to the drawing activity
+
+[33mcommit 4288070fc948b85cafac922971741e96a23b40b3[m[33m ([m[1;31morigin/topicSelection[m[33m)[m
+Author: Danny <danny.seel@epfl.ch>
+Date:   Sat Mar 18 16:38:40 2023 +0100
+
+    TopicSelectionActivity tests added
+
+[33mcommit e6a5259ed557f018a7ece5d892bec507ba6f5206[m
+Author: Danny <danny.seel@epfl.ch>
+Date:   Sat Mar 18 15:25:39 2023 +0100
+
+    Add tests for GameOptionsActivity
+
+[33mcommit ccfa3dc1945ff20347123567ba72f67e05bc64a4[m
+Author: Danny <danny.seel@epfl.ch>
+Date:   Sat Mar 18 12:49:46 2023 +0100
+
+    Topic selection added + topic now stored on firebase
+
+[33mcommit ecdf9baa470240e50df3aa593d84115e56109a1c[m
+Author: Danny <danny.seel@epfl.ch>
+Date:   Sat Mar 18 12:09:12 2023 +0100
+
+    Number of rounds now stored on Firebase + initial draft of topic selection activity added
+
+[33mcommit f47d76c8565b936ef2b3b6fc797fe9d8bcdfcd37[m
+Author: Danny <danny.seel@epfl.ch>
+Date:   Sat Mar 18 11:23:39 2023 +0100
+
+    Create game options menu with functional round selection
+
+[33mcommit dbb5592571788863febdf0a13ea4991c5c903203[m
+Merge: b10b09c 645cc56
+Author: Paul Guillon <93641311+Pyr0ss@users.noreply.github.com>
+Date:   Fri Mar 17 11:57:56 2023 +0100
+
+    Merge pull request #33 from guess-It-SDP/bitmapHandler
+    
+    Bitmap handler
+
+[33mcommit 645cc560c52865b54139d862fdfdec21006867fd[m[33m ([m[1;31morigin/bitmapHandler[m[33m)[m
+Merge: bdf9010 b10b09c
+Author: Pyr0ss <pguillon67@gmail.com>
+Date:   Fri Mar 17 11:47:18 2023 +0100
+
+    Merge branch 'main' of https://github.com/guess-It-SDP/guessIt into bitmapHandler
+
+[33mcommit b10b09cd4a822207eedd2c9ab92b095524a2a030[m
+Merge: f546d2b b9ef206
+Author: Paul Guillon <93641311+Pyr0ss@users.noreply.github.com>
+Date:   Fri Mar 17 10:57:20 2023 +0100
+
+    Merge pull request #31 from guess-It-SDP/demo2
+    
+    Demo2
+
+[33mcommit b9ef2069b2de4cbbd5588d14eb6c9e22360194b8[m[33m ([m[1;31morigin/demo2[m[33m, [m[1;32mdemo2[m[33m)[m
+Author: Naarileth <michael.freeman@epfl.ch>
+Date:   Fri Mar 17 10:45:37 2023 +0100
+
+    fixed for demo
+
+[33mcommit f34f80b7077ca8636b212bb42ac382df9be57224[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Fri Mar 17 10:33:23 2023 +0100
+
+    fonctionne pas
+
+[33mcommit fe896df1e0d48c6973d1de5d7424d720b536c314[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Fri Mar 17 10:20:42 2023 +0100
+
+    removed test
+
+[33mcommit bdf90105ea6c1a583ffb8ce07e65a2ae8bc3de9f[m
+Merge: 3092be1 f546d2b
+Author: Pyr0ss <pguillon67@gmail.com>
+Date:   Fri Mar 17 09:54:23 2023 +0100
+
+    Merge branch 'main' into bitmapHandler
+
+[33mcommit 0e1ee19889131f6b33d5b9028738d4a5a8dddd2d[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Fri Mar 17 09:45:59 2023 +0100
+
+    record audio Activity
+
+[33mcommit 3092be1c158ff6c8fa88651e1543b6ccd18da12e[m
+Author: Pyr0ss <pguillon67@gmail.com>
+Date:   Fri Mar 17 09:45:07 2023 +0100
+
+    done and tested
+
+[33mcommit 07b6252024bbb15ede43dced9cb853d8ee087ce4[m[33m ([m[1;31morigin/demo[m[33m, [m[1;32mdemo[m[33m)[m
+Author: David Lacour <davidlacourgaletto@gmail.com>
+Date:   Fri Mar 17 00:26:32 2023 +0100
+
+    first demo
+
+[33mcommit f546d2b549c444f358d0931963616e4444cd19aa[m
+Merge: f660f3a 2bdb1b1
+Author: Paul Guillon <93641311+Pyr0ss@users.noreply.github.com>
+Date:   Thu Mar 16 21:25:45 2023 +0100
+
+    Merge pull request #28 from guess-It-SDP/drawingActivity
+    
+    Drawing activity
+
+[33mcommit 2bdb1b19cff2c9ffe9ca420065cd961b25c6bae7[m[33m ([m[1;31morigin/drawingActivity[m[33m)[m
+Merge: 7448e33 f660f3a
+Author: Pyr0ss <pguillon67@gmail.com>
+Date:   Thu Mar 16 21:11:07 2023 +0100
+
+    Mer

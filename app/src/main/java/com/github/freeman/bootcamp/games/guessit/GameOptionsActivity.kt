@@ -53,6 +53,7 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.util.*
 
+
 /**
  * Displays a screen where a player that wants to create a lobby will use in order
  * to choose different options for the game
@@ -90,6 +91,10 @@ class GameOptionsActivity : ComponentActivity() {
     }
 }
 
+/**
+ * Create the radio buttons in order to chose a different number of rounds to be played during
+ * the Game.
+ */
 @Composable
 fun RoundsDisplay() {
     val kinds = NB_ROUNDS
@@ -98,6 +103,17 @@ fun RoundsDisplay() {
     selection = Integer.parseInt(selected)
 }
 
+
+/**
+ * Create the radio buttons in order to chose a different number of rounds to be played during the
+ * Game.
+ *
+ * @param The list of possible number of rounds a player can chose
+ * @param selected corresponds to the value inside the MutableState object currently chosen by the
+ * player(has a default value)
+ * @param SetSelected corresponds to the function that can be used to update the value inside the
+ * MutableState object.
+ */
 @Composable
 fun RoundsRadioButtons(mItems: List<String>, selected: String, setSelected: (selected: String) -> Unit) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -132,6 +148,11 @@ fun RoundsRadioButtons(mItems: List<String>, selected: String, setSelected: (sel
     }
 }
 
+/**
+ * Randomly chose topics that Will be presented to the player. Create the RadioButtons so the player can
+ * chose which topics he wants to use in his next Game.
+ *
+ */
 @Composable
 fun CategoriesDisplay() {
     val (selectedIndex, setSelected) = remember { mutableStateOf(-1) }
@@ -142,20 +163,17 @@ fun CategoriesDisplay() {
     categorySize = size
 
     if (topics.isNotEmpty() && categorySize > 0) {
-      selectedTopics.clear()
+        selectedTopics.clear()
         val allTopics = topics.toMutableList()
-        val indices = mutableListOf<Int>()
-        for (i in 1..categorySize) {
-            var randomNb = (0..categorySize).random()
-            while (indices.contains(randomNb)) {
-                randomNb = (0..categorySize).random()
-            }
-            indices.add(randomNb)
-        }
-        selectedTopics.addAll(listOf(allTopics[indices[0]], allTopics[indices[1]], allTopics[indices[2]]))
+        val selectedIndices = allTopics.indices.shuffled().take(categorySize)
+        selectedTopics.addAll(selectedIndices.map { allTopics[it] })
     }
 }
 
+/**
+ * Create the RadioButtons so the player can
+ * chose which topics he wants to use in his next Game.
+ */
 @Composable
 fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> Unit,
                            setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
@@ -229,13 +247,29 @@ fun NextButton(dbRef: DatabaseReference, lobbyType: String, password: String) {
     ElevatedButton(
         modifier = Modifier.testTag("nextButton"),
         onClick = {
-            next(context, dbRef, lobbyType, password)
+            next(context, dbRef,lobbyType, password)
         }
     ) {
         Text(NEXT)
     }
 }
 
+/**
+ * This function is used to start a new game by creating a new game in the Firebase Realtime
+ * Database. First, it gets the current user's ID from Firebase authentication.
+ * If the user is not authenticated, the ID is set to "null". Then, it creates a new reference
+ * to the "games/" node in the database and generates a unique key for the new game.
+ * If categorySize is less than or equal to zero, a Toast is displayed to prompt the user to
+ * select a category. Otherwise, it retrieves the user's username from their profile
+ * in the database. After retrieving the user's username, it creates a new GameData object,
+ * which contains information about the game. After creating the GameData object,
+ * it sets the new game's data in the database using the setValue function.
+ * Then, it starts a new WaitingRoomActivity and passes in the new game's ID and
+ * selected topics as extras. Finally, it finishes the current activity.
+ *
+ *@param context Information about application environnement.
+ *@param database A particular location inside the database.
+ */
 fun next(context: Context, database: DatabaseReference, lobbyType: String, password: String) {
     var userId = Firebase.auth.uid
     userId = userId ?: "null"
@@ -345,6 +379,12 @@ fun GameOptionsBackButton() {
     }
 }
 
+/**
+ * It first checks if the context passed to the function is an instance of an Activity.
+ * If it is, it calls the finish() method on the activity, which finishes the current
+ * activity and returns the user to the previous one in the activity stack (in this case, the main menu activity).
+ * If it's not, nothing happens.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PasswordInput(password: MutableState<String>) {
@@ -378,6 +418,11 @@ fun backToMainMenu(context: Context) {
     activity?.finish()
 }
 
+/**
+ * Display the screen containing the differents parameters the player can chose from to create
+ * a new game.
+ * @param dbRef a particular location in the database
+ */
 @Composable
 fun GameOptionsScreen(dbRef: DatabaseReference, lobbyType: String) {
     val password = remember { mutableStateOf("") }
