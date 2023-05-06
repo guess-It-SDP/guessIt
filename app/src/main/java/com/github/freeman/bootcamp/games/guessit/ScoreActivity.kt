@@ -20,10 +20,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.FINAL_SCORES_TITLE
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.SCORES_TITLE
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.WINNER_TITLE
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.gameEnded
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.size
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.turnEnded
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
@@ -55,7 +52,6 @@ class ScoreActivity : ComponentActivity() {
         const val FINAL_SCORES_TITLE = "Final Scores"
         const val WINNER_TITLE = "And the winner is… "
         var turnEnded = false
-        var gameEnded = false
     }
 }
 
@@ -221,25 +217,19 @@ fun ScoreScreen(
     ) {
         Spacer(modifier = Modifier.weight(1f))
 
-        if (!gameEnded) {
-            val nbPlayers = usersToScores.size
-            Scoreboard(
-                playerScores = usersToScores,
-                modifier = Modifier
-                    .width((0.475 * size).dp)
-                    .height(((0.225 + nbPlayers * 0.11) * size).dp)
-                    .testTag("scoreboard")
-            )
-        }
+        val nbPlayers = usersToScores.size
+        Scoreboard(
+            playerScores = usersToScores,
+            modifier = Modifier
+                .width((0.475 * size).dp)
+                .height(((0.225 + nbPlayers * 0.11) * size).dp)
+                .testTag("scoreboard")
+        )
     }
 
     if (turnEnded) {
         reinitialise(context, dbRef, playerIds.value.keys)
         turnEnded = false
-    }
-
-    if (gameEnded) {
-        EndScoreboard(usersToScores)
     }
 }
 
@@ -287,65 +277,6 @@ fun Scoreboard(playerScores: List<Pair<String?, Int>>, modifier: Modifier) {
                     }
                 }
                 Divider(color = Color.Black, thickness = 1.dp)
-            }
-        }
-    }
-}
-
-@Composable
-fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
-    Box(
-        modifier = Modifier
-            .background(Color.Blue, RoundedCornerShape(16.dp))
-            .padding(16.dp)
-            .testTag("endScoreboard")
-    ) {
-        Column (
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = FINAL_SCORES_TITLE,
-                color = Color.White,
-                style = MaterialTheme.typography.h4,
-                modifier = Modifier.align(Alignment.CenterHorizontally).testTag("endScoresTitle")
-            )
-
-            Spacer(modifier = Modifier.height(2.dp))
-            Divider(color = Color.White, thickness = 4.dp)
-
-            val winner = if (usersToScores.isNotEmpty()) usersToScores[0].first else "???"
-            Spacer(modifier = Modifier.height(30.dp))
-            Text(
-                text = "$WINNER_TITLE$winner!",
-                style = MaterialTheme.typography.body1,
-                color = Color.White,
-                modifier = Modifier.testTag("winnerDeclaration")
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            usersToScores.forEach { (name, score) ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (name != null) {
-                        Text(
-                            text = name,
-                            color = Color.White,
-                            style = MaterialTheme.typography.body1,
-                            modifier = Modifier.weight(1f).testTag("end$name")
-                        )
-
-                        Text(
-                            text = score.toString(),
-                            color = Color.White,
-                            style = MaterialTheme.typography.body1,
-                            modifier = Modifier.testTag("endScore")
-                        )
-                    }
-                }
-                Divider(color = Color.White, thickness = 1.dp)
             }
         }
     }

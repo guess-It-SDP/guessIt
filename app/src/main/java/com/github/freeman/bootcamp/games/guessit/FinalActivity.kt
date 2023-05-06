@@ -5,7 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.ElevatedButton
@@ -15,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -134,5 +138,64 @@ fun BackToMenuButton(context: Context) {
         modifier = Modifier.testTag("backToMenuButton")
     ) {
         Text(text = BACK_TO_MENU)
+    }
+}
+
+@Composable
+fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
+    Box(
+        modifier = Modifier
+            .background(Color.Blue, RoundedCornerShape(16.dp))
+            .padding(16.dp)
+            .testTag("endScoreboard")
+    ) {
+        Column (
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = ScoreActivity.FINAL_SCORES_TITLE,
+                color = Color.White,
+                style = MaterialTheme.typography.h4,
+                modifier = Modifier.align(Alignment.CenterHorizontally).testTag("endScoresTitle")
+            )
+
+            Spacer(modifier = Modifier.height(2.dp))
+            Divider(color = Color.White, thickness = 4.dp)
+
+            val winner = if (usersToScores.isNotEmpty()) usersToScores[0].first else "???"
+            Spacer(modifier = Modifier.height(30.dp))
+            Text(
+                text = "${ScoreActivity.WINNER_TITLE}$winner!",
+                style = MaterialTheme.typography.body1,
+                color = Color.White,
+                modifier = Modifier.testTag("winnerDeclaration")
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            usersToScores.forEach { (name, score) ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (name != null) {
+                        Text(
+                            text = name,
+                            color = Color.White,
+                            style = MaterialTheme.typography.body1,
+                            modifier = Modifier.weight(1f).testTag("end$name")
+                        )
+
+                        Text(
+                            text = score.toString(),
+                            color = Color.White,
+                            style = MaterialTheme.typography.body1,
+                            modifier = Modifier.testTag("endScore")
+                        )
+                    }
+                }
+                Divider(color = Color.White, thickness = 1.dp)
+            }
+        }
     }
 }

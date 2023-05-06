@@ -11,9 +11,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.freeman.bootcamp.games.guessit.EndScoreboard
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.gameEnded
-import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.reinitialise
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
@@ -37,14 +36,12 @@ class EndScoreboardTest {
 
     @Before
     fun init() {
-        gameEnded = true
         composeRule.setContent {
             val context = LocalContext.current
             val dbRef = getGameDBRef(context)
             reinitialise(context, dbRef, playerIds.toSet())
 
             initFirebaseScores(context, dbRef, playerIds, scores)
-            val playersToScores = initPlayersToScores(playerIds, scores)
             val usersToScores = usersToScoresToPair(playerIds, usernames, scores)
 
             BootcampComposeTheme(darkTheme = false) {
@@ -52,8 +49,7 @@ class EndScoreboardTest {
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    ScoreScreen(dbRef = dbRef, testingPlayersToScores = playersToScores,
-                        testingUsersToScores = usersToScores)
+                    EndScoreboard(usersToScores = usersToScores)
                 }
             }
         }
