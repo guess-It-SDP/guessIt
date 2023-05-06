@@ -58,7 +58,7 @@ fun SettingsScreen() {
         ) {
             val context = LocalContext.current
             TopAppBar(
-                modifier = Modifier.testTag("topAppbarDrawHat"),
+                modifier = Modifier.testTag("topAppbarSettings"),
                 title = {
                     androidx.compose.material.Text(
                         text = PARAMETERS_TITLE,
@@ -69,10 +69,13 @@ fun SettingsScreen() {
                 backgroundColor = androidx.compose.material.MaterialTheme.colors.background,
                 elevation = 4.dp,
                 navigationIcon = {
-                    androidx.compose.material.IconButton(onClick = {
-                        val activity = (context as? Activity)
-                        activity?.finish()
-                    }) {
+                    androidx.compose.material.IconButton(
+                        onClick = {
+                            val activity = (context as? Activity)
+                            activity?.finish()
+                        },
+                        modifier = Modifier.testTag("settingsBackButton")
+                    ) {
                         androidx.compose.material.Icon(
                             Icons.Filled.ArrowBack,
                             contentDescription = "Go back",

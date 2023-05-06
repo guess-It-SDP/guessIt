@@ -58,7 +58,7 @@ class DrawHatActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val DRAW_HAT = "Draw your hat"
+        const val DRAW_HAT = "Draw Your Hat"
         const val HAT_HELP = "Welcome! Please draw and upload any hat for your in-game video filter" +
                 " by clicking the upload symbol in the right corner."
         const val YOUR_HAT = "Your hat"
@@ -232,6 +232,7 @@ fun DrawHatScreen(storageRef: StorageReference) {
                             val tempFile = File.createTempFile("image", ".png")
                             tempFile.writeBytes(byteArray)
                             hatRef.putFile(tempFile.toUri())
+                            hat.value = it.asAndroidBitmap()
                         }
                     }
                 ) { undoCount, redoCount ->
