@@ -64,7 +64,6 @@ class ScoreActivity : ComponentActivity() {
  */
 @Composable
 fun turnIntoPairs(playersToScores: Map<String, MutableState<Int>>): List<Pair<String, Int>> {
-
     // Converts the map of players to mutable state of int into a list of pairs ID-score instead
     val scorePairs = ArrayList<Pair<String, Int>>()
     if (playersToScores.isNotEmpty()) {
@@ -135,7 +134,6 @@ fun updateScoreMap(playersToScores: Map<String, MutableState<Int>>, id: String, 
  * to change the artist
   */
 fun reinitialise(context: Context, dbRef: DatabaseReference, playerIds: Set<String>) {
-
     // Reset the number of guesses to 0
     dbRef.child(context.getString(R.string.current_correct_guesses_path)).setValue(0)
 
