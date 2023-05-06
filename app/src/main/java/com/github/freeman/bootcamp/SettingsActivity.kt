@@ -6,17 +6,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.SettingsActivity.Companion.MUSIC_VOLUME
+import com.github.freeman.bootcamp.SettingsActivity.Companion.PARAMETERS_TITLE
 import com.github.freeman.bootcamp.SettingsActivity.Companion.SETTINGS_TITLE
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
@@ -31,24 +36,9 @@ class SettingsActivity : ComponentActivity() {
     }
 
     companion object {
+        const val PARAMETERS_TITLE = "App Parameters"
         const val SETTINGS_TITLE = "Settings"
         const val MUSIC_VOLUME = "Music Volume"
-    }
-}
-
-@Composable
-fun SettingsBackButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("settingsBackButton"),
-        onClick = {
-            back(context)
-        }
-    ) {
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Back arrow icon"
-        )
     }
 }
 
@@ -66,7 +56,30 @@ fun SettingsScreen() {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            SettingsBackButton()
+            val context = LocalContext.current
+            TopAppBar(
+                modifier = Modifier.testTag("topAppbarDrawHat"),
+                title = {
+                    androidx.compose.material.Text(
+                        text = PARAMETERS_TITLE,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                backgroundColor = androidx.compose.material.MaterialTheme.colors.background,
+                elevation = 4.dp,
+                navigationIcon = {
+                    androidx.compose.material.IconButton(onClick = {
+                        val activity = (context as? Activity)
+                        activity?.finish()
+                    }) {
+                        androidx.compose.material.Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "Go back",
+                        )
+                    }
+                }
+            )
         }
         Column(
             modifier = Modifier

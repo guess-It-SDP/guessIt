@@ -1,3 +1,7 @@
-18:20:47.516 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
-18:20:47.711 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
-18:21:26.015 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - sdp-guess-it-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 255ms, init: 0ms
+16:57:20.812 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+16:57:21.034 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
+16:59:47.756 [NamespaceSystem-akka.actor.default-dispatcher-6] INFO com.firebase.core.namespace.NamespaceActor - sdp-guess-it-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 337ms, init: 0ms
+16:59:55.687 [Thread-0] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.
+16:59:55.795 [NamespaceSystem-akka.actor.default-dispatcher-8] INFO com.firebase.core.namespace.Terminator$Terminator - 1 actors left to terminate: sdp-guess-it-default-rtdb
+16:59:55.861 [NamespaceSystem-akka.actor.default-dispatcher-10] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for sdp-guess-it-default-rtdb
+16:59:55.882 [Thread-0] INFO com.firebase.server.forge.App$ - Graceful shutdown complete.

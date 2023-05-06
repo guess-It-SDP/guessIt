@@ -1,6 +1,7 @@
 package com.github.freeman.bootcamp
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -11,6 +12,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,10 +24,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
+import com.github.freeman.bootcamp.DrawHatActivity.Companion.DRAW_HAT
 import com.github.freeman.bootcamp.DrawHatActivity.Companion.HAT_HELP
 import com.github.freeman.bootcamp.DrawHatActivity.Companion.YOUR_HAT
 import com.github.freeman.bootcamp.games.guessit.drawing.*
@@ -53,6 +58,7 @@ class DrawHatActivity : AppCompatActivity() {
     }
 
     companion object {
+        const val DRAW_HAT = "Draw your hat"
         const val HAT_HELP = "Welcome! Please draw and upload any hat for your in-game video filter" +
                 " by clicking the upload symbol in the right corner."
         const val YOUR_HAT = "Your hat"
@@ -60,8 +66,7 @@ class DrawHatActivity : AppCompatActivity() {
 }
 
 // Note: DrawingActivity could unfortunately not be reused as it contains references to a specific
-// game, contains a timer, uses the realtime database as opposed to the storage one, etc. and thus
-// it required a number of modifications and additions.
+// game, contains a timer, uses the realtime database as opposed to the storage one, etc.
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun DrawHatScreen(storageRef: StorageReference) {
@@ -96,6 +101,30 @@ fun DrawHatScreen(storageRef: StorageReference) {
 
     Box(Modifier.testTag(context.getString(R.string.draw_hat_screen))) {
         Column {
+            TopAppBar(
+                modifier = Modifier.testTag("topAppbarDrawHat"),
+                title = {
+                    Text(
+                        text = DRAW_HAT,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                backgroundColor = MaterialTheme.colors.background,
+                elevation = 4.dp,
+                navigationIcon = {
+                    IconButton(onClick = {
+                        val activity = (context as? Activity)
+                        activity?.finish()
+                    }) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "Go back",
+                        )
+                    }
+                }
+            )
+
             Row {
                 Column (
                     modifier = Modifier.padding(10.dp),
@@ -131,7 +160,7 @@ fun DrawHatScreen(storageRef: StorageReference) {
                 )
             }
 
-            // Controls bar
+            // Controls bar with the eraser option
             DrawHatControlsBar(
                 drawController,
                 onColorClick =
@@ -155,7 +184,7 @@ fun DrawHatScreen(storageRef: StorageReference) {
                 currentWidth
             )
 
-            // Color picker that appears when clicking on one of the two color selection buttons
+            // Colour picker
             RangVikalp(
                 isVisible = colorBarVisibility.value,
                 colorIntensity = 0,
@@ -168,8 +197,7 @@ fun DrawHatScreen(storageRef: StorageReference) {
                 drawController.changeColor(it)
             }
 
-            // Slider to select stroke width that appears when clicking the corresponding button in
-            // the controls bar
+            // Slider to select stroke width
             if (widthSliderVisibility.value) {
                 Slider(
                     value = currentWidth.value,

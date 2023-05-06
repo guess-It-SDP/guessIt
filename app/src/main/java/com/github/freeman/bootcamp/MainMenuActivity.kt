@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.AUDIO_REC
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAW_HAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
@@ -88,7 +87,6 @@ class MainMenuActivity : ComponentActivity() {
         const val DRAWING = "Drawing"
         const val WORDLE = "Play Wordle"
         const val VIDEO_CALL = "Video Call"
-        const val DRAW_HAT = "Draw Hat"
     }
 }
 
@@ -229,20 +227,6 @@ fun VideoCallButton() {
     )
 }
 
-fun drawHat(context: Context) {
-    context.startActivity(Intent(context, DrawHatActivity::class.java))
-}
-
-@Composable
-fun DrawHatButton() {
-    val context = LocalContext.current
-    MainMenuButton(
-        testTag = "drawHatButton",
-        onClick = { drawHat(context) },
-        text = DRAW_HAT
-    )
-}
-
 @Composable
 fun MainMenuScreen() {
     Column(
@@ -263,9 +247,6 @@ fun MainMenuScreen() {
 
         Spacer(modifier = Modifier.size(6.dp))
         SettingsButton()
-
-        Spacer(modifier = Modifier.size(6.dp))
-        DrawHatButton()
 
         Spacer(modifier = Modifier.size(6.dp))
         ChatButton()
