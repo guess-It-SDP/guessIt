@@ -97,6 +97,10 @@
     <string name="timer_unused">unused</string>
     <string name="timer_inprogress">inprogress</string>
 
+    <!-- Strings used in FinalActivity  -->
+    <string name="trophy">trophy</string>
+    <string name="celebration">celebration</string>
+
     <!-- Test Strings -->
     <string name="test_game_id">testgameid</string>
 </resources>

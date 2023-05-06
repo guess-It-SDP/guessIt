@@ -50,7 +50,6 @@ class ScoreActivity : ComponentActivity() {
         const val size = 200
         const val SCORES_TITLE = "Scores"
         const val FINAL_SCORES_TITLE = "Final Scores"
-        const val WINNER_TITLE = "And the winner is… "
         var turnEnded = false
     }
 }
