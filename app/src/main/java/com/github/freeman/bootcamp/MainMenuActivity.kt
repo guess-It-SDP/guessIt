@@ -18,11 +18,13 @@ import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.AUDIO_REC
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.FINAL
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
+import com.github.freeman.bootcamp.games.guessit.FinalActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
@@ -87,6 +89,7 @@ class MainMenuActivity : ComponentActivity() {
         const val DRAWING = "Drawing"
         const val WORDLE = "Play Wordle"
         const val VIDEO_CALL = "Video Call"
+        const val FINAL = "Final"
     }
 }
 
@@ -227,6 +230,23 @@ fun VideoCallButton() {
     )
 }
 
+fun final(context: Context) {
+    context.startActivity(Intent(context, FinalActivity::class.java).apply {
+        // Todo: This is for testing purposes only and has to be removed
+        putExtra(context.getString(R.string.gameId_extra), "-NUjwOemlunB-cpBxvsC")
+    })
+}
+
+@Composable
+fun FinalButton() {
+    val context = LocalContext.current
+    MainMenuButton(
+        testTag = "finalButton",
+        onClick = { final(context) },
+        text = FINAL
+    )
+}
+
 @Composable
 fun MainMenuScreen() {
     Column(
@@ -247,6 +267,9 @@ fun MainMenuScreen() {
 
         Spacer(modifier = Modifier.size(6.dp))
         SettingsButton()
+
+        Spacer(modifier = Modifier.size(6.dp))
+        FinalButton()
 
         Spacer(modifier = Modifier.size(6.dp))
         ChatButton()

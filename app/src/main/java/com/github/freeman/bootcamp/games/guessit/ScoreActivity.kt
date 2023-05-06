@@ -154,7 +154,7 @@ fun reinitialise(context: Context, dbRef: DatabaseReference, playerIds: Set<Stri
 @Composable
 fun ScoreScreen(
     dbRef: DatabaseReference,
-    testingPlayersToScores: HashMap<String, MutableState<Int>> = HashMap<String, MutableState<Int>>(),
+    testingPlayersToScores: HashMap<String, MutableState<Int>> = HashMap(),
     testingUsersToScores:  List<Pair<String?, Int>> = listOf()
 ) {
     val context = LocalContext.current
