@@ -145,6 +145,48 @@ fun reinitialise(context: Context, dbRef: DatabaseReference, playerIds: Set<Stri
 }
 
 @Composable
+fun obtainPlayersToScores(
+    dbRef: DatabaseReference,
+    playerIds: MutableState<Map<String, Map<String, Int>>>,
+    context: Context
+): HashMap<String, MutableState<Int>> {
+    // Initialise the values of the map player ID to score
+    val playersToScores = HashMap<String, MutableState<Int>>()
+    for (id in playerIds.value.keys) {
+        playersToScores[id] = remember { mutableStateOf(-1) }
+    }
+
+    // Observe the points of all players to update the scoreboard
+    for (id in playerIds.value.keys) {
+        dbRef
+            .child(context.getString(R.string.players_path))
+            .child(id)
+            .addChildEventListener(object : ChildEventListener {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    updateScoreMap(playersToScores, id, snapshot)
+                }
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    updateScoreMap(playersToScores, id, snapshot)
+                }
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+                    updateScoreMap(playersToScores, id, snapshot)
+                }
+
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                    updateScoreMap(playersToScores, id, snapshot)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // No particular action needs to be taken in this case
+                }
+            })
+    }
+    return playersToScores
+}
+
+@Composable
 fun ScoreScreen(
     dbRef: DatabaseReference,
     testingPlayersToScores: HashMap<String, MutableState<Int>> = HashMap(),
@@ -159,39 +201,8 @@ fun ScoreScreen(
             playerIds.value = it as HashMap<String, Map<String, Int>>
         }
 
-    // Initialise the values of the map player ID to score
-    var playersToScores = HashMap<String, MutableState<Int>>()
-    for (id in playerIds.value.keys) {
-        playersToScores[id] = remember { mutableStateOf(-1) }
-    }
-
-    // Observe the points of all players to update the scoreboard
-    for (id in playerIds.value.keys) {
-        dbRef
-            .child(context.getString(R.string.players_path))
-            .child(id)
-            .addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                updateScoreMap(playersToScores, id, snapshot)
-            }
-
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                updateScoreMap(playersToScores, id, snapshot)
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                updateScoreMap(playersToScores, id, snapshot)
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                updateScoreMap(playersToScores, id, snapshot)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // No particular action needs to be taken in this case
-            }
-        })
-    }
+    // Get the player ID to score map
+    var playersToScores = obtainPlayersToScores(dbRef, playerIds, context)
 
     // Dependency injection for testing purposes
     if (testingPlayersToScores.size > 0) {

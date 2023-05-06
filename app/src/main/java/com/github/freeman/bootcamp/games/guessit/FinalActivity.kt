@@ -16,7 +16,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,9 +37,6 @@ import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.WINNER_
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 
 class FinalActivity : ComponentActivity() {
@@ -77,39 +73,8 @@ fun FinalScreen(dbRef: DatabaseReference) {
             playerIds.value = it as HashMap<String, Map<String, Int>>
         }
 
-    // Initialise the values of the map player ID to score
-    val playersToScores = HashMap<String, MutableState<Int>>()
-    for (id in playerIds.value.keys) {
-        playersToScores[id] = remember { mutableStateOf(-1) }
-    }
-
-    // Fetch the points of all players to display in the end scoreboard
-    for (id in playerIds.value.keys) {
-        dbRef
-            .child(context.getString(R.string.players_path))
-            .child(id)
-            .addChildEventListener(object : ChildEventListener {
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    updateScoreMap(playersToScores, id, snapshot)
-                }
-
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    updateScoreMap(playersToScores, id, snapshot)
-                }
-
-                override fun onChildRemoved(snapshot: DataSnapshot) {
-                    updateScoreMap(playersToScores, id, snapshot)
-                }
-
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                    updateScoreMap(playersToScores, id, snapshot)
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    // No particular action needs to be taken in this case
-                }
-            })
-    }
+    // Get the player ID to score map
+    val playersToScores = obtainPlayersToScores(dbRef, playerIds, context)
 
     val scores = turnIntoPairs(playersToScores)
     val usernames = fetchUserNames(scores)
