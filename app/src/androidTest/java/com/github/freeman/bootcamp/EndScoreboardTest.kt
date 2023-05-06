@@ -99,4 +99,14 @@ class EndScoreboardTest {
             composeRule.onNodeWithTag("end$name").assertTextContains(name)
         }
     }
+
+    @Test
+    fun trophyImageIsDisplayed() {
+        composeRule.onNodeWithTag("trophy").assertIsDisplayed()
+    }
+
+    @Test
+    fun celebrationImageIsDisplayed() {
+        composeRule.onNodeWithTag("celebration").assertIsDisplayed()
+    }
 }

@@ -18,13 +18,11 @@ import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.AUDIO_REC
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.FINAL
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
-import com.github.freeman.bootcamp.games.guessit.FinalActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
@@ -89,7 +87,6 @@ class MainMenuActivity : ComponentActivity() {
         const val DRAWING = "Drawing"
         const val WORDLE = "Play Wordle"
         const val VIDEO_CALL = "Video Call"
-        const val FINAL = "Final"
     }
 }
 
@@ -102,7 +99,6 @@ fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String) {
         Text(text)
     }
 }
-
 
 fun play(context: Context) {
     context.startActivity(Intent(context, CreateJoinActivity::class.java))
@@ -118,7 +114,6 @@ fun PlayButton() {
     )
 }
 
-
 fun settings(context: Context) {
     context.startActivity(Intent(context, SettingsProfileActivity::class.java))
 }
@@ -132,7 +127,6 @@ fun SettingsButton() {
         text = SETTINGS
     )
 }
-
 
 fun chatTest(context: Context) {
     context.startActivity(Intent(context, ChatActivity::class.java).apply {
@@ -149,7 +143,6 @@ fun ChatButton() {
         text = CHAT
     )
 }
-
 
 fun guessing(context: Context, gameId: String) {
     context.startActivity(Intent(context, GuessingActivity::class.java).apply {
@@ -168,7 +161,6 @@ fun GuessingButton() {
     )
 }
 
-
 fun audioRec(context: Context) {
     context.startActivity(Intent(context, AudioRecordingActivity::class.java))
 }
@@ -182,7 +174,6 @@ fun AudioRecordingButton() {
         text = AUDIO_REC
     )
 }
-
 
 fun drawing(context: Context, gameId: String) {
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {
@@ -199,7 +190,6 @@ fun DrawingButton() {
         text = DRAWING
     )
 }
-
 
 fun wordle(context: Context) {
     context.startActivity(Intent(context, WordleMenu::class.java))
@@ -230,23 +220,6 @@ fun VideoCallButton() {
     )
 }
 
-fun final(context: Context) {
-    context.startActivity(Intent(context, FinalActivity::class.java).apply {
-        // Todo: This is for testing purposes only and has to be removed
-        putExtra(context.getString(R.string.gameId_extra), "-NUjwOemlunB-cpBxvsC")
-    })
-}
-
-@Composable
-fun FinalButton() {
-    val context = LocalContext.current
-    MainMenuButton(
-        testTag = "finalButton",
-        onClick = { final(context) },
-        text = FINAL
-    )
-}
-
 @Composable
 fun MainMenuScreen() {
     Column(
@@ -269,9 +242,6 @@ fun MainMenuScreen() {
         SettingsButton()
 
         Spacer(modifier = Modifier.size(6.dp))
-        FinalButton()
-
-        Spacer(modifier = Modifier.size(6.dp))
         ChatButton()
 
         Spacer(modifier = Modifier.size(6.dp))
@@ -290,5 +260,3 @@ fun MainMenuScreen() {
         WordleButton()
     }
 }
-
-

@@ -43,7 +43,6 @@ class FinalActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
         val dbRef = getGameDBRef(this, gameId)
         setContent {
@@ -88,7 +87,8 @@ fun FinalScreen(dbRef: DatabaseReference) {
             Text(
                 text = GAME_OVER,
                 fontSize = 44.sp,
-                style = MaterialTheme.typography.h5
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier.testTag(GAME_OVER)
             )
             Spacer(modifier = Modifier.size(30.dp))
             EndScoreboard(usersToScores)
@@ -113,7 +113,10 @@ fun BackToMenuButton(context: Context) {
         },
         modifier = Modifier.testTag("backToMenuButton")
     ) {
-        Text(text = BACK_TO_MENU)
+        Text(
+            text = BACK_TO_MENU,
+            modifier = Modifier.testTag(BACK_TO_MENU)
+        )
     }
 }
 
@@ -166,6 +169,7 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
                     painter = rememberAsyncImagePainter(R.drawable.celebration),
                     contentDescription = context.getString(R.string.celebration),
                     modifier = Modifier
+                        .testTag("celebration")
                         .size(40.dp)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
@@ -187,6 +191,7 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
                     painter = rememberAsyncImagePainter(R.drawable.trophy),
                     contentDescription = context.getString(R.string.trophy),
                     modifier = Modifier
+                        .testTag("trophy")
                         .size(40.dp)
                 )
             }
