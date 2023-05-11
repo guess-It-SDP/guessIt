@@ -44,6 +44,9 @@ class ScoreActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val dbRef = getGameDBRef(this)
+        val gameState = intent.getStringExtra(getString(R.string.game_state))
+        scoreRecap = gameState == getString(R.string.state_scorerecap)
+        gameOverRecap = gameState == getString(R.string.state_gameover)
         setContent {
             BootcampComposeTheme {
                 ScoreScreen(dbRef)
@@ -194,12 +197,6 @@ fun ScoreScreen(
     if (testingPlayersToScores.size > 0) {
         usersToScores = testingUsersToScores
     }
-
-    FirebaseUtilities.databaseGet(dbRef.child(context.getString(R.string.current_state_path)))
-        .thenAccept {
-            gameOverRecap = it == context.getString(R.string.state_gameover)
-            scoreRecap = it == context.getString(R.string.state_scorerecap)
-        }
 
     if (gameOverRecap) {
         EndScoreboard(usersToScores)

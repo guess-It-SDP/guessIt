@@ -74,6 +74,7 @@
     <!-- Strings used for extra between activities -->
     <string name="gameId_extra">gameId</string>
     <string name="gameId_testing">testing</string>
+    <string name="game_state">gameState</string>
 
     <!-- current_state states -->
     <string name="state_waitingforplayers">waiting for players</string>

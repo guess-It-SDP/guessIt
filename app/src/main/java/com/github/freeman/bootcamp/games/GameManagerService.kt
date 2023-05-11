@@ -19,7 +19,6 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.concurrent.schedule
 
 /***
@@ -37,6 +36,7 @@ class GameManagerService : Service() {
         var nbPlayers = 0
         var nbRounds = 0
         var isHost = false
+        var topics = ArrayList<String>()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -57,7 +57,6 @@ class GameManagerService : Service() {
                                 isHost = localPlayerID == hostID.toString()
 
                                 // Get the list of topics
-                                val topics = ArrayList<String>()
                                 for (i in 0 until GameOptionsActivity.NB_TOPICS) {
                                     topics.add(intent.getStringExtra("topic$i").toString())
                                 }
@@ -70,7 +69,7 @@ class GameManagerService : Service() {
                                         if (snapshot.exists()) {
                                             when (snapshot.getValue<String>()!!) {
                                                 getString(R.string.state_newturn) -> {
-                                                    startNewTurn(localPlayerID, gameID, gameDBRef, topics)
+                                                    startNewTurn(localPlayerID, gameID, gameDBRef)
                                                 }
                                                 getString(R.string.state_scorerecap) -> {
                                                     scoreRecap()
@@ -145,7 +144,7 @@ class GameManagerService : Service() {
     }
 
     // Starts the correct activity between the Topic Selection Activity and the Guessing Activity
-    private fun startNewTurn(localPlayerID : String, gameID : String, gameDBRef : DatabaseReference, topics : List<String>) {
+    private fun startNewTurn(localPlayerID : String, gameID : String, gameDBRef : DatabaseReference) {
         // Get current artist
         FirebaseUtilities.databaseGet(gameDBRef.child(getString(R.string.current_artist_path)))
             .thenAccept {
@@ -172,11 +171,12 @@ class GameManagerService : Service() {
     private fun scoreRecap() {
         val intent = Intent(this, ScoreActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.putExtra(getString(R.string.game_state), getString(R.string.state_scorerecap))
         startActivity(intent)
     }
 
     private fun endTurn(currentStateRef : DatabaseReference) {
-        if (roundNb == nbRounds && turnNb == nbPlayers) {
+        if (roundNb == nbRounds && turnNb == nbPlayers - 1) {
             Timer().schedule(2000) {
                 currentStateRef.setValue(getString(R.string.state_gameover))
             }
@@ -215,13 +215,9 @@ class GameManagerService : Service() {
     private fun gameOver(gameDBRef : DatabaseReference) {
         val intent = Intent(this, ScoreActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.putExtra(getString(R.string.game_state), getString(R.string.state_gameover))
         startActivity(intent)
-        saveStatsToProfile()
         gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_lobbyclosed))
         stopSelf()
-    }
-
-    private fun saveStatsToProfile() {
-
     }
 }
