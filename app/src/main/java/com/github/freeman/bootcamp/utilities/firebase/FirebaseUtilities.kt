@@ -29,10 +29,29 @@ object FirebaseUtilities {
             if (it.value == null) future.completeExceptionally(NoSuchFieldException())
             else if (it.value is Long) {
                 future.complete((it.value as Long).toString())
+            } else if (it.value is Double) {
+                future.complete((it.value as Double).toString())
             } else {
                 future.complete(it.value as String)
             }
 
+        }.addOnFailureListener {
+            future.completeExceptionally(it)
+        }
+
+        return future
+    }
+
+    /**
+     * Gets the value located in the given database reference
+     * @param dbRef database reference
+     * @return a future of the value of type Double contained in the database
+     */
+    fun databaseGetDouble(dbRef: DatabaseReference): CompletableFuture<Double> {
+        val future = CompletableFuture<Double>()
+        dbRef.get().addOnSuccessListener {
+            if (it.value == null) future.completeExceptionally(NoSuchFieldException())
+            else future.complete(it.value as Double)
         }.addOnFailureListener {
             future.completeExceptionally(it)
         }

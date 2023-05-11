@@ -74,7 +74,7 @@ class WordleGameActivityTest {
 
         @Test
         fun buttonIsDisplayed(composeRule :  AndroidComposeTestRule<ActivityScenarioRule<WordleGameActivity>, WordleGameActivity>) {
-            composeRule.onNode(hasText("Submit word")).assertIsDisplayed()
+            composeRule.onNodeWithTag("submitWordButton").assertIsDisplayed()
         }
 
         @Test
@@ -95,7 +95,7 @@ class WordleGameActivityTest {
             composeRule.onNode(hasText("Enter a 5 letters word to submit")).performTextInput("hello")
             Espresso.closeSoftKeyboard()
 
-            composeRule.onNode(hasText("Submit word")).performClick()
+            composeRule.onNodeWithTag("submitWordButton").performClick()
             for (i in 0 until nbTiles) {
                 composeRule.onNode(hasTestTag("wordle_tile_id_" + i.toString())).assertIsDisplayed()
             }
@@ -105,7 +105,7 @@ class WordleGameActivityTest {
         fun adding6LettersDoesntCrash(composeRule :  AndroidComposeTestRule<ActivityScenarioRule<WordleGameActivity>, WordleGameActivity>,nbTiles: Int)  {
             composeRule.onNode(hasText("Enter a 5 letters word to submit")).performTextInput("helloo")
             Espresso.closeSoftKeyboard()
-            composeRule.onNode(hasText("Submit word")).performClick()
+            composeRule.onNodeWithTag("submitWordButton").performClick()
             for (i in 0 until nbTiles) {
                 composeRule.onNode(hasTestTag("wordle_tile_id_" + i.toString())).assertIsDisplayed()
             }
@@ -123,7 +123,7 @@ class WordleGameActivityTest {
         fun submitLLLXLtoHelloAddRightColors(composeRule :  AndroidComposeTestRule<ActivityScenarioRule<WordleGameActivity>, WordleGameActivity>) {
             composeRule.onNode(hasText("Enter a 5 letters word to submit")).performTextInput("LLLXL")
             Espresso.closeSoftKeyboard()
-            composeRule.onNode(hasText("Submit word")).performClick()
+            composeRule.onNodeWithTag("submitWordButton").performClick()
             composeRule.onNode(hasTestTag("wordle_tile_id_" + 0.toString()))
             .assertBackgroundColor(Color(WordleGameState.TileState.WRONG_SPOT.argb))
             composeRule.onNode(hasTestTag("wordle_tile_id_" + 1.toString()))

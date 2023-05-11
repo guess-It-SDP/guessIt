@@ -8,14 +8,14 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.CorrectAnswerPopUp
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
@@ -42,6 +43,9 @@ import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
+import com.github.freeman.bootcamp.utilities.rememberImeState
+import com.github.freeman.bootcamp.videocall.VideoScreen
+import com.github.freeman.bootcamp.videocall.VideoScreen2
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -66,7 +70,7 @@ class GuessingActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbrefGame, this)
+                GuessingScreen(dbrefGame, this,gameId)
             }
         }
     }
@@ -98,7 +102,7 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
             .testTag("guessItem")
     ) {
         val userId = Firebase.auth.currentUser?.uid
-        if (guess.guess?.lowercase() == answer.lowercase() && guess.guesserId == userId) {
+        if (guess.message?.lowercase() == answer.lowercase() && guess.guesserId == userId) {
             val dbGuesserScoreRef = dbrefGame
                 .child(context.getString(R.string.players_path))
                 .child(userId.toString())
@@ -151,7 +155,11 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
 
         }
 
-        Text(text = "${guess.guesser} tries \"${guess.guess}\"")
+        if (!(guess.message?.lowercase() == GuessingActivity.answer.lowercase())) {
+            Text(text = "${guess.guesser} : ${guess.message}")
+        } else {
+            Text(text = "${guess.guesser} : ****")
+        }
     }
 }
 
@@ -178,13 +186,15 @@ fun GuessesList(guesses: Array<Guess>, dbrefGame: DatabaseReference, artistId: S
 fun GuessingBar(
     guess: String,
     onGuessChange: (String) -> Unit,
-    onSendClick: () -> Unit
+    onSendClick: () -> Unit,
+    scrollState: ScrollState
 ) {
     Surface(
         color = Color.White,
         modifier = Modifier
             .fillMaxWidth()
             .testTag("guessingBar")
+            .verticalScroll(scrollState)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -212,8 +222,18 @@ fun GuessingBar(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
+fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String) {
+    val imeState = rememberImeState()
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(key1 = imeState.value) {
+        if (imeState.value){
+            scrollState.animateScrollTo(scrollState.maxValue)
+        }
+    }
+
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
     var timer by remember { mutableStateOf("") }
@@ -340,6 +360,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
         }
     })
 
+
     MaterialTheme {
         Column(
             modifier = Modifier
@@ -360,28 +381,36 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
                     modifier = Modifier
                         .height(400.dp)
                         .fillMaxWidth()
-                        .background(Color.DarkGray)
+                        .background(Color.White)
             ) {
                 if (topicSelection) {
                     Text(
                         text = WAITING_TEXT,
                         modifier = Modifier
                             .align(Alignment.Center),
-                        color = Color.White
+                        color = Color.DarkGray
                     )
                 } else {
-                    Image(
-                        bitmap = bitmap,
-                        contentDescription = "drawn image",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                    )
+                    Row() {
+                        BootcampComposeTheme { // Video conversation zone
+                            VideoScreen2(
+                                roomName = gameId,
+                                testing = false
+                            )
+                        }
+                        Image(
+                            bitmap = bitmap,
+                            contentDescription = "drawn image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                              //  .align(Alignment.Center)
+                        )
+                    }
                 }
 
                 if (timer != context.getString(R.string.timer_unused)) {
                     val dbRefTimer = dbrefGame.child(context.getString(R.string.current_timer_path))
-                    TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.LightGray)
+                    TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.DarkGray)
                 }
 
                 ScoreScreen(dbrefGame)
@@ -405,7 +434,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
                     guess = guess,
                     onGuessChange = { guess = it },
                     onSendClick = {
-                        val gs = Guess(guesser = username, guesserId = uid, guess = guess)
+                        val gs = Guess(guesser = username, guesserId = uid, message = guess)
                         val guessId = guesses.size.toString()
                         dbrefGame
                             .child(context.getString(R.string.guesses_path))
@@ -413,7 +442,8 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context) {
                             .setValue(gs)
 
                         guess = ""
-                    }
+                    },
+                    scrollState,
                 )
             }
 

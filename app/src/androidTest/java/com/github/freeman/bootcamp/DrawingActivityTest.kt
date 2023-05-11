@@ -4,6 +4,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingScreen
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
@@ -27,10 +28,25 @@ class DrawingActivityTest {
     @get:Rule
     val composeRule = createComposeRule()
 
+    @get:Rule
+    var permissionRule = GrantPermissionRule.grant(
+        android.Manifest.permission.RECORD_AUDIO,
+        android.Manifest.permission.INTERNET,
+        android.Manifest.permission.ACCESS_NETWORK_STATE,
+        android.Manifest.permission.RECORD_AUDIO,
+        android.Manifest.permission.READ_PHONE_STATE,
+        android.Manifest.permission.INTERNET,
+        android.Manifest.permission.CAMERA,
+        android.Manifest.permission.MODIFY_AUDIO_SETTINGS,
+        android.Manifest.permission.ACCESS_WIFI_STATE,
+        android.Manifest.permission.READ_EXTERNAL_STORAGE,
+    )
+
     private fun setContent() {
+        val dbref = Firebase.database.getReference("games/testgameid")
         composeRule.setContent {
             val dbref = getGameDBRef(context)
-            DrawingScreen(dbref)
+            DrawingScreen(dbref,"127")
         }
     }
 
