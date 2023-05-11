@@ -160,11 +160,24 @@ class FaceDetectionActivity : ComponentActivity() {
                     paint.style = Paint.Style.STROKE
                     paint.strokeWidth = 16.0f
 
+                    /*
                     faces.forEach { face ->
                         val boundingBox = face.boundingBox
                         val rect = Rect(boundingBox.left, boundingBox.top, boundingBox.right, boundingBox.bottom)
                         canvas.drawRect(rect, paint)
                     }
+                    */
+
+
+                    val faceBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.hat)
+                    faces.forEach { face ->
+                        val boundingBox = face.boundingBox
+                        val rect = Rect(boundingBox.left-boundingBox.width()/3, Math.floor(face.boundingBox.top-face.boundingBox.height()/1.5).toInt(), boundingBox.right+boundingBox.width()/3, Math.floor(face.boundingBox.bottom-face.boundingBox.height()/1.5).toInt())
+                        canvas.drawBitmap(faceBitmap, null, rect, paint)
+                    }
+
+
+
                     faceDetected = true
 
                 }
