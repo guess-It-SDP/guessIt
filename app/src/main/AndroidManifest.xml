@@ -26,6 +26,9 @@
             android:label="@string/title_activity_draw_hat"
             android:theme="@style/Theme.BootcampCompose.NoActionBar" />
         <activity
+            android:name=".games.guessit.FinalActivity"
+            android:exported="false" />
+        <activity
             android:name=".games.guessit.StatsActivity"
             android:exported="false">
             <meta-data

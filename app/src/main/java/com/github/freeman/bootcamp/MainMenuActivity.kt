@@ -100,7 +100,6 @@ fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String) {
     }
 }
 
-
 fun play(context: Context) {
     context.startActivity(Intent(context, CreateJoinActivity::class.java))
 }
@@ -115,7 +114,6 @@ fun PlayButton() {
     )
 }
 
-
 fun settings(context: Context) {
     context.startActivity(Intent(context, SettingsProfileActivity::class.java))
 }
@@ -129,7 +127,6 @@ fun SettingsButton() {
         text = SETTINGS
     )
 }
-
 
 fun chatTest(context: Context) {
     context.startActivity(Intent(context, ChatActivity::class.java).apply {
@@ -146,7 +143,6 @@ fun ChatButton() {
         text = CHAT
     )
 }
-
 
 fun guessing(context: Context, gameId: String) {
     context.startActivity(Intent(context, GuessingActivity::class.java).apply {
@@ -165,7 +161,6 @@ fun GuessingButton() {
     )
 }
 
-
 fun audioRec(context: Context) {
     context.startActivity(Intent(context, AudioRecordingActivity::class.java))
 }
@@ -179,7 +174,6 @@ fun AudioRecordingButton() {
         text = AUDIO_REC
     )
 }
-
 
 fun drawing(context: Context, gameId: String) {
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {
@@ -196,7 +190,6 @@ fun DrawingButton() {
         text = DRAWING
     )
 }
-
 
 fun wordle(context: Context) {
     context.startActivity(Intent(context, WordleMenu::class.java))
@@ -267,5 +260,3 @@ fun MainMenuScreen() {
         WordleButton()
     }
 }
-
-
