@@ -113,10 +113,13 @@ fun DrawHatScreen(storageRef: StorageReference) {
                 backgroundColor = MaterialTheme.colors.background,
                 elevation = 4.dp,
                 navigationIcon = {
-                    IconButton(onClick = {
-                        val activity = (context as? Activity)
-                        activity?.finish()
-                    }) {
+                    IconButton(
+                        onClick = {
+                            val activity = (context as? Activity)
+                            activity?.finish()
+                        },
+                        modifier = Modifier.testTag("drawHatBackButton")
+                    ) {
                         Icon(
                             Icons.Filled.ArrowBack,
                             contentDescription = "Go back",
@@ -148,14 +151,17 @@ fun DrawHatScreen(storageRef: StorageReference) {
                         text = YOUR_HAT,
                         fontSize = 14.sp,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .testTag(YOUR_HAT)
                     )
                 }
 
                 Text(
                     text = HAT_HELP,
                     modifier = Modifier
-                        .padding(10.dp),
+                        .padding(10.dp)
+                        .testTag(HAT_HELP),
                     fontSize = 20.sp,
                 )
             }
@@ -332,8 +338,8 @@ fun RowScope.ToggleButton(
     border: Boolean = false,
     onClick: () -> Unit,
     isToggled: MutableState<Boolean>,
-) {
-    val modifier = Modifier.size(24.dp)
+) { 
+    val modifier = Modifier.size(24.dp).testTag("usersHat")
     IconButton(
         onClick = onClick, modifier = Modifier.weight(1f, true)
     ) {
