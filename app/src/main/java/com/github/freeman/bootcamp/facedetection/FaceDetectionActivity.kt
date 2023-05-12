@@ -38,6 +38,107 @@ class FaceDetectionActivity : ComponentActivity() {
         const val HAT_FOREHEAD_FACTOR = -1.5 // The factors by which the distance of the hat from the boundingBox should be adjusted.
         const val HAT_LEFT_HEAD_FACTOR = -3.0
         const val HAT_RIGHT_HEAD_FACTOR = 3.0
+        const val FACE_DETECTION_TAG = "faceDetectionTag"
+        const val FACE_DETECTION_TAG2 = "faceDetectionTag2"
+        const val FACE_DETECTION_TAG3 = "faceDetectionTag3"
+
+
+        /**
+         * Draws a hat on top of faces detected in a given bitmap image, using the provided overlay picture.
+         *
+         * @param bitmap The bitmap image on which to draw the hat.
+         * @param overlayPic The overlay picture to use for the hat.
+         */
+        @Composable
+        fun drawHatOnBitmapImage(bitmap: Bitmap?, overlayPic: Bitmap) {
+            var faceDetected by remember { mutableStateOf(false) }
+            LaunchedEffect(true) {
+                val image = InputImage.fromBitmap(bitmap!!, 0)
+                val options = options()
+                val detector = FaceDetection.getClient(options)
+                detector.process(image)
+                    .addOnSuccessListener { faces ->
+                        val canvas = Canvas(bitmap!!)
+                        val paint = paint()
+                        faces.forEach { face ->
+                            drawHat(face, canvas, overlayPic, paint)
+                        }
+
+                        faceDetected = true
+
+                    }
+                    .addOnFailureListener { e ->
+                        // Handle the failure here
+
+                    }
+            }
+            Box(modifier = Modifier.fillMaxSize().testTag(FACE_DETECTION_TAG)) {
+                if (faceDetected) {
+                    Image(
+                        bitmap = bitmap!!.asImageBitmap(),
+                        contentDescription = "Face Detection Result",
+                        modifier = Modifier.fillMaxSize().testTag(FACE_DETECTION_TAG2)
+                    )
+                }
+            }
+        }
+
+        private fun paint(): Paint {
+            val paint = Paint()
+            paint.color = Color.Red.toArgb()
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = 16.0f
+            return paint
+        }
+
+        private fun options(): FaceDetectorOptions {
+            val options = FaceDetectorOptions.Builder()
+                .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+                .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
+                .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+                .build()
+            return options
+        }
+
+        /**
+         * Draws a hat on the given face in the canvas using the provided face bitmap and paint object.
+         *
+         * @param face       The face object representing the detected face.
+         * @param canvas     The canvas object where the hat will be drawn.
+         * @param faceBitmap The bitmap object representing the face image.
+         * @param paint      The paint object used to draw the hat.
+         */
+        private fun drawHat(face: Face, canvas: Canvas, overlayPic: Bitmap, paint: Paint) {
+            val boundingBox = face.boundingBox
+            val rect = Rect(
+                boundingBox.left + adjustBound(
+                    boundingBox.width(),
+                    FaceDetectionActivity.HAT_LEFT_HEAD_FACTOR
+                ), face.
+                boundingBox.top + adjustBound(
+                    face.boundingBox.height(),
+                    FaceDetectionActivity.HAT_FOREHEAD_FACTOR
+                ), boundingBox.right + adjustBound(
+                    boundingBox.width(),
+                    FaceDetectionActivity.HAT_RIGHT_HEAD_FACTOR
+                ), face.boundingBox.bottom + adjustBound(
+                    face.boundingBox.height(),
+                    FaceDetectionActivity.HAT_FOREHEAD_FACTOR
+                )
+            )
+            canvas.drawBitmap(overlayPic, null, rect, paint)
+        }
+
+        /**
+         * Adjusts the distance of the face bounding box based on a given factor.
+         *
+         * @param boundsDistance The distance of the face bounding box to be adjusted.
+         * @param factor         The factor by which the distance of the bounding box should be adjusted.
+         * @return The adjusted distance of the face bounding box.
+         */
+        private fun adjustBound(boundsDistance: Int, factor: Double): Int {
+            return Math.floor(boundsDistance / factor).toInt();
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,115 +148,9 @@ class FaceDetectionActivity : ComponentActivity() {
             var bitmap by remember { mutableStateOf<Bitmap?>(null) }
             var context = LocalContext.current
             var faceBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.hat)
-            bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.my_image2)
+            bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.please_dont)
                 .copy(Bitmap.Config.ARGB_8888, true)
             drawHatOnBitmapImage(bitmap, faceBitmap)
         }
-    }
-
-    /**
-     * Draws a hat on top of faces detected in a given bitmap image, using the provided overlay picture.
-     *
-     * @param bitmap The bitmap image on which to draw the hat.
-     * @param overlayPic The overlay picture to use for the hat.
-     */
-    @Composable
-    fun drawHatOnBitmapImage(bitmap: Bitmap?, overlayPic : Bitmap ) {
-        var faceDetected by remember { mutableStateOf(false) }
-        LaunchedEffect(true) {
-            val image = InputImage.fromBitmap(bitmap!!, 0)
-            val options = options()
-            val detector = FaceDetection.getClient(options)
-            detector.process(image)
-                .addOnSuccessListener { faces ->
-                    val canvas = Canvas(bitmap!!)
-                    val paint = paint()
-                    faces.forEach { face ->
-                        drawHat(face, canvas, overlayPic, paint)
-                    }
-
-                    faceDetected = true
-
-                }
-                .addOnFailureListener { e ->
-                    // Handle the failure here
-
-                }
-        }
-        Box(modifier = Modifier.fillMaxSize()) {
-            if (faceDetected) {
-                Image(
-                    bitmap = bitmap!!.asImageBitmap(),
-                    contentDescription = "Face Detection Result",
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-        }
-    }
-}
-private fun paint(): Paint {
-    val paint = Paint()
-    paint.color = Color.Red.toArgb()
-    paint.style = Paint.Style.STROKE
-    paint.strokeWidth = 16.0f
-    return paint
-}
-private fun options(): FaceDetectorOptions {
-    val options = FaceDetectorOptions.Builder()
-        .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
-        .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
-        .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
-        .build()
-    return options
-}
-
-/**
- * Draws a hat on the given face in the canvas using the provided face bitmap and paint object.
- *
- * @param face       The face object representing the detected face.
- * @param canvas     The canvas object where the hat will be drawn.
- * @param faceBitmap The bitmap object representing the face image.
- * @param paint      The paint object used to draw the hat.
- */
-private fun drawHat(face: Face, canvas: Canvas, overlayPic: Bitmap, paint: Paint) {
-    val boundingBox = face.boundingBox
-    val rect = Rect(
-        boundingBox.left + adjustBound(
-            boundingBox.width(),
-            FaceDetectionActivity.HAT_LEFT_HEAD_FACTOR
-        ), face.boundingBox.top + adjustBound(
-            face.boundingBox.height(),
-            FaceDetectionActivity.HAT_FOREHEAD_FACTOR
-        ), boundingBox.right + adjustBound(
-            boundingBox.width(),
-            FaceDetectionActivity.HAT_RIGHT_HEAD_FACTOR
-        ), face.boundingBox.bottom + adjustBound(
-            face.boundingBox.height(),
-            FaceDetectionActivity.HAT_FOREHEAD_FACTOR
-        )
-    )
-    canvas.drawBitmap(overlayPic, null, rect, paint)
-}
-
-/**
- * Adjusts the distance of the face bounding box based on a given factor.
- *
- * @param boundsDistance The distance of the face bounding box to be adjusted.
- * @param factor         The factor by which the distance of the bounding box should be adjusted.
- * @return The adjusted distance of the face bounding box.
- */
-private fun adjustBound(boundsDistance: Int, factor: Double): Int {
-    return Math.floor(boundsDistance / factor).toInt();
-}
-
-@Composable
-fun FaceDetectionScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .testTag("mainMenuScreen"),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
     }
 }
