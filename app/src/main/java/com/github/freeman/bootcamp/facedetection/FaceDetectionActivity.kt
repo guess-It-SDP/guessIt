@@ -40,7 +40,6 @@ class FaceDetectionActivity : ComponentActivity() {
         const val HAT_RIGHT_HEAD_FACTOR = 3.0
         const val FACE_DETECTION_TAG = "faceDetectionTag"
         const val FACE_DETECTION_TAG2 = "faceDetectionTag2"
-        const val FACE_DETECTION_TAG3 = "faceDetectionTag3"
 
 
         /**
