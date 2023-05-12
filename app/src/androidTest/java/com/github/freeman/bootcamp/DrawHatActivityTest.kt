@@ -7,8 +7,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.github.freeman.bootcamp.DrawHatActivity.Companion.HAT_HELP
 import com.github.freeman.bootcamp.DrawHatActivity.Companion.YOUR_HAT
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -37,7 +36,9 @@ class DrawHatActivityTest {
 
     @Before
     fun init() {
-        val storageRef = Firebase.storage.reference
+        FirebaseEmulator.init()
+        val storageRef = FirebaseSingletons.storage.get().storage.reference
+
         composeRule.setContent {
             DrawHatScreen(storageRef)
         }
