@@ -23,6 +23,7 @@ import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
+import com.github.freeman.bootcamp.games.guessit.VideoCreator.Companion.createRecap
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
@@ -161,6 +162,17 @@ fun GuessingButton() {
     )
 }
 
+@Composable
+fun CreateVideoTestButton() {
+    val context = LocalContext.current
+
+    MainMenuButton(
+        testTag = "createVideoTestButton",
+        onClick = { createRecap(context, "test_game_id") },
+        text = "create video"
+    )
+}
+
 fun audioRec(context: Context) {
     context.startActivity(Intent(context, AudioRecordingActivity::class.java))
 }
@@ -258,5 +270,8 @@ fun MainMenuScreen() {
 
         Spacer(modifier = Modifier.size(6.dp))
         WordleButton()
+
+        Spacer(modifier = Modifier.size(6.dp))
+        CreateVideoTestButton()
     }
 }

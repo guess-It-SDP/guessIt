@@ -77,6 +77,9 @@
     <string name="stats_percentage_first_guesser_path">percentage_first_guesser</string>
     <string name="stats_percentage_guesser_path">percentage_guesser</string>
     <string name="stats_percentage_somebody_guessed_path">percentage_somebody_guessed</string>
+    <string name="game_recaps_path">game_recaps</string>
+    <string name="game_recaps_selfies_path">selfies</string>
+    <string name="game_recaps_drawings_path">drawings</string>
 
     <!-- Strings used for extra between activities -->
     <string name="gameId_extra">gameId</string>
@@ -100,6 +103,9 @@
     <!-- Strings used in FinalActivity  -->
     <string name="trophy">trophy</string>
     <string name="celebration">celebration</string>
+
+    <!-- game recaps local path  -->
+    <string name="game_recaps_local_path">guessIt/recaps</string>
 
     <!-- Test Strings -->
     <string name="test_game_id">testgameid</string>
