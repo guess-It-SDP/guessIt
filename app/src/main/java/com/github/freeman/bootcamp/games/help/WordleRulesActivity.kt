@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp.games.wordle
+package com.github.freeman.bootcamp.games.help
 
 import android.app.Activity
 import android.content.Context
@@ -24,9 +24,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.freeman.bootcamp.games.wordle.WordleRulesActivity.Companion.RULES
-import com.github.freeman.bootcamp.games.wordle.WordleRulesActivity.Companion.TOPBAR_WORDLE_RULES_TEXT
-import com.github.freeman.bootcamp.games.wordle.WordleRulesActivity.Companion.WORDLE_RULES_TITLE
+import com.github.freeman.bootcamp.games.help.WordleRulesActivity.Companion.RULES
+import com.github.freeman.bootcamp.games.help.WordleRulesActivity.Companion.TOPBAR_WORDLE_RULES_TEXT
+import com.github.freeman.bootcamp.games.help.WordleRulesActivity.Companion.WORDLE_RULES_TITLE
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 class WordleRulesActivity : ComponentActivity() {

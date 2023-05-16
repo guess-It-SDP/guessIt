@@ -39,6 +39,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.SettingsActivity.Companion.SETTINGS_TITLE
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.games.guessit.StatsActivity
+import com.github.freeman.bootcamp.games.help.HelpActivity
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.auth.ktx.auth
@@ -379,7 +380,9 @@ private fun prepareOptionsData(context: Context) {
             icon = appIcons.Info,
             title = "Help",
             subTitle = "Get some help about how the app works",
-            clickAction = {  }
+            clickAction = {
+                context.startActivity(Intent(context, HelpActivity::class.java))
+            }
         )
     )
 

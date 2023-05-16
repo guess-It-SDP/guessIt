@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import com.github.freeman.bootcamp.MainMenuButton
+import com.github.freeman.bootcamp.games.help.WordleRulesActivity
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity.Companion.difficultyIsWordOnly
 import com.github.freeman.bootcamp.games.wordle.WordleMenu.Companion.GAME_RULES
 import com.github.freeman.bootcamp.games.wordle.WordleMenu.Companion.Difficulty

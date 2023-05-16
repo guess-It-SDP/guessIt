@@ -21,6 +21,27 @@
         android:theme="@style/Theme.BootcampCompose"
         tools:targetApi="31">
         <activity
+            android:name=".games.help.GuessItRulesActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".games.help.CreditsActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".games.help.HelpActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".games.guessit.FinalActivity"
             android:exported="false" />
         <activity
@@ -163,7 +184,7 @@
             android:name=".games.wordle.WordleMenu"
             android:exported="true" />
         <activity
-            android:name=".games.wordle.WordleRulesActivity"
+            android:name=".games.help.WordleRulesActivity"
             android:exported="true" />
     </application>
 
