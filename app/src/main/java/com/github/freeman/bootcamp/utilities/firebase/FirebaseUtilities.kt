@@ -3,6 +3,7 @@ package com.github.freeman.bootcamp.utilities.firebase
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import com.github.freeman.bootcamp.R
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
