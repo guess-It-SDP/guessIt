@@ -42,6 +42,12 @@
                 android:value="" />
         </activity>
         <activity
+            android:name=".DrawHatActivity"
+            android:exported="false"
+            android:label="@string/title_activity_draw_hat"
+            android:theme="@style/Theme.BootcampCompose.NoActionBar" />
+        </activity>
+        <activity
             android:name=".games.guessit.FinalActivity"
             android:exported="false" />
         <activity
