@@ -16,27 +16,21 @@ import java.lang.Character.MIN_VALUE as NULLCHAR
  * @param validWords the set of existing english words
  * @param solutions the set of existing words that the wordToGuess is randomly chosen from
  */
- class WordleGameState {
-        private val currentLine: Int
-        private val grid: Array<Array<Tile>>
-        private val wordOnly: Boolean
-        private val wordToGuess: String
-        private val validWords: List<String>
+ class WordleGameState private constructor(
+    private val currentLine: Int,
+    grid: Array<Array<Tile>>,
+    private val wordOnly: Boolean,
+    private val wordToGuess: String,
+    validWords: List<String>,
+    solutions: List<String>
+) {
+    private val grid: Array<Array<Tile>>
+    private val validWords: List<String>
         private val solutions: List<String>
 
-    private constructor(
-        currentLine: Int,
-        grid: Array<Array<Tile>>,
-        wordOnly: Boolean,
-        wordToGuess: String,
-        validWords: List<String>,
-        solutions: List<String>,
-    ){
-        this.currentLine = currentLine
+    init {
         val generatedArray = Array(grid.size) { i-> Array(grid[0].size) { j->Tile(grid[i][j].letter, grid[i][j].state) } }
         this.grid = generatedArray
-        this.wordOnly = wordOnly
-        this.wordToGuess = wordToGuess
         this.validWords = validWords.toList()
         this.solutions = solutions.toList()
     }
