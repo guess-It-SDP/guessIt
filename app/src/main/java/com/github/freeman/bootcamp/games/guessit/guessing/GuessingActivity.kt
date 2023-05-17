@@ -155,7 +155,7 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
 
         }
 
-        if (!(guess.message?.lowercase() == GuessingActivity.answer.lowercase() && guess.guesserId == userId)) {
+        if (!(guess.message?.lowercase() == GuessingActivity.answer.lowercase())) {
             Text(text = "${guess.guesser} : ${guess.message}")
         } else {
             Text(text = "${guess.guesser} : ****")

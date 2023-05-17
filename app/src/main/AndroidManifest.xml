@@ -20,6 +20,14 @@
         android:theme="@style/Theme.BootcampCompose"
         tools:targetApi="31">
         <activity
+            android:name=".DrawHatActivity"
+            android:exported="false"
+            android:label="@string/title_activity_draw_hat"
+            android:theme="@style/Theme.BootcampCompose.NoActionBar" />
+        <activity
+            android:name=".games.guessit.FinalActivity"
+            android:exported="false" />
+        <activity
             android:name=".games.guessit.StatsActivity"
             android:exported="false">
             <meta-data
@@ -58,7 +66,7 @@
         </activity>
         <activity
             android:name=".videocall.VideoCallActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".games.guessit.drawing.DrawingActivity"
             android:exported="true">
@@ -96,8 +104,8 @@
         </activity>
         <activity
             android:name=".games.guessit.guessing.GuessingActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="false" >
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -111,35 +119,35 @@
         </activity>
         <activity
             android:name=".games.guessit.lobbies.CreateJoinActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".games.guessit.lobbies.LobbyListActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".games.guessit.lobbies.WaitingRoomActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".games.guessit.lobbies.CreatePublicPrivateActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".recorder.AudioRecordingActivity"
-            android:exported="true" >
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
