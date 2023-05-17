@@ -35,12 +35,12 @@ import com.google.mlkit.vision.face.Face
  */
 class FaceDetectionActivity : ComponentActivity() {
     companion object {
-     //   const val HAT_FOREHEAD_FACTOR = -1.5 // The factors by which the distance of the hat from the boundingBox should be adjusted.
-      //  const val HAT_LEFT_HEAD_FACTOR = -3.0
-      //  const val HAT_RIGHT_HEAD_FACTOR = 3.0
-        const val HAT_FOREHEAD_FACTOR = -3.0 // The factors by which the distance of the hat from the boundingBox should be adjusted.
-        const val HAT_LEFT_HEAD_FACTOR = -5.0
-        const val HAT_RIGHT_HEAD_FACTOR = 5.0
+        const val HAT_FOREHEAD_FACTOR = -1.5 // The factors by which the distance of the hat from the boundingBox should be adjusted.
+       const val HAT_LEFT_HEAD_FACTOR = -3.0
+       const val HAT_RIGHT_HEAD_FACTOR = 3.0
+        const val HAIR_FOREHEAD_FACTOR = -3.0
+        const val HAIR_LEFT_HEAD_FACTOR = -5.0
+        const val HAIR_RIGHT_HEAD_FACTOR = 5.0
         const val FACE_DETECTION_TAG = "faceDetectionTag"
         const val FACE_DETECTION_TAG2 = "faceDetectionTag2"
 
@@ -149,7 +149,7 @@ class FaceDetectionActivity : ComponentActivity() {
         setContent {
             var bitmap by remember { mutableStateOf<Bitmap?>(null) }
             var context = LocalContext.current
-            var faceBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.hair0)
+            var faceBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.hat)
             bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.please_dont)
                 .copy(Bitmap.Config.ARGB_8888, true)
             drawHatOnBitmapImage(bitmap, faceBitmap)
