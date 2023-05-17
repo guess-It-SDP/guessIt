@@ -86,7 +86,7 @@ class HelpTests {
         composeRule.onNodeWithTag("guessItRulesButton").performClick()
 
         composeRule.onNodeWithTag("topAppbarGuessItRules").assertIsDisplayed()
-        composeRule.onNodeWithTag("wordleRulesScreen").assertIsDisplayed()
+        composeRule.onNodeWithTag("guessItRulesScreen").assertIsDisplayed()
     }
 
     @Test
