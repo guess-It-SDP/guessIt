@@ -47,10 +47,20 @@ class GuessItRulesActivity : ComponentActivity() {
         const val GUESSIT_RULES_TITLE = "How to play?"
 
         val GUESSIT_RULES = listOf(
-            
-            ("iThe rules of Wordle are elegantly simple.\n"),
-            "iYour objective is to guess a secret five-letter word in as few guesses as possible.\n",
-            "nTo submit a guess, type any five-letter word and press enter.\n")
+            "nThe rules of Guess It! are simple.\n",
+            "nThere are two categories of players: artists and guessers.\n",
+            "nThe artists must make guess a word by drawing it to the guessers.\n",
+            "iAnd that's all !\n",
+            "\n",
+            "nWell, if you ask, I can detail a little bit more:\n",
+            "nEach game is divided into rounds. You choose the number of rounds in your game. During each round, each of the players will draw one after the other and therefore have the others players guess a word.\n",
+            "nThe artist has 60 seconds to guess his word. If he succeeds within the time limit, he receives 1 point. Guessers also receive 1 point when they guess.\n",
+            "nThe game doesn't end when someone has found it; the word is replaced by \"***\" and the other guessers can continue playing.\n",
+            "\n",
+            "nAt the end of the game, the player with the highest amount of point wins, and he can show off with a recap of the game he just won!\n",
+            "\n",
+            "iGood luck and good game!\n")
+
     }
 }
 
@@ -58,7 +68,7 @@ class GuessItRulesActivity : ComponentActivity() {
 fun GuessItRulesDisplay() {
     Column(
         modifier = Modifier
-            .testTag("wordleRulesScreen")
+            .testTag("guessItRulesScreen")
             .fillMaxSize()
             .padding(10.dp)
     ) {

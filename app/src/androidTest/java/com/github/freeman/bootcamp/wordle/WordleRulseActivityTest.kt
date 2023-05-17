@@ -5,8 +5,9 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import com.github.freeman.bootcamp.games.wordle.WordleRulesActivity
-import com.github.freeman.bootcamp.games.wordle.WordleRulesActivity.Companion.TOPBAR_WORDLE_RULES_TEXT
+import com.github.freeman.bootcamp.games.help.WordleRulesActivity
+import com.github.freeman.bootcamp.games.help.WordleRulesActivity.Companion.TOPBAR_WORDLE_RULES_TEXT
+import com.github.freeman.bootcamp.games.help.WordleRulesActivity.Companion.WORDLE_RULES_TITLE
 import com.github.freeman.bootcamp.wordle.WordleGameActivityTest.Companion.createAndroidIntentComposeRule
 import org.junit.Rule
 import org.junit.Test
@@ -33,7 +34,7 @@ class WordleRulseActivityTest {
 
     @Test
     fun wordleRulesAreDisplayedAndContainsCorrectText(){
-        composeRule.onNodeWithTag("how_to_play").assertTextContains(WordleRulesActivity.WORDLE_RULES_TITLE)
+        composeRule.onNodeWithTag("how_to_play").assertTextContains(WORDLE_RULES_TITLE)
     }
 
 }
