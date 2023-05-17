@@ -1,12 +1,9 @@
-package com.github.freeman.bootcamp.games
+package com.github.freeman.bootcamp.games.guessit
 
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity
-import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
@@ -18,7 +15,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
 
 /***

@@ -20,7 +20,7 @@
         android:theme="@style/Theme.BootcampCompose"
         tools:targetApi="31">
         <service
-            android:name=".games.GameManagerService"
+            android:name=".games.guessit.GameManagerService"
             android:enabled="true"
             android:exported="true" />
         <activity

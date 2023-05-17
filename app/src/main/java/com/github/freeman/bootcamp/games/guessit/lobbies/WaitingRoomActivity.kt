@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.games.GameManagerService
+import com.github.freeman.bootcamp.games.guessit.GameManagerService
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.CATEGORY_INFO
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.KICKED
