@@ -13,9 +13,19 @@ import com.google.firebase.storage.ktx.storage
 import java.io.File
 import java.io.FileWriter
 
+/**
+ * Helper class that allows to create a GuessIt recap video for a given gameId
+ * from a set of images stored in the firebase storage
+ */
 class VideoCreator {
 
     companion object {
+        /**
+         * Creates a recap video for the given game
+         *
+         * @param context context of the app
+         * @param gameId id of the game
+         */
         fun createRecap(context: Context, gameId: String) {
             val storageRef = Firebase.storage.reference
 
@@ -40,6 +50,7 @@ class VideoCreator {
                 .listAll()
                 .addOnSuccessListener { userIdListResult ->
                     userIdListResult.prefixes.forEach { userIdRef ->
+                        // fetch every user
                         userIdRefList.add(userIdRef)
                     }
 
@@ -48,6 +59,7 @@ class VideoCreator {
                         .child(context.getString(R.string.game_recaps_selfies_path))
                             .listAll()
                             .addOnSuccessListener { selfieListResult ->
+                                // fetch every selfies of a user
                                 selfieListResult.items.forEach { item ->
                                     selfiesFileList.add(item)
                                 }
@@ -56,13 +68,16 @@ class VideoCreator {
                                     .child(context.getString(R.string.game_recaps_drawings_path))
                                     .listAll()
                                     .addOnSuccessListener { drawingListResult ->
+                                        // fetch every drawings of a user
                                         drawingListResult.items.forEach { item ->
                                             drawingsFileList.add(item)
                                         }
 
+                                        // create the video only when all images are fetched
                                         if (i == userIdRefList.size - 1) {
                                             combinedFileList = drawingsFileList.zip(selfiesFileList).flatMap { listOf(it.first, it.second) }
 
+                                            // downloads all files
                                             for (file in combinedFileList) {
                                                 val maxDownloadSize = 5 * 1024 * 1024.toLong()
                                                 file.getBytes(maxDownloadSize).addOnSuccessListener { bytes ->
