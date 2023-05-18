@@ -5,33 +5,41 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.AUDIO_REC
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity
 import com.github.freeman.bootcamp.games.wordle.WordleMenu
-import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.createProfile
-import com.github.freeman.bootcamp.videocall.VideoCallActivity
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -82,22 +90,31 @@ class MainMenuActivity : ComponentActivity() {
         const val SETTINGS = "Settings"
         const val PLAY = "Play game"
         const val CHAT = "Chat"
-        const val GUESSING = "Guessing"
-        const val AUDIO_REC = "Audio Recording"
-        const val DRAWING = "Drawing"
-        const val WORDLE = "Play Wordle"
-        const val VIDEO_CALL = "Video Call"
     }
 }
 
 @Composable
-fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String) {
+fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String, icon: ImageVector = Icons.Default.Add) {
     ElevatedButton(
-        modifier = Modifier.testTag(testTag),
-        onClick = onClick
+        modifier= Modifier
+            .testTag(testTag)
+            .padding(16.dp),
+        onClick = onClick,
     ) {
-        Text(text)
+        Row (
+            modifier = Modifier
+                .padding(5.dp)
+        ){
+            Icon(
+                imageVector = icon,
+                contentDescription = "menu button"
+            )
+            Spacer(modifier = Modifier.size(5.dp))
+            Text(text)
+        }
+
     }
+
 }
 
 fun play(context: Context) {
@@ -110,7 +127,8 @@ fun PlayButton() {
     MainMenuButton(
         testTag = "playButton",
         onClick = { play(context) },
-        text = PLAY
+        text = PLAY,
+        icon = Icons.Filled.PlayArrow
     )
 }
 
@@ -124,7 +142,8 @@ fun SettingsButton() {
     MainMenuButton(
         testTag = "settingsButton",
         onClick = { settings(context) },
-        text = SETTINGS
+        text = SETTINGS,
+        icon = Icons.Filled.Settings
     )
 }
 
@@ -140,7 +159,8 @@ fun ChatButton() {
     MainMenuButton(
         testTag = "chatButton",
         onClick = { chatTest(context) },
-        text = CHAT
+        text = CHAT,
+        icon = Icons.Filled.Email
     )
 }
 
@@ -150,45 +170,10 @@ fun guessing(context: Context, gameId: String) {
     })
 }
 
-@Composable
-fun GuessingButton() {
-    val context = LocalContext.current
-    MainMenuButton(
-        testTag = "guessingButton",
-        // TODO: Add the correct game ID and correct answer
-        onClick = { guessing(context, context.getString(R.string.test_game_id)) },
-        text = GUESSING
-    )
-}
-
-fun audioRec(context: Context) {
-    context.startActivity(Intent(context, AudioRecordingActivity::class.java))
-}
-
-@Composable
-fun AudioRecordingButton() {
-    val context = LocalContext.current
-    MainMenuButton(
-        testTag = "audioRecordingButton",
-        onClick = { audioRec(context) },
-        text = AUDIO_REC
-    )
-}
-
 fun drawing(context: Context, gameId: String) {
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {
         putExtra(context.getString(R.string.gameId_extra), gameId)
     })
-}
-
-@Composable
-fun DrawingButton() {
-    val context = LocalContext.current
-    MainMenuButton(
-        testTag = "drawingButton",
-        onClick = { drawing(context, context.getString(R.string.test_game_id)) },
-        text = DRAWING
-    )
 }
 
 fun wordle(context: Context) {
@@ -196,67 +181,105 @@ fun wordle(context: Context) {
 }
 
 @Composable
-fun WordleButton() {
+fun AppTitle() {
     val context = LocalContext.current
-    MainMenuButton(
-        testTag = "wordleButton",
-        onClick = { wordle(context) },
-        text = WORDLE
-    )
-}
+    Box(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .background(
+                MaterialTheme.colorScheme.primaryContainer,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("gameName"),
+                text = context.getString(R.string.app_name),
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 30.sp,
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = context.getString(R.string.app_catch_phrase),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.secondary,
+                textAlign = TextAlign.Center
 
-@OptIn(ExperimentalUnsignedTypes::class)
-fun videoCall(context: Context) {
-    context.startActivity(Intent(context, VideoCallActivity::class.java))
+            )
+        }
+    }
 }
 
 @Composable
-fun VideoCallButton() {
-    val context = LocalContext.current
-    MainMenuButton(
-        testTag = "videoCallButton",
-        onClick = { videoCall(context) },
-        text = VIDEO_CALL
+fun TopAppbarMainMenu() {
+
+    TopAppBar(
+        modifier = Modifier.testTag("topAppBarMainMenu"),
+        title = {
+            Text(
+                text = "Main Menu",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 20.sp
+            )
+        },
+        backgroundColor = MaterialTheme.colorScheme.background,
+        elevation = 4.dp,
     )
 }
+
 
 @Composable
 fun MainMenuScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .testTag("mainMenuScreen"),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            modifier = Modifier.testTag("gameName"),
-            text = LocalContext.current.getString(R.string.app_name),
-            fontSize = 40.sp
-        )
+    Surface {
+        Column {
+            TopAppbarMainMenu()
 
-        Spacer(modifier = Modifier.size(6.dp))
-        PlayButton()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .testTag("mainMenuScreen"),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AppTitle()
+            }
+        }
 
-        Spacer(modifier = Modifier.size(6.dp))
-        SettingsButton()
+        Column (
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
 
-        Spacer(modifier = Modifier.size(6.dp))
-        ChatButton()
+        ){
+            PlayButton()
+            Row {
+                SettingsButton()
+                ChatButton()
+            }
+        }
+    }
+}
 
-        Spacer(modifier = Modifier.size(6.dp))
-        AudioRecordingButton()
-
-        Spacer(modifier = Modifier.size(6.dp))
-        GuessingButton()
-
-        Spacer(modifier = Modifier.size(6.dp))
-        DrawingButton()
-
-        Spacer(modifier = Modifier.size(6.dp))
-        VideoCallButton()
-
-        Spacer(modifier = Modifier.size(6.dp))
-        WordleButton()
+@Preview
+@Composable
+fun AppTitlePreview() {
+    BootcampComposeTheme {
+        AppTitle()
     }
 }

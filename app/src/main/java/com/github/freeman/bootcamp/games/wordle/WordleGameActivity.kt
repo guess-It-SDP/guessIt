@@ -24,9 +24,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.github.freeman.bootcamp.games.wordle.WordleGameActivity.Companion.SUBMISSION_TEXTFIELD
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.ui.theme.Purple40
 import androidx.compose.runtime.remember as remember1
 
 /**
@@ -197,7 +195,6 @@ class WordleGameActivity : ComponentActivity() {
                 Icon(
                     imageVector = Icons.Filled.CheckCircle,
                     contentDescription = "Submit word",
-                    tint = Purple40
                 )
             }
         }

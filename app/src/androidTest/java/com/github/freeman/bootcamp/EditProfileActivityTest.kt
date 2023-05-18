@@ -29,7 +29,7 @@ class EditProfileActivityTest {
             val displayName = remember { mutableStateOf("Chris P Bacon") }
             val profilePicBitmap = remember { mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)) }
 
-            BootcampComposeTheme(darkTheme = false) {
+            BootcampComposeTheme() {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally

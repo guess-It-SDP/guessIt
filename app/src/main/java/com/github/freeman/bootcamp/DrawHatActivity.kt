@@ -29,11 +29,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
+import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.DrawHatActivity.Companion.DRAW_HAT
 import com.github.freeman.bootcamp.DrawHatActivity.Companion.HAT_HELP
 import com.github.freeman.bootcamp.DrawHatActivity.Companion.YOUR_HAT
 import com.github.freeman.bootcamp.games.guessit.drawing.*
-import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
