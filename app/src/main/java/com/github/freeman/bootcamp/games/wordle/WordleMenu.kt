@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.MainMenuButton
+import com.github.freeman.bootcamp.games.help.WordleRulesActivity
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity.Companion.difficultyIsWordOnly
 import com.github.freeman.bootcamp.games.wordle.WordleMenu.Companion.Difficulty
 import com.github.freeman.bootcamp.games.wordle.WordleMenu.Companion.LETTERS
