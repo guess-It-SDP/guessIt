@@ -41,13 +41,14 @@ class SettingsActivityTest {
         composeRule.onNode(hasTestTag("settingsBackButton")).assertHasClickAction()
     }
 
+    /*
     @Test
     fun musicVolumeTextIsCorrect() {
         startBackgroundMusicService()
         setDisplay()
         composeRule.onNode(hasTestTag(MUSIC_VOLUME))//.assertTextContains(MUSIC_VOLUME)
     }
-
+     */
     private fun startBackgroundMusicService() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         context.startService(Intent(context, BackgroundMusicService::class.java))

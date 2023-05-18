@@ -1,34 +1,26 @@
 package com.github.freeman.bootcamp.facedetection
 
-import android.content.Context
-import android.content.res.Resources
-import android.graphics.Bitmap
+import android.content.ContentValues.TAG
+import android.content.Intent
+import android.graphics.*
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.google.mlkit.vision.face.FaceDetectorOptions
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import android.graphics.*
-import com.google.mlkit.vision.face.FaceDetection
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import com.google.mlkit.vision.common.InputImage
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
-import androidx.compose.runtime.*
 import com.github.freeman.bootcamp.R
-import androidx.compose.ui.graphics.toArgb
+import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetectorOptions
 
 /**
  * A class that provides face detection functionality and draws on it
@@ -50,6 +42,10 @@ class FaceDetectionActivity : ComponentActivity() {
         private const val MOUSTACHE_RIGHT_HEAD_FACTOR = -0.0
         const val FACE_DETECTION_TAG = "faceDetectionTag"
         const val FACE_DETECTION_TAG2 = "faceDetectionTag2"
+        const val FACE_DETECTION_ACTIVITY_INTENT_NAME = "faceDetectionActivityIntentName"
+        enum class FaceDetectionDrawingType {
+           hat,hair,moustache,hatAndMoustache
+        }
 
 
         /**
@@ -141,7 +137,7 @@ class FaceDetectionActivity : ComponentActivity() {
          *
          * @return The function that draws a hat on the canvas.
          */
-        fun drawHatUnit(): (Face, Canvas, Bitmap, Paint) -> Unit =
+     private fun drawHatUnit(): (Face, Canvas, Bitmap, Paint) -> Unit =
             { face, canvas, overlayPic, paint -> drawHat(face, canvas, overlayPic, paint) }
 
         /**
@@ -150,7 +146,7 @@ class FaceDetectionActivity : ComponentActivity() {
          *
          * @return The function that draws a moustache on the canvas.
          */
-        fun drawMoustacheUnit(): (Face, Canvas, Bitmap, Paint) -> Unit =
+       private fun drawMoustacheUnit(): (Face, Canvas, Bitmap, Paint) -> Unit =
             { face, canvas, overlayPic, paint -> drawMoustache(face, canvas, overlayPic, paint) }
 
         /**
@@ -159,7 +155,7 @@ class FaceDetectionActivity : ComponentActivity() {
          *
          * @return The function that draws a hat on the canvas.
          */
-        fun drawHairUnit(): (Face, Canvas, Bitmap, Paint) -> Unit =
+       private fun drawHairUnit(): (Face, Canvas, Bitmap, Paint) -> Unit =
             { face, canvas, overlayPic, paint -> drawHair(face, canvas, overlayPic, paint) }
 
         /**
@@ -278,7 +274,8 @@ class FaceDetectionActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        val intent = Intent()
+        val type = intent.getStringExtra(FACE_DETECTION_ACTIVITY_INTENT_NAME).toString()
         setContent {
             var bitmap by remember { mutableStateOf<Bitmap?>(null) }
             var context = LocalContext.current
@@ -286,7 +283,51 @@ class FaceDetectionActivity : ComponentActivity() {
             var moustacheBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.moustache)
             bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.ed)
                 .copy(Bitmap.Config.ARGB_8888, true)
-            drawObjectsOnFacesOnBitmapImage(bitmap, hatBitmap, drawHatUnit(),moustacheBitmap)
+            context
+
+            val bundle = intent.extras
+            if (bundle != null) {
+                for (key in bundle.keySet()) {
+                    Log.e(TAG, key + " : " + if (bundle[key] != null) bundle[key] else "NULL")
+                }
+            }
+            Log.d("intent URI", intent.toUri(0));
+                when (type) {
+                    FaceDetectionActivity.Companion.FaceDetectionDrawingType.hair.toString() -> drawObjectsOnFacesOnBitmapImage(
+                        bitmap,
+                        hatBitmap,
+                        drawHatUnit(),
+                        moustacheBitmap
+                    )
+                    FaceDetectionActivity.Companion.FaceDetectionDrawingType.hatAndMoustache.toString() -> drawObjectsOnFacesOnBitmapImage(
+                        bitmap,
+                        hatBitmap,
+                        drawHairUnit()
+                    )
+                    FaceDetectionDrawingType.hat.toString() -> drawObjectsOnFacesOnBitmapImage(
+                        bitmap,
+                        hatBitmap,
+                        drawHatUnit()
+                    )
+                    FaceDetectionDrawingType.moustache.toString() -> drawObjectsOnFacesOnBitmapImage(
+                        bitmap,
+                        hatBitmap,
+                        drawMoustacheUnit()
+                    )
+                    /*
+                    else -> drawObjectsOnFacesOnBitmapImage(
+                        bitmap,
+                        hatBitmap,
+                        drawHatUnit(),
+                        moustacheBitmap
+                    )
+                    */
+
+
+
+                }
+
+
         }
     }
 }
