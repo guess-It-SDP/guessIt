@@ -5,6 +5,7 @@ package com.github.freeman.bootcamp.games.guessit.guessing
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager.FEATURE_CAMERA_FRONT
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
@@ -174,9 +175,12 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
 
             // Take Selfie of the guesser for the game recap and save it to Firebase storage
             val lifecycleOwner = LocalLifecycleOwner.current
-            takeSelfie(storageGameRef, userId, context, lifecycleOwner)
-            // Store drawing for the game recap
-            storeDrawing(storageGameRef, userId, context)
+            val pm = context.packageManager
+            if (pm.hasSystemFeature(FEATURE_CAMERA_FRONT)) {
+                takeSelfie(storageGameRef, userId, context, lifecycleOwner)
+                // Store drawing for the game recap
+                storeDrawing(storageGameRef, userId, context)
+            }
 
             val gs = Guess(guess.guesser, guess.guesserId, answer)
             CorrectAnswerPopUp(gs = gs)
@@ -225,25 +229,23 @@ private fun takeSelfie(
     val cameraProviderFuture: ListenableFuture<ProcessCameraProvider> =
         ProcessCameraProvider.getInstance(context)
     val processCameraProvider = cameraProviderFuture.get()
-    try {
-        processCameraProvider.bindToLifecycle(
-            lifecycleOwner,
-            CameraSelector.DEFAULT_FRONT_CAMERA,
-            imageCapture
-        )
-        val cameraExecutor = Executors.newSingleThreadExecutor()
-        val onImageSavedCallback = object : ImageCapture.OnImageSavedCallback {
-            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                storageSelfieRef.putFile(tempFile.toUri())
-                Log.i("Selfie", "Image saved")
-            }
-
-            override fun onError(exception: ImageCaptureException) {
-                Log.d("Selfie", exception.message.toString())
-            }
+    processCameraProvider.bindToLifecycle(
+        lifecycleOwner,
+        CameraSelector.DEFAULT_FRONT_CAMERA,
+        imageCapture
+    )
+    val cameraExecutor = Executors.newSingleThreadExecutor()
+    val onImageSavedCallback = object : ImageCapture.OnImageSavedCallback {
+        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+            storageSelfieRef.putFile(tempFile.toUri())
+            Log.i("Selfie", "Image saved")
         }
-        imageCapture.takePicture(outputFileOptions, cameraExecutor, onImageSavedCallback)
-    } catch (_: IllegalAccessException) {}
+
+        override fun onError(exception: ImageCaptureException) {
+            Log.d("Selfie", exception.message.toString())
+        }
+    }
+    imageCapture.takePicture(outputFileOptions, cameraExecutor, onImageSavedCallback)
 }
 
 /**
