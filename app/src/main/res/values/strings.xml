@@ -82,6 +82,8 @@
     <string name="stats_percentage_first_guesser_path">percentage_first_guesser</string>
     <string name="stats_percentage_guesser_path">percentage_guesser</string>
     <string name="stats_percentage_somebody_guessed_path">percentage_somebody_guessed</string>
+    <string name="game_recaps_path">game_recaps</string>
+    <string name="recap_path">recap.mp4</string>
 
     <!-- Strings used for extra between activities -->
     <string name="gameId_extra">gameId</string>
