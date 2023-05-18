@@ -18,10 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.AccountCircle
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +36,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.SettingsActivity.Companion.SETTINGS_TITLE
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.games.guessit.StatsActivity
+import com.github.freeman.bootcamp.games.help.HelpActivity
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.auth.ktx.auth
@@ -376,13 +374,25 @@ private fun prepareOptionsData(context: Context) {
 
     optionsList.add(
         OptionsData(
-            icon = appIcons.Info,
-            title = "Help",
-            subTitle = "Get some help about how the app works",
-            clickAction = {  }
+            icon = appIcons.Face,
+            title = "Draw Your Hat",
+            subTitle = "Draw your own hat to be displayed in-game",
+            clickAction = {
+                context.startActivity(Intent(context, DrawHatActivity::class.java))
+            }
         )
     )
 
+    optionsList.add(
+        OptionsData(
+            icon = appIcons.Info,
+            title = "Help",
+            subTitle = "Get some help about how the app works",
+            clickAction = {
+                context.startActivity(Intent(context, HelpActivity::class.java))
+            }
+        )
+    )
 }
 
 /**
@@ -393,4 +403,3 @@ private fun prepareOptionsData(context: Context) {
  * @param clickAction what to do when the field is clicked
  */
 data class OptionsData(val icon: ImageVector, val title: String, val subTitle: String, val clickAction: () -> Unit)
-

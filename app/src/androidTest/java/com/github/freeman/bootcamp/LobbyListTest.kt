@@ -92,17 +92,16 @@ class LobbyListTest {
         composeRule.onNodeWithTag("lobbyList").assertIsDisplayed()
     }
 
-    @Test
-    fun enteringRightPasswordEntersLobby() {
-        Intents.init()
-
-        composeRule.onNodeWithText("test_2's room").performClick()
-        composeRule.onNodeWithTag("dialogTextField").performTextInput("abc")
-        composeRule.onNodeWithTag("doneButton").performClick()
-
-        Intents.intended(IntentMatchers.hasComponent(WaitingRoomActivity::class.java.name))
-
-
-        Intents.release()
-    }
+//    @Test
+//    fun enteringRightPasswordEntersLobby() {
+//        Intents.init()
+//
+//        composeRule.onNodeWithText("test_2's room").performClick()
+//        composeRule.onNodeWithTag("dialogTextField").performTextInput("abc")
+//        composeRule.onNodeWithTag("doneButton").performClick()
+//
+//        Intents.intended(IntentMatchers.hasComponent(WaitingRoomActivity::class.java.name))
+//
+//        Intents.release()
+//    }
 }

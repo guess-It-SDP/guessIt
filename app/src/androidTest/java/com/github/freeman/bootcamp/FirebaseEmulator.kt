@@ -11,6 +11,5 @@ object FirebaseEmulator {
 
         FirebaseSingletons.database.set(databaseInstance)
         FirebaseSingletons.storage.set(storageInstance)
-
     }
 }
