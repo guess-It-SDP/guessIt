@@ -44,7 +44,6 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-
 class ShareRecapActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +62,11 @@ class ShareRecapActivity : ComponentActivity() {
     }
 }
 
+/**
+ * The screen for sharing the recap of the game players have just played, containing
+ * a recap preview and the sharing button
+ * @param gameId The id of the game
+ */
 @Composable
 fun ShareRecapScreen(gameId:String) {
     val context = LocalContext.current
@@ -104,6 +108,10 @@ fun ShareRecapScreen(gameId:String) {
     }
 }
 
+/**
+ * The button to share the recap
+ * @param videoUrl The URL of the recap video
+ */
 @Composable
 fun ShareButton(videoUrl: String) {
     val context = LocalContext.current
@@ -136,6 +144,10 @@ fun ShareButton(videoUrl: String) {
     }
 }
 
+/**
+ * Download locally and temporarily the video recap
+ * @param videoUrl The URL of the recap video
+ */
 private fun downloadVideo(videoUrl: String): File {
     val url = URL(videoUrl)
     val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
@@ -158,6 +170,9 @@ private fun downloadVideo(videoUrl: String): File {
     return videoFile
 }
 
+/**
+ * Share the video
+ */
 private fun shareVideo(context: Context, videoFile: File) {
     val videoUri: Uri = FileProvider.getUriForFile(
         context,
@@ -174,6 +189,10 @@ private fun shareVideo(context: Context, videoFile: File) {
     context.startActivity(Intent.createChooser(shareIntent, "Share Video"))
 }
 
+/**
+ * The preview of the recap video
+ * @param videoUrl The URL of the game recap video
+ */
 @Composable
 fun RecapPreview(videoUrl: String) {
     val context = LocalContext.current

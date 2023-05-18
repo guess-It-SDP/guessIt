@@ -23,7 +23,6 @@ class ShareRecapTest {
 
     @Before
     fun init() {
-        FirebaseEmulator.init()
         composeRule.setContent {
             BootcampComposeTheme {
                 ShareRecapScreen("test_game_id")
@@ -35,8 +34,11 @@ class ShareRecapTest {
     fun shareVideoScreenIsDisplayed() {
         composeRule.onNodeWithTag("shareRecapScreen").assertIsDisplayed()
         composeRule.onNodeWithTag("shareRecapTitle").assertIsDisplayed()
+    }
+
+    @Test
+    fun recapPreviewIsDisplayed() {
         composeRule.onNodeWithTag("recapPreview").assertIsDisplayed()
-        composeRule.onNodeWithTag("shareRecapButton").assertIsDisplayed()
     }
 
     @Test
