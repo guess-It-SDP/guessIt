@@ -175,12 +175,9 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
 
             // Take Selfie of the guesser for the game recap and save it to Firebase storage
             val lifecycleOwner = LocalLifecycleOwner.current
-            val pm = context.packageManager
-            if (pm.hasSystemFeature(FEATURE_CAMERA_FRONT)) {
-                takeSelfie(storageGameRef, userId, context, lifecycleOwner)
-                // Store drawing for the game recap
-                storeDrawing(storageGameRef, userId, context)
-            }
+            takeSelfie(storageGameRef, userId, context, lifecycleOwner)
+            // Store drawing for the game recap
+            storeDrawing(storageGameRef, userId, context)
 
             val gs = Guess(guess.guesser, guess.guesserId, answer)
             CorrectAnswerPopUp(gs = gs)
@@ -229,23 +226,25 @@ private fun takeSelfie(
     val cameraProviderFuture: ListenableFuture<ProcessCameraProvider> =
         ProcessCameraProvider.getInstance(context)
     val processCameraProvider = cameraProviderFuture.get()
-    processCameraProvider.bindToLifecycle(
-        lifecycleOwner,
-        CameraSelector.DEFAULT_FRONT_CAMERA,
-        imageCapture
-    )
-    val cameraExecutor = Executors.newSingleThreadExecutor()
-    val onImageSavedCallback = object : ImageCapture.OnImageSavedCallback {
-        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-            storageSelfieRef.putFile(tempFile.toUri())
-            Log.i("Selfie", "Image saved")
-        }
+    if (processCameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)) {
+        processCameraProvider.bindToLifecycle(
+            lifecycleOwner,
+            CameraSelector.DEFAULT_FRONT_CAMERA,
+            imageCapture
+        )
+        val cameraExecutor = Executors.newSingleThreadExecutor()
+        val onImageSavedCallback = object : ImageCapture.OnImageSavedCallback {
+            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                storageSelfieRef.putFile(tempFile.toUri())
+                Log.i("Selfie", "Image saved")
+            }
 
-        override fun onError(exception: ImageCaptureException) {
-            Log.d("Selfie", exception.message.toString())
+            override fun onError(exception: ImageCaptureException) {
+                Log.d("Selfie", exception.message.toString())
+            }
         }
+        imageCapture.takePicture(outputFileOptions, cameraExecutor, onImageSavedCallback)
     }
-    imageCapture.takePicture(outputFileOptions, cameraExecutor, onImageSavedCallback)
 }
 
 /**
