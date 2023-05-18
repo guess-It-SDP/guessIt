@@ -4,7 +4,7 @@
 
     <uses-feature android:name="android.hardware.camera.any" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -23,6 +23,33 @@
         android:theme="@style/Theme.BootcampCompose"
         tools:targetApi="31">
         <activity
+            android:name=".games.help.GuessItRulesActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".games.help.CreditsActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".games.help.HelpActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".DrawHatActivity"
+            android:exported="false"
+            android:label="@string/title_activity_draw_hat"
+            android:theme="@style/Theme.BootcampCompose.NoActionBar" />
+
+        <activity
             android:name=".games.guessit.FinalActivity"
             android:exported="false" />
         <activity
@@ -32,6 +59,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
         <activity
             android:name=".games.guessit.TimerActivity"
             android:exported="false">
@@ -165,8 +193,14 @@
             android:name=".games.wordle.WordleMenu"
             android:exported="true" />
         <activity
-            android:name=".games.wordle.WordleRulesActivity"
+            android:name=".games.help.WordleRulesActivity"
             android:exported="true" />
-    </application>
+        <activity
+            android:name=".facedetection.FaceDetectionActivity"
+            android:exported="true" />
+
+
+</application>
+
 
 </manifest>
