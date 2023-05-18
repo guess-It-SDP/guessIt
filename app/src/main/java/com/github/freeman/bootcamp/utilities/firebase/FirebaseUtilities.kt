@@ -126,7 +126,23 @@ object FirebaseUtilities {
         }
 
         return future
+    }
 
+    /**
+     * Gets the url of a file located in the given storage reference
+     * @param storageRef storage reference
+     * @return a future of the uri of the file contained in the storage
+     */
+    fun urlStorageGet(fileStorageRef: StorageReference): CompletableFuture<Uri> {
+        val future = CompletableFuture<Uri>()
+
+        fileStorageRef.downloadUrl.addOnSuccessListener {
+            future.complete(it)
+        }.addOnFailureListener {
+            future.completeExceptionally(it)
+        }
+
+        return future
     }
 
     /**
