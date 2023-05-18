@@ -19,9 +19,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import com.github.freeman.bootcamp.ui.theme.md_theme_light_primary
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.ui.theme.Purple80
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -45,7 +45,7 @@ class TimerActivity : ComponentActivity() {
 
 @Composable
 fun TimerScreen(dbrefTimer: DatabaseReference, time: Long, size: Int = 70, fontSize: TextUnit = 30.sp,
-                color: Color= Purple80, textColor: Color = Color.DarkGray) {
+                color: Color= md_theme_light_primary, textColor: Color = Color.DarkGray) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier

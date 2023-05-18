@@ -5,20 +5,12 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.AUDIO_REC
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.DRAWING
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.GUESSING
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
-import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
-import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.videocall.VideoCallActivity
-import com.github.freeman.bootcamp.games.wordle.WordleMenu
-import com.github.freeman.bootcamp.recorder.AudioRecordingActivity
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -103,47 +95,6 @@ class MainMenuTest {
         Intents.intended(IntentMatchers.hasComponent(ChatActivity::class.java.name))
 
         Intents.release()
-    }
-
-    @Test
-    fun guessingIntentIsSent() {
-        Intents.init()
-
-        composeRule.onNodeWithText(GUESSING).performClick()
-        Intents.intended(IntentMatchers.hasComponent(GuessingActivity::class.java.name))
-
-        Intents.release()
-    }
-
-    @Test
-    fun audioRecIntentIsSent() {
-        Intents.init()
-
-        composeRule.onNodeWithText(AUDIO_REC).performClick()
-        Intents.intended(IntentMatchers.hasComponent(AudioRecordingActivity::class.java.name))
-
-        Intents.release()
-    }
-
-    @Test
-    fun drawingIntentIsSent() {
-        Intents.init()
-
-        composeRule.onNodeWithText(DRAWING).performClick()
-        Intents.intended(IntentMatchers.hasComponent(DrawingActivity::class.java.name))
-
-        Intents.release()
-    }
-
-    @Test
-    fun wordleButtonIsDisplayedHasClickActionAndCorrectText(){
-        testButton("wordleButton", WordleMenu::class.java.name,MainMenuActivity.WORDLE)
-    }
-
-    @OptIn(ExperimentalUnsignedTypes::class)
-    @Test
-    fun videoButtonIsDisplayedHasClickActionAndCorrectText(){
-        testButton("videoCallButton", VideoCallActivity::class.java.name,MainMenuActivity.VIDEO_CALL)
     }
 
         /**

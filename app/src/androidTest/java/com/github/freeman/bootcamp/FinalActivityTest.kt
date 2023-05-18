@@ -29,7 +29,7 @@ class FinalActivityTest {
             val context = LocalContext.current
             val dbRef = FirebaseUtilities.getGameDBRef(context)
 
-            BootcampComposeTheme(darkTheme = false) {
+            BootcampComposeTheme() {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
