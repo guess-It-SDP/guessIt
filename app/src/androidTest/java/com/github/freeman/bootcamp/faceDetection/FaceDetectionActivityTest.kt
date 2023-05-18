@@ -46,40 +46,4 @@ class FaceDetectionActivityTest {
             FaceDetectionActivity.FACE_DETECTION_TAG, FaceDetectionActivity.FACE_DETECTION_TAG
         )
     }
-
-    /*
-    @Test
-    fun drawMoustacheAndHairAndHatDontNullifyCanvas() {
-        var context = composeRule.activity
-        var faceBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.hat)
-        var bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.ed)
-            .copy(Bitmap.Config.ARGB_8888, true)
-        val paint = Paint()
-        paint.color = Color.Red.toArgb()
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 16.0f
-        val image = InputImage.fromBitmap(faceBitmap!!, 0)
-        val options = FaceDetectorOptions.Builder()
-            .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
-            .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
-            .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL).build()
-        val detector = FaceDetection.getClient(options)
-        detector.process(image).addOnSuccessListener { faces ->
-            val canvas = Canvas(bitmap!!)
-            detector.process(image).addOnSuccessListener { faces ->
-                val canvas = Canvas(bitmap!!)
-
-                faces.forEach { face ->
-                    FaceDetectionActivity.drawHairUnit().invoke(face, canvas, bitmap, paint)
-                    FaceDetectionActivity.drawMoustacheUnit().invoke(face, canvas, bitmap, paint)
-                    FaceDetectionActivity.drawHatUnit().invoke(face, canvas, bitmap, paint)
-                }
-            }
-            assertNotNull(canvas)
-        }
-
-    }
-    
-     */
-
 }

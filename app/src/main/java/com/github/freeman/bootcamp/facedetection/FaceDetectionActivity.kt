@@ -212,7 +212,7 @@ class FaceDetectionActivity : ComponentActivity() {
          * @param overlayPic The bitmap object representing the object to add on the face
          * @param paint      The paint object used to draw the hat.
          */
-        private fun drawHair(face: Face, canvas: Canvas, overlayPic: Bitmap, paint: Paint) {
+        fun drawHair(face: Face, canvas: Canvas, overlayPic: Bitmap, paint: Paint) {
             drawStuff(
                 face,
                 canvas,

@@ -195,6 +195,9 @@
         <activity
             android:name=".facedetection.FaceDetectionActivity"
             android:exported="true" />
+        <activity
+            android:name=".facedetection.FaceDetectionActivity2"
+            android:exported="true" />
 
 
 </application>
