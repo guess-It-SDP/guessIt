@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.SCORES_TITLE
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.size
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.turnEnded
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
@@ -41,9 +40,6 @@ class ScoreActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val dbRef = getGameDBRef(this)
-        val gameState = intent.getStringExtra(getString(R.string.game_state))
-        scoreRecap = gameState == getString(R.string.state_scorerecap)
-        gameOverRecap = gameState == getString(R.string.state_gameover)
         setContent {
             BootcampComposeTheme {
                 ScoreScreen(dbRef)
@@ -55,7 +51,6 @@ class ScoreActivity : ComponentActivity() {
         const val size = 200
         const val SCORES_TITLE = "Scores"
         const val FINAL_SCORES_TITLE = "Final Scores"
-        var turnEnded = false
     }
 }
 
@@ -203,46 +198,24 @@ fun ScoreScreen(
         usersToScores = testingUsersToScores
     }
 
-    if (gameOverRecap) {
-        EndScoreboard(usersToScores)
-    } else if (scoreRecap) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(size.dp),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.Top
+    ) {
+        Spacer(modifier = Modifier.weight(1f))
+
+        val nbPlayers = usersToScores.size
         Scoreboard(
             playerScores = usersToScores,
-            modifier = Modifier.fillMaxSize()
-        )
-        dbRef.child(context.getString(R.string.current_state_path))
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        if (snapshot.getValue<String>()!! != context.getString(R.string.state_scorerecap)) {
-                            val activity = context as? Activity
-                            activity?.finish()
-                        }
-                    }
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    // do nothing
-                }
-            })
-    } else {
-        Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(size.dp),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.Top
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-
-            val nbPlayers = usersToScores.size
-            Scoreboard(
-                playerScores = usersToScores,
-                modifier = Modifier
-                    .width((0.475 * size).dp)
-                    .height(((0.225 + nbPlayers * 0.11) * size).dp)
-                    .testTag("scoreboard")
-            )
-
+                .width((0.475 * size).dp)
+                .height(((0.225 + nbPlayers * 0.11) * size).dp)
+                .testTag("scoreboard")
+        )
     }
 }
 

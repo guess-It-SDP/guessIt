@@ -13,7 +13,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.games.guessit.EndScoreboard
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity
-import com.github.freeman.bootcamp.games.guessit.reinitialise
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import org.junit.Before
@@ -39,7 +38,6 @@ class EndScoreboardTest {
         composeRule.setContent {
             val context = LocalContext.current
             val dbRef = getGameDBRef(context)
-            reinitialise(context, dbRef, playerIds.toSet())
 
             initFirebaseScores(context, dbRef, playerIds, scores)
             val usersToScores = usersToScoresToPair(playerIds, usernames, scores)

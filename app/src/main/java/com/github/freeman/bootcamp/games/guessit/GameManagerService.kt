@@ -3,6 +3,7 @@ package com.github.freeman.bootcamp.games.guessit
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.util.Log
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
@@ -14,6 +15,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -33,104 +35,110 @@ class GameManagerService : Service() {
         var nbRounds = 0
         var isHost = false
         var topics = ArrayList<String>()
+        var firstStart = true
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val gameID = intent!!.getStringExtra(getString(R.string.gameId_extra)).toString()
-        val gameDBRef = getGameDBRef(this, gameID)
-        var playersOrder = listOf<String>()
-        // Get the number of rounds and number of players
-        FirebaseUtilities.databaseGet(gameDBRef.child(getString(R.string.param_nb_rounds_path)))
-            .thenAccept { getNbRounds ->
-                nbRounds = getNbRounds.toInt()
-                FirebaseUtilities.databaseGet(gameDBRef.child(getString(R.string.param_nb_players_path)))
-                    .thenAccept { getNbPlayers ->
-                        nbPlayers = getNbPlayers.toInt()
-                        // Get local player ID and host ID to check if this app is the host app
-                        val localPlayerID = Firebase.auth.currentUser?.uid.toString()
-                        FirebaseUtilities.databaseGet(gameDBRef.child(getString(R.string.param_host_id_path)))
-                            .thenAccept { hostID ->
-                                isHost = localPlayerID == hostID.toString()
+        if (firstStart) {
+            Log.d("GameManager Order", "Game Manager Started")
+            val gameID = intent!!.getStringExtra(getString(R.string.gameId_extra)).toString()
+            val gameDBRef = getGameDBRef(this, gameID)
+            var playersOrder = listOf<String>()
+            // Get the number of rounds and number of players
+            FirebaseUtilities.databaseGet(gameDBRef.child(getString(R.string.param_nb_rounds_path)))
+                .thenAccept { getNbRounds ->
+                    nbRounds = getNbRounds.toInt()
+                    FirebaseUtilities.databaseGet(gameDBRef.child(getString(R.string.param_nb_players_path)))
+                        .thenAccept { getNbPlayers ->
+                            nbPlayers = getNbPlayers.toInt()
+                            // Get local player ID and host ID to check if this app is the host app
+                            val localPlayerID = Firebase.auth.currentUser?.uid.toString()
+                            FirebaseUtilities.databaseGet(gameDBRef.child(getString(R.string.param_host_id_path)))
+                                .thenAccept { hostID ->
+                                    isHost = localPlayerID == hostID.toString()
 
-                                // Get the list of topics
-                                for (i in 0 until GameOptionsActivity.NB_TOPICS) {
-                                    topics.add(intent.getStringExtra("topic$i").toString())
+                                    // Get the list of topics
+                                    for (i in 0 until GameOptionsActivity.NB_TOPICS) {
+                                        topics.add(intent.getStringExtra("topic$i").toString())
+                                    }
+
+                                    // Listen to the current game state to start corresponding activities
+                                    // Activities are responsible for closing themselves based on current the game state
+                                    val currentStateRef = gameDBRef.child(getString(R.string.current_state_path))
+                                    currentStateRef.addValueEventListener(object : ValueEventListener {
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            if (snapshot.exists()) {
+                                                when (snapshot.getValue<String>()!!) {
+                                                    getString(R.string.state_newturn) -> {
+                                                        startNewTurn(localPlayerID, gameID, gameDBRef)
+                                                    }
+                                                    getString(R.string.state_scorerecap) -> {
+                                                        scoreRecap()
+                                                        prepareNewTurn(gameDBRef, playersOrder)
+                                                    }
+                                                    getString(R.string.state_gameover) -> {
+                                                        gameOver(gameDBRef)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        override fun onCancelled(error: DatabaseError) {
+                                            // do nothing
+                                        }
+                                    })
+
+                                    // Change game state to score recap or game over if the timer is over
+                                    val timerStateRef = gameDBRef.child(getString(R.string.current_timer_path))
+                                    timerStateRef.addValueEventListener(object : ValueEventListener {
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            if (snapshot.exists()) {
+                                                val timerState = snapshot.getValue<String>()!!
+                                                if (timerState == getString(R.string.timer_over)) {
+                                                    endTurn(currentStateRef)
+                                                }
+                                            }
+                                        }
+                                        override fun onCancelled(error: DatabaseError) {
+                                            // do nothing
+                                        }
+                                    })
+
+                                    // Change game state to score recap or game over if everyone guessed the word
+                                    val correctGuessesRef = gameDBRef.child(getString(R.string.current_correct_guesses_path))
+                                    correctGuessesRef.addValueEventListener(object : ValueEventListener {
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            if (snapshot.exists()) {
+                                                val correctGuesses = snapshot.getValue<Long>()!!.toInt()
+                                                if (correctGuesses == nbPlayers - 1) {
+                                                    endTurn(currentStateRef)
+                                                }
+                                            }
+                                        }
+                                        override fun onCancelled(error: DatabaseError) {
+                                            // do nothing
+                                        }
+                                    })
+
+                                    // Initialize the game if this app is the host app
+                                    if (isHost) {
+                                        // Create players order that will be used for the rest of the game
+                                        // First get all the player IDs
+                                        FirebaseUtilities.databaseGetMap(gameDBRef.child(getString(R.string.players_path)))
+                                            .thenAccept {
+                                                // Randomly shuffle the player IDs
+                                                playersOrder = it.keys.toList().shuffled() as List<String>
+                                                // Set first player to draw
+                                                setNewArtist(gameDBRef, 0, playersOrder)
+                                                // Change game state to start the game
+                                                gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_newturn))
+                                                Log.d("GameManager Order", "New turn state set (initialization)")
+                                            }
+                                    }
                                 }
-
-                                // Listen to the current game state to start corresponding activities
-                                // Activities are responsible for closing themselves based on current the game state
-                                val currentStateRef = gameDBRef.child(getString(R.string.current_state_path))
-                                currentStateRef.addValueEventListener(object : ValueEventListener {
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        if (snapshot.exists()) {
-                                            when (snapshot.getValue<String>()!!) {
-                                                getString(R.string.state_newturn) -> {
-                                                    startNewTurn(localPlayerID, gameID, gameDBRef)
-                                                }
-                                                getString(R.string.state_scorerecap) -> {
-                                                    scoreRecap()
-                                                    prepareNewTurn(gameDBRef, playersOrder)
-                                                }
-                                                getString(R.string.state_gameover) -> {
-                                                    gameOver(gameDBRef)
-                                                }
-                                            }
-                                        }
-                                    }
-                                    override fun onCancelled(error: DatabaseError) {
-                                        // do nothing
-                                    }
-                                })
-
-                                // Change game state to score recap or game over if the timer is over
-                                val timerStateRef = gameDBRef.child(getString(R.string.current_timer_path))
-                                timerStateRef.addValueEventListener(object : ValueEventListener {
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        if (snapshot.exists()) {
-                                            val timerState = snapshot.getValue<String>()!!
-                                            if (timerState == getString(R.string.timer_over)) {
-                                                endTurn(currentStateRef)
-                                            }
-                                        }
-                                    }
-                                    override fun onCancelled(error: DatabaseError) {
-                                        // do nothing
-                                    }
-                                })
-
-                                // Change game state to score recap or game over if everyone guessed the word
-                                val correctGuessesRef = gameDBRef.child(getString(R.string.current_correct_guesses_path))
-                                correctGuessesRef.addValueEventListener(object : ValueEventListener {
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        if (snapshot.exists()) {
-                                            val correctGuesses = snapshot.getValue<Long>()!!.toInt()
-                                            if (correctGuesses == nbPlayers - 1) {
-                                                endTurn(currentStateRef)
-                                            }
-                                        }
-                                    }
-                                    override fun onCancelled(error: DatabaseError) {
-                                        // do nothing
-                                    }
-                                })
-
-                                // Initialize the game if this app is the host app
-                                if (isHost) {
-                                    // Create players order that will be used for the rest of the game
-                                    // First get all the player IDs
-                                    FirebaseUtilities.databaseGetMap(gameDBRef.child(getString(R.string.players_path)))
-                                        .thenAccept {
-                                            // Randomly shuffle the player IDs
-                                            playersOrder = it.keys.toList().shuffled() as List<String>
-                                            // Set first player to draw
-                                            setNewArtist(gameDBRef, 0, playersOrder)
-                                            // Change game state to start the game
-                                            gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_newturn))
-                                        }
-                                }
-                            }
                         }
-            }
+                }
+            firstStart = false
+        }
         return START_NOT_STICKY
     }
 
@@ -161,18 +169,19 @@ class GameManagerService : Service() {
                 intent.putExtra(getString(R.string.gameId_extra), gameID)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
+                Log.d("GameManager Order", "Topic selection launched")
             }
     }
 
     private fun scoreRecap() {
         val intent = Intent(this, ScoreActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.putExtra(getString(R.string.game_state), getString(R.string.state_scorerecap))
         startActivity(intent)
     }
 
     private fun endTurn(currentStateRef : DatabaseReference) {
-        if (roundNb == nbRounds && turnNb == nbPlayers - 1) {
+        Log.d("GameManager Order", "Round number : $roundNb, Turn number : $turnNb")
+        if (roundNb == nbRounds - 1 && turnNb == nbPlayers - 1) {
             Timer().schedule(2000) {
                 currentStateRef.setValue(getString(R.string.state_gameover))
             }
@@ -200,20 +209,23 @@ class GameManagerService : Service() {
             // (wait 10 seconds so that players have time to see their scores)
             Timer().schedule(10000) {
                 gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_newturn))
+                Log.d("GameManager Order", "New turn state set")
             }
         }
     }
 
     private fun setNewArtist(gameDBRef : DatabaseReference, playerNumber : Int, playersOrder : List<String>) {
+        Log.d("GameManager Order", "New artist set")
         gameDBRef.child(getString(R.string.current_artist_path)).setValue(playersOrder[playerNumber])
     }
 
     private fun gameOver(gameDBRef : DatabaseReference) {
-        val intent = Intent(this, ScoreActivity::class.java)
+        val intent = Intent(this, FinalActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.putExtra(getString(R.string.game_state), getString(R.string.state_gameover))
         startActivity(intent)
-        gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_lobbyclosed))
+        Timer().schedule(10000) {
+            gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_lobbyclosed))
+        }
         stopSelf()
     }
 }
