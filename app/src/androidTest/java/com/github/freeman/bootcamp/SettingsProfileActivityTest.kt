@@ -36,7 +36,7 @@ class SettingsProfileActivityTest {
             val email = remember { mutableStateOf("em@il.com") }
 
 
-            BootcampComposeTheme(darkTheme = false) {
+            BootcampComposeTheme() {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -110,8 +110,4 @@ class SettingsProfileActivityTest {
     fun accountButtonHasClickAction() {
         composeRule.onNodeWithText("Manage Account").assertHasClickAction()
     }
-
-
-
-
 }
