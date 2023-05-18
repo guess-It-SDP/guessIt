@@ -1,11 +1,18 @@
 package com.github.freeman.bootcamp.games.wordle
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,8 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.freeman.bootcamp.EditProfileActivity
 import com.github.freeman.bootcamp.MainMenuButton
 import com.github.freeman.bootcamp.games.help.WordleRulesActivity
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity.Companion.difficultyIsWordOnly
@@ -55,6 +65,7 @@ class WordleMenu : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
+                TopAppbarWordleMenu()
                 WordleMenuScreen()
             }
         }
@@ -106,20 +117,21 @@ fun WordleMenuScreen() {
             modifier = Modifier
                 .testTag("wordleMenuTitle")
                 .align(Alignment.CenterHorizontally),
-            text = WORDLE_MENU_TEXT,
+            text = WORDLE_MENU_TITLE,
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(Modifier.size(20.dp))
+        Spacer(Modifier.size(50.dp))
 
         Text(
             modifier = Modifier
                 .testTag("wordleMenuText")
                 .align(Alignment.CenterHorizontally),
-            text = WORDLE_MENU_TITLE,
+            text = WORDLE_MENU_TEXT,
             fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
         )
 
         Spacer(Modifier.size(20.dp))
@@ -137,4 +149,36 @@ private fun lettersOrWordOnly(difficulty: Difficulty): String {
         return WORD_ONLY
     }
     return LETTERS
+}
+
+@Composable
+fun TopAppbarWordleMenu(context: Context = LocalContext.current) {
+
+    TopAppBar(
+        modifier = Modifier.testTag("topAppbarWordleMenu"),
+        title = {
+            androidx.compose.material.Text(
+                text = WORDLE_MENU_TITLE,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        backgroundColor = MaterialTheme.colors.background,
+        elevation = 4.dp,
+        navigationIcon = {
+            IconButton(
+                modifier = Modifier
+                    .testTag("appBarBack"),
+                onClick = {
+                    val activity = (context as? Activity)
+                    activity?.finish()
+
+                }) {
+                Icon(
+                    Icons.Filled.ArrowBack,
+                    contentDescription = "Go back",
+                )
+            }
+        }
+    )
 }

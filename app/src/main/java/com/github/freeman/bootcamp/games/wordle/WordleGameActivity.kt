@@ -48,7 +48,6 @@ class WordleGameActivity : ComponentActivity() {
         private const val SOLUTIONS_FILE = "wordle_common.txt"
         private const val EASY_WORDS_FILE = "wordle_easy.txt"
 
-        private const val SUBMISSION_BUTTON = "Submit word"
         const val SUBMISSION_TEXTFIELD = "Enter a 5 letters word to submit"
 
         private const val NB_ROW_EASY = 9

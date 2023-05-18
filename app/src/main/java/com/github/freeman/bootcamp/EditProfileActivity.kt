@@ -302,6 +302,7 @@ fun EditDialog(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     TextField(
+                        singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
                         modifier = Modifier
                             .testTag("dialogTextField")
