@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.guessing.Guess
-import com.github.freeman.bootcamp.ui.theme.Purple40
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -46,8 +45,7 @@ fun PopUpScreen(
             Box(
                 modifier = Modifier
                     .testTag("popUpBox")
-                    .clip(shape)
-                    .background(Purple40),
+                    .clip(shape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
