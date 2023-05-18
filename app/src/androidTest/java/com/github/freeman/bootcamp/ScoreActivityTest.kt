@@ -14,7 +14,6 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.SCORES_TITLE
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.gameOverRecap
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.reinitialise
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
@@ -41,7 +40,6 @@ class ScoreActivityTest {
 
     @Before
     fun init() {
-        gameOverRecap = false
         composeRule.setContent {
             val context = LocalContext.current
             val dbRef = getGameDBRef(context)
@@ -100,8 +98,6 @@ class ScoreActivityTest {
             }
         }
     }
-
-
 }
 
 // Initialises the player scores of the test game on the Firebase

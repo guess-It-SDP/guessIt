@@ -177,12 +177,13 @@ fun DrawingScreen(
                 TimerOverPopUp()
             } else {
                 Row() {
-                    BootcampComposeTheme { // Video conversation zone
-                        VideoScreen2(
-                            roomName = gameId,
-                            testing = false
-                        )
-                    }
+                    // Video calls deactivated for now because of camera conflict
+//                    BootcampComposeTheme { // Video conversation zone
+//                        VideoScreen2(
+//                            roomName = gameId,
+//                            testing = false
+//                        )
+//                    }
                     // Drawing zone
                     DrawBox(
                         drawController = drawController,

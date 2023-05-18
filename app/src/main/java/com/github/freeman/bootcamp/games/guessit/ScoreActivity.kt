@@ -21,12 +21,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.FINAL_SCORES_TITLE
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.SCORES_TITLE
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.WINNER_TITLE
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.gameOverRecap
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.size
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.scoreRecap
+import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.turnEnded
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
@@ -58,9 +55,7 @@ class ScoreActivity : ComponentActivity() {
         const val size = 200
         const val SCORES_TITLE = "Scores"
         const val FINAL_SCORES_TITLE = "Final Scores"
-        const val WINNER_TITLE = "And the winner is… "
-        var scoreRecap = false
-        var gameOverRecap = false
+        var turnEnded = false
     }
 }
 
@@ -69,7 +64,6 @@ class ScoreActivity : ComponentActivity() {
  */
 @Composable
 fun turnIntoPairs(playersToScores: Map<String, MutableState<Int>>): List<Pair<String, Int>> {
-
     // Converts the map of players to mutable state of int into a list of pairs ID-score instead
     val scorePairs = ArrayList<Pair<String, Int>>()
     if (playersToScores.isNotEmpty()) {
@@ -136,9 +130,51 @@ fun updateScoreMap(playersToScores: Map<String, MutableState<Int>>, id: String, 
 }
 
 @Composable
+fun obtainPlayersToScores(
+    dbRef: DatabaseReference,
+    playerIds: MutableState<Map<String, Map<String, Int>>>,
+    context: Context
+): HashMap<String, MutableState<Int>> {
+    // Initialise the values of the map player ID to score
+    val playersToScores = HashMap<String, MutableState<Int>>()
+    for (id in playerIds.value.keys) {
+        playersToScores[id] = remember { mutableStateOf(-1) }
+    }
+
+    // Observe the points of all players to update the scoreboard
+    for (id in playerIds.value.keys) {
+        dbRef
+            .child(context.getString(R.string.players_path))
+            .child(id)
+            .addChildEventListener(object : ChildEventListener {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    updateScoreMap(playersToScores, id, snapshot)
+                }
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    updateScoreMap(playersToScores, id, snapshot)
+                }
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+                    updateScoreMap(playersToScores, id, snapshot)
+                }
+
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                    updateScoreMap(playersToScores, id, snapshot)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // No particular action needs to be taken in this case
+                }
+            })
+    }
+    return playersToScores
+}
+
+@Composable
 fun ScoreScreen(
     dbRef: DatabaseReference,
-    testingPlayersToScores: HashMap<String, MutableState<Int>> = HashMap<String, MutableState<Int>>(),
+    testingPlayersToScores: HashMap<String, MutableState<Int>> = HashMap(),
     testingUsersToScores:  List<Pair<String?, Int>> = listOf()
 ) {
     val context = LocalContext.current
@@ -150,39 +186,8 @@ fun ScoreScreen(
             playerIds.value = it as HashMap<String, Map<String, Int>>
         }
 
-    // Initialise the values of the map player ID to score
-    var playersToScores = HashMap<String, MutableState<Int>>()
-    for (id in playerIds.value.keys) {
-        playersToScores[id] = remember { mutableStateOf(-1) }
-    }
-
-    // Observe the points of all players to update the scoreboard
-    for (id in playerIds.value.keys) {
-        dbRef
-            .child(context.getString(R.string.players_path))
-            .child(id)
-            .addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                updateScoreMap(playersToScores, id, snapshot)
-            }
-
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                updateScoreMap(playersToScores, id, snapshot)
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                updateScoreMap(playersToScores, id, snapshot)
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                updateScoreMap(playersToScores, id, snapshot)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // No particular action needs to be taken in this case
-            }
-        })
-    }
+    // Get the player ID to score map
+    var playersToScores = obtainPlayersToScores(dbRef, playerIds, context)
 
     // Dependency injection for testing purposes
     if (testingPlayersToScores.size > 0) {
@@ -237,7 +242,7 @@ fun ScoreScreen(
                     .height(((0.225 + nbPlayers * 0.11) * size).dp)
                     .testTag("scoreboard")
             )
-        }
+
     }
 }
 
@@ -287,69 +292,6 @@ fun Scoreboard(playerScores: List<Pair<String?, Int>>, modifier: Modifier) {
                     }
                 }
                 Divider(color = Color.Black, thickness = 1.dp)
-            }
-        }
-    }
-}
-
-@Composable
-fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
-    Box(
-        modifier = Modifier
-            .background(Color.Blue, RoundedCornerShape(16.dp))
-            .padding(16.dp)
-            .testTag("endScoreboard")
-    ) {
-        Column (
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = FINAL_SCORES_TITLE,
-                color = Color.White,
-                style = MaterialTheme.typography.h4,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .testTag("endScoresTitle")
-            )
-
-            Spacer(modifier = Modifier.height(2.dp))
-            Divider(color = Color.White, thickness = 4.dp)
-
-            val winner = if (usersToScores.isNotEmpty()) usersToScores[0].first else "???"
-            Spacer(modifier = Modifier.height(30.dp))
-            Text(
-                text = "$WINNER_TITLE$winner!",
-                style = MaterialTheme.typography.body1,
-                color = Color.White,
-                modifier = Modifier.testTag("winnerDeclaration")
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            usersToScores.forEach { (name, score) ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (name != null) {
-                        Text(
-                            text = name,
-                            color = Color.White,
-                            style = MaterialTheme.typography.body1,
-                            modifier = Modifier
-                                .weight(1f)
-                                .testTag("end$name")
-                        )
-
-                        Text(
-                            text = score.toString(),
-                            color = Color.White,
-                            style = MaterialTheme.typography.body1,
-                            modifier = Modifier.testTag("endScore")
-                        )
-                    }
-                }
-                Divider(color = Color.White, thickness = 1.dp)
             }
         }
     }

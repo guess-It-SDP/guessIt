@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" >
+    xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -24,13 +25,15 @@
             android:enabled="true"
             android:exported="true" />
         <activity
+            android:name=".games.guessit.FinalActivity"
+            android:exported="false" />
+        <activity
             android:name=".games.guessit.StatsActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
         <activity
             android:name=".games.guessit.TimerActivity"
             android:exported="false" >
@@ -62,7 +65,7 @@
         </activity>
         <activity
             android:name=".videocall.VideoCallActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".games.guessit.drawing.DrawingActivity"
             android:exported="true">
@@ -100,8 +103,8 @@
         </activity>
         <activity
             android:name=".games.guessit.guessing.GuessingActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="false" >
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -115,35 +118,35 @@
         </activity>
         <activity
             android:name=".games.guessit.lobbies.CreateJoinActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".games.guessit.lobbies.LobbyListActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".games.guessit.lobbies.WaitingRoomActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".games.guessit.lobbies.CreatePublicPrivateActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".recorder.AudioRecordingActivity"
-            android:exported="true" >
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
