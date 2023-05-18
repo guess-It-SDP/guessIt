@@ -5,19 +5,22 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.MainMenuButton
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity.Companion.difficultyIsWordOnly
-import com.github.freeman.bootcamp.games.wordle.WordleMenu.Companion.GAME_RULES
 import com.github.freeman.bootcamp.games.wordle.WordleMenu.Companion.Difficulty
 import com.github.freeman.bootcamp.games.wordle.WordleMenu.Companion.LETTERS
+import com.github.freeman.bootcamp.games.wordle.WordleMenu.Companion.WORDLE_MENU_TEXT
+import com.github.freeman.bootcamp.games.wordle.WordleMenu.Companion.WORDLE_MENU_TITLE
 import com.github.freeman.bootcamp.games.wordle.WordleMenu.Companion.WORD_ONLY
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
@@ -40,9 +43,10 @@ class WordleMenu : ComponentActivity() {
 
         const val LETTERS = " (letters)"
         const val WORD_ONLY = " (words only)"
-        const val GAME_RULES = "Rules of the Game"
         const val WORDLE_MENU_TEST_TAG = "WordleMenuScreen"
 
+        const val WORDLE_MENU_TITLE = "Wordle"
+        const val WORDLE_MENU_TEXT = "Choose a difficulty level:"
     }
 
 
@@ -68,18 +72,9 @@ private fun launchGame(context: Context, difficulty: String) {
 }
 
 /**
- * Change the activity to the game activity and put the difficulty strong in the extras
- */
-private fun launch(context: Context) {
-    context.startActivity(Intent(context, WordleRulesActivity::class.java))
-}
-
-/**
- * Creates a button ot launch a game
+ * Creates a button to launch a game
  *
- *@param testTag Tag use to find the object for testing
- *@param activityLauncher a unit function to launch next scene
- *@param text The text displayed inside the button
+ *@param difficulty The difficulty of the game that will be launched
  */
 @Composable
 private fun DifficultyButton(
@@ -106,13 +101,28 @@ fun WordleMenuScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        val context = LocalContext.current
-
-        MainMenuButton(
-            testTag = GAME_RULES,
-            onClick = { (::launch)(context) },
-            text = GAME_RULES
+        Text(
+            modifier = Modifier
+                .testTag("wordleMenuTitle")
+                .align(Alignment.CenterHorizontally),
+            text = WORDLE_MENU_TEXT,
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold
         )
+
+        Spacer(Modifier.size(20.dp))
+
+        Text(
+            modifier = Modifier
+                .testTag("wordleMenuText")
+                .align(Alignment.CenterHorizontally),
+            text = WORDLE_MENU_TITLE,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(Modifier.size(20.dp))
+
         DifficultyButton(Difficulty.EASY)
         DifficultyButton(Difficulty.MEDIUM)
         DifficultyButton(Difficulty.HARD)

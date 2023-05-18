@@ -46,16 +46,6 @@ class WordleMenuTest {
     }
 
     @Test
-    fun rulesButtonIsDisplayedHasClickActionCorrectTextAndSendIntent() {
-        TestCompanion.testButton(
-            WordleMenu.Companion.GAME_RULES,
-            WordleRulesActivity::class.java.name,
-            WordleMenu.Companion.GAME_RULES,
-            composeRule
-        )
-    }
-
-    @Test
     fun easyButtonIsDisplayedHasClickActionAndCorrectTextAndSendIntent() {
         TestCompanion.testButton(
             WordleMenu.Companion.Difficulty.EASY.prettyText,
