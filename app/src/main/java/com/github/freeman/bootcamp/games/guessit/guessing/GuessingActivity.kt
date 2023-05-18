@@ -225,23 +225,25 @@ private fun takeSelfie(
     val cameraProviderFuture: ListenableFuture<ProcessCameraProvider> =
         ProcessCameraProvider.getInstance(context)
     val processCameraProvider = cameraProviderFuture.get()
-    processCameraProvider.bindToLifecycle(
-        lifecycleOwner,
-        CameraSelector.DEFAULT_FRONT_CAMERA,
-        imageCapture
-    )
-    val cameraExecutor = Executors.newSingleThreadExecutor()
-    val onImageSavedCallback = object : ImageCapture.OnImageSavedCallback {
-        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-            storageSelfieRef.putFile(tempFile.toUri())
-            Log.i("Selfie", "Image saved")
-        }
+    try {
+        processCameraProvider.bindToLifecycle(
+            lifecycleOwner,
+            CameraSelector.DEFAULT_FRONT_CAMERA,
+            imageCapture
+        )
+        val cameraExecutor = Executors.newSingleThreadExecutor()
+        val onImageSavedCallback = object : ImageCapture.OnImageSavedCallback {
+            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                storageSelfieRef.putFile(tempFile.toUri())
+                Log.i("Selfie", "Image saved")
+            }
 
-        override fun onError(exception: ImageCaptureException) {
-            Log.d("Selfie", exception.message.toString())
+            override fun onError(exception: ImageCaptureException) {
+                Log.d("Selfie", exception.message.toString())
+            }
         }
-    }
-    imageCapture.takePicture(outputFileOptions, cameraExecutor, onImageSavedCallback)
+        imageCapture.takePicture(outputFileOptions, cameraExecutor, onImageSavedCallback)
+    } catch (_: IllegalAccessException) {}
 }
 
 /**
