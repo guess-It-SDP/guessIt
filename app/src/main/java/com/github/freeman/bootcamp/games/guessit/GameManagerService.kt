@@ -222,7 +222,9 @@ class GameManagerService : Service() {
     }
 
     private fun gameOver(gameDBRef : DatabaseReference, gameID: String) {
-        VideoCreator.createRecap(this, gameID)
+        if (isHost) {
+            VideoCreator.createRecap(this, gameID)
+        }
         val intent = Intent(this, FinalActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(getString(R.string.gameId_extra), gameID)
