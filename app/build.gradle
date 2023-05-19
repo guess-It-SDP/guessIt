@@ -154,6 +154,11 @@ dependencies {
     implementation 'com.google.android.gms:play-services-mlkit-face-detection:17.1.0'
     implementation 'io.agora.rtc:full-sdk:3.5.0'
 
+    // ffmpeg for video creation
+    implementation 'com.arthenica:mobile-ffmpeg-full-gpl:4.4'
+
+
+
 }
 
 tasks.withType(Test) {
