@@ -52,8 +52,7 @@ class FaceDetectionActivity : ComponentActivity() {
         const val FACE_DETECTION_TAG2 = "faceDetectionTag2"
 
         fun transformBitmapToDrawOnFaces(
-            bitmap: Bitmap?, overlayPic: Bitmap, drawFunction: (Face, Canvas, Bitmap, Paint) -> Unit
-            , context : Context
+            bitmap: Bitmap?, context : Context
         ) {
             var overlayPic = BitmapFactory.decodeResource(context.resources, R.drawable.hat)
             var overlayPic2 = BitmapFactory.decodeResource(context.resources, R.drawable.moustache)
@@ -65,9 +64,8 @@ class FaceDetectionActivity : ComponentActivity() {
                     val paint = paint()
                     faces.forEach { face ->
 
-                        if(overlayPic2 != null){     drawFunction(face, canvas, overlayPic, paint)
+                        if(overlayPic2 != null){     drawHat(face, canvas, overlayPic, paint)
                             drawMoustache(face, canvas, overlayPic2, paint) }
-                        else {drawFunction(face, canvas, overlayPic, paint) }
                     }
                 }
             }
