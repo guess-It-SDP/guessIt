@@ -9,6 +9,9 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
     <application
         android:name= ".MyApplication"
         android:allowBackup="true"
@@ -19,6 +22,44 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BootcampCompose"
         tools:targetApi="31">
+
+        <activity
+            android:name=".games.guessit.ShareRecapActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".games.help.GuessItRulesActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".games.help.CreditsActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".games.help.HelpActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".DrawHatActivity"
+            android:exported="false"
+            android:label="@string/title_activity_draw_hat"
+            android:theme="@style/Theme.BootcampCompose.NoActionBar" />
+
+        <activity
+            android:name=".games.guessit.FinalActivity"
+            android:exported="false" />
         <activity
             android:name=".games.guessit.StatsActivity"
             android:exported="false">
@@ -96,8 +137,8 @@
         </activity>
         <activity
             android:name=".games.guessit.guessing.GuessingActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="false" >
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -111,35 +152,35 @@
         </activity>
         <activity
             android:name=".games.guessit.lobbies.CreateJoinActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".games.guessit.lobbies.LobbyListActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".games.guessit.lobbies.WaitingRoomActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".games.guessit.lobbies.CreatePublicPrivateActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".recorder.AudioRecordingActivity"
-            android:exported="true" >
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -160,10 +201,24 @@
             android:name=".games.wordle.WordleMenu"
             android:exported="true" />
         <activity
-            android:name=".games.wordle.WordleRulesActivity"
+            android:name=".games.help.WordleRulesActivity"
+            android:exported="true" />
+        <activity
+            android:name=".facedetection.FaceDetectionActivity"
+            android:exported="true" />
+        <activity
+            android:name=".facedetection.FaceDetectionActivity2"
             android:exported="true" />
 
-</application>
-
+      <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
 
 </manifest>

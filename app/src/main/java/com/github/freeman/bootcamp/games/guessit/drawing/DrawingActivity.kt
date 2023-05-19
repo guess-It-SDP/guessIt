@@ -2,7 +2,6 @@ package com.github.freeman.bootcamp.games.guessit.drawing
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.provider.Settings.Global.getString
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
@@ -27,15 +26,12 @@ import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Compani
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
-import com.github.freeman.bootcamp.videocall.APP_ID
-import com.github.freeman.bootcamp.videocall.VideoScreen
-import com.github.freeman.bootcamp.videocall.VideoScreen2
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
+import com.github.freeman.bootcamp.videocall.VideoScreen2
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.DrawController
@@ -43,14 +39,14 @@ import io.ak1.drawbox.rememberDrawController
 import io.ak1.rangvikalp.RangVikalp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 
 // This class uses two great libraries :
 // - For the drawing zone : DrawBox (https://github.com/akshay2211/DrawBox)
 // - For the color picker : Rang-Vikalp (https://github.com/akshay2211/rang-vikalp)
 
-private val DEFAULT_COLOR = black
-private const val DEFAULT_WIDTH = 15f
+val DEFAULT_COLOR = black
+const val DEFAULT_WIDTH = 15f
+const val DEFAULT_ERASE_WIDTH = 100f
 
 class DrawingActivity : ComponentActivity() {
 
@@ -272,7 +268,7 @@ private fun ControlsBar(
 
 // Represents a button in the controls bar
 @Composable
-private fun RowScope.MenuItems(
+fun RowScope.MenuItems(
     @DrawableRes resId: Int,
     desc: String,
     colorTint: Color,

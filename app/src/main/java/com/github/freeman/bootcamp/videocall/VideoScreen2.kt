@@ -4,10 +4,7 @@ import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -65,6 +62,7 @@ fun VideoScreen2(
     if(viewModel.hasAudioPermission.value && viewModel.hasCameraPermission.value && !testing) {
         val agoraSettings = AgoraSettings()
         agoraSettings.enabledButtons = mutableSetOf()
+
         AndroidView(
             factory = {
 
@@ -73,13 +71,16 @@ fun VideoScreen2(
                         appId = APP_ID,
 
                     ), style = AgoraVideoViewer.Style.GRID,
-                    agoraSettings = agoraSettings
+                    agoraSettings = agoraSettings,
+
                 ).also {
+
                     it.join(roomName)
                     agoraView = it
                 }
             },
             modifier = Modifier.fillMaxWidth(0.2f).fillMaxSize().testTag("agora_video_view2")
         )
-    }
-}
+
+
+}}

@@ -13,20 +13,21 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.AccountCircle
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +40,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.SettingsActivity.Companion.SETTINGS_TITLE
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.games.guessit.StatsActivity
+import com.github.freeman.bootcamp.games.help.HelpActivity
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.auth.ktx.auth
@@ -98,20 +100,19 @@ class SettingsProfileActivity : ComponentActivity() {
                     }
             }
 
-            BootcampComposeTheme(darkTheme = false) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    TopAppbarSettings()
-                    Profile(displayName = displayName, email = email, profilePic = profilePicBitmap)
+            BootcampComposeTheme {
+                Surface {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        TopAppbarSettings()
+                        Profile(displayName = displayName, email = email, profilePic = profilePicBitmap)
+                    }
                 }
             }
-
         }
-
     }
-
 }
 
 // list of option available global to the activity
@@ -127,10 +128,13 @@ fun TopAppbarSettings(context: Context = LocalContext.current) {
             Text(
                 text = SETTINGS_TITLE,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 20.sp
             )
         },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
             IconButton(onClick = {
@@ -140,6 +144,7 @@ fun TopAppbarSettings(context: Context = LocalContext.current) {
                 Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -222,7 +227,8 @@ private fun UserDetails(context: Context = LocalContext.current, displayName: Mu
                 Text(
                     text = displayName.value,
                     style = TextStyle(
-                        fontSize = 22.sp,
+                        fontSize = 23.sp,
+                        color = MaterialTheme.colorScheme.secondary,
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -235,8 +241,8 @@ private fun UserDetails(context: Context = LocalContext.current, displayName: Mu
                     text = email.value,
                     style = TextStyle(
                         fontSize = 14.sp,
-                        color = Color.Gray,
-                        letterSpacing = (0.8).sp
+                        letterSpacing = (0.8).sp,
+                        color = MaterialTheme.colorScheme.secondary,
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -255,7 +261,7 @@ private fun UserDetails(context: Context = LocalContext.current, displayName: Mu
                     modifier = Modifier.size(24.dp),
                     imageVector = Icons.Outlined.Edit,
                     contentDescription = "Edit Details",
-                    tint = MaterialTheme.colors.primary
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -282,7 +288,7 @@ private fun OptionsItemStyle(item: OptionsData) {
                 .size(32.dp),
             imageVector = item.icon,
             contentDescription = item.title,
-            tint = MaterialTheme.colors.primary
+            tint = MaterialTheme.colorScheme.primary
         )
 
         Row(
@@ -302,6 +308,7 @@ private fun OptionsItemStyle(item: OptionsData) {
                     text = item.title,
                     style = TextStyle(
                         fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.secondary,
                     )
                 )
 
@@ -313,7 +320,7 @@ private fun OptionsItemStyle(item: OptionsData) {
                     style = TextStyle(
                         fontSize = 14.sp,
                         letterSpacing = (0.8).sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.tertiary,
                     )
                 )
 
@@ -325,7 +332,7 @@ private fun OptionsItemStyle(item: OptionsData) {
                     .weight(weight = 1f, fill = false),
                 imageVector = Icons.Outlined.KeyboardArrowRight,
                 contentDescription = item.title,
-                tint = Color.Black.copy(alpha = 0.70f)
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }
@@ -376,13 +383,25 @@ private fun prepareOptionsData(context: Context) {
 
     optionsList.add(
         OptionsData(
-            icon = appIcons.Info,
-            title = "Help",
-            subTitle = "Get some help about how the app works",
-            clickAction = {  }
+            icon = appIcons.Face,
+            title = "Draw Your Hat",
+            subTitle = "Draw your own hat to be displayed in-game",
+            clickAction = {
+                context.startActivity(Intent(context, DrawHatActivity::class.java))
+            }
         )
     )
 
+    optionsList.add(
+        OptionsData(
+            icon = appIcons.Info,
+            title = "Help",
+            subTitle = "Get some help about how the app works",
+            clickAction = {
+                context.startActivity(Intent(context, HelpActivity::class.java))
+            }
+        )
+    )
 }
 
 /**
@@ -393,4 +412,3 @@ private fun prepareOptionsData(context: Context) {
  * @param clickAction what to do when the field is clicked
  */
 data class OptionsData(val icon: ImageVector, val title: String, val subTitle: String, val clickAction: () -> Unit)
-
