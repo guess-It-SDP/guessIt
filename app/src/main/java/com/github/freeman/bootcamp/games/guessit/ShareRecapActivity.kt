@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,8 +34,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.github.freeman.bootcamp.games.guessit.ShareRecapActivity.Companion.SHARE_RECAP_TITLE
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.ui.theme.Pink40
-import com.github.freeman.bootcamp.ui.theme.Pink80
+import com.github.freeman.bootcamp.ui.theme.md_theme_light_inversePrimary
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -88,7 +88,7 @@ fun ShareRecapScreen(gameId:String) {
             .testTag("shareRecapScreen")
             .fillMaxSize()
             .padding(10.dp)
-            .background(Pink80),
+            .background(MaterialTheme.colorScheme.inversePrimary),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -139,7 +139,7 @@ fun ShareButton(videoUrl: String) {
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp),
-            tint = Pink80
+            tint = MaterialTheme.colorScheme.inversePrimary
         )
     }
 }

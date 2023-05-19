@@ -2,12 +2,21 @@
 
 package com.github.freeman.bootcamp.games.guessit.guessing
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager.FEATURE_CAMERA_FRONT
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCapture.CAPTURE_MODE_ZERO_SHUTTER_LAG
+import androidx.camera.core.ImageCapture.OutputFileOptions
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,13 +27,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import androidx.core.net.toUri
+import androidx.lifecycle.LifecycleOwner
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.CorrectAnswerPopUp
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
@@ -36,6 +48,7 @@ import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Compa
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.SCREEN_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.WAITING_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.bitmap
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.pointsReceived
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.turnNb
@@ -44,8 +57,8 @@ import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.github.freeman.bootcamp.utilities.rememberImeState
-import com.github.freeman.bootcamp.videocall.VideoScreen
 import com.github.freeman.bootcamp.videocall.VideoScreen2
+import com.google.common.util.concurrent.ListenableFuture
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -55,6 +68,11 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.util.concurrent.Executors
 
 /**
  * The activity where the guesser tries to guess what is the drawing
@@ -67,10 +85,11 @@ class GuessingActivity : ComponentActivity() {
 
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
         dbrefGame = getGameDBRef(this, gameId)
+        val storageGameRef = Firebase.storage.reference.child(getString(R.string.game_recaps_path)).child(gameId)
 
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbrefGame, this,gameId)
+                GuessingScreen(dbrefGame, this, gameId, storageGameRef)
             }
         }
     }
@@ -86,6 +105,7 @@ class GuessingActivity : ComponentActivity() {
         lateinit var answer: String
         var roundNb = 0
         var turnNb = 0
+        var bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888).asImageBitmap()
     }
 }
 
@@ -93,7 +113,10 @@ class GuessingActivity : ComponentActivity() {
  * Displays of one guess (with the guesser name)
  */
 @Composable
-fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artistId: String) {
+@SuppressLint("RestrictedApi")
+@androidx.annotation.OptIn(androidx.camera.core.ExperimentalZeroShutterLag::class)
+fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artistId: String,
+              storageGameRef: StorageReference) {
     val context = LocalContext.current
 
     Row(
@@ -150,12 +173,17 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
                     }
                 }
 
+            // Take Selfie of the guesser for the game recap and save it to Firebase storage
+            val lifecycleOwner = LocalLifecycleOwner.current
+            takeSelfie(storageGameRef, userId, context, lifecycleOwner)
+            // Store drawing for the game recap
+            storeDrawing(storageGameRef, userId, context)
+
             val gs = Guess(guess.guesser, guess.guesserId, answer)
             CorrectAnswerPopUp(gs = gs)
-
         }
 
-        if (!(guess.message?.lowercase() == GuessingActivity.answer.lowercase())) {
+        if (guess.message?.lowercase() != GuessingActivity.answer.lowercase()) {
             Text(text = "${guess.guesser} : ${guess.message}")
         } else {
             Text(text = "${guess.guesser} : ****")
@@ -163,17 +191,73 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
     }
 }
 
+private fun storeDrawing(
+    storageGameRef: StorageReference,
+    userId: String?,
+    context: Context
+) {
+    val storageDrawingsRef = storageGameRef.child(userId.toString())
+        .child(context.getString(R.string.drawings_folder_name))
+        .child(context.getString(R.string.drawing_file_name))
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    bitmap.asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+    val tempFile = File.createTempFile(context.getString(R.string.drawing_file_name), null)
+    tempFile.writeBytes(byteArrayOutputStream.toByteArray())
+    storageDrawingsRef.putFile(tempFile.toUri())
+}
+
+@SuppressLint("RestrictedApi")
+@androidx.annotation.OptIn(androidx.camera.core.ExperimentalZeroShutterLag::class)
+private fun takeSelfie(
+    storageGameRef: StorageReference,
+    userId: String?,
+    context: Context,
+    lifecycleOwner : LifecycleOwner
+) {
+    val storageSelfieRef = storageGameRef.child(userId.toString())
+        .child(context.getString(R.string.selfies_folder_name))
+        .child(context.getString(R.string.selfie_file_name))
+    val imageCapture = ImageCapture.Builder()
+        .setCaptureMode(CAPTURE_MODE_ZERO_SHUTTER_LAG)
+        .setCameraSelector(CameraSelector.DEFAULT_FRONT_CAMERA)
+        .build()
+    val tempFile = File.createTempFile(context.getString(R.string.selfie_file_name), null)
+    val outputFileOptions = OutputFileOptions.Builder(tempFile).build()
+    val cameraProviderFuture: ListenableFuture<ProcessCameraProvider> =
+        ProcessCameraProvider.getInstance(context)
+    val processCameraProvider = cameraProviderFuture.get()
+    if (processCameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)) {
+        processCameraProvider.bindToLifecycle(
+            lifecycleOwner,
+            CameraSelector.DEFAULT_FRONT_CAMERA,
+            imageCapture
+        )
+        val cameraExecutor = Executors.newSingleThreadExecutor()
+        val onImageSavedCallback = object : ImageCapture.OnImageSavedCallback {
+            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                storageSelfieRef.putFile(tempFile.toUri())
+                Log.i("Selfie", "Image saved")
+            }
+
+            override fun onError(exception: ImageCaptureException) {
+                Log.d("Selfie", exception.message.toString())
+            }
+        }
+        imageCapture.takePicture(outputFileOptions, cameraExecutor, onImageSavedCallback)
+    }
+}
+
 /**
  * Displays all guesses that have been made in the game
  */
 @Composable
-fun GuessesList(guesses: Array<Guess>, dbrefGame: DatabaseReference, artistId: String) {
+fun GuessesList(guesses: Array<Guess>, dbrefGame: DatabaseReference, artistId: String, storageGameRef: StorageReference) {
     LazyColumn (
         modifier = Modifier
             .fillMaxWidth()
     ) {
         items(guesses) { guess ->
-            GuessItem(guess, answer, dbrefGame, artistId)
+            GuessItem(guess, answer, dbrefGame, artistId, storageGameRef)
         }
     }
 }
@@ -224,7 +308,7 @@ fun GuessingBar(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String) {
+fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String, storageGameRef: StorageReference) {
     val imeState = rememberImeState()
     val scrollState = rememberScrollState()
 
@@ -324,12 +408,15 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String
         .child(roundNb.toString())
         .child(turnNb.toString())
         .child(context.getString(R.string.drawing_path))
-    var bitmap by remember { mutableStateOf(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888).asImageBitmap()) }
+    var displayedBitmap by remember { mutableStateOf(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888).asImageBitmap()) }
     dbrefImages.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 val decoded = BitmapHandler.stringToBitmap(snapshot.getValue<String>()!!)
-                if (decoded != null) bitmap = decoded.asImageBitmap()
+                if (decoded != null) {
+                    displayedBitmap = decoded.asImageBitmap()
+                    bitmap = decoded.asImageBitmap()
+                }
             }
         }
         override fun onCancelled(databaseError: DatabaseError) {
@@ -389,14 +476,15 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String
                     )
                 } else {
                     Row() {
-                        BootcampComposeTheme { // Video conversation zone
-                            VideoScreen2(
-                                roomName = gameId,
-                                testing = false
-                            )
-                        }
+                        // Video calls deactivated for now because of camera conflict
+//                        BootcampComposeTheme { // Video conversation zone
+//                            VideoScreen2(
+//                                roomName = gameId,
+//                                testing = false
+//                            )
+//                        }
                         Image(
-                            bitmap = bitmap,
+                            bitmap = displayedBitmap,
                             contentDescription = "drawn image",
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -421,7 +509,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String
                     .testTag("guessesList")
             ) {
                 GuessesList(guesses = guesses, dbrefGame = dbrefGame,
-                    artistId = currentArtist.value)
+                    artistId = currentArtist.value, storageGameRef = storageGameRef)
             }
 
             if (timer == context.getString(R.string.timer_over)) {
