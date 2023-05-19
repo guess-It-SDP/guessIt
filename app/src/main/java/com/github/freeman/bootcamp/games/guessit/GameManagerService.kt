@@ -77,7 +77,7 @@ class GameManagerService : Service() {
                                                         prepareNewTurn(gameDBRef, playersOrder)
                                                     }
                                                     getString(R.string.state_gameover) -> {
-                                                        gameOver(gameDBRef)
+                                                        gameOver(gameDBRef, gameID)
                                                     }
                                                 }
                                             }
@@ -219,9 +219,10 @@ class GameManagerService : Service() {
         gameDBRef.child(getString(R.string.current_artist_path)).setValue(playersOrder[playerNumber])
     }
 
-    private fun gameOver(gameDBRef : DatabaseReference) {
+    private fun gameOver(gameDBRef : DatabaseReference, gameID: String) {
         val intent = Intent(this, FinalActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.putExtra(getString(R.string.gameId_extra), gameID)
         startActivity(intent)
         Timer().schedule(10000) {
             gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_lobbyclosed))

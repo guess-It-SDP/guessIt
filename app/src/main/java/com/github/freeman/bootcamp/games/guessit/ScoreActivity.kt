@@ -39,7 +39,8 @@ class ScoreActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val dbRef = getGameDBRef(this)
+        val gameID = intent.getStringExtra(getString(R.string.gameId_extra))
+        val dbRef = getGameDBRef(this, gameID.toString())
         setContent {
             BootcampComposeTheme {
                 ScoreScreen(dbRef)
