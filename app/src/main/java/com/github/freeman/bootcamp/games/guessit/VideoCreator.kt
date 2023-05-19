@@ -139,7 +139,7 @@ class VideoCreator {
                 // video created successfully
                 Toast.makeText(context, "video created", Toast.LENGTH_SHORT).show()
                 val storageRef = Firebase.storage.reference.child(context.getString(R.string.game_recaps_path))
-                    .child(gameID)
+                    .child(gameID).child(videoFileName)
                 storageRef.putFile(videoFile.toUri())
             } else {
                 // error creating video

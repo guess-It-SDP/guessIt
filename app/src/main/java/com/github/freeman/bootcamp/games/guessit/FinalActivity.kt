@@ -95,18 +95,18 @@ fun FinalScreen(dbRef: DatabaseReference, gameID: String) {
             Spacer(modifier = Modifier.size(30.dp))
             EndScoreboard(usersToScores)
         }
-        Row() {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.Start
-            ) {
-                BackToMenuButton(context)
-            }
-            GameRecapButton(context, gameID)
-        }
 
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Row() {
+                BackToMenuButton(context)
+                GameRecapButton(context, gameID)
+            }
+        }
     }
 }
 
