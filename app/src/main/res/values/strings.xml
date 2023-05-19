@@ -86,6 +86,10 @@
     <string name="game_recaps_path">game_recaps</string>
     <string name="game_recaps_selfies_path">selfies</string>
     <string name="game_recaps_drawings_path">drawings</string>
+    <string name="selfies_folder_name">selfies</string>
+    <string name="selfie_file_name">selfie.jpeg</string>
+    <string name="drawings_folder_name">drawings</string>
+    <string name="drawing_file_name">drawing.png</string>
     <string name="recap_path">recap.mp4</string>
 
     <!-- Strings used for extra between activities -->
