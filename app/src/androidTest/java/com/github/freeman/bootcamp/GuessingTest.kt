@@ -10,6 +10,8 @@ import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Compa
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingScreen
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseSingletons
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -47,9 +49,12 @@ class GuessingTest {
                 .child(context.getString(R.string.games_path))
                 .child(guessGameId)
                 .child(context.getString(R.string.guesses_path))
+            val storageGamRef = Firebase.storage.reference
+                .child(context.getString(R.string.game_recaps_path))
+                .child(context.getString(R.string.test_game_id))
 
             BootcampComposeTheme {
-                GuessingScreen(database, context = context,guessGameId)
+                GuessingScreen(database, context = context,guessGameId, storageGamRef)
             }
         }
     }
