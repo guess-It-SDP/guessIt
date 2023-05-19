@@ -41,11 +41,11 @@ class DrawingActivityTest {
         }
     }
 
-//    @Test
-//    fun drawingScreenIsDisplayed() {
+    @Test
+    fun drawingScreenIsDisplayed() {
 //        setContent()
 //        composeRule.onNodeWithTag(context.getString(R.string.drawing_screen)).assertIsDisplayed()
-//    }
+    }
 //
 //    @Test
 //    fun colorButtonHasClickAction() {
