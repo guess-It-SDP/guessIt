@@ -51,6 +51,29 @@ class FaceDetectionActivity : ComponentActivity() {
         const val FACE_DETECTION_TAG = "faceDetectionTag"
         const val FACE_DETECTION_TAG2 = "faceDetectionTag2"
 
+        fun transformBitmapToDrawOnFaces(
+            bitmap: Bitmap?, overlayPic: Bitmap, drawFunction: (Face, Canvas, Bitmap, Paint) -> Unit
+            , context : Context
+        ) {
+            var overlayPic = BitmapFactory.decodeResource(context.resources, R.drawable.hat)
+            var overlayPic2 = BitmapFactory.decodeResource(context.resources, R.drawable.moustache)
+                val image = InputImage.fromBitmap(bitmap!!, 0)
+                val options = options()
+                val detector = FaceDetection.getClient(options)
+                detector.process(image).addOnSuccessListener { faces ->
+                    val canvas = Canvas(bitmap!!)
+                    val paint = paint()
+                    faces.forEach { face ->
+
+                        if(overlayPic2 != null){     drawFunction(face, canvas, overlayPic, paint)
+                            drawMoustache(face, canvas, overlayPic2, paint) }
+                        else {drawFunction(face, canvas, overlayPic, paint) }
+                    }
+                }
+            }
+
+
+
 
         /**
          * Draws objects on the detected faces in the provided bitmap image using the specified overlay pictures and draw function.
