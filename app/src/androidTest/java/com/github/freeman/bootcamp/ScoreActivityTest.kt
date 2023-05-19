@@ -47,7 +47,7 @@ class ScoreActivityTest {
            val playersToScores = initPlayersToScores(playerIds, scores)
            val usersToScores = usersToScoresToPair(playerIds, usernames, scores)
 
-            BootcampComposeTheme(darkTheme = false) {
+            BootcampComposeTheme() {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
