@@ -34,7 +34,7 @@ class FinalActivityTest {
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    FinalScreen(dbRef)
+                    FinalScreen(dbRef, context.getString(R.string.test_game_id))
                 }
             }
         }
