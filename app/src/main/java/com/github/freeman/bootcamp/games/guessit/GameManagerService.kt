@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
@@ -221,6 +222,7 @@ class GameManagerService : Service() {
     }
 
     private fun gameOver(gameDBRef : DatabaseReference, gameID: String) {
+        VideoCreator.createRecap(this, gameID)
         val intent = Intent(this, FinalActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(getString(R.string.gameId_extra), gameID)

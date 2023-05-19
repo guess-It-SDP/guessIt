@@ -33,6 +33,7 @@ import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.BACK_TO_MENU
 import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.BLUES
 import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.GAME_OVER
+import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.GAME_RECAP
 import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.WINNER_TITLE
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
@@ -47,7 +48,7 @@ class FinalActivity : ComponentActivity() {
         val dbRef = getGameDBRef(this, gameId)
         setContent {
             BootcampComposeTheme {
-                FinalScreen(dbRef)
+                FinalScreen(dbRef, gameId)
             }
         }
     }
@@ -55,6 +56,7 @@ class FinalActivity : ComponentActivity() {
     companion object {
         const val GAME_OVER = "Game over!"
         const val BACK_TO_MENU = "Back to menu"
+        const val GAME_RECAP = "Game recap"
         const val WINNER_TITLE = "And the winner is… "
         val BLUES = listOf(Color(0xFF4C74C7), Color(0xFF2196F3),
             Color(0xFF03A9F4), Color(0xFF00BCD4))
@@ -62,7 +64,7 @@ class FinalActivity : ComponentActivity() {
 }
 
 @Composable
-fun FinalScreen(dbRef: DatabaseReference) {
+fun FinalScreen(dbRef: DatabaseReference, gameID: String) {
     val context = LocalContext.current
 
     // Get the Ids of all players in this game
@@ -93,15 +95,35 @@ fun FinalScreen(dbRef: DatabaseReference) {
             Spacer(modifier = Modifier.size(30.dp))
             EndScoreboard(usersToScores)
         }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.Start
-        ) {
-            BackToMenuButton(context)
+        Row() {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.Start
+            ) {
+                BackToMenuButton(context)
+            }
+            GameRecapButton(context, gameID)
         }
+
+    }
+}
+
+@Composable
+fun GameRecapButton(context: Context, gameID: String){
+    ElevatedButton(
+        onClick = {
+            val intent = Intent(context, ShareRecapActivity::class.java)
+            intent.putExtra(context.getString(R.string.gameId_extra), gameID)
+            context.startActivity(intent)
+        },
+        modifier = Modifier.testTag("gameRecapButton")
+    ) {
+        Text(
+            text = GAME_RECAP,
+            modifier = Modifier.testTag(GAME_RECAP)
+        )
     }
 }
 

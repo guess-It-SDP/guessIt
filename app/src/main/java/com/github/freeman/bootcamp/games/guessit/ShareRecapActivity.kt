@@ -1,6 +1,5 @@
 package com.github.freeman.bootcamp.games.guessit
 
-import com.github.freeman.bootcamp.R
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -16,7 +15,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,9 +34,9 @@ import androidx.core.content.FileProvider
 import androidx.media3.common.MediaItem.fromUri
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ShareRecapActivity.Companion.SHARE_RECAP_TITLE
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.ui.theme.md_theme_light_inversePrimary
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
