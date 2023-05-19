@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
@@ -33,8 +34,6 @@ import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.VIDEO_CALL
-import com.github.freeman.bootcamp.MainMenuActivity.Companion.WORDLE
 import com.github.freeman.bootcamp.games.guessit.VideoCreator.Companion.createRecap
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
@@ -147,6 +146,17 @@ fun SettingsButton() {
         onClick = { settings(context) },
         text = SETTINGS,
         icon = Icons.Filled.Settings
+    )
+}
+
+@Composable
+fun CreateVideoButton() {
+    val context = LocalContext.current
+    MainMenuButton(
+        testTag = "createVideoTestButton",
+        onClick = { createRecap(context, "test_game_id") },
+        text = "create video",
+        icon = Icons.Filled.Create
     )
 }
 
@@ -275,6 +285,7 @@ fun MainMenuScreen() {
                 SettingsButton()
                 ChatButton()
             }
+            CreateVideoButton()
         }
     }
 }
