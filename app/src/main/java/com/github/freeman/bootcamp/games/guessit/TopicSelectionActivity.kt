@@ -32,7 +32,6 @@ import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companio
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.turnNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGetList
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
@@ -141,11 +140,13 @@ fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, gameI
     dbref.child(context.getString(R.string.current_timer_path))
         .setValue(context.getString(R.string.timer_inprogress))
     dbref.child(context.getString(R.string.current_state_path))
-        .setValue(context.getString(R.string.state_playround))
+        .setValue(context.getString(R.string.state_playturn))
 
     context.startActivity(Intent(context, DrawingActivity::class.java).apply {
         putExtra(context.getString(R.string.gameId_extra), gameId)
     })
+    val activity = (context as? Activity)
+    activity?.finish()
 }
 
 @Composable

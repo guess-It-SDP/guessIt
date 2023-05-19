@@ -109,7 +109,7 @@ class WaitingRoomTest {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         val gameState = snapshot.getValue<String>()!!
-                        if (gameState == context.getString(R.string.state_playgame)) {
+                        if (gameState == context.getString(R.string.state_newturn)) {
                             databaseGet(artistRef)
                                 .thenAccept {
                                     val intent = if (userId == it) {

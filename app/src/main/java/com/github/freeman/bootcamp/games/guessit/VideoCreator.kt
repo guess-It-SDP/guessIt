@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.widget.Toast
+import androidx.core.net.toUri
 import com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.github.freeman.bootcamp.R
@@ -29,7 +30,7 @@ class VideoCreator {
         fun createRecap(context: Context, gameId: String) {
             val storageRef = Firebase.storage.reference
 
-            val videoName = "recap_$gameId"
+            val videoName = "recap"
 
             val selfiesFileList = mutableListOf<StorageReference>()
             val drawingsFileList = mutableListOf<StorageReference>()
@@ -84,7 +85,7 @@ class VideoCreator {
                                                     val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                                                     combinedList.add(bitmap)
                                                     if (combinedList.size == combinedFileList.size) {
-                                                        createVideoFromImages(context, combinedList, videoName, videoDir)
+                                                        createVideoFromImages(context, combinedList, videoName, videoDir, gameId)
                                                     }
                                                 }
                                             }
@@ -95,10 +96,11 @@ class VideoCreator {
                 }
         }
 
-        private fun createVideoFromImages(context: Context, bitmapList: List<Bitmap>, videoName: String, videoDir: File) {
+        private fun createVideoFromImages(context: Context, bitmapList: List<Bitmap>, videoName: String, videoDir: File, gameID: String) {
 
             val videoFileName = "$videoName.mp4"
-            val videoFilePath = File(videoDir, videoFileName).absolutePath
+            val videoFile = File(videoDir, videoFileName)
+            val videoFilePath = videoFile.absolutePath
 
             val cacheDir = context.cacheDir
             val imageList = mutableListOf<Pair<Int, String>>()
@@ -136,6 +138,9 @@ class VideoCreator {
             if (rc == RETURN_CODE_SUCCESS) {
                 // video created successfully
                 Toast.makeText(context, "video created", Toast.LENGTH_SHORT).show()
+                val storageRef = Firebase.storage.reference.child(context.getString(R.string.game_recaps_path))
+                    .child(gameID).child(videoFileName)
+                storageRef.putFile(videoFile.toUri())
             } else {
                 // error creating video
                 Toast.makeText(context, "error $rc : video not created", Toast.LENGTH_SHORT).show()

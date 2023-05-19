@@ -38,14 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.games.guessit.GameManagerService
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
-import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.CATEGORY_INFO
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.KICKED
-import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.NB_ROUNDS_INFO
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.START_GAME
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.TOPBAR_TEXT
-import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
@@ -100,33 +98,21 @@ class WaitingRoomActivity: ComponentActivity() {
 
             val players = remember { mutableStateListOf<String>() }
             val gameStateRef = dbRef.child(getString(R.string.current_state_path))
-            val artistRef = dbRef.child(getString(R.string.current_artist_path))
 
-            // starts the correct activity depending on who is the artist and the guessers.
-            // the host changes the game state in the database and all players listen to it
-            // in order to start the game
+            // starts game manager service which will handle the progress of the game
             val dbListener = gameStateRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         val gameState = snapshot.getValue<String>()!!
-                        if (gameState == getString(R.string.state_playgame)) {
-                            databaseGet(artistRef)
-                                .thenAccept {
-                                    val intent = if (userId == it) {
-                                        Intent(context, TopicSelectionActivity::class.java)
-                                    } else {
-                                        Intent(context, GuessingActivity::class.java)
-                                    }
-
-                                    intent.apply {
-                                        putExtra(getString(R.string.gameId_extra), gameId)
-                                        for (i in allTopics.indices) {
-                                            putExtra("topic$i", allTopics[i])
-                                        }
-                                    }
-
-                                    context.startActivity(intent)
+                        if (gameState == getString(R.string.state_newturn)) {
+                            val intent = Intent(context, GameManagerService::class.java)
+                            intent.apply {
+                                putExtra(getString(R.string.gameId_extra), gameId)
+                                for (i in allTopics.indices) {
+                                    putExtra("topic$i", allTopics[i])
                                 }
+                            }
+                            context.startService(intent)
                         } else if (gameState == getString(R.string.state_lobbyclosed)) {
                             dbRef.removeValue()
                             val activity = (context as? Activity)
@@ -610,7 +596,7 @@ fun StartButton(
             enabled = userId == hostId.value && players.size >= 2,
             onClick = {
                 dbRef.child(context.getString(R.string.current_state_path))
-                    .setValue(context.getString(R.string.state_playgame))
+                    .setValue(context.getString(R.string.state_newturn))
             }
         ) {
             Text(START_GAME)

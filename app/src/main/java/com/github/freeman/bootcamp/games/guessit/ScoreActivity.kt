@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp.games.guessit
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.SCORES_TITLE
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.size
-import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.turnEnded
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
@@ -30,6 +30,7 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
@@ -38,7 +39,8 @@ class ScoreActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val dbRef = getGameDBRef(this)
+        val gameID = intent.getStringExtra(getString(R.string.gameId_extra))
+        val dbRef = getGameDBRef(this, gameID.toString())
         setContent {
             BootcampComposeTheme {
                 ScoreScreen(dbRef)
@@ -50,7 +52,6 @@ class ScoreActivity : ComponentActivity() {
         const val size = 200
         const val SCORES_TITLE = "Scores"
         const val FINAL_SCORES_TITLE = "Final Scores"
-        var turnEnded = false
     }
 }
 
@@ -122,26 +123,6 @@ fun updateScoreMap(playersToScores: Map<String, MutableState<Int>>, id: String, 
             playersToScores[id]?.value = score
         }
     }
-}
-
-/***
- * This function is to be called between turns to set variables back to their default values or
- * to change the artist
-  */
-fun reinitialise(context: Context, dbRef: DatabaseReference, playerIds: Set<String>) {
-    // Reset the number of guesses to 0
-    dbRef.child(context.getString(R.string.current_correct_guesses_path)).setValue(0)
-
-    // Choose a new artist. Todo: create a mechanism for switching the artist in a fair manner
-    if (playerIds.isNotEmpty()) {
-        val randInt = playerIds.indices.random()
-        val newArtist = playerIds.toList()[randInt]
-        dbRef.child(context.getString(R.string.current_artist_path))
-            .setValue(newArtist)
-    }
-
-    // Delete all the guesses
-    dbRef.child(context.getString(R.string.guesses_path)).removeValue()
 }
 
 @Composable
@@ -218,6 +199,7 @@ fun ScoreScreen(
         usersToScores = testingUsersToScores
     }
 
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -235,11 +217,6 @@ fun ScoreScreen(
                 .height(((0.225 + nbPlayers * 0.11) * size).dp)
                 .testTag("scoreboard")
         )
-    }
-
-    if (turnEnded) {
-        reinitialise(context, dbRef, playerIds.value.keys)
-        turnEnded = false
     }
 }
 
@@ -276,7 +253,9 @@ fun Scoreboard(playerScores: List<Pair<String?, Int>>, modifier: Modifier) {
                         Text(
                             text = name,
                             style = MaterialTheme.typography.body2,
-                            modifier = Modifier.weight(1f).testTag(name)
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag(name)
                         )
 
                         Text(

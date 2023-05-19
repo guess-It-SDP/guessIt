@@ -98,12 +98,15 @@
     <string name="password_extra">password</string>
     <string name="gameId_testing">testing</string>
     <string name="users_to_scores">users to scores</string>
+    <string name="game_state">gameState</string>
 
     <!-- current_state states -->
     <string name="state_waitingforplayers">waiting for players</string>
+    <string name="state_newturn">new turn</string>
     <string name="state_topicselection">topic selection</string>
-    <string name="state_playround">play round</string>
-    <string name="state_playgame">play game</string>
+    <string name="state_playturn">play turn</string>
+    <string name="state_scorerecap">score recap</string>
+    <string name="state_gameover">game over</string>
     <string name="state_lobbyclosed">lobby closed</string>
 
     <!-- current_timer states -->
