@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -87,7 +88,7 @@ fun ShareRecapScreen(gameId:String) {
             .testTag("shareRecapScreen")
             .fillMaxSize()
             .padding(10.dp)
-            .background(md_theme_light_inversePrimary),
+            .background(MaterialTheme.colorScheme.inversePrimary),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -138,7 +139,7 @@ fun ShareButton(videoUrl: String) {
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp),
-            tint = md_theme_light_inversePrimary
+            tint = MaterialTheme.colorScheme.inversePrimary
         )
     }
 }
