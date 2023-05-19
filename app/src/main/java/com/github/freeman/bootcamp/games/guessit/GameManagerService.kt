@@ -73,7 +73,7 @@ class GameManagerService : Service() {
                                                         startNewTurn(localPlayerID, gameID, gameDBRef)
                                                     }
                                                     getString(R.string.state_scorerecap) -> {
-                                                        scoreRecap()
+                                                        scoreRecap(gameID)
                                                         prepareNewTurn(gameDBRef, playersOrder)
                                                     }
                                                     getString(R.string.state_gameover) -> {
@@ -173,8 +173,9 @@ class GameManagerService : Service() {
             }
     }
 
-    private fun scoreRecap() {
+    private fun scoreRecap(gameID: String) {
         val intent = Intent(this, ScoreActivity::class.java)
+        intent.putExtra(getString(R.string.gameId_extra), gameID)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
     }
