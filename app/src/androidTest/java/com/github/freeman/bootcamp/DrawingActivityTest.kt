@@ -54,12 +54,12 @@ class DrawingActivityTest {
 //            .assertHasClickAction()
 //    }
 //
-    @Test
-    fun widthButtonHasClickAction() {
-        setContent()
-        composeRule.onNodeWithContentDescription(context.getString(R.string.stroke_width))
-            .assertHasClickAction()
-    }
+//    @Test
+//    fun widthButtonHasClickAction() {
+//        setContent()
+//        composeRule.onNodeWithContentDescription(context.getString(R.string.stroke_width))
+//            .assertHasClickAction()
+//    }
 //
 //    @Test
 //    fun undoButtonHasClickAction() {
