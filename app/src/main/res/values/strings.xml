@@ -12,6 +12,10 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="title_activity_bit_map_handler_testing">BitMapHandlerTestingActivity</string>
 
+    <!-- Useful Strings -->
+    <string name="wordle_name">Wordle</string>
+    <string name="guessit_name">Guess It!</string>
+
     <!-- Strings used in DrawingActivity -->
     <string name="drawing_screen">Drawing screen</string>
     <string name="width_slider">Width slider</string>

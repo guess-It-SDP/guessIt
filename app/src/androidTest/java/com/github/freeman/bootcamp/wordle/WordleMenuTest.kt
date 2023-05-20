@@ -1,8 +1,10 @@
 package com.github.freeman.bootcamp.wordle
 
+import androidx.compose.material.Surface
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.games.help.WordleRulesActivity
+import com.github.freeman.bootcamp.games.wordle.TopAppbarWordleMenu
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
 import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.games.wordle.WordleMenuScreen
@@ -35,13 +37,16 @@ class WordleMenuTest {
     private fun setWordleMenuScreen() {
         composeRule.setContent {
             BootcampComposeTheme {
-                WordleMenuScreen()
+                Surface {
+                    TopAppbarWordleMenu()
+                    WordleMenuScreen()
+                }
             }
         }
     }
 
     @Test
-    fun rulesButtonIsDisplayedHasClickActionCorrectTextAndSendIntent() {
+    fun topAppBarIsDisplayedAndCorrectText() {
         TestCompanion.testButton(
             WordleMenu.Companion.GAME_RULES,
             WordleRulesActivity::class.java.name,

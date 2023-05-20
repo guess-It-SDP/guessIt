@@ -26,6 +26,12 @@ import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActi
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.PUBLIC_TYPE_TEXT
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.TOPBAR_TEXT
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.unit.sp
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
 
 /**
  * Shows a screen where you can either choose to create a public or a private lobby
@@ -36,9 +42,10 @@ class CreatePublicPrivateActivity: ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                TopAppbarPublicPrivate()
-
-                MainScreen()
+                Surface {
+                    TopAppbarPublicPrivate()
+                    PublicPrivateLobbyScreen()
+                }
             }
         }
     }
@@ -52,8 +59,6 @@ class CreatePublicPrivateActivity: ComponentActivity() {
     }
 }
 
-
-
 @Composable
 fun TopAppbarPublicPrivate(context: Context = LocalContext.current) {
 
@@ -62,22 +67,27 @@ fun TopAppbarPublicPrivate(context: Context = LocalContext.current) {
         title = {
             Text(
                 text = TOPBAR_TEXT,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 20.sp
             )
         },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
             IconButton(
-                modifier = Modifier.testTag("topAppbarPublicPrivateButton"),
+                modifier = Modifier
+                    .testTag("topAppbarPublicPrivateButton"),
                 onClick = {
-                val activity = (context as? Activity)
-                activity?.finish()
+                    val activity = (context as? Activity)
+                    activity?.finish()
             }) {
                 Icon(
-                    Icons.Filled.ArrowBack,
+                    imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
+                    tint = androidx.compose.material3.MaterialTheme.colorScheme.primary,
                 )
             }
         }
@@ -85,7 +95,7 @@ fun TopAppbarPublicPrivate(context: Context = LocalContext.current) {
 }
 
 @Composable
-fun MainScreen() {
+fun PublicPrivateLobbyScreen() {
     Column (
         modifier = Modifier
             .fillMaxSize()
