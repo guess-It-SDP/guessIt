@@ -22,6 +22,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +36,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -225,10 +229,13 @@ fun TopAppbarEditProfile(context: Context = LocalContext.current) {
             Text(
                 text = TOPBAR_TEXT,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 20.sp
             )
         },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
             IconButton(
@@ -262,13 +269,14 @@ fun EditDialog(
     val txtFieldError = remember { mutableStateOf("") }
     val txtField = remember { mutableStateOf(text.value) }
 
+
     Dialog(
         onDismissRequest = { show.value = false }
     ) {
         Surface(
             modifier = Modifier.testTag("customDialog"),
             shape = RoundedCornerShape(16.dp),
-            color = Color.White
+            color = MaterialTheme.colorScheme.primaryContainer
         ) {
             Box(
                 contentAlignment = Alignment.Center
@@ -286,12 +294,13 @@ fun EditDialog(
                                 fontSize = 24.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
-                            )
+                            ),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Icon(
                             imageVector = Icons.Rounded.Delete,
                             contentDescription = "",
-                            tint = colorResource(android.R.color.darker_gray),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier
                                 .width(30.dp)
                                 .height(30.dp)
@@ -309,13 +318,16 @@ fun EditDialog(
                             .border(
                                 BorderStroke(
                                     width = 2.dp,
-                                    color = colorResource(
-                                        id = if (txtFieldError.value.isEmpty()) android.R.color.holo_green_light else android.R.color.holo_red_dark
-                                    )
+                                    color =
+                                    if (txtFieldError.value.isEmpty())
+                                        MaterialTheme.colorScheme.primary
+                                    else Color.Red
                                 ),
                                 shape = RoundedCornerShape(50)
                             ),
                         colors = TextFieldDefaults.textFieldColors(
+                            textColor = MaterialTheme.colorScheme.primary,
+                            disabledTextColor =  MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                             backgroundColor = Color.Transparent,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent
@@ -324,13 +336,15 @@ fun EditDialog(
                             Icon(
                                 imageVector = Icons.Rounded.Person,
                                 contentDescription = "",
-                                tint = colorResource(android.R.color.holo_green_light),
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier
                                     .width(20.dp)
                                     .height(20.dp)
                             )
                         },
-                        placeholder = { Text(text = enterValue) },
+                        placeholder = {
+                            Text(text = enterValue)
+                        },
                         value = txtField.value,
                         onValueChange = {
                             txtField.value = it
@@ -354,14 +368,23 @@ fun EditDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp)
-                                .testTag("doneButton")
-                        ) {
-                            Text(text = DONE)
-                        }
+                                .testTag("doneButton"),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.primaryContainer
+                            ),
+                            content = {
+                                Text(
+                                    text = DONE,
+                                    color = MaterialTheme.colorScheme.primaryContainer
+                                )
+                            }
+                        )
                     }
                 }
             }
         }
+
     }
 }
 
@@ -383,7 +406,7 @@ private fun EditableItemStyle(item: EditableData) {
                 .size(32.dp),
             imageVector = item.icon,
             contentDescription = item.title,
-            tint = MaterialTheme.colors.primary
+            tint = MaterialTheme.colorScheme.primary
         )
 
         Row(
@@ -426,7 +449,7 @@ private fun EditableItemStyle(item: EditableData) {
                     .weight(weight = 1f, fill = false),
                 imageVector = Icons.Outlined.Edit,
                 contentDescription = item.title,
-                tint = Color.Black.copy(alpha = 0.70f)
+                tint = MaterialTheme.colorScheme.onPrimary
             )
         }
     }

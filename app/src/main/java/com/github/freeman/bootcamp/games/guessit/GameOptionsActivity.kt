@@ -436,10 +436,11 @@ fun GameOptionsScreen(dbRef: DatabaseReference, lobbyType: String) {
             text = ROUNDS_SELECTION
         )
         RoundsDisplay()
+        Spacer(modifier = Modifier.size(20.dp))
 
         if (lobbyType == PRIVATE_TYPE_TEXT) {
             PasswordInput(password)
-            Spacer(modifier = Modifier.size(10.dp))
+            Spacer(modifier = Modifier.size(20.dp))
         }
         NextButton(dbRef, lobbyType, password.value)
     }

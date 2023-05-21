@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -44,8 +43,10 @@ import com.github.freeman.bootcamp.games.guessit.GameManagerService
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.CATEGORY_INFO
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.KICKED
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.NB_ROUNDS_INFO
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.START_GAME
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.TOPBAR_TEXT
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.WAITING_FOR_START_GAME
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
@@ -228,6 +229,7 @@ class WaitingRoomActivity: ComponentActivity() {
         const val NB_ROUNDS_INFO = "Number of rounds :"
         const val START_GAME = "Start"
         const val KICKED = "You have been kicked by host"
+        const val WAITING_FOR_START_GAME = "Waiting for the host to start"
     }
 }
 
@@ -261,7 +263,7 @@ fun TopAppbarWaitingRoom(
                 color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                fontSize = 22.sp
+                fontSize = 20.sp
             )
         },
         backgroundColor = MaterialTheme.colorScheme.background,
@@ -327,7 +329,7 @@ fun RoomInfo(
             .testTag("roomInfo")
             .padding(8.dp)
             .clip(RoundedCornerShape(5.dp))
-            .background(Color.LightGray)
+            .background(MaterialTheme.colorScheme.primaryContainer)
     ) {
         Column(
             modifier = modifier
@@ -340,7 +342,9 @@ fun RoomInfo(
             Text(
                 text = lobbyName.value,
                 fontWeight = FontWeight.Bold,
-                fontSize = 25.sp
+                fontSize = 25.sp,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
 
             Column (
@@ -360,13 +364,17 @@ fun RoomInfo(
                     Text(
                         text = CATEGORY_INFO,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
 
                     Text(
                         text = category.value,
                         fontWeight = FontWeight.Normal,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
 
@@ -378,15 +386,19 @@ fun RoomInfo(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Number of rounds :",
+                        text = NB_ROUNDS_INFO,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
 
                     Text(
                         text = nbRounds.value.toString(),
                         fontWeight = FontWeight.Normal,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
@@ -533,6 +545,7 @@ fun PlayerDisplay(player: PlayerData, hostId: String, dbRef: DatabaseReference, 
                     text = player.name,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
+                    fontSize = 22.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -605,7 +618,11 @@ fun StartButton(
                     .setValue(context.getString(R.string.state_newturn))
             }
         ) {
-            Text(START_GAME)
+            if (userId == hostId.value) {
+                Text(START_GAME)
+            } else {
+                Text(WAITING_FOR_START_GAME)
+            }
         }
     }
 
