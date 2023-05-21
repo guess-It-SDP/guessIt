@@ -21,6 +21,9 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +34,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -168,33 +170,34 @@ class WaitingRoomActivity: ComponentActivity() {
 
 
             BootcampComposeTheme {
+                Surface {
+                    Column{
+                        TopAppbarWaitingRoom(
+                            dbRef = dbRef,
+                            hostId = hostId,
+                            players = players,
+                            dbListener = dbListener,
+                            playersListener = playersListener
+                        )
 
-                Column{
-                    TopAppbarWaitingRoom(
-                        dbRef = dbRef,
-                        hostId = hostId,
-                        players = players,
-                        dbListener = dbListener,
-                        playersListener = playersListener
-                    )
+                        RoomInfo(
+                            dbRef = dbRef
+                        )
 
-                    RoomInfo(
-                        dbRef = dbRef
-                    )
+                        PlayerList(
+                            modifier = Modifier.weight(1f),
+                            dbRef = database,
+                            storageRef = storage,
+                            players = players,
+                            hostId = hostId.value,
+                            gameId = gameId
+                        )
 
-                    PlayerList(
-                        modifier = Modifier.weight(1f),
-                        dbRef = database,
-                        storageRef = storage,
-                        players = players,
-                        hostId = hostId.value,
-                        gameId = gameId
-                    )
-
-                    StartButton(
-                        dbRef = dbRef,
-                        players = players
-                    )
+                        StartButton(
+                            dbRef = dbRef,
+                            players = players
+                        )
+                    }
                 }
             }
 
@@ -254,11 +257,14 @@ fun TopAppbarWaitingRoom(
         title = {
             Text(
                 text = TOPBAR_TEXT,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 22.sp
             )
         },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
             IconButton(
@@ -282,6 +288,7 @@ fun TopAppbarWaitingRoom(
                 Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -524,9 +531,8 @@ fun PlayerDisplay(player: PlayerData, hostId: String, dbRef: DatabaseReference, 
             ) {
                 Text(
                     text = player.name,
-                    style = TextStyle(
-                        fontSize = 22.sp,
-                    ),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
