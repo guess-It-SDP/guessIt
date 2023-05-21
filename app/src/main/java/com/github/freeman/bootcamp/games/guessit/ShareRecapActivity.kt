@@ -37,6 +37,7 @@ import androidx.media3.ui.PlayerView
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ShareRecapActivity.Companion.SHARE_RECAP_TITLE
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import com.github.freeman.bootcamp.ui.theme.md_theme_light_inversePrimary
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
