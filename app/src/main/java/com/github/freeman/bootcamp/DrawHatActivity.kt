@@ -221,7 +221,7 @@ fun DrawHatScreen(storageRef: StorageReference) {
                 )
             }
 
-            Row() {
+            Row {
                 // Drawing zone
                 DrawBox(
                     drawController = drawController,

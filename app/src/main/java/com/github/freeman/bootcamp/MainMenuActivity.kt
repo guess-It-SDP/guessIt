@@ -9,7 +9,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.foundation.Image
@@ -30,7 +29,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -224,27 +222,6 @@ fun AppTitle() {
         }
     }
 }
-
-@Composable
-fun TopAppbarMainMenu() {
-
-    TopAppBar(
-        modifier = Modifier.testTag("topAppBarMainMenu"),
-        title = {
-            Text(
-                text = "Main Menu",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontSize = 20.sp
-            )
-        },
-        backgroundColor = MaterialTheme.colorScheme.background,
-        elevation = 4.dp,
-    )
-}
-
 
 @Composable
 fun MainMenuScreen() {

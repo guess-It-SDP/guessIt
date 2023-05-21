@@ -82,23 +82,29 @@ class LobbyListActivity: ComponentActivity() {
                             // Shows the dialog when a private lobby is clicked
                             val context = LocalContext.current
                             val userId = Firebase.auth.uid
-                            EditDialog(
-                                text = password,
-                                setValue = ENTER_PASSWORD_TEXT,
-                                enterValue = PASSWORD_TEXT,
-                                show = enterPassword,
-                                keyboardType = KeyboardType.NumberPassword
-                            ) {
-                                if (lobby.value.password == it) {
-                                    joinLobby(
-                                        context,
-                                        dbRef.child(context.getString(R.string.games_path)),
-                                        userId.toString(),
-                                        lobby.value
-                                    )
-                                } else {
-                                    Toast.makeText(context, WRONG_PASSWORD_TEXT, Toast.LENGTH_SHORT)
-                                        .show()
+                            Box (Modifier.fillMaxSize()) {
+                                EditDialog(
+                                    text = password,
+                                    setValue = ENTER_PASSWORD_TEXT,
+                                    enterValue = PASSWORD_TEXT,
+                                    show = enterPassword,
+                                    keyboardType = KeyboardType.NumberPassword
+                                ) {
+                                    if (lobby.value.password == it) {
+                                        joinLobby(
+                                            context,
+                                            dbRef.child(context.getString(R.string.games_path)),
+                                            userId.toString(),
+                                            lobby.value
+                                        )
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            WRONG_PASSWORD_TEXT,
+                                            Toast.LENGTH_SHORT
+                                        )
+                                            .show()
+                                    }
                                 }
                             }
                         }
