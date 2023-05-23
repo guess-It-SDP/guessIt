@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.platform.LocalContext
@@ -30,6 +31,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.freeman.bootcamp.MainMenuButton
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import java.io.File
@@ -46,14 +48,12 @@ class DisplayRecapsActivity : ComponentActivity() {
             val videos = videoDir.listFiles()
 
             BootcampComposeTheme {
-                Surface (modifier = Modifier.background(color = MaterialTheme.colorScheme.background).fillMaxSize()) {
+                Surface (modifier = Modifier
+                    .background(color = MaterialTheme.colorScheme.background)
+                    .fillMaxSize()) {
                     Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
                         TopAppbarDisplayRecaps()
-                        if (videos != null) {
-                            Box(modifier = Modifier.padding(5.dp).background(color = MaterialTheme.colorScheme.background)) {
-                                VideoGallery(videos = videos)
-                            }
-                        }
+                        VideoGallery(videos = videos)
                     }
                 }
             }
@@ -97,31 +97,50 @@ fun TopAppbarDisplayRecaps(context: Context = LocalContext.current) {
 @Composable
 fun VideoGallery(videos: Array<File>?) {
     val pagerState = rememberPagerState()
+    val context = LocalContext.current
 
-    VerticalPager(
-        modifier = Modifier
-            .background(color = MaterialTheme.colorScheme.background),
-        pageCount = videos!!.size,
-        state = pagerState
-    ) { page ->
-        if (page < videos.size) {
-            val videoFile = videos[page]
-            val videoUri = videoFile.absolutePath
-            Box(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-                    .background(
-                        MaterialTheme.colorScheme.primaryContainer,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .padding(16.dp)
-            ) {
-                RecapPreview(
-                    videoUrl = videoUri
-                )
+    if (videos != null) {
+        Box(
+            modifier = Modifier
+                .padding(5.dp)
+                .background(color = MaterialTheme.colorScheme.background)
+        ) {
+            Column {
+                VerticalPager(
+                    modifier = Modifier
+                        .background(color = MaterialTheme.colorScheme.background),
+                    pageCount = videos.size,
+                    state = pagerState
+                ) { page ->
+                    if (page < videos.size) {
+                        val videoFile = videos[page]
+                        val videoUri = videoFile.absolutePath
+                        Box(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth()
+                                .background(
+                                    MaterialTheme.colorScheme.primaryContainer,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                                .padding(16.dp)
+                        ) {
+                            Column {
+                                RecapPreview(
+                                    videoUrl = videoUri
+                                )
+                                MainMenuButton(
+                                    testTag = "shareRecap",
+                                    onClick = { shareVideo(context, videoFile) },
+                                    text = context.getString(R.string.share_recap),
+                                    icon = Icons.Filled.Share
+                                )
+                            }
+
+                        }
+                    }
+                }
             }
-
         }
     }
 }
