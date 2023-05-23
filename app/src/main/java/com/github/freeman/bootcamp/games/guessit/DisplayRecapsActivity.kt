@@ -49,8 +49,10 @@ class DisplayRecapsActivity : ComponentActivity() {
                 Surface (modifier = Modifier.background(color = MaterialTheme.colorScheme.background).fillMaxSize()) {
                     Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
                         TopAppbarDisplayRecaps()
-                        Box(modifier = Modifier.padding(5.dp).background(color = MaterialTheme.colorScheme.background)) {
-                            VideoGallery(videos = videos)
+                        if (videos != null) {
+                            Box(modifier = Modifier.padding(5.dp).background(color = MaterialTheme.colorScheme.background)) {
+                                VideoGallery(videos = videos)
+                            }
                         }
                     }
                 }
