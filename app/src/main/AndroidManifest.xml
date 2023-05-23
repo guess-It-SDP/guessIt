@@ -30,9 +30,17 @@
         <service
             android:name=".games.guessit.GameManagerService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false"
+            android:permission="TODO" />
         <activity
             android:name=".games.guessit.ShareRecapActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".games.guessit.DisplayRecapsActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
