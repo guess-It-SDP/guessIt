@@ -7,29 +7,32 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.freeman.bootcamp.MainMenuButton
 import com.github.freeman.bootcamp.games.help.HelpActivity.Companion.CREDITS_BUTTON
 import com.github.freeman.bootcamp.games.help.HelpActivity.Companion.HELP_TITLE
 import com.github.freeman.bootcamp.games.help.HelpActivity.Companion.OFFLINE_RULES
 import com.github.freeman.bootcamp.games.help.HelpActivity.Companion.ONLINE_RULES
 import com.github.freeman.bootcamp.games.help.HelpActivity.Companion.TOPBAR_HELP_TEXT
+import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 
 class HelpActivity : ComponentActivity() {
@@ -37,8 +40,10 @@ class HelpActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
-                TopAppbarHelp()
-                HelpScreen()
+                Surface {
+                    TopAppbarHelp()
+                    HelpScreen()
+                }
             }
         }
     }
@@ -70,44 +75,36 @@ fun HelpScreen() {
                 .align(Alignment.CenterHorizontally),
             text = HELP_TITLE,
             fontSize = 25.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.primary,
         )
 
         Spacer(modifier = Modifier.size(20.dp))
 
-        // 'Guess It!' credits
-        ElevatedButton(
-            modifier = Modifier.testTag("creditsButton"),
-            onClick = {
-                context.startActivity(Intent(context, CreditsActivity::class.java))
-            }
-        ) {
-            Text(CREDITS_BUTTON)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
+        // Credits
+        MainMenuButton(
+            testTag = "creditsButton",
+            onClick = { context.startActivity(Intent(context, CreditsActivity::class.java)) },
+            text = CREDITS_BUTTON,
+            icon = ImageVector.vectorResource(R.drawable.group)
+        )
 
         // Rules of "Guess It!" online game
-        ElevatedButton(
-            modifier = Modifier.testTag("guessItRulesButton"),
-            onClick = {
-                context.startActivity(Intent(context, GuessItRulesActivity::class.java))
-            }
-        ) {
-            Text(ONLINE_RULES)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
+        MainMenuButton(
+            testTag = "guessItRulesButton",
+            onClick = { context.startActivity(Intent(context, GuessItRulesActivity::class.java)) },
+            text = ONLINE_RULES,
+            icon = ImageVector.vectorResource(R.drawable.rules)
+        )
 
         // Rules of "Wordle" offline game
-        ElevatedButton(
-            modifier = Modifier.testTag("wordleRulesButton"),
-            onClick = {
-                context.startActivity(Intent(context, WordleRulesActivity::class.java))
-            }
-        ) {
-            Text(OFFLINE_RULES)
-        }
+        MainMenuButton(
+            testTag = "wordleRulesButton",
+            onClick = { context.startActivity(Intent(context, WordleRulesActivity::class.java)) },
+            text = OFFLINE_RULES,
+            icon = ImageVector.vectorResource(R.drawable.rules)
+        )
     }
 
 }
@@ -121,11 +118,14 @@ fun TopAppbarHelp(context: Context = LocalContext.current) {
             Text(
                 modifier = Modifier.testTag("topBarHelpTitle"),
                 text = TOPBAR_HELP_TEXT,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 20.sp
             )
         },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
             IconButton(onClick = {
@@ -133,8 +133,9 @@ fun TopAppbarHelp(context: Context = LocalContext.current) {
                 activity?.finish()
             }) {
                 Icon(
-                    Icons.Filled.ArrowBack,
+                    imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }

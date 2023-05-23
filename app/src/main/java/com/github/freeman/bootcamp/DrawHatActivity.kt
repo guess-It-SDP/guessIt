@@ -2,6 +2,7 @@ package com.github.freeman.bootcamp
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -14,6 +15,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -99,152 +105,129 @@ fun DrawHatScreen(storageRef: StorageReference) {
         firstStroke.value = false
     }
 
-    Box(Modifier.testTag(context.getString(R.string.draw_hat_screen))) {
-        Column {
-            TopAppBar(
-                modifier = Modifier.testTag("topAppbarDrawHat"),
-                title = {
-                    Text(
-                        text = DRAW_HAT,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 4.dp,
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            val activity = (context as? Activity)
-                            activity?.finish()
-                        },
-                        modifier = Modifier.testTag("drawHatBackButton")
+    Surface {
+        Box(Modifier.testTag(context.getString(R.string.draw_hat_screen))) {
+            Column {
+                TopAppBarDrawHat()
+
+                Row {
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(
-                            Icons.Filled.ArrowBack,
-                            contentDescription = "Go back",
-                        )
-                    }
-                }
-            )
 
-            Row {
-                Column (
-                    modifier = Modifier.padding(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    Box(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .border(width = 2.dp, color = Color.Black)
-                    ) {
-                        // The user's last hat
-                        Image(
-                            painter = rememberAsyncImagePainter(hat.value),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    Text(
-                        text = YOUR_HAT,
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .padding(top = 4.dp)
-                            .testTag(YOUR_HAT)
-                    )
-                }
-
-                Text(
-                    text = HAT_HELP,
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .testTag(HAT_HELP),
-                    fontSize = 20.sp,
-                )
-            }
-
-            // Controls bar with the eraser option
-            DrawHatControlsBar(
-                drawController,
-                onColorClick =
-                {
-                    colorBarVisibility.value = !colorBarVisibility.value
-                    widthSliderVisibility.value = false
-                },
-                onWidthClick =
-                {
-                    widthSliderVisibility.value = !widthSliderVisibility.value
-                    colorBarVisibility.value = false
-                },
-                undoVisibility,
-                redoVisibility,
-                currentColor,
-                onEraseClick = {
-                    undoVisibility.value = false
-                    redoVisibility.value = false
-                },
-                currentColor,
-                currentWidth
-            )
-
-            // Colour picker
-            RangVikalp(
-                isVisible = colorBarVisibility.value,
-                colorIntensity = 0,
-                showShades = false,
-                colors = colorArray,
-                defaultColor = DEFAULT_COLOR
-            )
-            {
-                currentColor.value = it
-                drawController.changeColor(it)
-            }
-
-            // Slider to select stroke width
-            if (widthSliderVisibility.value) {
-                Slider(
-                    value = currentWidth.value,
-                    onValueChange = { newValue ->
-                        currentWidth.value = newValue
-                        drawController.changeStrokeWidth(newValue)
-                    },
-                    valueRange = 5f..50f,
-                    colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colors.primaryVariant,
-                        activeTrackColor = MaterialTheme.colors.primary,
-                        inactiveTrackColor = MaterialTheme.colors.secondary
-                    ),
-                    modifier = Modifier.testTag(context.getString(R.string.width_slider))
-                )
-            }
-
-            Row {
-                // Drawing zone
-                DrawBox(
-                    drawController = drawController,
-                    backgroundColor = Color.White,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f, fill = false),
-                    bitmapCallback = { imageBitmap, _ ->
-                        imageBitmap?.let {
-                            // Store (and potentially overwrite) the player's hat
-                            val byteArrayOutputStream = ByteArrayOutputStream()
-                            it.asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-                            val byteArray = byteArrayOutputStream.toByteArray()
-                            val tempFile = File.createTempFile("image", ".png")
-                            tempFile.writeBytes(byteArray)
-                            hatRef.putFile(tempFile.toUri())
-                            hat.value = it.asAndroidBitmap()
+                        Box(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .border(width = 2.dp, color = Color.Black)
+                        ) {
+                            // The user's last hat
+                            Image(
+                                painter = rememberAsyncImagePainter(hat.value),
+                                contentScale = ContentScale.Crop,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize()
+                            )
                         }
+                        Text(
+                            text = YOUR_HAT,
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(top = 4.dp)
+                                .testTag(YOUR_HAT)
+                        )
                     }
-                ) { undoCount, redoCount ->
-                    colorBarVisibility.value = false
-                    undoVisibility.value = undoCount != 0
-                    redoVisibility.value = redoCount != 0
+
+                    Text(
+                        text = HAT_HELP,
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .testTag(HAT_HELP),
+                        fontSize = 20.sp,
+                    )
+                }
+
+                // Controls bar with the eraser option
+                DrawHatControlsBar(
+                    drawController,
+                    onColorClick =
+                    {
+                        colorBarVisibility.value = !colorBarVisibility.value
+                        widthSliderVisibility.value = false
+                    },
+                    onWidthClick =
+                    {
+                        widthSliderVisibility.value = !widthSliderVisibility.value
+                        colorBarVisibility.value = false
+                    },
+                    undoVisibility,
+                    redoVisibility,
+                    currentColor,
+                    onEraseClick = {
+                        undoVisibility.value = false
+                        redoVisibility.value = false
+                    },
+                    currentColor,
+                    currentWidth
+                )
+
+                // Colour picker
+                RangVikalp(
+                    isVisible = colorBarVisibility.value,
+                    colorIntensity = 0,
+                    showShades = false,
+                    colors = colorArray,
+                    defaultColor = DEFAULT_COLOR
+                ) {
+                    currentColor.value = it
+                    drawController.changeColor(it)
+                }
+
+                // Slider to select stroke width
+                if (widthSliderVisibility.value) {
+                    Slider(
+                        value = currentWidth.value,
+                        onValueChange = { newValue ->
+                            currentWidth.value = newValue
+                            drawController.changeStrokeWidth(newValue)
+                        },
+                        valueRange = 5f..50f,
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.surfaceVariant,
+                            activeTrackColor = MaterialTheme.colorScheme.primary,
+                            inactiveTrackColor = MaterialTheme.colorScheme.secondary
+                        ),
+                        modifier = Modifier.testTag(context.getString(R.string.width_slider))
+                    )
+                }
+
+                Row {
+                    // Drawing zone
+                    DrawBox(
+                        drawController = drawController,
+                        backgroundColor = Color.White,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f, fill = false),
+                        bitmapCallback = { imageBitmap, _ ->
+                            imageBitmap?.let {
+                                // Store (and potentially overwrite) the player's hat
+                                val byteArrayOutputStream = ByteArrayOutputStream()
+                                it.asAndroidBitmap()
+                                    .compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+                                val byteArray = byteArrayOutputStream.toByteArray()
+                                val tempFile = File.createTempFile("image", ".png")
+                                tempFile.writeBytes(byteArray)
+                                hatRef.putFile(tempFile.toUri())
+                                hat.value = it.asAndroidBitmap()
+                            }
+                        }
+                    ) { undoCount, redoCount ->
+                        colorBarVisibility.value = false
+                        undoVisibility.value = undoCount != 0
+                        redoVisibility.value = redoCount != 0
+                    }
                 }
             }
         }
@@ -272,14 +255,14 @@ private fun DrawHatControlsBar(
         MenuItems(
             R.drawable.ic_undo,
             LocalContext.current.getString(R.string.undo),
-            if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+            if (undoVisibility.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
         ) {
             if (undoVisibility.value) drawController.unDo()
         }
         MenuItems(
             R.drawable.ic_redo,
             LocalContext.current.getString(R.string.redo),
-            if (redoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+            if (redoVisibility.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
         ) {
             if (redoVisibility.value) drawController.reDo()
         }
@@ -293,7 +276,7 @@ private fun DrawHatControlsBar(
         MenuItems(
             R.drawable.ic_width,
             LocalContext.current.getString(R.string.stroke_width),
-            MaterialTheme.colors.primary
+            MaterialTheme.colorScheme.primary
         ) {
             onWidthClick()
         }
@@ -302,7 +285,7 @@ private fun DrawHatControlsBar(
             R.drawable.black_eraser,
             R.drawable.white_eraser,
             context.getString(R.string.toggleEraser),
-            MaterialTheme.colors.primary,
+            MaterialTheme.colorScheme.primary,
             onClick = {
                 // Toggle the eraser on or off
                 if (!isToggled.value) {
@@ -322,7 +305,7 @@ private fun DrawHatControlsBar(
         MenuItems(
             R.drawable.ic_sharp_arrow_circle_up,
             LocalContext.current.getString(R.string.drawing_done),
-            MaterialTheme.colors.primary
+            MaterialTheme.colorScheme.primary
         ) {
             drawController.saveBitmap()
         }
@@ -358,4 +341,38 @@ fun RowScope.ToggleButton(
             ) else modifier
         )
     }
+}
+
+@Composable
+fun TopAppBarDrawHat(context: Context = LocalContext.current) {
+    TopAppBar(
+        modifier = Modifier.testTag("topAppbarDrawHat"),
+        title = {
+            Text(
+                text = DRAW_HAT,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 20.sp
+            )
+        },
+        backgroundColor = MaterialTheme.colorScheme.background,
+        elevation = 4.dp,
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    val activity = (context as? Activity)
+                    activity?.finish()
+                },
+                modifier = Modifier.testTag("drawHatBackButton")
+            ) {
+                Icon(
+                    Icons.Filled.ArrowBack,
+                    contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    )
 }

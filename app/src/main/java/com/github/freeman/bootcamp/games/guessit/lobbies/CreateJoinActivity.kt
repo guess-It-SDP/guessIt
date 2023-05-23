@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,6 +32,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import com.github.freeman.bootcamp.MainMenuButton
 
 
 /**
@@ -131,22 +136,22 @@ fun TopAppbarCreateJoin(context: Context = LocalContext.current) {
 @Composable
 fun CreateGameButton() {
     val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag(context.getString(R.string.createjoin_creategame)),
-        onClick = { context.startActivity(Intent(context, CreatePublicPrivateActivity::class.java)) }
-    ) {
-        Text(CREATE_GAME_BUTTON_TEXT)
-    }
+    MainMenuButton(
+        testTag = "createGameButton",
+        onClick = { context.startActivity(Intent(context, CreatePublicPrivateActivity::class.java)) },
+        text = CREATE_GAME_BUTTON_TEXT,
+        icon = Icons.Default.Edit
+    )
 
 }
 
 @Composable
 fun JoinGameButton() {
     val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag(context.getString(R.string.createjoin_joininggame)),
-        onClick = { context.startActivity(Intent(context, LobbyListActivity::class.java)) }
-    ) {
-        Text(JOINING_GAME_BUTTON_TEXT)
-    }
+    MainMenuButton(
+        testTag = "joinGameButton",
+        onClick = { context.startActivity(Intent(context, LobbyListActivity::class.java)) },
+        text = JOINING_GAME_BUTTON_TEXT,
+        icon = ImageVector.vectorResource(R.drawable.join)
+    )
 }

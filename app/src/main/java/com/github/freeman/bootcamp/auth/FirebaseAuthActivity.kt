@@ -10,19 +10,21 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -116,11 +118,13 @@ class FirebaseAuthActivity : ComponentActivity() {
             }
 
             BootcampComposeTheme {
-                TopAppbarAccount()
-                AuthenticationForm(
-                    signInInfo = signInInfo,
-                    currentUser = currentUser
-                )
+                Surface {
+                    TopAppbarAccount()
+                    AuthenticationForm(
+                        signInInfo = signInInfo,
+                        currentUser = currentUser
+                    )
+                }
             }
         }
 
@@ -217,13 +221,16 @@ fun TopAppbarAccount(context: Context = LocalContext.current) {
     TopAppBar(
         modifier = Modifier.testTag("topAppbarAccount"),
         title = {
-            androidx.compose.material.Text(
+            Text(
                 text = SCREEN_TITLE,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 20.sp
             )
         },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
             IconButton(onClick = {
@@ -233,6 +240,7 @@ fun TopAppbarAccount(context: Context = LocalContext.current) {
                 Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -258,17 +266,20 @@ fun WarningDeletion(signInInfo: MutableState<String>, currentUser: MutableState<
                 style = TextStyle(
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
-                )
+                ),
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         },
         text = {
             Text(
                 text = DELETION_WARNING_TEXT,
-                modifier = Modifier.testTag("deletionAlertText")
+                modifier = Modifier.testTag("deletionAlertText"),
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         },
         onDismissRequest = {
-            show.value = false },
+            show.value = false
+        },
         confirmButton = {
             Button(
                 onClick = {
@@ -279,11 +290,15 @@ fun WarningDeletion(signInInfo: MutableState<String>, currentUser: MutableState<
                 },
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
-                    .testTag("deleteButton")
+                    .testTag("deleteButton"),
+                colors = androidx.compose.material.ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    contentColor = MaterialTheme.colorScheme.primaryContainer
+                )
             ) {
                 Text(
                     text = DELETE_BUTTON,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.primaryContainer
                 )
             }
         },
@@ -294,14 +309,20 @@ fun WarningDeletion(signInInfo: MutableState<String>, currentUser: MutableState<
                 },
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
-                    .testTag("cancelButton")
+                    .testTag("cancelButton"),
+                colors = androidx.compose.material.ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    contentColor = MaterialTheme.colorScheme.primaryContainer
+                )
             ) {
                 Text(
                     text = CANCEL_BUTTON,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.primaryContainer
                 )
             }
-        }
+        },
+        backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
     )
 }
 
@@ -327,7 +348,10 @@ fun AuthenticationForm(signInInfo: MutableState<String>, currentUser: MutableSta
         Text(
             modifier = Modifier.testTag("sign_in_info"),
             text = signInInfo.value,
+            color = MaterialTheme.colorScheme.tertiary
         )
+
+        Spacer(Modifier.size(20.dp))
 
         if (currentUser.value == null) {
             // if the user is not authenticated
@@ -336,7 +360,9 @@ fun AuthenticationForm(signInInfo: MutableState<String>, currentUser: MutableSta
                 modifier = Modifier.testTag("google_sign_in_button"),
                 onClick = {
                     (context as? FirebaseAuthActivity)?.signIntoGoogleAccount(signInInfo)
-                })
+                },
+                colors = ButtonDefaults.buttonColors()
+            )
             { Text(GOOGLE_SIGN_IN_BUTTON) }
 
 
@@ -348,7 +374,9 @@ fun AuthenticationForm(signInInfo: MutableState<String>, currentUser: MutableSta
                     modifier = Modifier.testTag("google_sign_in_button"),
                     onClick = {
                         (context as? FirebaseAuthActivity)?.signIntoGoogleAccount(signInInfo)
-                    })
+                    },
+                    colors = ButtonDefaults.buttonColors()
+                )
                 { Text(GOOGLE_SIGN_IN_BUTTON) }
             }
 
@@ -360,7 +388,9 @@ fun AuthenticationForm(signInInfo: MutableState<String>, currentUser: MutableSta
                     onClick = {
                         (context as? FirebaseAuthActivity)?.signOutOfGoogleAccount(context, signInInfo, currentUser)
 
-                    })
+                    },
+                    colors = ButtonDefaults.buttonColors()
+                )
                 { Text(GOOGLE_SIGN_OUT_BUTTON) }
 
                 Spacer(modifier = Modifier.size(24.dp))
@@ -369,7 +399,9 @@ fun AuthenticationForm(signInInfo: MutableState<String>, currentUser: MutableSta
                     modifier = Modifier.testTag("delete_button"),
                     onClick = {
                         alertOpen.value = true
-                    })
+                    },
+                    colors = ButtonDefaults.buttonColors()
+                )
                 { Text(PROFILE_DELETION_BUTTON) }
             }
         }

@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.MaterialTheme
@@ -563,7 +564,9 @@ fun PlayerDisplay(player: PlayerData, hostId: String, dbRef: DatabaseReference, 
                     enabled = currentPlayerIsHost, // Only enable the button for the host
                     onClick = {
                         kickedRef.setValue(true)
-                    }) {
+                    },
+                    colors = ButtonDefaults.buttonColors()
+                ) {
                     Image(
                         painterResource(id = R.drawable.kick_player_boot),
                         contentDescription = "Kick button icon",
@@ -616,7 +619,8 @@ fun StartButton(
             onClick = {
                 dbRef.child(context.getString(R.string.current_state_path))
                     .setValue(context.getString(R.string.state_newturn))
-            }
+            },
+            colors = ButtonDefaults.buttonColors()
         ) {
             if (userId == hostId.value) {
                 Text(START_GAME)

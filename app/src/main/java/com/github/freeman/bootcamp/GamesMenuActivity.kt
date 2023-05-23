@@ -11,20 +11,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Surface
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,7 +35,6 @@ import com.github.freeman.bootcamp.GamesMenuActivity.Companion.NOT_CONNECTED_INF
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity
 import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import androidx.compose.material3.MaterialTheme
 
 class GamesMenuActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,59 +84,28 @@ fun GamesMenuScreen() {
 
             Spacer(Modifier.size(20.dp))
 
-            GameMenuButton(
+            MainMenuButton(
                 testTag = "guessItButton",
-                text = context.getString(R.string.guessit_name),
-                iconId = R.drawable.draw,
                 onClick = {
                     if (isConnectedToInternet) {
                         context.startActivity(Intent(context, CreateJoinActivity::class.java))
                     } else {
                         Toast.makeText(context, NOT_CONNECTED_INFO, Toast.LENGTH_LONG).show()
                     }
-                }
+                },
+                text = context.getString(R.string.guessit_name),
+                icon = ImageVector.vectorResource(R.drawable.draw)
             )
 
-            GameMenuButton(
+
+            MainMenuButton(
                 testTag = "wordleButton",
+                onClick = { context.startActivity(Intent(context, WordleMenu::class.java)) },
                 text = context.getString(R.string.wordle_name),
-                iconId = R.drawable.abc,
-                onClick = {
-                    context.startActivity(Intent(context, WordleMenu::class.java))
-                }
+                icon = ImageVector.vectorResource(R.drawable.abc)
             )
         }
     )
-}
-
-@Composable
-fun GameMenuButton(testTag: String, onClick: () -> Unit, text: String, iconId: Int) {
-    ElevatedButton(
-        modifier= Modifier
-            .testTag(testTag)
-            .padding(16.dp),
-        onClick = onClick,
-    ) {
-        Row (
-            modifier = Modifier
-                .padding(5.dp)
-        ){
-            Image(
-                painterResource(id = iconId),
-                contentDescription = "game menu button icon",
-                modifier = Modifier
-                    .testTag("gameMenuButtonIcon")
-                    .size(20.dp)
-            )
-            Spacer(modifier = Modifier.size(10.dp))
-            Text(
-                text = text,
-                fontStyle = FontStyle.Italic
-            )
-        }
-
-    }
-
 }
 
 fun checkInternetConnectivity(context: Context): Boolean {
@@ -176,7 +142,8 @@ fun TopAppbarGamesMenu() {
                 onClick = {
                     val activity = (context as? Activity)
                     activity?.finish()
-                }) {
+                },
+            ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Go back",

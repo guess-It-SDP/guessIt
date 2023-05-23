@@ -15,21 +15,22 @@ import androidx.compose.foundation.Image
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
@@ -101,6 +102,7 @@ fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String, icon: Ima
             .testTag(testTag)
             .padding(16.dp),
         onClick = onClick,
+        colors = ButtonDefaults.buttonColors()
     ) {
         Row (
             modifier = Modifier
@@ -108,7 +110,8 @@ fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String, icon: Ima
         ){
             Icon(
                 imageVector = icon,
-                contentDescription = "menu button"
+                contentDescription = "menu button",
+                modifier = Modifier.size(23.dp)
             )
             Spacer(modifier = Modifier.size(5.dp))
             Text(text)
@@ -225,6 +228,11 @@ fun AppTitle() {
 
 @Composable
 fun MainMenuScreen() {
+
+    /////TODO: Remove/////
+    val context = LocalContext.current
+    //////////////////////
+
     Surface {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -238,7 +246,8 @@ fun MainMenuScreen() {
             Image(
                 bitmap = bitmap.asImageBitmap(),
                 contentDescription = "My Background Image",
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.FillBounds,
+                colorFilter = tint(MaterialTheme.colorScheme.primaryContainer)
             )
 
             Column(
@@ -258,6 +267,28 @@ fun MainMenuScreen() {
                     SettingsButton()
                     ChatButton()
                 }
+
+                ///////////TODO: REMOVE//////////
+                Row {
+                    MainMenuButton(
+                        testTag = "",
+                        onClick = {
+                            guessing(context, "testgameid")
+                        },
+                        text = "Guessing"
+                    )
+                    MainMenuButton(
+                        testTag = "",
+                        onClick = {
+                            drawing(context, "testgameid")
+                        },
+                        text = "Drawing"
+                    )
+                }
+                ///////////////////////////////////
+
+
+
             }
         }
     }

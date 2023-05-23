@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,6 +33,9 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import com.github.freeman.bootcamp.MainMenuButton
 
 /**
  * Shows a screen where you can either choose to create a public or a private lobby
@@ -87,7 +91,7 @@ fun TopAppbarPublicPrivate(context: Context = LocalContext.current) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
-                    tint = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
         }
@@ -112,31 +116,31 @@ fun PublicPrivateLobbyScreen() {
 @Composable
 private fun PublicLobbyButton() {
     val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("publicLobbyButton"),
+    MainMenuButton(
+        testTag = "publicLobbyButton",
         onClick = {
             context.startActivity(
                 Intent(context, GameOptionsActivity::class.java)
                     .putExtra(context.getString(R.string.type_extra), PUBLIC_TYPE_TEXT)
             )
-        }
-    ) {
-        Text(PUBLIC_BUTTON_TEXT)
-    }
+        },
+        text = PUBLIC_BUTTON_TEXT,
+        icon = ImageVector.vectorResource(R.drawable.publiclobby)
+    )
 }
 
 @Composable
 private fun PrivateLobbyButton() {
     val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("privateLobbyButton"),
+    MainMenuButton(
+        testTag = "privateLobbyButton",
         onClick = {
             context.startActivity(
                 Intent(context, GameOptionsActivity::class.java)
-                    .putExtra(context.getString(R.string.type_extra), PRIVATE_TYPE_TEXT)
+                    .putExtra(context.getString(R.string.type_extra), PUBLIC_TYPE_TEXT)
             )
-        }
-    ) {
-        Text(PRIVATE_BUTTON_TEXT)
-    }
+        },
+        text = PRIVATE_BUTTON_TEXT,
+        icon = Icons.Filled.Lock
+    )
 }

@@ -11,8 +11,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -33,9 +37,11 @@ class GuessItRulesActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
-                Column {
-                    TopAppbarGuessItRules()
-                    GuessItRulesDisplay()
+                Surface {
+                    Column {
+                        TopAppbarGuessItRules()
+                        GuessItRulesDisplay()
+                    }
                 }
             }
 
@@ -112,11 +118,14 @@ fun TopAppbarGuessItRules(context: Context = LocalContext.current) {
             Text(
                 modifier = Modifier.testTag("topBarGuessItRulesTitle"),
                 text = TOPBAR_GUESSIT_RULES_TEXT,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 20.sp
             )
         },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
             IconButton(onClick = {
@@ -124,8 +133,9 @@ fun TopAppbarGuessItRules(context: Context = LocalContext.current) {
                 activity?.finish()
             }) {
                 Icon(
-                    Icons.Filled.ArrowBack,
+                    imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }

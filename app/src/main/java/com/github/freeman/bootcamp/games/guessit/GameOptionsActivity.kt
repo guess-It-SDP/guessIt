@@ -259,7 +259,8 @@ fun NextButton(dbRef: DatabaseReference, lobbyType: String, password: String) {
         modifier = Modifier.testTag("nextButton"),
         onClick = {
             next(context, dbRef,lobbyType, password)
-        }
+        },
+        colors = ButtonDefaults.buttonColors()
     ) {
         Text(NEXT)
     }

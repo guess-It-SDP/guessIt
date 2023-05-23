@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
+import com.github.freeman.bootcamp.EditProfileActivity.Companion.CHOOSE_USERNAME
 import com.github.freeman.bootcamp.EditProfileActivity.Companion.DONE
 import com.github.freeman.bootcamp.EditProfileActivity.Companion.EMPTY_ERROR
 import com.github.freeman.bootcamp.EditProfileActivity.Companion.ENTER_VALUE
@@ -95,14 +96,15 @@ class EditProfileActivity : ComponentActivity() {
             }
 
             BootcampComposeTheme {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    TopAppbarEditProfile()
-                    EditUserDetails(displayName = displayName, profilePic = profilePicBitmap)
+                Surface {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        TopAppbarEditProfile()
+                        EditUserDetails(displayName = displayName, profilePic = profilePicBitmap)
+                    }
                 }
-
             }
 
         }
@@ -115,6 +117,7 @@ class EditProfileActivity : ComponentActivity() {
         const val DONE = "Enter value"
         const val EMPTY_ERROR = "Field can not be empty"
         const val USER_NAME = "NAME"
+        const val CHOOSE_USERNAME = "Choose username"
     }
 
 }
@@ -154,6 +157,7 @@ fun EditUserDetails(context: Context = LocalContext.current, displayName: Mutabl
         if (showNameDialog.value) {
             EditDialog(
                 text = displayName,
+                setValue = CHOOSE_USERNAME,
                 updateData = { name ->
                     dbRef.child(context.getString(R.string.profiles_path))
                         .child(userId.toString())
@@ -249,6 +253,7 @@ fun TopAppbarEditProfile(context: Context = LocalContext.current) {
                 Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -424,9 +429,9 @@ private fun EditableItemStyle(item: EditableData) {
                 // Title
                 Text(
                     text = item.title,
-                    style = TextStyle(
-                        fontSize = 18.sp,
-                    )
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 18.sp
                 )
 
                 Spacer(modifier = Modifier.height(2.dp))
@@ -434,11 +439,9 @@ private fun EditableItemStyle(item: EditableData) {
                 // editable data
                 Text(
                     text = item.subTitle.value,
-                    style = TextStyle(
-                        fontSize = 18.sp,
-                        letterSpacing = (0.8).sp,
-                        color = Color.Gray
-                    )
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontSize = 18.sp
                 )
 
             }
@@ -449,7 +452,7 @@ private fun EditableItemStyle(item: EditableData) {
                     .weight(weight = 1f, fill = false),
                 imageVector = Icons.Outlined.Edit,
                 contentDescription = item.title,
-                tint = MaterialTheme.colorScheme.onPrimary
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }
