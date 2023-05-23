@@ -75,12 +75,6 @@ class MainMenuTest {
     }
 
     @Test
-    fun createVideoButtonIsDisplayed() {
-        composeRule.onNodeWithTag("createVideoTestButton").assertHasClickAction()
-        composeRule.onNodeWithTag("createVideoTestButton").performClick()
-    }
-
-    @Test
     fun clickingSettingsSendsIntent() {
         Intents.init()
         composeRule.onNodeWithTag("settingsButton").performClick()
