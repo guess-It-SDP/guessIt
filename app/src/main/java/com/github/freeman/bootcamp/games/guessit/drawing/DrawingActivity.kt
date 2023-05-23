@@ -50,7 +50,7 @@ const val DEFAULT_WIDTH = 15f
 const val DEFAULT_ERASE_WIDTH = 100f
 
 class DrawingActivity : ComponentActivity() {
-
+    override fun onBackPressed() {} // prevent going back by sliding left or pressing back button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
