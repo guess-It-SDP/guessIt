@@ -104,6 +104,7 @@ fun VideoGallery(videos: Array<File>?) {
             modifier = Modifier
                 .padding(5.dp)
                 .background(color = MaterialTheme.colorScheme.background)
+                .testTag("videoGallery")
         ) {
             Column {
                 VerticalPager(
@@ -136,7 +137,6 @@ fun VideoGallery(videos: Array<File>?) {
                                     icon = Icons.Filled.Share
                                 )
                             }
-
                         }
                     }
                 }
