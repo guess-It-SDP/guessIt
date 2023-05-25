@@ -213,7 +213,7 @@ class GameManagerService : Service() {
             turnNb += 1
         }
         if (isHost) {
-            setNewArtist(gameDBRef)
+//            setNewArtist(gameDBRef)
             // Set the number of correct guesses to 0
             gameDBRef.child(getString(R.string.current_correct_guesses_path)).setValue(0)
             // Delete all the guesses
@@ -221,7 +221,7 @@ class GameManagerService : Service() {
             // Change game state to start new turn
             // (wait 10 seconds so that players have time to see their scores)
             Timer().schedule(10000) {
-                gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_newturn))
+                gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_setartist))
                 Log.d("GameManagerD", "New turn state set")
             }
         }
