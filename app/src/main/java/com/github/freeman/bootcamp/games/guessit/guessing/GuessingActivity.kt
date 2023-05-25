@@ -46,6 +46,7 @@ import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Compa
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.WAITING_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.answer
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.bitmap
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.pointsReceived
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.turnNb
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
@@ -96,6 +97,7 @@ class GuessingActivity : ComponentActivity() {
         const val WAITING_TEXT = "Please wait while the artist selects a word to draw."
         const val SCREEN_TEXT = "Your turn to guess!"
 
+        var pointsReceived = false
         lateinit var answer: String
         var roundNb = 0
         var turnNb = 0
@@ -143,11 +145,15 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
                             }
                     }
 
-                    // Give the points to the player who guessed correctly & increment the number of correct guesses
+                    // Give the points to the player who guessed correctly
                     FirebaseUtilities.databaseGetLong(dbGuesserScoreRef)
                         .thenAccept { score ->
-                            correctGuessesRef.setValue(nbGuesses + 1)
-                            dbGuesserScoreRef.setValue(score + 1)
+                            // Increase current player's points
+                            if (!pointsReceived) {
+                                dbGuesserScoreRef.setValue(score + 1)
+                                correctGuessesRef.setValue(nbGuesses + 1)
+                                pointsReceived = true
+                            }
                         }
                 }
 
