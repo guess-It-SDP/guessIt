@@ -126,7 +126,8 @@ class GameManagerService : Service() {
                                             .thenAccept {
                                                 // Randomly shuffle the player IDs
                                                 @Suppress("UNCHECKED_CAST")
-                                                playersOrder = it.keys.toList().shuffled() as List<String>
+                                                playersOrder = it.keys.toList() as List<String>
+                                                playersOrder = playersOrder.shuffled()
                                                 Log.d("GameManagerD", "Players order: $playersOrder")
                                                 // Set first player to draw
                                                 setNewArtist(gameDBRef, 0, playersOrder)
