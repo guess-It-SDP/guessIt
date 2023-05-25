@@ -307,7 +307,7 @@ private fun DrawHatControlsBar(
                 // Toggle the eraser on or off
                 if (!isToggled.value) {
                     drawController.changeColor(Color.White)
-                    drawController.changeStrokeWidth(currentWidth.value)
+                    drawController.changeStrokeWidth(DEFAULT_ERASE_WIDTH)
                     isToggled.value = !isToggled.value
                     onEraseClick()
                 } else {

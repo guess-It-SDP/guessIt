@@ -47,7 +47,7 @@ import kotlinx.coroutines.launch
 
 val DEFAULT_COLOR = black
 const val DEFAULT_WIDTH = 15f
-const val DEFAULT_ERASE_WIDTH = 100f
+const val DEFAULT_ERASE_WIDTH = 90f
 
 class DrawingActivity : ComponentActivity() {
 

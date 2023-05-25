@@ -8,6 +8,7 @@ import androidx.core.net.toUri
 import com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.facedetection.FaceDetectionActivity.Companion.transformBitmapToDrawOnFaces
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -76,6 +77,16 @@ class VideoCreator {
 
                                         // create the video only when all images are fetched
                                         if (i == userIdRefList.size - 1) {
+
+                                            // download all selfies files and draw a hat and mustache over them
+                                            for (file in selfiesFileList) {
+                                                val maxDownloadSize = 5 * 1024 * 1024.toLong()
+                                                file.getBytes(maxDownloadSize).addOnSuccessListener { bytes ->
+                                                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                                                    transformBitmapToDrawOnFaces(bitmap, context)
+                                                }
+                                            }
+
                                             combinedFileList = drawingsFileList.zip(selfiesFileList).flatMap { listOf(it.first, it.second) }
 
                                             // downloads all files
