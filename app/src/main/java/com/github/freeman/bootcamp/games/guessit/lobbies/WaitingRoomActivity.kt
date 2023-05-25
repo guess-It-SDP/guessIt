@@ -102,6 +102,8 @@ class WaitingRoomActivity: ComponentActivity() {
                                 putExtra(getString(R.string.gameId_extra), gameId)
                             }
                             context.startService(intent)
+                            val activity = (context as? Activity)
+                            activity?.finish()
                         } else if (gameState == getString(R.string.state_lobbyclosed)) {
                             dbRef.removeValue()
                             val activity = (context as? Activity)
@@ -585,6 +587,8 @@ fun StartButton(
             onClick = {
                 dbRef.child(context.getString(R.string.current_state_path))
                     .setValue(context.getString(R.string.state_newturn))
+                val activity = (context as? Activity)
+                activity?.finish()
             }
         ) {
             Text(START_GAME)

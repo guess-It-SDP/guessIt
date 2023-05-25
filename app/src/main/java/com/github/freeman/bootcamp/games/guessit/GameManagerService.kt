@@ -76,7 +76,7 @@ class GameManagerService : Service() {
                                                         prepareNewTurn(gameDBRef, playersOrder)
                                                     }
                                                     getString(R.string.state_gameover) -> {
-                                                        gameOver(gameID)
+                                                        gameOver(gameID, gameDBRef)
                                                     }
                                                 }
                                             }
@@ -224,7 +224,7 @@ class GameManagerService : Service() {
         gameDBRef.child(getString(R.string.current_artist_path)).setValue(playersOrder[playerNumber])
     }
 
-    private fun gameOver(gameID: String) {
+    private fun gameOver(gameID: String, gameDBRef: DatabaseReference) {
         if (isHost) {
             VideoCreator.createRecap(this, gameID)
         }
@@ -232,6 +232,7 @@ class GameManagerService : Service() {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(getString(R.string.gameId_extra), gameID)
         startActivity(intent)
+        gameDBRef.removeValue()
         stopSelf()
     }
 }
