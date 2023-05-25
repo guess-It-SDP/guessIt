@@ -144,12 +144,6 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
                                 dbArtistScoreRef.setValue(artistsPoints + 1)
                             }
                     }
-                }
-
-            // Give the guesser points and increase the number of correct guesses by 1
-            FirebaseUtilities.databaseGetLong(correctGuessesRef)
-                .thenAccept {
-                    val nbGuesses = it
 
                     // Increment the number of correct guesses
                     if (!pointsReceived) {
