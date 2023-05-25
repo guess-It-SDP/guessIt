@@ -1,9 +1,11 @@
 package com.github.freeman.bootcamp
 
+import android.view.KeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.SCREEN_TEXT

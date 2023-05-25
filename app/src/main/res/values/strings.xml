@@ -35,6 +35,10 @@
     <string name="chat_send_button">chatSendButton</string>
     <string name="chat_activate_button">chatActivateButton</string>
 
+    <!-- Strings used in DisplayRecapsActivity -->
+    <string name="share_recap">Share</string>
+
+
     <!-- Strings used in CreateJoinActivity -->
     <string name="createjoin_screen">createJoin</string>
     <string name="createjoin_text1">createJoinText1</string>

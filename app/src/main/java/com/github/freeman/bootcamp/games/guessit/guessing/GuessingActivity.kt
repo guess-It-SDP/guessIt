@@ -75,7 +75,7 @@ import java.util.concurrent.Executors
  */
 class GuessingActivity : ComponentActivity() {
     private lateinit var dbrefGame: DatabaseReference
-
+    override fun onBackPressed() {} // prevent going back by sliding left or pressing back button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

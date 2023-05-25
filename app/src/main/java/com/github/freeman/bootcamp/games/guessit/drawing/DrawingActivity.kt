@@ -47,7 +47,7 @@ val DEFAULT_COLOR = black
 const val DEFAULT_WIDTH = 15f
 
 class DrawingActivity : ComponentActivity() {
-
+    override fun onBackPressed() {} // prevent going back by sliding left or pressing back button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
