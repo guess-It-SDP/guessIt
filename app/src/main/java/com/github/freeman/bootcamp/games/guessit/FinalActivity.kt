@@ -118,7 +118,6 @@ fun GameRecapButton(context: Context, gameID: String, dbRef: DatabaseReference){
             val intent = Intent(context, ShareRecapActivity::class.java)
             intent.putExtra(context.getString(R.string.gameId_extra), gameID)
             context.startActivity(intent)
-            dbRef.removeValue()
             val activity = (context as? Activity)
             activity?.finish()
         },
@@ -136,7 +135,6 @@ fun BackToMenuButton(context: Context, dbRef: DatabaseReference) {
     ElevatedButton(
         onClick = {
             context.startActivity(Intent(context, MainMenuActivity::class.java))
-            dbRef.removeValue()
             val activity = (context as? Activity)
             activity?.finish()
         },
