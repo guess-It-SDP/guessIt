@@ -5,10 +5,12 @@ package com.github.freeman.bootcamp.games.guessit.guessing
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager.FEATURE_CAMERA_FRONT
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewTreeObserver
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.camera.core.CameraSelector
@@ -29,14 +31,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.CorrectAnswerPopUp
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
@@ -57,7 +61,6 @@ import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.github.freeman.bootcamp.utilities.rememberImeState
-import com.github.freeman.bootcamp.videocall.VideoScreen2
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -89,7 +92,9 @@ class GuessingActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbrefGame, this, gameId, storageGameRef)
+                Surface {
+                    GuessingScreen(dbrefGame, this, storageGameRef)
+                }
             }
         }
     }
@@ -138,11 +143,10 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
 
             // Increase the points of the artist if they haven't already received points this round
             FirebaseUtilities.databaseGetLong(correctGuessesRef)
-                .thenAccept {
-                    val nbGuesses = it
+                .thenAccept { it ->
 
                     // If the artist hasn't yet received points for this drawing, grant them
-                    if (nbGuesses.toInt() == 0) {
+                    if (it.toInt() == 0) {
                         FirebaseUtilities.databaseGetLong(dbArtistScoreRef)
                             .thenAccept {
                                 val artistsPoints = it
@@ -153,8 +157,7 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
 
             // Give the guesser points and increase the number of correct guesses by 1
             FirebaseUtilities.databaseGetLong(correctGuessesRef)
-                .thenAccept {
-                    val nbGuesses = it
+                .thenAccept { it ->
 
                     // Give the points to the player who guessed correctly
                     FirebaseUtilities.databaseGetLong(dbGuesserScoreRef)
@@ -169,7 +172,7 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
 
                     // Increment the number of correct guesses
                     if (!pointsReceived) {
-                        correctGuessesRef.setValue(nbGuesses + 1)
+                        correctGuessesRef.setValue(it + 1)
                     }
                 }
 
@@ -265,20 +268,18 @@ fun GuessesList(guesses: Array<Guess>, dbrefGame: DatabaseReference, artistId: S
 /**
  * The writing bar where guessers can enter their guesses
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun GuessingBar(
     guess: String,
     onGuessChange: (String) -> Unit,
-    onSendClick: () -> Unit,
-    scrollState: ScrollState
+    onSendClick: () -> Unit
 ) {
     Surface(
-        color = Color.White,
+        //color = MaterialTheme.colorScheme.primaryContainer,
         modifier = Modifier
             .fillMaxWidth()
             .testTag("guessingBar")
-            .verticalScroll(scrollState)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -293,6 +294,7 @@ fun GuessingBar(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
+                singleLine = true
             )
             Spacer(modifier = Modifier.width(8.dp))
             Button(
@@ -306,35 +308,18 @@ fun GuessingBar(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String, storageGameRef: StorageReference) {
-    val imeState = rememberImeState()
-    val scrollState = rememberScrollState()
-
-    LaunchedEffect(key1 = imeState.value) {
-        if (imeState.value){
-            scrollState.animateScrollTo(scrollState.maxValue)
-        }
-    }
+fun GuessingScreen(dbrefGame: DatabaseReference, context: Context, storageGameRef: StorageReference) {
 
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
-    var timer by remember { mutableStateOf("") }
+    val timer = remember { mutableStateOf("") }
 
     //the timer of the game
-    timer = ""
     val dbrefTimer = dbrefGame.child(context.getString(R.string.current_timer_path))
-    dbrefTimer.addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            if (snapshot.exists()) {
-                timer = snapshot.getValue<String>()!!
-            }
-        }
-        override fun onCancelled(error: DatabaseError) {
-            TODO("Not yet implemented")
-        }
-    })
+    FirebaseUtilities.databaseGet(dbrefTimer).thenAccept {
+        timer.value = it
+    }
 
     //the guesses made by the guessers
     dbrefGame.child(context.getString(R.string.guesses_path))
@@ -447,94 +432,87 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String
         }
     })
 
-
-    MaterialTheme {
-        Column(
+    Column(
+        modifier = Modifier
+            .testTag("guessingScreen")
+    ) {
+        Text(
+            text = SCREEN_TEXT,
             modifier = Modifier
-                .background(Color.White)
-                .testTag("guessingScreen")
-        ) {
-            Text(
-                    text = SCREEN_TEXT,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .testTag("guessText"),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-            )
+                .padding(8.dp)
+                .align(Alignment.CenterHorizontally)
+                .testTag("guessText"),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
 
-            Box(
+        Box(
+            modifier = Modifier
+                .height(400.dp)
+                .fillMaxWidth()
+        ) {
+            if (topicSelection) {
+                Text(
+                    text = WAITING_TEXT,
                     modifier = Modifier
-                        .height(400.dp)
-                        .fillMaxWidth()
-                        .background(Color.White)
-            ) {
-                if (topicSelection) {
-                    Text(
-                        text = WAITING_TEXT,
-                        modifier = Modifier
-                            .align(Alignment.Center),
-                        color = Color.DarkGray
-                    )
-                } else {
-                    Row() {
-                        // Video calls deactivated for now because of camera conflict
+                        .align(Alignment.Center),
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                Row (Modifier.background(Color.White)){
+                    // Video calls deactivated for now because of camera conflict
 //                        BootcampComposeTheme { // Video conversation zone
 //                            VideoScreen2(
 //                                roomName = gameId,
 //                                testing = false
 //                            )
 //                        }
-                        Image(
-                            bitmap = displayedBitmap,
-                            contentDescription = "drawn image",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                              //  .align(Alignment.Center)
-                        )
-                    }
+                    Image(
+                        bitmap = displayedBitmap,
+                        contentDescription = "drawn image",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                          //  .align(Alignment.Center)
+                    )
                 }
-
-                if (timer != context.getString(R.string.timer_unused)) {
-                    val dbRefTimer = dbrefGame.child(context.getString(R.string.current_timer_path))
-                    TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.DarkGray)
-                }
-
-                ScoreScreen(dbrefGame)
             }
 
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .background(Color.White)
-                    .align(Alignment.End)
-                    .testTag("guessesList")
-            ) {
-                GuessesList(guesses = guesses, dbrefGame = dbrefGame,
-                    artistId = currentArtist.value, storageGameRef = storageGameRef)
+            if (timer.value != context.getString(R.string.timer_unused)) {
+                val dbRefTimer = dbrefGame.child(context.getString(R.string.current_timer_path))
+                TimerScreen(dbRefTimer, 60L, fontSize = 30.sp)
             }
 
-            if (timer == context.getString(R.string.timer_over)) {
-                TimerOverPopUp()
-            } else {
-                GuessingBar(
-                    guess = guess,
-                    onGuessChange = { guess = it },
-                    onSendClick = {
-                        val gs = Guess(guesser = username, guesserId = uid, message = guess)
-                        val guessId = guesses.size.toString()
-                        dbrefGame
-                            .child(context.getString(R.string.guesses_path))
-                            .child(guessId)
-                            .setValue(gs)
+            ScoreScreen(dbrefGame)
+        }
 
-                        guess = ""
-                    },
-                    scrollState,
-                )
-            }
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .align(Alignment.End)
+                .testTag("guessesList")
+        ) {
+            GuessesList(guesses = guesses, dbrefGame = dbrefGame,
+                artistId = currentArtist.value, storageGameRef = storageGameRef)
+        }
 
+        if (timer.value == context.getString(R.string.timer_over)) {
+            TimerOverPopUp()
+        } else {
+            GuessingBar(
+                guess = guess,
+                onGuessChange = { guess = it },
+                onSendClick = {
+                    val gs = Guess(guesser = username, guesserId = uid, message = guess)
+                    val guessId = guesses.size.toString()
+                    dbrefGame
+                        .child(context.getString(R.string.guesses_path))
+                        .child(guessId)
+                        .setValue(gs)
+
+                    guess = ""
+                },
+            )
         }
     }
 }

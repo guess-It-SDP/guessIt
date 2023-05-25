@@ -10,6 +10,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,7 +32,6 @@ import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
-import com.github.freeman.bootcamp.videocall.VideoScreen2
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -57,7 +60,11 @@ class DrawingActivity : ComponentActivity() {
         val dbref = getGameDBRef(this, gameId)
 
         setContent {
-            DrawingScreen(dbref,gameId)
+            BootcampComposeTheme {
+                Surface {
+                    DrawingScreen(dbref)
+                }
+            }
         }
     }
 
@@ -71,8 +78,7 @@ class DrawingActivity : ComponentActivity() {
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun DrawingScreen(
-    dbref: DatabaseReference,
-    gameId: String
+    dbref: DatabaseReference
 ) {
     val context = LocalContext.current
 
@@ -159,9 +165,9 @@ fun DrawingScreen(
                     },
                     valueRange = 5f..50f,
                     colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colors.primaryVariant,
-                        activeTrackColor = MaterialTheme.colors.primary,
-                        inactiveTrackColor = MaterialTheme.colors.secondary
+                        thumbColor = MaterialTheme.colorScheme.primary,
+                        activeTrackColor = MaterialTheme.colorScheme.primary,
+                        inactiveTrackColor = MaterialTheme.colorScheme.secondary
                     ),
                     modifier = Modifier.testTag(context.getString(R.string.width_slider))
                 )
@@ -252,14 +258,14 @@ private fun ControlsBar(
         MenuItems(
             R.drawable.ic_undo,
             LocalContext.current.getString(R.string.undo),
-            if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+            if (undoVisibility.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
         ) {
             if (undoVisibility.value) drawController.unDo()
         }
         MenuItems(
             R.drawable.ic_redo,
             LocalContext.current.getString(R.string.redo),
-            if (redoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+            if (redoVisibility.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
         ) {
             if (redoVisibility.value) drawController.reDo()
         }
@@ -273,14 +279,14 @@ private fun ControlsBar(
         MenuItems(
             R.drawable.ic_width,
             LocalContext.current.getString(R.string.stroke_width),
-            MaterialTheme.colors.primary
+            MaterialTheme.colorScheme.primary
         ) {
             onWidthClick()
         }
         MenuItems(
             R.drawable.ic_sharp_arrow_circle_up,
             LocalContext.current.getString(R.string.drawing_done),
-            MaterialTheme.colors.primary
+            MaterialTheme.colorScheme.primary
         ) {
             drawController.saveBitmap()
         }
@@ -318,5 +324,5 @@ fun RowScope.MenuItems(
 fun DrawingScreenPreview() {
     val context = LocalContext.current
     val dbref = getGameDBRef(context)
-    DrawingScreen(dbref,"127")
+    DrawingScreen(dbref)
 }

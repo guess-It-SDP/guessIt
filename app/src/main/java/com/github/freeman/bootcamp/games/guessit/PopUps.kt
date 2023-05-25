@@ -3,6 +3,7 @@ package com.github.freeman.bootcamp.games.guessit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,6 +21,7 @@ import com.github.freeman.bootcamp.games.guessit.guessing.Guess
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import androidx.compose.material3.Surface
 
 /**
  * This is the skeleton of any pop up
@@ -31,36 +33,37 @@ fun PopUpScreen(
 ) {
     val shape = RoundedCornerShape(12.dp)
 
-    Popup {
-        Column(
-            modifier = Modifier
-                .testTag("popUpScreen")
-                .background(Color.Transparent)
-                .fillMaxSize()
-                .wrapContentSize(Alignment.Center)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
+    Surface {
+        Popup {
+            Column(
                 modifier = Modifier
-                    .testTag("popUpBox")
-                    .clip(shape),
-                contentAlignment = Alignment.Center
+                    .testTag("popUpScreen")
+                    .background(Color.Transparent)
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
+                Box(
                     modifier = Modifier
-                        .testTag("popUpText")
-                        .padding(15.dp),
-                    text = text,
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Center,
-                    color = Color.White
-                )
+                        .testTag("popUpBox")
+                        .background(MaterialTheme.colorScheme.primaryContainer,shape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .testTag("popUpText")
+                            .padding(15.dp),
+                        text = text,
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
             }
         }
     }
-
 }
 
 /**

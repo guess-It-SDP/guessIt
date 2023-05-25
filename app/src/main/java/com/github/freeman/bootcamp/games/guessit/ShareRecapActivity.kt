@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp.games.guessit
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -9,12 +10,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +39,7 @@ import com.github.freeman.bootcamp.games.guessit.ShareRecapActivity.Companion.SH
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.ui.theme.md_theme_light_inversePrimary
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.File
@@ -55,7 +56,9 @@ class ShareRecapActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                ShareRecapScreen(gameId)
+                Surface {
+                    ShareRecapScreen(gameId)
+                }
             }
         }
     }
@@ -86,28 +89,58 @@ fun ShareRecapScreen(gameId:String) {
             videoUrl.value = it.toString()
         }
 
-    Column(
-        modifier = Modifier
-            .testTag("shareRecapScreen")
-            .fillMaxSize()
-            .padding(10.dp)
-            .background(MaterialTheme.colorScheme.inversePrimary),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            ShareRecapBackButton()
+        }
+
+        Column(
             modifier = Modifier
-                .padding(20.dp)
-                .testTag("shareRecapTitle"),
-            text = SHARE_RECAP_TITLE,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            fontSize = 30.sp
+                .testTag("shareRecapScreen")
+                .fillMaxSize()
+                .padding(10.dp)
+                .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(10.dp)),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                modifier = Modifier
+                    .testTag("shareRecapTitle"),
+                text = SHARE_RECAP_TITLE,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp,
+                lineHeight = 35.sp,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            RecapPreview(videoUrl.value)
+            ShareButton(videoUrl.value)
+        }
+    }
+}
+
+/**
+ * The button to back to the final score board
+ */
+@Composable
+fun ShareRecapBackButton() {
+    val context = LocalContext.current
+    ElevatedButton(
+        modifier = Modifier
+            .testTag("shareRecapBackButton"),
+        onClick = {
+            val activity = (context as? Activity)
+            activity?.finish()
+        },
+    ) {
+        Icon(
+            imageVector = Icons.Filled.ArrowBack,
+            contentDescription = "Back arrow icon",
+            tint = MaterialTheme.colorScheme.onPrimaryContainer
         )
-        Spacer(Modifier.size(20.dp))
-        RecapPreview(videoUrl.value)
-        Spacer(Modifier.size(20.dp))
-        ShareButton(videoUrl.value)
     }
 }
 
@@ -133,7 +166,7 @@ fun ShareButton(videoUrl: String) {
         },
         modifier = Modifier
             .testTag("shareRecapButton")
-            .background(Color.White, CircleShape)
+            .background(MaterialTheme.colorScheme.onPrimaryContainer, CircleShape)
     ) {
 
         Icon(
@@ -142,7 +175,7 @@ fun ShareButton(videoUrl: String) {
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp),
-            tint = MaterialTheme.colorScheme.inversePrimary
+            tint = MaterialTheme.colorScheme.primaryContainer
         )
     }
 }
@@ -214,7 +247,7 @@ fun RecapPreview(videoUrl: String) {
     Box(
         modifier = Modifier
             .testTag("recapPreview")
-            .padding(20.dp)
+            .padding(50.dp)
     ) {
         AndroidView(
             factory = { context ->

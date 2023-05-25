@@ -19,15 +19,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
@@ -36,6 +33,9 @@ import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
+import com.github.freeman.bootcamp.games.guessit.FinalActivity
+import com.github.freeman.bootcamp.games.guessit.ShareRecapActivity
+import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
@@ -281,6 +281,46 @@ fun MainMenuScreen() {
                         testTag = "",
                         onClick = {
                             drawing(context, "testgameid")
+                        },
+                        text = "Drawing"
+                    )
+                }
+                Row {
+                    MainMenuButton(
+                        testTag = "",
+                        onClick = {
+                            context.startActivity(Intent(context, FinalActivity::class.java).apply {
+                                putExtra(context.getString(R.string.gameId_extra), "testgameid")
+                            })
+                        },
+                        text = "Final Activity"
+                    )
+                    MainMenuButton(
+                        testTag = "",
+                        onClick = {
+                            context.startActivity(Intent(context, ShareRecapActivity::class.java).apply {
+                                putExtra(context.getString(R.string.gameId_extra), "-NVnCrn5Lj7Ve__BZPq5")
+                            })
+                        },
+                        text = "Share Recap"
+                    )
+                }
+                Row {
+                    MainMenuButton(
+                        testTag = "",
+                        onClick = {
+                            context.startActivity(Intent(context, TopicSelectionActivity::class.java).apply {
+                                putExtra(context.getString(R.string.gameId_extra), "testgameid")
+                            })
+                        },
+                        text = "Topic Selection"
+                    )
+                    MainMenuButton(
+                        testTag = "",
+                        onClick = {
+                            context.startActivity(Intent(context, ShareRecapActivity::class.java).apply {
+                                putExtra(context.getString(R.string.gameId_extra), "testgameid")
+                            })
                         },
                         text = "Drawing"
                     )

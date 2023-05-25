@@ -7,8 +7,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -18,14 +18,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.MainMenuButton
+import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity.Companion.difficultyIsWordOnly
 import com.github.freeman.bootcamp.games.wordle.WordleMenu.Companion.Difficulty
 import com.github.freeman.bootcamp.games.wordle.WordleMenu.Companion.LETTERS
@@ -93,12 +96,14 @@ private fun launchGame(context: Context, difficulty: String) {
 @Composable
 private fun DifficultyButton(
     difficulty: Difficulty,
+    icon: ImageVector
 ) {
     val context = LocalContext.current
     MainMenuButton(
         testTag = difficulty.prettyText,
         onClick = { launchGame(context, difficulty.name) } ,
-        text = difficulty.prettyText + lettersOrWordOnly(difficulty)
+        text = difficulty.prettyText + lettersOrWordOnly(difficulty),
+        icon = icon
     )
 }
 
@@ -117,32 +122,22 @@ fun WordleMenuScreen() {
 
         Text(
             modifier = Modifier
-                .testTag("wordleMenuTitle")
-                .align(Alignment.CenterHorizontally),
-            text = WORDLE_MENU_TITLE,
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(Modifier.size(50.dp))
-
-        Text(
-            modifier = Modifier
                 .testTag("wordleMenuText")
                 .align(Alignment.CenterHorizontally),
             text = WORDLE_MENU_TEXT,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.primary
         )
 
         Spacer(Modifier.size(20.dp))
 
-        DifficultyButton(Difficulty.EASY)
-        DifficultyButton(Difficulty.MEDIUM)
-        DifficultyButton(Difficulty.HARD)
-        DifficultyButton(Difficulty.VERY_HARD)
-        DifficultyButton(Difficulty.VERY_VERY_HARD)
+        DifficultyButton(Difficulty.EASY, ImageVector.vectorResource(R.drawable.level1))
+        DifficultyButton(Difficulty.MEDIUM, ImageVector.vectorResource(R.drawable.level2))
+        DifficultyButton(Difficulty.HARD, ImageVector.vectorResource(R.drawable.level3))
+        DifficultyButton(Difficulty.VERY_HARD, ImageVector.vectorResource(R.drawable.level4))
+        DifficultyButton(Difficulty.VERY_VERY_HARD, ImageVector.vectorResource(R.drawable.level5))
     }
 }
 
@@ -154,18 +149,22 @@ private fun lettersOrWordOnly(difficulty: Difficulty): String {
 }
 
 @Composable
-fun TopAppbarWordleMenu(context: Context = LocalContext.current) {
+fun TopAppbarWordleMenu() {
+    val context = LocalContext.current
 
     TopAppBar(
         modifier = Modifier.testTag("topAppbarWordleMenu"),
         title = {
             Text(
                 text = WORDLE_MENU_TITLE,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 20.sp
             )
         },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
             IconButton(
@@ -174,11 +173,12 @@ fun TopAppbarWordleMenu(context: Context = LocalContext.current) {
                 onClick = {
                     val activity = (context as? Activity)
                     activity?.finish()
-
-                }) {
+                },
+            ) {
                 Icon(
-                    Icons.Filled.ArrowBack,
+                    imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
         }
