@@ -37,7 +37,6 @@ import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.T
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.categories
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.categorySize
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedCategory
-import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedTopics
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selection
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.PRIVATE_TYPE_TEXT
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity
@@ -49,7 +48,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.util.*
 
@@ -86,7 +84,6 @@ class GameOptionsActivity : ComponentActivity() {
         var selectedCategory = categories[0]
         val NB_ROUNDS = listOf("1", "3", "5", "7", "9")
         var selection: Int = 5
-        var selectedTopics = mutableListOf<String?>()
         var categorySize = DEFAULT_CATEGORY_SIZE
     }
 }
@@ -108,10 +105,10 @@ fun RoundsDisplay() {
  * Create the radio buttons in order to chose a different number of rounds to be played during the
  * Game.
  *
- * @param The list of possible number of rounds a player can chose
+ * @param mItems list of possible number of rounds a player can chose
  * @param selected corresponds to the value inside the MutableState object currently chosen by the
  * player(has a default value)
- * @param SetSelected corresponds to the function that can be used to update the value inside the
+ * @param setSelected corresponds to the function that can be used to update the value inside the
  * MutableState object.
  */
 @Composable
@@ -157,17 +154,9 @@ fun RoundsRadioButtons(mItems: List<String>, selected: String, setSelected: (sel
 fun CategoriesDisplay() {
     val (selectedIndex, setSelected) = remember { mutableStateOf(-1) }
     val (size, setSize) = remember { mutableStateOf(DEFAULT_CATEGORY_SIZE) }
-    val (topics, setTopics) = remember { mutableStateOf(arrayOf<String>()) }
-    CategoriesRadioButtons(selectedIndex, setSelected, setSize, setTopics)
+    CategoriesRadioButtons(selectedIndex, setSelected, setSize)
 
     categorySize = size
-
-    if (topics.isNotEmpty() && categorySize > 0) {
-        selectedTopics.clear()
-        val allTopics = topics.toMutableList()
-        val selectedIndices = allTopics.indices.shuffled().take(categorySize)
-        selectedTopics.addAll(selectedIndices.map { allTopics[it] })
-    }
 }
 
 /**
@@ -176,7 +165,7 @@ fun CategoriesDisplay() {
  */
 @Composable
 fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> Unit,
-                           setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
+                           setSize: (topics: Int) -> Unit) {
 
     val context = LocalContext.current
 
@@ -191,7 +180,7 @@ fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> U
                 onClick = {
                     selectedCategory = categories[index]
                     setSelected(index)
-                    fetchFromDB(context, setSize, setTopics)
+                    fetchFromDB(context, setSize)
                 },
                 shape = when (index) {
                     0 -> RoundedCornerShape(
@@ -312,9 +301,6 @@ fun next(context: Context, database: DatabaseReference, lobbyType: String, passw
 
                 context.startActivity(Intent(context, WaitingRoomActivity::class.java).apply {
                     putExtra(context.getString(R.string.gameId_extra), gameId)
-                    for (i in 0 until selectedTopics.size) {
-                        putExtra("topic$i", selectedTopics[i])
-                    }
                     putExtra(context.getString(R.string.type_extra), lobbyType)
                     putExtra(context.getString(R.string.password_extra), password)
                 })
@@ -325,7 +311,7 @@ fun next(context: Context, database: DatabaseReference, lobbyType: String, passw
     }
 }
 
-fun fetchFromDB(context: Context, setSize: (topics: Int) -> Unit, setTopics: (topics: Array<String>) -> Unit) {
+fun fetchFromDB(context: Context, setSize: (topics: Int) -> Unit) {
     val dbrefTopics = Firebase.database.reference
         .child(context.getString(R.string.topics_path))
         .child(selectedCategory)
@@ -335,27 +321,6 @@ fun fetchFromDB(context: Context, setSize: (topics: Int) -> Unit, setTopics: (to
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             val fetchedSize = dataSnapshot.childrenCount.toInt() - 1
             setSize(fetchedSize)
-        }
-
-        override fun onCancelled(databaseError: DatabaseError) {
-        }
-    })
-
-    fetchTopics(context, setTopics)
-}
-
-fun fetchTopics(context: Context, setTopics: (topics: Array<String>) -> Unit) {
-    val dbrefTopics = Firebase.database.reference
-        .child(context.getString(R.string.topics_path))
-        .child(selectedCategory)
-
-    // Fetches topics from the database
-    dbrefTopics.addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            if (snapshot.exists()) {
-                val fetchedTopics = snapshot.getValue<ArrayList<String>>()!!
-                setTopics(fetchedTopics.toTypedArray())
-            }
         }
 
         override fun onCancelled(databaseError: DatabaseError) {
