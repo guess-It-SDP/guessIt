@@ -35,6 +35,7 @@ class GameManagerService : Service() {
         var isHost = false
         var topics = ArrayList<String>()
         var firstStart = true
+        var playersOrder = listOf<String>()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -68,6 +69,16 @@ class GameManagerService : Service() {
                                         override fun onDataChange(snapshot: DataSnapshot) {
                                             if (snapshot.exists()) {
                                                 when (snapshot.getValue<String>()!!) {
+                                                    getString(R.string.state_initialize) -> {
+                                                        if (isHost) {
+                                                            initializeGame(gameDBRef)
+                                                        }
+                                                    }
+                                                    getString(R.string.state_setartist) -> {
+                                                        if (isHost) {
+                                                            setNewArtist(gameDBRef, turnNb, playersOrder)
+                                                        }
+                                                    }
                                                     getString(R.string.state_newturn) -> {
                                                         startNewTurn(localPlayerID, gameID, gameDBRef)
                                                     }
@@ -117,25 +128,6 @@ class GameManagerService : Service() {
                                             // do nothing
                                         }
                                     })
-
-                                    // Initialize the game if this app is the host app
-                                    if (isHost) {
-                                        // Create players order that will be used for the rest of the game
-                                        // First get all the player IDs
-                                        FirebaseUtilities.databaseGetMap(gameDBRef.child(getString(R.string.players_path)))
-                                            .thenAccept {
-                                                // Randomly shuffle the player IDs
-                                                @Suppress("UNCHECKED_CAST")
-                                                playersOrder = it.keys.toList() as List<String>
-                                                playersOrder = playersOrder.shuffled()
-                                                Log.d("GameManagerD", "Players order: $playersOrder")
-                                                // Set first player to draw
-                                                setNewArtist(gameDBRef, 0, playersOrder)
-                                                // Change game state to start the game
-                                                gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_newturn))
-                                                Log.d("GameManagerD", "New turn state set (initialization)")
-                                            }
-                                    }
                                 }
                         }
                 }
@@ -147,6 +139,22 @@ class GameManagerService : Service() {
     // Override required to extend Service
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    private fun initializeGame(gameDBRef: DatabaseReference) {
+        // Create players order that will be used for the rest of the game
+        // First get all the player IDs
+        FirebaseUtilities.databaseGetMap(gameDBRef.child(getString(R.string.players_path)))
+            .thenAccept {
+                // Randomly shuffle the player IDs
+                @Suppress("UNCHECKED_CAST")
+                playersOrder = it.keys.toList() as List<String>
+                playersOrder = playersOrder.shuffled()
+                Log.d("GameManagerD", "Players order: $playersOrder")
+                // Change game state to start the game
+                gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_setartist))
+                Log.d("GameManagerD", "New turn state set (initialization)")
+            }
     }
 
     // Starts the correct activity between the Topic Selection Activity and the Guessing Activity
@@ -223,6 +231,7 @@ class GameManagerService : Service() {
     private fun setNewArtist(gameDBRef : DatabaseReference, playerNumber : Int, playersOrder : List<String>) {
         Log.d("GameManagerD", "New artist set")
         gameDBRef.child(getString(R.string.current_artist_path)).setValue(playersOrder[playerNumber])
+        gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_newturn))
     }
 
     private fun gameOver(gameID: String, gameDBRef: DatabaseReference) {

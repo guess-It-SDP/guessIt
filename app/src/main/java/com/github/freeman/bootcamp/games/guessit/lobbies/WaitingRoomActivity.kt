@@ -586,7 +586,7 @@ fun StartButton(
             enabled = userId == hostId.value && players.size >= 2,
             onClick = {
                 dbRef.child(context.getString(R.string.current_state_path))
-                    .setValue(context.getString(R.string.state_newturn))
+                    .setValue(context.getString(R.string.state_setartist))
                 val activity = (context as? Activity)
                 activity?.finish()
             }

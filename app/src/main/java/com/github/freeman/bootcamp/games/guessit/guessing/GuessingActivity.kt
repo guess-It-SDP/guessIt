@@ -170,7 +170,7 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
 
             // Take Selfie of the guesser for the game recap and save it to Firebase storage
             val lifecycleOwner = LocalLifecycleOwner.current
-            takeSelfie(storageGameRef, userId, context, lifecycleOwner)
+            //takeSelfie(storageGameRef, userId, context, lifecycleOwner)
             // Store drawing for the game recap
             storeDrawing(storageGameRef, userId, context)
 

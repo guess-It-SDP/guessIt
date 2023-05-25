@@ -108,6 +108,8 @@
     <string name="state_scorerecap">score recap</string>
     <string name="state_gameover">game over</string>
     <string name="state_lobbyclosed">lobby closed</string>
+    <string name="state_setartist">set artist</string>
+    <string name="state_initialize">initialize game</string>
 
     <!-- current_timer states -->
     <string name="timer_over">over</string>
