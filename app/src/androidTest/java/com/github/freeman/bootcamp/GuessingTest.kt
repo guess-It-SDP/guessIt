@@ -56,7 +56,7 @@ class GuessingTest {
                 .child(context.getString(R.string.test_game_id))
 
             BootcampComposeTheme {
-                GuessingScreen(database, context = context,guessGameId, storageGamRef)
+                GuessingScreen(database, context = context, storageGamRef)
             }
         }
     }
