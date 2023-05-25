@@ -152,6 +152,11 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
                 .thenAccept {
                     val nbGuesses = it
 
+                    // Increment the number of correct guesses
+                    if (!pointsReceived) {
+                        correctGuessesRef.setValue(nbGuesses + 1)
+                    }
+
                     // Give the points to the player who guessed correctly
                     FirebaseUtilities.databaseGetLong(dbGuesserScoreRef)
                         .thenAccept { score ->
@@ -161,11 +166,6 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
                                 pointsReceived = true
                             }
                         }
-
-                    // Increment the number of correct guesses
-                    if (!pointsReceived) {
-                        correctGuessesRef.setValue(nbGuesses + 1)
-                    }
                 }
 
             // Take Selfie of the guesser for the game recap and save it to Firebase storage
