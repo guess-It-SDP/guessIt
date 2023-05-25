@@ -135,19 +135,20 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
             // Increase the points of the artist if they haven't already received points this round
             FirebaseUtilities.databaseGetLong(correctGuessesRef)
                 .thenAccept {
-                    val nbGuesses = it
-
-                    // If the artist hasn't yet received points for this drawing, grant them
-                    if (nbGuesses.toInt() == 0) {
-                        FirebaseUtilities.databaseGetLong(dbArtistScoreRef)
-                            .thenAccept { artistsPoints ->
-                                dbArtistScoreRef.setValue(artistsPoints + 1)
-                            }
-                    }
 
                     // Give the points to the player who guessed correctly
                     FirebaseUtilities.databaseGetLong(dbGuesserScoreRef)
                         .thenAccept { score ->
+                            val nbGuesses = it
+
+                            // If the artist hasn't yet received points for this drawing, grant them
+                            if (nbGuesses.toInt() == 0) {
+                                FirebaseUtilities.databaseGetLong(dbArtistScoreRef)
+                                    .thenAccept { artistsPoints ->
+                                        dbArtistScoreRef.setValue(artistsPoints + 1)
+                                    }
+                            }
+
                             // Increase current player's points
                             if (!pointsReceived) {
                                 dbGuesserScoreRef.setValue(score + 1)
