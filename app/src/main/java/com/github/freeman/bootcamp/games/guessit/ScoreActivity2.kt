@@ -38,7 +38,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
-class ScoreActivity : ComponentActivity() {
+class ScoreActivity2 : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +62,7 @@ class ScoreActivity : ComponentActivity() {
  * This function is necessary as the scoreboard takes Pairs as input, not Maps
  */
 @Composable
-fun turnIntoPairs2(playersToScores: Map<String, MutableState<Int>>): List<Pair<String, Int>> {
+fun turnIntoPairs(playersToScores: Map<String, MutableState<Int>>): List<Pair<String, Int>> {
     // Converts the map of players to mutable state of int into a list of pairs ID-score instead
     val scorePairs = ArrayList<Pair<String, Int>>()
     if (playersToScores.isNotEmpty()) {
@@ -75,7 +75,7 @@ fun turnIntoPairs2(playersToScores: Map<String, MutableState<Int>>): List<Pair<S
 }
 
 @Composable
-fun fetchUserNames2(playerIds: List<Pair<String, Int>>): Map<String, MutableState<String>> {
+fun fetchUserNames(playerIds: List<Pair<String, Int>>): Map<String, MutableState<String>> {
     val dbRef = Firebase.database.reference
     val usernames = HashMap<String, MutableState<String>>()
 
@@ -102,7 +102,7 @@ fun fetchUserNames2(playerIds: List<Pair<String, Int>>): Map<String, MutableStat
 }
 
 @Composable
-fun usernamesToScores2(
+fun usernamesToScores(
     scores: List<Pair<String, Int>>,
     usernames: Map<String, MutableState<String>>
 ): List<Pair<String?, Int>> {
@@ -119,7 +119,7 @@ fun usernamesToScores2(
     return usersToScores
 }
 
-fun updateScoreMap2(playersToScores: Map<String, MutableState<Int>>, id: String, snapshot: DataSnapshot) {
+fun updateScoreMap(playersToScores: Map<String, MutableState<Int>>, id: String, snapshot: DataSnapshot) {
     if (snapshot.exists() && snapshot.key == "score") {
         val score = snapshot.getValue<Int>()
         if (score != null) {
@@ -129,7 +129,7 @@ fun updateScoreMap2(playersToScores: Map<String, MutableState<Int>>, id: String,
 }
 
 @Composable
-fun obtainPlayersToScores2(
+fun obtainPlayersToScores(
     dbRef: DatabaseReference,
     playerIds: MutableState<Map<String, Map<String, Int>>>,
     context: Context
@@ -171,7 +171,7 @@ fun obtainPlayersToScores2(
 }
 
 @Composable
-fun ScoreScreen2(
+fun ScoreScreen(
     dbRef: DatabaseReference,
     testingPlayersToScores: HashMap<String, MutableState<Int>> = HashMap(),
     testingUsersToScores:  List<Pair<String?, Int>> = listOf()
@@ -229,7 +229,7 @@ fun ScoreScreen2(
 }
 
 @Composable
-fun Scoreboard2(playerScores: List<Pair<String?, Int>>, modifier: Modifier) {
+fun Scoreboard(playerScores: List<Pair<String?, Int>>, modifier: Modifier) {
     var size by remember { mutableStateOf(IntSize.Zero) }
 
     Box(
