@@ -85,7 +85,7 @@ class GuessingActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbrefGame, this, storageGameRef)
+                GuessingScreen(dbrefGame, this, storageGameRef, LocalLifecycleOwner.current)
             }
         }
     }
@@ -116,8 +116,7 @@ class GuessingActivity : ComponentActivity() {
 @Composable
 @SuppressLint("RestrictedApi")
 @androidx.annotation.OptIn(androidx.camera.core.ExperimentalZeroShutterLag::class)
-fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artistId: String,
-              storageGameRef: StorageReference) {
+fun GuessItem(guess: Guess, storageGameRef: StorageReference) {
     val context = LocalContext.current
 
     Row(
@@ -126,55 +125,7 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
             .testTag("guessItem")
     ) {
         val userId = Firebase.auth.currentUser?.uid
-//        if (guess.message?.lowercase() == answer.lowercase() && guess.guesserId == userId) {
-//            val dbGuesserScoreRef = dbrefGame
-//                .child(context.getString(R.string.players_path))
-//                .child(userId.toString())
-//                .child(context.getString(R.string.score_path))
-//            val dbArtistScoreRef = dbrefGame
-//                .child(context.getString(R.string.players_path))
-//                .child(artistId)
-//                .child(context.getString(R.string.score_path))
-//            val correctGuessesRef = dbrefGame.child(context.getString(R.string.current_correct_guesses_path))
-//
-//            // Increase the points of the artist if they haven't already received points this round
-//            FirebaseUtilities.databaseGetLong(correctGuessesRef)
-//                .thenAccept { nbGuesses ->
-//                    // Give the points to the player who guessed correctly
-//                    FirebaseUtilities.databaseGetLong(dbGuesserScoreRef)
-//                        .thenAccept { score ->
-//                            // If the artist hasn't yet received points for this drawing, grant them
-//                            if (nbGuesses.toInt() == 0) {
-//                                FirebaseUtilities.databaseGetLong(dbArtistScoreRef)
-//                                    .thenAccept { artistsPoints ->
-//                                        dbArtistScoreRef.setValue(artistsPoints + 1)
-//                                    }
-//                            }
-//
-//                            // Increase current player's points
-//                            if (!pointsReceived) {
-//                                dbGuesserScoreRef.setValue(score + 1)
-//                                correctGuessesRef.setValue(nbGuesses + 1)
-//                                pointsReceived = true
-//                            }
-//                        }
-//                }
-//
-//            // Take Selfie of the guesser for the game recap and save it to Firebase storage
-//            val lifecycleOwner = LocalLifecycleOwner.current
-//            //takeSelfie(storageGameRef, userId, context, lifecycleOwner)
-//            // Store drawing for the game recap
-//            storeDrawing(storageGameRef, userId, context)
-//
-//            val gs = Guess(guess.guesser, guess.guesserId, answer)
-//        }
-//        if (guess.message?.lowercase() != GuessingActivity.answer.lowercase()) {
-//            Text(text = "${guess.guesser} : ${guess.message}")
-//        } else {
-//            Text(text = "${guess.guesser} : ****")
-//        }
-
-        if (guess.message?.lowercase() != GuessingActivity.answer.lowercase()) {
+        if (guess.message?.lowercase() != answer.lowercase()) {
             Text(text = "${guess.guesser} : ${guess.message}")
         } else if (guess.guesserId == userId) {
             Text(text = "${guess.guesser} : ${guess.message} (Correct!)")
@@ -250,7 +201,7 @@ fun GuessesList(guesses: Array<Guess>, dbrefGame: DatabaseReference, artistId: S
             .fillMaxWidth()
     ) {
         items(guesses) { guess ->
-            GuessItem(guess, answer, dbrefGame, artistId, storageGameRef)
+            GuessItem(guess, storageGameRef)
         }
     }
 }
@@ -300,7 +251,8 @@ fun GuessingBar(
 }
 
 @Composable
-fun GuessingScreen(dbrefGame: DatabaseReference, context: Context, storageGameRef: StorageReference) {
+fun GuessingScreen(dbrefGame: DatabaseReference, context: Context, storageGameRef: StorageReference,
+lifecycleOwner: LifecycleOwner) {
     val imeState = rememberImeState()
     val scrollState = rememberScrollState()
 
@@ -524,6 +476,11 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context, storageGameRe
                                 .child(currentArtist.value)
                                 .child(context.getString(R.string.score_path))
                             val correctGuessesRef = dbrefGame.child(context.getString(R.string.current_correct_guesses_path))
+
+                            // Take Selfie of the guesser for the game recap and save it to Firebase storage
+                            takeSelfie(storageGameRef, userId, context, lifecycleOwner)
+                            // Store drawing for the game recap
+                            storeDrawing(storageGameRef, userId, context)
 
                             // Increase the points of the artist if they haven't already received points this round
                             FirebaseUtilities.databaseGetLong(correctGuessesRef)
