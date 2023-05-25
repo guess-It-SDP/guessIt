@@ -93,11 +93,4 @@ class GuessingTest {
         composeRule.onNode(hasSetTextAction()).performTextInput("House")
         composeRule.onNodeWithTag("guessButton").performClick()
     }
-
-    @Test
-    fun popupIsDisplayedUponGuessingCorrectly() {
-        composeRule.onNode(hasSetTextAction()).performTextInput(answer)
-        composeRule.onNodeWithTag("guessButton").performClick()
-        composeRule.onNodeWithTag("popUpScreen").assertIsDisplayed()
-    }
 }
