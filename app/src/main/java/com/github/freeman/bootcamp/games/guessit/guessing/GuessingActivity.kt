@@ -90,6 +90,11 @@ class GuessingActivity : ComponentActivity() {
         }
     }
 
+    override fun onStop() {
+        pointsReceived = false
+        super.onStop()
+    }
+
     companion object {
         const val GUESSING_BOTTOMBAR_TEXT = "Type a guess..."
         const val GUESSING_BOTTOMBAR_BUTTON_TEXT = "OK"
