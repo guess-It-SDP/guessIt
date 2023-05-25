@@ -509,7 +509,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context, storageGameRe
                             .setValue(gs)
 
                         val userId = Firebase.auth.currentUser?.uid
-                        if (gs.message?.lowercase() == answer.lowercase() && gs.guesserId == userId) {
+                        if (gs.message?.lowercase() == answer.lowercase()) {
                             val dbGuesserScoreRef = dbrefGame
                                 .child(context.getString(R.string.players_path))
                                 .child(userId.toString())
@@ -536,6 +536,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context, storageGameRe
 
                                             // Increase current player's points
                                             if (!pointsReceived) {
+                                                Log.d("GuessingD","pointsReceived: $pointsReceived")
                                                 dbGuesserScoreRef.setValue(score + 1)
                                                 correctGuessesRef.setValue(nbGuesses + 1)
                                                 pointsReceived = true
