@@ -1,34 +1,25 @@
 package com.github.freeman.bootcamp.facedetection
 
 import android.content.Context
-import android.content.res.Resources
-import android.graphics.Bitmap
+import android.graphics.*
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.google.mlkit.vision.face.FaceDetectorOptions
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import android.graphics.*
-import com.google.mlkit.vision.face.FaceDetection
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import com.google.mlkit.vision.common.InputImage
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
-import androidx.compose.runtime.*
 import com.github.freeman.bootcamp.R
-import androidx.compose.ui.graphics.toArgb
+import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetectorOptions
 
 /**
  * A class that provides face detection functionality and draws on it
@@ -52,15 +43,19 @@ class FaceDetectionActivity : ComponentActivity() {
         const val FACE_DETECTION_TAG2 = "faceDetectionTag2"
 
         fun transformBitmapToDrawOnFaces(
-            bitmap: Bitmap?, context : Context
+            bitmap: Bitmap?, context: Context, hatBitmap:  MutableState<Bitmap?>? = null
         ) {
             var overlayPic = BitmapFactory.decodeResource(context.resources, R.drawable.hat)
-            var overlayPic2 = BitmapFactory.decodeResource(context.resources, R.drawable.moustache)
+            if (hatBitmap != null) {
+                overlayPic = hatBitmap.value
+            }
+
+            val overlayPic2 = BitmapFactory.decodeResource(context.resources, R.drawable.moustache)
                 val image = InputImage.fromBitmap(bitmap!!, 0)
                 val options = options()
                 val detector = FaceDetection.getClient(options)
                 detector.process(image).addOnSuccessListener { faces ->
-                    val canvas = Canvas(bitmap!!)
+                    val canvas = Canvas(bitmap)
                     val paint = paint()
                     faces.forEach { face ->
 

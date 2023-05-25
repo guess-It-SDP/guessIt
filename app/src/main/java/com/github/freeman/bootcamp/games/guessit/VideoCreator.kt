@@ -4,11 +4,13 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.widget.Toast
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.facedetection.FaceDetectionActivity.Companion.transformBitmapToDrawOnFaces
+import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -42,6 +44,24 @@ class VideoCreator {
             val videoDir = File(context.getExternalFilesDir(null), context.getString(R.string.game_recaps_local_path))
             if (!videoDir.exists()) {
                 videoDir.mkdirs()
+            }
+
+            val dbRef = FirebaseUtilities.getGameDBRef(context, gameId)
+
+            // Get all the user IDs
+            val playerIds = mutableStateOf(mapOf<String, Map<String, Int>>())
+            FirebaseUtilities.databaseGetMap(dbRef.child(context.getString(R.string.players_path)))
+                .thenAccept {
+                    playerIds.value = it as HashMap<String, Map<String, Int>>
+                }
+            val userIds = playerIds.value.keys
+
+            // Fetch the user profile storage references to get their corresponding hats
+            val profileIdRefList = mutableListOf<StorageReference>()
+            for (userId in userIds) {
+                val profileIdRef = storageRef.child(context.getString(R.string.profiles_path))
+                    .child(userId).child(context.getString(R.string.hat))
+                profileIdRefList.add(profileIdRef)
             }
 
             val userIdRefList = mutableListOf<StorageReference>()
@@ -81,9 +101,17 @@ class VideoCreator {
                                             // download all selfies files and draw a hat and mustache over them
                                             for (file in selfiesFileList) {
                                                 val maxDownloadSize = 5 * 1024 * 1024.toLong()
+
+                                                // Fetch each user's hat
+                                                val hat = mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
+                                                FirebaseUtilities.storageGet(profileIdRefList[i])
+                                                    .thenAccept {
+                                                        hat.value = it
+                                                    }
+
                                                 file.getBytes(maxDownloadSize).addOnSuccessListener { bytes ->
                                                     val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                                                    transformBitmapToDrawOnFaces(bitmap, context)
+                                                    transformBitmapToDrawOnFaces(bitmap, context, hat)
                                                 }
                                             }
 
