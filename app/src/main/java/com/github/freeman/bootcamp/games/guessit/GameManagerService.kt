@@ -86,7 +86,7 @@ class GameManagerService : Service() {
                                                         prepareNewTurn(gameDBRef)
                                                     }
                                                     getString(R.string.state_gameover) -> {
-                                                        gameOver(gameID, gameDBRef)
+                                                        gameOver(gameID)
                                                     }
                                                 }
                                             }
