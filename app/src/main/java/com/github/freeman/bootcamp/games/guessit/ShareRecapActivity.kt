@@ -37,7 +37,6 @@ import androidx.media3.ui.PlayerView
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ShareRecapActivity.Companion.SHARE_RECAP_TITLE
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
-import com.github.freeman.bootcamp.ui.theme.md_theme_light_inversePrimary
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -176,7 +175,7 @@ private fun downloadVideo(videoUrl: String): File {
 /**
  * Share the video
  */
-private fun shareVideo(context: Context, videoFile: File) {
+fun shareVideo(context: Context, videoFile: File) {
     val videoUri: Uri = FileProvider.getUriForFile(
         context,
         context.packageName + ".provider",
@@ -189,7 +188,7 @@ private fun shareVideo(context: Context, videoFile: File) {
         type = "video/mp4"
     }
 
-    context.startActivity(Intent.createChooser(shareIntent, "Share Video"))
+    context.startActivity(Intent.createChooser(shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION), "Share Video"))
 }
 
 /**

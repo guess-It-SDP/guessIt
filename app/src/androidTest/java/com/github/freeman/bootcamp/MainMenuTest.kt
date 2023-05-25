@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
+import com.github.freeman.bootcamp.games.guessit.DisplayRecapsActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
@@ -74,16 +75,18 @@ class MainMenuTest {
     }
 
     @Test
-    fun createVideoButtonIsDisplayed() {
-        composeRule.onNodeWithTag("createVideoTestButton").assertHasClickAction()
-        composeRule.onNodeWithTag("createVideoTestButton").performClick()
-    }
-
-    @Test
     fun clickingSettingsSendsIntent() {
         Intents.init()
         composeRule.onNodeWithTag("settingsButton").performClick()
         Intents.intended(IntentMatchers.hasComponent(SettingsProfileActivity::class.java.name))
+        Intents.release()
+    }
+
+    @Test
+    fun clickingRecapsSendsIntent() {
+        Intents.init()
+        composeRule.onNodeWithTag("displayRecapsButton").performClick()
+        Intents.intended(IntentMatchers.hasComponent(DisplayRecapsActivity::class.java.name))
         Intents.release()
     }
 
