@@ -225,6 +225,9 @@
             android:name=".games.guessit.ScoreActivity"
             android:exported="true" />
         <activity
+            android:name=".games.guessit.ScoreActivity2"
+            android:exported="true" />
+        <activity
             android:name=".facedetection.FaceDetectionActivity2"
             android:exported="true" />
 
