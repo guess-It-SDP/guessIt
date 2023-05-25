@@ -125,6 +125,7 @@ class GameManagerService : Service() {
                                         FirebaseUtilities.databaseGetMap(gameDBRef.child(getString(R.string.players_path)))
                                             .thenAccept {
                                                 // Randomly shuffle the player IDs
+                                                @Suppress("UNCHECKED_CAST")
                                                 playersOrder = it.keys.toList().shuffled() as List<String>
                                                 Log.d("GameManagerD", "Players order: $playersOrder")
                                                 // Set first player to draw

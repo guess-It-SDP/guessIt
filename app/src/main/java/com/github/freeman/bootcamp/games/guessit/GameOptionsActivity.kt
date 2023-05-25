@@ -256,7 +256,7 @@ fun NextButton(dbRef: DatabaseReference, lobbyType: String, password: String) {
  * Then, it starts a new WaitingRoomActivity and passes in the new game's ID and
  * selected topics as extras. Finally, it finishes the current activity.
  *
- *@param context Information about application environnement.
+ *@param context Information about application environment.
  *@param database A particular location inside the database.
  */
 fun next(context: Context, database: DatabaseReference, lobbyType: String, password: String) {
@@ -384,7 +384,7 @@ fun backToMainMenu(context: Context) {
 }
 
 /**
- * Display the screen containing the differents parameters the player can chose from to create
+ * Display the screen containing the different parameters the player can chose from to create
  * a new game.
  * @param dbRef a particular location in the database
  */

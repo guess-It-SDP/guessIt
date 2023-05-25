@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NB_TOPICS
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.SELECT_TOPIC
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.topics

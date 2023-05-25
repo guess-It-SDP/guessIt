@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.GameManagerService
-import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.CATEGORY_INFO
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.KICKED
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.START_GAME
@@ -212,7 +211,6 @@ class WaitingRoomActivity: ComponentActivity() {
     companion object {
         const val TOPBAR_TEXT = "Waiting Room"
         const val CATEGORY_INFO = "Category :"
-        const val NB_ROUNDS_INFO = "Number of rounds :"
         const val START_GAME = "Start"
         const val KICKED = "You have been kicked by host"
     }
