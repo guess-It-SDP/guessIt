@@ -235,7 +235,7 @@ class GameManagerService : Service() {
         }
     }
 
-    private fun gameOver(gameID: String, gameDBRef: DatabaseReference) {
+    private fun gameOver(gameID: String) {
         if (isHost) {
             VideoCreator.createRecap(this, gameID)
         }
@@ -243,7 +243,6 @@ class GameManagerService : Service() {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(getString(R.string.gameId_extra), gameID)
         startActivity(intent)
-        gameDBRef.removeValue()
         stopSelf()
     }
 }
