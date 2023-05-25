@@ -43,7 +43,6 @@ class GameManagerService : Service() {
             Log.d("GameManagerD", "Game Manager Started")
             val gameID = intent!!.getStringExtra(getString(R.string.gameId_extra)).toString()
             val gameDBRef = getGameDBRef(this, gameID)
-            var playersOrder = listOf<String>()
             // Get the number of rounds and number of players
             FirebaseUtilities.databaseGet(gameDBRef.child(getString(R.string.param_nb_rounds_path)))
                 .thenAccept { getNbRounds ->
@@ -76,7 +75,7 @@ class GameManagerService : Service() {
                                                     }
                                                     getString(R.string.state_setartist) -> {
                                                         if (isHost) {
-                                                            setNewArtist(gameDBRef, turnNb, playersOrder)
+                                                            setNewArtist(gameDBRef)
                                                         }
                                                     }
                                                     getString(R.string.state_newturn) -> {
@@ -84,7 +83,7 @@ class GameManagerService : Service() {
                                                     }
                                                     getString(R.string.state_scorerecap) -> {
                                                         scoreRecap(gameID)
-                                                        prepareNewTurn(gameDBRef, playersOrder)
+                                                        prepareNewTurn(gameDBRef)
                                                     }
                                                     getString(R.string.state_gameover) -> {
                                                         gameOver(gameID, gameDBRef)
@@ -206,7 +205,7 @@ class GameManagerService : Service() {
         }
     }
 
-    private fun prepareNewTurn(gameDBRef: DatabaseReference, playersOrder : List<String>) {
+    private fun prepareNewTurn(gameDBRef: DatabaseReference) {
         if (turnNb == nbPlayers - 1) {
             turnNb = 0
             roundNb += 1
@@ -214,7 +213,7 @@ class GameManagerService : Service() {
             turnNb += 1
         }
         if (isHost) {
-            setNewArtist(gameDBRef, turnNb, playersOrder)
+            setNewArtist(gameDBRef)
             // Set the number of correct guesses to 0
             gameDBRef.child(getString(R.string.current_correct_guesses_path)).setValue(0)
             // Delete all the guesses
@@ -228,10 +227,12 @@ class GameManagerService : Service() {
         }
     }
 
-    private fun setNewArtist(gameDBRef : DatabaseReference, playerNumber : Int, playersOrder : List<String>) {
-        Log.d("GameManagerD", "New artist set")
-        gameDBRef.child(getString(R.string.current_artist_path)).setValue(playersOrder[playerNumber])
-        gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_newturn))
+    private fun setNewArtist(gameDBRef : DatabaseReference) {
+        Log.d("GameManagerD", "Setting new artist")
+        Log.d("GameManagerD", "PO: $playersOrder")
+        gameDBRef.child(getString(R.string.current_artist_path)).setValue(playersOrder[turnNb]).addOnSuccessListener {
+            gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_newturn))
+        }
     }
 
     private fun gameOver(gameID: String, gameDBRef: DatabaseReference) {

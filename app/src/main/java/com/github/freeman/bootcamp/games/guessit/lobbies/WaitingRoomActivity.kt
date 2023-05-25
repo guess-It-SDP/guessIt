@@ -96,7 +96,7 @@ class WaitingRoomActivity: ComponentActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         val gameState = snapshot.getValue<String>()!!
-                        if (gameState == getString(R.string.state_newturn)) {
+                        if (gameState == getString(R.string.state_initialize)) {
                             val intent = Intent(context, GameManagerService::class.java)
                             intent.apply {
                                 putExtra(getString(R.string.gameId_extra), gameId)
@@ -586,7 +586,7 @@ fun StartButton(
             enabled = userId == hostId.value && players.size >= 2,
             onClick = {
                 dbRef.child(context.getString(R.string.current_state_path))
-                    .setValue(context.getString(R.string.state_setartist))
+                    .setValue(context.getString(R.string.state_initialize))
                 val activity = (context as? Activity)
                 activity?.finish()
             }
