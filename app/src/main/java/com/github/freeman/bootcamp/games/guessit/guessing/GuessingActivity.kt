@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleOwner
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.games.guessit.CorrectAnswerPopUp
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
@@ -175,7 +174,6 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
             storeDrawing(storageGameRef, userId, context)
 
             val gs = Guess(guess.guesser, guess.guesserId, answer)
-            CorrectAnswerPopUp(gs = gs)
         }
 
         if (guess.message?.lowercase() != GuessingActivity.answer.lowercase()) {
