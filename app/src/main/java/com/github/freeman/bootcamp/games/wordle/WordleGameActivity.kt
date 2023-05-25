@@ -104,11 +104,35 @@ class WordleGameActivity : ComponentActivity() {
      */
     private fun setUpGame() {
         wordle = when (int.getStringExtra(WordleMenu.Companion.Difficulty::class.simpleName)) {
-            WordleMenu.Companion.Difficulty.EASY.name -> WordleGameState.startGame(difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.EASY,false), easyWords, validWords, NB_ROW_EASY)
-            WordleMenu.Companion.Difficulty.MEDIUM.name -> WordleGameState.startGame(difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.MEDIUM,false), easyWords, validWords, NB_ROW_MEDIUM)
-            WordleMenu.Companion.Difficulty.HARD.name -> WordleGameState.startGame(difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.HARD,false), easyWords, validWords, NB_ROW_MEDIUM)
-            WordleMenu.Companion.Difficulty.VERY_HARD.name -> WordleGameState.startGame(difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.VERY_HARD,false), solutions, validWords, NB_ROW_MEDIUM)
-            WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name -> WordleGameState.startGame(difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.VERY_VERY_HARD,false), solutions, validWords, NB_ROW_HARD)
+            WordleMenu.Companion.Difficulty.EASY.name -> WordleGameState.startGame(
+                difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.EASY, false),
+                easyWords,
+                validWords,
+                NB_ROW_EASY
+            )
+            WordleMenu.Companion.Difficulty.MEDIUM.name -> WordleGameState.startGame(
+                difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.MEDIUM, false),
+                easyWords,
+                validWords,
+                NB_ROW_MEDIUM
+            )
+            WordleMenu.Companion.Difficulty.HARD.name -> WordleGameState.startGame(
+                difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.HARD, false),
+                easyWords,
+                validWords,
+                NB_ROW_MEDIUM
+            )
+            WordleMenu.Companion.Difficulty.VERY_HARD.name -> WordleGameState.startGame(
+                difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.VERY_HARD, false),
+                solutions,
+                validWords,
+                NB_ROW_MEDIUM
+            )
+            WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name -> WordleGameState.startGame(
+                difficultyIsWordOnly.getOrDefault(
+                    WordleMenu.Companion.Difficulty.VERY_VERY_HARD, false
+                ), solutions, validWords, NB_ROW_HARD
+            )
             else -> WordleGameState.startGame(false, solutions, easyWords, NB_ROW_EASY)
         }
     }
@@ -128,38 +152,32 @@ class WordleGameActivity : ComponentActivity() {
      * @return true if the entry text is valid, false otherwise
      */
     private fun submit(text: String): Boolean {
-        val difficulty =
-            int.getStringExtra(WordleMenu.Companion.Difficulty::class.simpleName)
+        val difficulty = int.getStringExtra(WordleMenu.Companion.Difficulty::class.simpleName)
         if (text.length == 5) {
-            if (
-                difficulty == WordleMenu.Companion.Difficulty.HARD.name
-                || difficulty == WordleMenu.Companion.Difficulty.VERY_HARD.name
-                || difficulty == WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name
-            ) {
+            if (difficulty == WordleMenu.Companion.Difficulty.HARD.name || difficulty == WordleMenu.Companion.Difficulty.VERY_HARD.name || difficulty == WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name) {
                 if (!validWords.contains(text)) {
                     Toast.makeText(
-                        applicationContext,
-                        NOT_WRONG_WORDS_PLEASE,
-                        Toast.LENGTH_LONG
+                        applicationContext, NOT_WRONG_WORDS_PLEASE, Toast.LENGTH_LONG
                     ).show()
+                    return false
                 }
-            } else {
+            }
 
-                wordle = wordle.withSubmittedWord(
-                    text
-                )
-                val tiles = wordle.getTiles()
-                setContent {
-                    Column {
-                        BootcampComposeTheme {
-                            TileRoof(
-                                tiles
-                            )
-                            WordleButton()
-                        }
+            wordle = wordle.withSubmittedWord(
+                text
+            )
+            val tiles = wordle.getTiles()
+            setContent {
+                Column {
+                    BootcampComposeTheme {
+                        TileRoof(
+                            tiles
+                        )
+                        WordleButton()
                     }
                 }
             }
+
             return true
         } else {
             Toast.makeText(applicationContext, NOT_5_LETTERS_PLEASE, Toast.LENGTH_LONG).show()
@@ -182,16 +200,13 @@ class WordleGameActivity : ComponentActivity() {
             horizontalArrangement = Arrangement.Center
         ) {
             GreetingInput(msg)
-            IconButton(
-                modifier = Modifier.testTag("submitWordButton"),
-                onClick = {
-                    val tx = msg.text.lowercase().replace("\\s".toRegex(), "")
-                    if (submit(tx)) {
-                        keyboardController?.hide()
-                        msg.text = ""
-                    }
+            IconButton(modifier = Modifier.testTag("submitWordButton"), onClick = {
+                val tx = msg.text.lowercase().replace("\\s".toRegex(), "")
+                if (submit(tx)) {
+                    keyboardController?.hide()
+                    msg.text = ""
                 }
-            ) {
+            }) {
                 Icon(
                     imageVector = Icons.Filled.CheckCircle,
                     contentDescription = "Submit word",
@@ -219,8 +234,7 @@ class WordleGameActivity : ComponentActivity() {
             items(tiles.size) { i ->
 
                 TileContainer(
-                    Modifier.testTag("wordle_tile_id_$id"),
-                    tile = tiles[i]
+                    Modifier.testTag("wordle_tile_id_$id"), tile = tiles[i]
                 )
                 ++id
             }
@@ -233,21 +247,17 @@ class WordleGameActivity : ComponentActivity() {
      */
     @Composable
     private fun TileContainer(
-        modifier: Modifier,
-        tile: WordleGameState.Tile
+        modifier: Modifier, tile: WordleGameState.Tile
     ) {
         val shape = remember1 { RoundedCornerShape(4.dp) }
         Box(
-            modifier = modifier
-                .size(
+            modifier = modifier.size(
                     width = 29.dp,
                     height = 40.dp,
-                )
-                .background(
+                ).background(
                     color = Color(tile.state.argb),
                     shape = shape,
-                )
-                .run {
+                ).run {
 
                     this
 
@@ -269,26 +279,20 @@ class WordleGameActivity : ComponentActivity() {
 
         val keyboardController = LocalSoftwareKeyboardController.current
 
-        OutlinedTextField(
-            value = text,
-            label = {
-                Text(text = SUBMISSION_TEXTFIELD)
-            },
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    val tx = msg.text.lowercase().replace("\\s".toRegex(), "")
-                    if (submit(tx)) {
-                        keyboardController?.hide()
-                        msg.text = ""
-                    }
-                }
-            ),
+        OutlinedTextField(value = text, label = {
+            Text(text = SUBMISSION_TEXTFIELD)
+        }, keyboardActions = KeyboardActions(onDone = {
+            val tx = msg.text.lowercase().replace("\\s".toRegex(), "")
+            if (submit(tx)) {
+                keyboardController?.hide()
+                msg.text = ""
+            }
+        }),
             //onImeActionPerformed = {},
             onValueChange = {
                 text = it
                 msg.text = it.text
-            },
-            singleLine = true
+            }, singleLine = true
         )
     }
 }
