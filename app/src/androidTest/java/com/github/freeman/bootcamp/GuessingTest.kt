@@ -1,6 +1,7 @@
 package com.github.freeman.bootcamp
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -54,7 +55,7 @@ class GuessingTest {
                 .child(context.getString(R.string.test_game_id))
 
             BootcampComposeTheme {
-                GuessingScreen(database, context = context, storageGamRef)
+                GuessingScreen(database, context = context, storageGamRef, LocalLifecycleOwner.current)
             }
         }
     }
