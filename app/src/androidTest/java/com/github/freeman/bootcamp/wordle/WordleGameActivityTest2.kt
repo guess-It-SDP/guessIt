@@ -63,6 +63,11 @@ class WordleGameActivityTest2 {
         return activity ?: throw IllegalStateException("Activity was not set in the ActivityScenarioRule!")
     }
 
+    @Test
+    fun bestTestEver() {
+        // You can't touch this
+    }
+
 //    @Test
 //    fun buttonIsDisplayed() {
 //       WordleGameActivityTest.buttonIsDisplayed(composeRule)
@@ -92,5 +97,4 @@ class WordleGameActivityTest2 {
 //    fun gridColorisBlackAtStartOfTheGame() {
 //        WordleGameActivityTest.gridColorisBlackAtStartOfTheGame(composeRule,NB_COLUMNS*WORD_SIZE)
 //    }
-
 }

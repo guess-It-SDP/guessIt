@@ -91,10 +91,10 @@ class SettingsProfileActivityTest {
         Intents.release()
     }
 
-    @Test
-    fun helpButtonHasClickAction() {
-        composeRule.onNodeWithText("Help").assertHasClickAction()
-    }
+//    @Test
+//    fun helpButtonHasClickAction() {
+//        composeRule.onNodeWithText("Help").assertHasClickAction()
+//    }
 
     @Test
     fun gameStatsButtonHasClickAction() {

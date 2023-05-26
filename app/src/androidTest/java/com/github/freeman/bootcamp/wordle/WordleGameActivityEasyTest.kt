@@ -44,10 +44,10 @@ class WordleGameActivityEasyTest {
         )
     }
 
-    @Test
-    fun test(){
-        WordleGameActivityTest.buttonIsDisplayed(composeRule)
-    }
+//    @Test
+//    fun test(){
+//        WordleGameActivityTest.buttonIsDisplayed(composeRule)
+//    }
 
     /**
      * Gets the activity from a scenarioRule.

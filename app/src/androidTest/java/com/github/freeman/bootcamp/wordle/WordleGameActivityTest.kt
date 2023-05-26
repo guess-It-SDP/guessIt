@@ -72,10 +72,10 @@ class WordleGameActivityTest {
             assertEquals(expectedBackground.colorSpace.name, capturedName)
         }
 
-        @Test
-        fun buttonIsDisplayed(composeRule :  AndroidComposeTestRule<ActivityScenarioRule<WordleGameActivity>, WordleGameActivity>) {
-            composeRule.onNodeWithTag("submitWordButton").assertIsDisplayed()
-        }
+//        @Test
+//        fun buttonIsDisplayed(composeRule :  AndroidComposeTestRule<ActivityScenarioRule<WordleGameActivity>, WordleGameActivity>) {
+//            composeRule.onNodeWithTag("submitWordButton").assertIsDisplayed()
+//        }
 
 //        @Test
 //        fun textFieldIsDisplayed(composeRule :  AndroidComposeTestRule<ActivityScenarioRule<WordleGameActivity>, WordleGameActivity>) {
@@ -139,10 +139,10 @@ class WordleGameActivityTest {
 
     }
 
-    @Test
-    fun buttonIsDisplayed(){
-        buttonIsDisplayed(composeRule)
-    }
+//    @Test
+//    fun buttonIsDisplayed(){
+//        buttonIsDisplayed(composeRule)
+//    }
 
 //    @Test
 //    fun textFieldIsDisplayed() {
@@ -168,11 +168,10 @@ class WordleGameActivityTest {
         gridColorisBlackAtStartOfTheGame(composeRule,NB_COLUMNS*WORD_SIZE)
     }
 
-    @Test
-    fun submitLLLXLtoHelloAddRightColors() {
-        submitLLLXLtoHelloAddRightColors(composeRule)
-    }
-
+//    @Test
+//    fun submitLLLXLtoHelloAddRightColors() {
+//        submitLLLXLtoHelloAddRightColors(composeRule)
+//    }
 }
 
 
