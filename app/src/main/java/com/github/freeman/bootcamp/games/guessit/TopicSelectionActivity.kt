@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.R
-import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NB_TOPICS
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.SELECT_TOPIC
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.TopicSelectionActivity.Companion.topics
@@ -46,10 +45,6 @@ class TopicSelectionActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
         dbref = getGameDBRef(this, gameId)
-        topics.clear()
-        for (i in 0 until NB_TOPICS) {
-            topics.add(intent.getStringExtra("topic$i").toString())
-        }
 
         // inform database that a player is in the topic selection phase
         dbref.child(getString(R.string.current_state_path))
@@ -167,6 +162,7 @@ fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
     val topic1 = remember { mutableStateOf(topics[1]) }
     val topic2 = remember { mutableStateOf(topics[2]) }
     val topicList = listOf(topic0, topic1, topic2)
+    refreshTopics(context, dbref, topicList)
 
     Column(
         modifier = Modifier

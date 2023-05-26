@@ -2,6 +2,7 @@ package com.github.freeman.bootcamp
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
@@ -37,7 +38,7 @@ class DrawingActivityTest {
     private fun setContent() {
         composeRule.setContent {
             val dbref = getGameDBRef(context)
-            DrawingScreen(dbref,"127")
+            DrawingScreen(dbref)
         }
     }
 

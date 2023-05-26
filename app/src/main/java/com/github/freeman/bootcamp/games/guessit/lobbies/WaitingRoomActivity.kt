@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.GameManagerService
-import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.CATEGORY_INFO
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.KICKED
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.START_GAME
@@ -59,7 +58,7 @@ import com.google.firebase.storage.ktx.storage
 /**
  *  A screen where players wait until the host starts the game.
  *  When the activity is created, it retrieves the user's ID and the game ID from the intent that
- *  started it. It also initializes a list of all topics that will be used in the game.
+ *  started it.
  *  It displays a top app bar with information about the room, a list of players currently in the
  *  room, and a "Start" button. The activity listens to changes in the game state and updates the
  *  UI accordingly. When the game state changes to "play game", the activity starts the appropriate
@@ -75,17 +74,10 @@ class WaitingRoomActivity: ComponentActivity() {
 
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
 
-        val allTopics = ArrayList<String>()
-
         val database = Firebase.database.reference
         val dbRef = getGameDBRef(this, gameId)
 
         val storage = Firebase.storage.reference
-
-
-        for (i in 0 until GameOptionsActivity.NB_TOPICS) {
-            allTopics.add(intent.getStringExtra("topic$i").toString())
-        }
 
         setContent {
             val context = LocalContext.current
@@ -104,15 +96,14 @@ class WaitingRoomActivity: ComponentActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         val gameState = snapshot.getValue<String>()!!
-                        if (gameState == getString(R.string.state_newturn)) {
+                        if (gameState == getString(R.string.state_initialize)) {
                             val intent = Intent(context, GameManagerService::class.java)
                             intent.apply {
                                 putExtra(getString(R.string.gameId_extra), gameId)
-                                for (i in allTopics.indices) {
-                                    putExtra("topic$i", allTopics[i])
-                                }
                             }
                             context.startService(intent)
+                            val activity = (context as? Activity)
+                            activity?.finish()
                         } else if (gameState == getString(R.string.state_lobbyclosed)) {
                             dbRef.removeValue()
                             val activity = (context as? Activity)
@@ -222,7 +213,6 @@ class WaitingRoomActivity: ComponentActivity() {
     companion object {
         const val TOPBAR_TEXT = "Waiting Room"
         const val CATEGORY_INFO = "Category :"
-        const val NB_ROUNDS_INFO = "Number of rounds :"
         const val START_GAME = "Start"
         const val KICKED = "You have been kicked by host"
     }
@@ -596,7 +586,9 @@ fun StartButton(
             enabled = userId == hostId.value && players.size >= 2,
             onClick = {
                 dbRef.child(context.getString(R.string.current_state_path))
-                    .setValue(context.getString(R.string.state_newturn))
+                    .setValue(context.getString(R.string.state_initialize))
+                val activity = (context as? Activity)
+                activity?.finish()
             }
         ) {
             Text(START_GAME)
