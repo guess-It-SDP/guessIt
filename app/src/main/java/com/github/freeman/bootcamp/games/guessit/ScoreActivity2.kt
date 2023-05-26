@@ -45,6 +45,7 @@ import io.agora.agorauikit_android.AgoraVideoViewer
 class ScoreActivity2 : ComponentActivity() {
     var agoraView  : AgoraVideoViewer? = null
 
+    @OptIn(ExperimentalUnsignedTypes::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameID = intent.getStringExtra(getString(R.string.gameId_extra))!!
@@ -79,8 +80,6 @@ class ScoreActivity2 : ComponentActivity() {
                             if (gameState != context.getString(R.string.state_scorerecap)) {
                                 Log.d("VideoCall", "State scorerecap changed")
                                 inScoreRecap = false
-                                val activity = context as? Activity
-                                activity?.finish()
                             }
                         }
                     }
@@ -91,7 +90,7 @@ class ScoreActivity2 : ComponentActivity() {
 
                 Surface {
                     Column {
-                        CurrentScoreboard(usersToScores = usersToScores, gameID)
+                        CurrentScoreboard(usersToScores = usersToScores)
                         if(inScoreRecap) {
                             val permissionLauncher = rememberLauncherForActivityResult(
                                 contract = ActivityResultContracts.RequestMultiplePermissions(),
@@ -145,7 +144,7 @@ class ScoreActivity2 : ComponentActivity() {
 }
 
 @Composable
-fun CurrentScoreboard(usersToScores: List<Pair<String?, Int>>, gameID: String) {
+fun CurrentScoreboard(usersToScores: List<Pair<String?, Int>>) {
 
     Box(
         modifier = Modifier

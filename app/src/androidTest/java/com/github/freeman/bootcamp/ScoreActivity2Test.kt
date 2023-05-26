@@ -55,7 +55,7 @@ class ScoreActivity2Test {
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    CurrentScoreboard(usersToScores = usersToScores, "fakeID")
+                    CurrentScoreboard(usersToScores = usersToScores)
             //        VideoScreen(roomName = "test", testing = false)
                 }
             }
