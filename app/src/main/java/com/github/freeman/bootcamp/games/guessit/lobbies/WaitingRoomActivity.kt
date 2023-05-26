@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.GameManagerService
-import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.CATEGORY_INFO
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.KICKED
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.START_GAME
@@ -97,12 +96,14 @@ class WaitingRoomActivity: ComponentActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         val gameState = snapshot.getValue<String>()!!
-                        if (gameState == getString(R.string.state_newturn)) {
+                        if (gameState == getString(R.string.state_initialize)) {
                             val intent = Intent(context, GameManagerService::class.java)
                             intent.apply {
                                 putExtra(getString(R.string.gameId_extra), gameId)
                             }
                             context.startService(intent)
+                            val activity = (context as? Activity)
+                            activity?.finish()
                         } else if (gameState == getString(R.string.state_lobbyclosed)) {
                             dbRef.removeValue()
                             val activity = (context as? Activity)
@@ -212,7 +213,6 @@ class WaitingRoomActivity: ComponentActivity() {
     companion object {
         const val TOPBAR_TEXT = "Waiting Room"
         const val CATEGORY_INFO = "Category :"
-        const val NB_ROUNDS_INFO = "Number of rounds :"
         const val START_GAME = "Start"
         const val KICKED = "You have been kicked by host"
     }
@@ -586,7 +586,9 @@ fun StartButton(
             enabled = userId == hostId.value && players.size >= 2,
             onClick = {
                 dbRef.child(context.getString(R.string.current_state_path))
-                    .setValue(context.getString(R.string.state_newturn))
+                    .setValue(context.getString(R.string.state_initialize))
+                val activity = (context as? Activity)
+                activity?.finish()
             }
         ) {
             Text(START_GAME)

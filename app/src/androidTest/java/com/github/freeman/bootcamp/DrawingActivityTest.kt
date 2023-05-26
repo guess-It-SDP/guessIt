@@ -38,7 +38,7 @@ class DrawingActivityTest {
     private fun setContent() {
         composeRule.setContent {
             val dbref = getGameDBRef(context)
-            DrawingScreen(dbref,"127")
+            DrawingScreen(dbref)
         }
     }
 
