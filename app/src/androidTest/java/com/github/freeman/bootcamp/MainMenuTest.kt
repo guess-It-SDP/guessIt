@@ -54,7 +54,7 @@ class MainMenuTest {
         Intents.init()
 
         composeRule.onNodeWithTag("playButton").performClick()
-        Intents.intended(IntentMatchers.hasComponent(CreateJoinActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(GamesMenuActivity::class.java.name))
 
         Intents.release()
     }
@@ -94,7 +94,7 @@ class MainMenuTest {
     fun chatTestIntentIsSent() {
         Intents.init()
 
-        composeRule.onNodeWithText(CHAT).performClick()
+        composeRule.onNodeWithText(CHAT, substring = true).performClick()
         Intents.intended(IntentMatchers.hasComponent(ChatActivity::class.java.name))
 
         Intents.release()
