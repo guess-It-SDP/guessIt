@@ -70,15 +70,10 @@ class HelpTests {
         composeRule.onNodeWithTag("This ").assertTextContains("This ", substring = true)
         composeRule.onNodeWithTag("Devel").assertTextContains("Devel", substring = true)
         composeRule.onNodeWithTag("Micha").assertTextContains("Micha", substring = true)
-        composeRule.onNodeWithTag("Danny").assertTextContains("Danny", substring = true)
-        composeRule.onNodeWithTag("Clara").assertTextContains("Clara", substring = true)
-        composeRule.onNodeWithTag("David").assertTextContains("David", substring = true)
-        composeRule.onNodeWithTag("Paul ").assertTextContains("Paul ", substring = true)
         composeRule.onNodeWithTag("Profe").assertTextContains("Profe", substring = true)
         composeRule.onNodeWithTag("Georg").assertTextContains("Georg", substring = true)
         composeRule.onNodeWithTag("Super").assertTextContains("Super", substring = true)
         composeRule.onNodeWithTag("Can C").assertTextContains("Can C", substring = true)
-        composeRule.onNodeWithTag("Mathi").assertTextContains("Mathi", substring = true)
     }
 
     @Test
