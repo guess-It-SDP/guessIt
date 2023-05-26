@@ -71,7 +71,9 @@ class TopAppBarsTest {
         composeRule.onNodeWithText("Parameters").performClick()
 
         composeRule.onNodeWithTag("topAppbarSettings").assertIsDisplayed()
-        composeRule.onNodeWithTag("topAppbarSettingsTitle").assertTextContains(SettingsActivity.PARAMETERS_TITLE)
+        composeRule.onNodeWithTag("topAppbarSettingsTitle").assertTextContains(
+            SettingsActivity.PARAMETERS_TITLE
+        )
         composeRule.onNodeWithTag("appBarBack").assertIsDisplayed()
         composeRule.onNodeWithTag("appBarBack").assertHasClickAction()
     }
@@ -184,7 +186,7 @@ class TopAppBarsTest {
         composeRule.onNodeWithText("Easy", substring = true).performClick()
 
         composeRule.onNodeWithTag("topAppbarWordleGame").assertIsDisplayed()
-        composeRule.onNodeWithTag("topAppbarWordleGame").assertTextContains(
+        composeRule.onNodeWithTag("topAppbarWordleGameTitle").assertTextContains(
             WordleGameActivity.WORDLE_GAME_TITLE
         )
         composeRule.onNodeWithTag("appBarBack").assertIsDisplayed()

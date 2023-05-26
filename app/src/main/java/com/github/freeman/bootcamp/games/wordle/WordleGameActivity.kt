@@ -315,6 +315,7 @@ fun TopAppbarWordleGame() {
         modifier = Modifier.testTag("topAppbarWordleGame"),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarWordleGameTitle"),
                 text = WORDLE_GAME_TITLE,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
