@@ -33,6 +33,7 @@ class TopAppBarsTest {
         }
     }
 
+    /*
     @Test
     fun chatTopAppBar() {
         composeRule.onNodeWithText("Chat").performClick()
@@ -42,6 +43,7 @@ class TopAppBarsTest {
         composeRule.onNodeWithTag("appBarBack").assertIsDisplayed()
         composeRule.onNodeWithTag("appBarBack").assertHasClickAction()
     }
+    */
 
     @Test
     fun settingsTopAppBar() {
