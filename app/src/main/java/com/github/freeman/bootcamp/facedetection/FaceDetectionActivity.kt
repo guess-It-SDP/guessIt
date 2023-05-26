@@ -60,7 +60,7 @@ class FaceDetectionActivity : ComponentActivity() {
                 val options = options()
                 val detector = FaceDetection.getClient(options)
                 detector.process(image).addOnSuccessListener { faces ->
-                    val canvas = Canvas(bitmap!!)
+                    val canvas = Canvas(bitmap.copy(Bitmap.Config.ARGB_8888,true)!!)
                     val paint = paint()
                     faces.forEach { face ->
 
