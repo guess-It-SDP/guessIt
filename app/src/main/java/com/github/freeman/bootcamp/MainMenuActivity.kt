@@ -96,7 +96,7 @@ class MainMenuActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String, icon: ImageVector = Icons.Default.Add) {
+fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String, icon: ImageVector = Icons.Default.Add, enabled: Boolean = true) {
     ElevatedButton(
         modifier= Modifier
             .testTag(testTag)

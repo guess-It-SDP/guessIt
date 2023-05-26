@@ -432,7 +432,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context, storageGameRe
                 }
 
                 if (timer == context.getString(R.string.timer_inprogress)) {
-                    TimerScreen(dbrefTimer, 60L, fontSize = 30.sp, textColor = Color.DarkGray)
+                    TimerScreen(dbrefTimer, 60L, fontSize = 30.sp)
                 }
 
                 ScoreScreen(dbrefGame)

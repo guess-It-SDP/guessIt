@@ -134,21 +134,19 @@ fun GameRecapButton(context: Context, gameID: String){
             override fun onCancelled(error: DatabaseError) {}
         })
 
-    if (displayButton.value) {
-        MainMenuButton(
-            testTag = "gameRecapButton",
-            onClick = {
-                val intent = Intent(context, ShareRecapActivity::class.java)
-                intent.putExtra(context.getString(R.string.gameId_extra), gameID)
-                context.startActivity(intent)
-                val activity = (context as? Activity)
-                activity?.finish()
-            },
-            text = GAME_RECAP,
-            icon = ImageVector.vectorResource(R.drawable.video)
-        )
-    }
-
+    MainMenuButton(
+        testTag = "gameRecapButton",
+        onClick = {
+            val intent = Intent(context, ShareRecapActivity::class.java)
+            intent.putExtra(context.getString(R.string.gameId_extra), gameID)
+            context.startActivity(intent)
+            val activity = (context as? Activity)
+            activity?.finish()
+        },
+        text = GAME_RECAP,
+        icon = ImageVector.vectorResource(R.drawable.video),
+        enabled = displayButton.value
+    )
 }
 
 @Composable
