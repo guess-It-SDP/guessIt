@@ -64,7 +64,7 @@ class HelpTests {
     fun creditsScreenContainsCorrectTexts() {
         composeRule.onNodeWithTag("creditsButton").performClick()
 
-        composeRule.onNodeWithTag("topBarCreditsTitle").assertTextContains(TOPBAR_CREDITS_TEXT)
+        composeRule.onNodeWithTag("topAppbarCredits").assertTextContains(TOPBAR_CREDITS_TEXT)
         composeRule.onNodeWithTag("creditsScreen").assertIsDisplayed()
 
         composeRule.onNodeWithTag("This ").assertTextContains("This ", substring = true)

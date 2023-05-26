@@ -204,6 +204,7 @@ fun TopAppbarChat() {
         modifier = Modifier.testTag("topAppbarChat"),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarChatTitle"),
                 text = GLOBAL_CHAT_TILE,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,

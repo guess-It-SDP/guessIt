@@ -349,6 +349,7 @@ fun TopAppBarDrawHat(context: Context = LocalContext.current) {
         modifier = Modifier.testTag("topAppbarDrawHat"),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarDrawHatTitle"),
                 text = DRAW_HAT,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

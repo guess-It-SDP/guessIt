@@ -222,6 +222,7 @@ fun TopAppbarAccount(context: Context = LocalContext.current) {
         modifier = Modifier.testTag("topAppbarAccount"),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarAccountTitle"),
                 text = SCREEN_TITLE,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
@@ -233,10 +234,13 @@ fun TopAppbarAccount(context: Context = LocalContext.current) {
         backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
-            IconButton(onClick = {
-                val activity = (context as? Activity)
-                activity?.finish()
-            }) {
+            IconButton(
+                modifier = Modifier.testTag("appBarBack"),
+                onClick = {
+                    val activity = (context as? Activity)
+                    activity?.finish()
+                }
+            ) {
                 Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = "Go back",

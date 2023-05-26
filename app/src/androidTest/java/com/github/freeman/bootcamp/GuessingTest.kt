@@ -54,7 +54,7 @@ class GuessingTest {
                 .child(context.getString(R.string.test_game_id))
 
             BootcampComposeTheme {
-                GuessingScreen(database, context = context,guessGameId, storageGamRef)
+                GuessingScreen(database, context = context, storageGamRef)
             }
         }
     }
@@ -93,10 +93,4 @@ class GuessingTest {
         composeRule.onNodeWithTag("guessButton").performClick()
     }
 
-    @Test
-    fun popupIsDisplayedUponGuessingCorrectly() {
-        composeRule.onNode(hasSetTextAction()).performTextInput(answer)
-        composeRule.onNodeWithTag("guessButton").performClick()
-        composeRule.onNodeWithTag("popUpScreen").assertIsDisplayed()
-    }
 }

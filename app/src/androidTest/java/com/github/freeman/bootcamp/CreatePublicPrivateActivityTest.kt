@@ -9,7 +9,7 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity
-import com.github.freeman.bootcamp.games.guessit.lobbies.MainScreen
+import com.github.freeman.bootcamp.games.guessit.lobbies.PublicPrivateLobbyScreen
 import com.github.freeman.bootcamp.games.guessit.lobbies.TopAppbarPublicPrivate
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import org.junit.Before
@@ -28,8 +28,7 @@ class CreatePublicPrivateActivityTest {
         composeRule.setContent {
             BootcampComposeTheme {
                 TopAppbarPublicPrivate()
-
-                MainScreen()
+                PublicPrivateLobbyScreen()
             }
         }
     }

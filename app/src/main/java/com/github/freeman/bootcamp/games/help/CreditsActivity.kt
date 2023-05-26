@@ -120,7 +120,7 @@ fun CreditsDisplay() {
 fun TopAppbarCredits(context: Context = LocalContext.current) {
 
     TopAppBar(
-        modifier = Modifier.testTag("topAppbarCreditsRules"),
+        modifier = Modifier.testTag("topAppbarCredits"),
         title = {
             Text(
                 text = TOPBAR_CREDITS_TEXT,

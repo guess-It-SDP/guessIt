@@ -34,7 +34,6 @@ import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.BACK_TO
 import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.GAME_OVER
 import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.GAME_RECAP
 import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.WINNER_TITLE
-import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
@@ -98,9 +97,8 @@ fun FinalScreen(dbRef: DatabaseReference, gameID: String) {
         EndScoreboard(usersToScores)
         Spacer(modifier = Modifier.size(50.dp))
 
-        BackToMenuButton(context)
-        Spacer(Modifier.size(10.dp))
         GameRecapButton(context, gameID)
+        BackToMenuButton(context)
 
     }
 }
@@ -115,7 +113,7 @@ fun GameRecapButton(context: Context, gameID: String){
             context.startActivity(intent)
         },
         text = GAME_RECAP,
-        icon = ImageVector.vectorResource(R.drawable.menu)
+        icon = ImageVector.vectorResource(R.drawable.video)
     )
 }
 
@@ -180,9 +178,9 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
             // Display the winner alongside celebration and trophy images
             Row {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable._09089),
+                    modifier = Modifier.testTag("celebration1").size(40.dp),
+                    imageVector = ImageVector.vectorResource(R.drawable.guessitvictory),
                     contentDescription = context.getString(R.string.trophy),
-                    modifier = Modifier.size(40.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(10.dp))
@@ -201,9 +199,9 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.palette),
+                    modifier = Modifier.testTag("celebration2").size(40.dp),
+                    imageVector = ImageVector.vectorResource(R.drawable.guessitvictory),
                     contentDescription = context.getString(R.string.trophy),
-                    modifier = Modifier.size(40.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

@@ -118,16 +118,6 @@ class WordleGameActivity : ComponentActivity() {
     }
 
     /**
-     * used in testing to get hardcoded word hello
-     */
-    private fun testingSetUp() {
-        val testing = intent.getBooleanExtra("testing", false)
-        if (testing) {
-            wordle = wordle.withSetWordToGuess("hello")
-        }
-    }
-
-    /**
      * Submit a word, used in WordleButton()
      * @return true if the entry text is valid, false otherwise
      */
@@ -324,7 +314,7 @@ fun TopAppbarWordleGame() {
     TopAppBar(
         modifier = Modifier.testTag("topAppbarWordleGame"),
         title = {
-            androidx.compose.material3.Text(
+            Text(
                 text = WORDLE_GAME_TITLE,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,

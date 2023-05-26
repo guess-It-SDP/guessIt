@@ -101,6 +101,7 @@ fun TopAppbarCreateJoin(context: Context = LocalContext.current) {
         modifier = Modifier.testTag(context.getString(R.string.createjoin_topbar)),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarCreateJoinTitle"),
                 text = TOPBAR_TEXT,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,

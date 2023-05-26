@@ -455,6 +455,7 @@ fun TopAppbarGameOptions(context: Context = LocalContext.current) {
         modifier = Modifier.testTag("topBarGameOptions"),
         title = {
             Text(
+                modifier = Modifier.testTag("topBarGameOptionsTitle"),
                 text = TOPBAR_GAMEOPTIONS_TEXT,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,

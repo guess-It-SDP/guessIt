@@ -137,6 +137,7 @@ fun TopAppbarLobbies(context: Context = LocalContext.current, enterPassword: Mut
         modifier = Modifier.testTag("topAppbarLobbies"),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarLobbiesTitle"),
                 text = TOPBAR_TEXT,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -148,14 +149,17 @@ fun TopAppbarLobbies(context: Context = LocalContext.current, enterPassword: Mut
         backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
-            IconButton(onClick = {
-                if (enterPassword.value) {
-                    enterPassword.value = false
-                } else {
-                    val activity = (context as? Activity)
-                    activity?.finish()
+            IconButton(
+                modifier = Modifier.testTag("appBarBack"),
+                onClick = {
+                    if (enterPassword.value) {
+                        enterPassword.value = false
+                    } else {
+                        val activity = (context as? Activity)
+                        activity?.finish()
+                    }
                 }
-            }) {
+            ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Go back",

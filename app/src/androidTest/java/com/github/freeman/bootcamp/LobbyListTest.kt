@@ -74,6 +74,7 @@ class LobbyListTest {
         }
 
         composeRule.onNodeWithTag("playButton").performClick()
+        composeRule.onNodeWithText("Guess It!").performClick()
         composeRule.onNodeWithTag("joiningGameButton").performClick()
     }
 

@@ -9,10 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -86,7 +83,8 @@ fun TopAppBarSettings(context: Context = LocalContext.current) {
     TopAppBar(
         modifier = Modifier.testTag("topAppbarSettings"),
         title = {
-            androidx.compose.material.Text(
+            Text(
+                modifier = Modifier.testTag("topAppbarSettingsTitle"),
                 text = PARAMETERS_TITLE,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -98,14 +96,14 @@ fun TopAppBarSettings(context: Context = LocalContext.current) {
         backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
-            androidx.compose.material.IconButton(
+            IconButton(
                 onClick = {
                     val activity = (context as? Activity)
                     activity?.finish()
                 },
-                modifier = Modifier.testTag("settingsBackButton")
+                modifier = Modifier.testTag("appBarBack")
             ) {
-                androidx.compose.material.Icon(
+                Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
                     tint = MaterialTheme.colorScheme.primary,

@@ -70,6 +70,7 @@ fun TopAppbarPublicPrivate(context: Context = LocalContext.current) {
         modifier = Modifier.testTag("topAppbarPublicPrivate"),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarPublicPrivateTitle"),
                 text = TOPBAR_TEXT,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,

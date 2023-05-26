@@ -74,6 +74,7 @@ fun GamesMenuScreen() {
         content = {
 
             Text(
+                modifier = Modifier.testTag("gamesMenuText"),
                 text = GAMES_MENU_TEXT,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
@@ -125,6 +126,7 @@ fun TopAppbarGamesMenu() {
         modifier = Modifier.testTag("topAppbarGamesMenu"),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarGamesMenuTitle"),
                 text = GAMES_MENU_TITLE,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,

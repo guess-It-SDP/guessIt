@@ -126,6 +126,7 @@ fun TopAppbarSettings(context: Context = LocalContext.current) {
         modifier = Modifier.testTag("topAppbarProfile"),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarProfileTitle"),
                 text = SETTINGS_TITLE,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

@@ -156,6 +156,7 @@ fun TopAppbarWordleMenu() {
         modifier = Modifier.testTag("topAppbarWordleMenu"),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarWordleMenuTitle"),
                 text = WORDLE_MENU_TITLE,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,

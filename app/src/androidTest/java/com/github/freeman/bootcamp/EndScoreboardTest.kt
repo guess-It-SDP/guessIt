@@ -99,12 +99,8 @@ class EndScoreboardTest {
     }
 
     @Test
-    fun trophyImageIsDisplayed() {
-        composeRule.onNodeWithTag("trophy").assertIsDisplayed()
-    }
-
-    @Test
     fun celebrationImageIsDisplayed() {
-        composeRule.onNodeWithTag("celebration").assertIsDisplayed()
+        composeRule.onNodeWithTag("celebration1").assertIsDisplayed()
+        composeRule.onNodeWithTag("celebration2").assertIsDisplayed()
     }
 }

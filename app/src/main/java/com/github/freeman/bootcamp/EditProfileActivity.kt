@@ -231,6 +231,7 @@ fun TopAppbarEditProfile(context: Context = LocalContext.current) {
         modifier = Modifier.testTag("topAppbarEditProfile"),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarEditProfileTitle"),
                 text = TOPBAR_TEXT,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
