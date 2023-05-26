@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp.games.guessit
 
+import android.app.Service
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,6 +12,7 @@ import com.arthenica.mobileffmpeg.FFmpeg
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.facedetection.FaceDetectionActivity.Companion.transformBitmapToDrawOnFaces
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -180,9 +182,19 @@ class VideoCreator {
                 val storageRef = Firebase.storage.reference.child(context.getString(R.string.game_recaps_path))
                     .child(gameID).child(videoFileName)
                 storageRef.putFile(videoFile.toUri())
+
+                Firebase.database.reference
+                    .child(context.getString(R.string.games_path))
+                    .child(gameID)
+                    .child("recap_created")
+                    .setValue(true)
+
+                val ctx = context as Service
+                ctx.stopSelf()
             } else {
                 // error creating video
                 Toast.makeText(context, "error $rc : video not created", Toast.LENGTH_SHORT).show()
+                createRecap(context, gameID)
             }
         }
     }

@@ -39,7 +39,15 @@ import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.WINNER_
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 
 class FinalActivity : ComponentActivity() {
 
@@ -113,7 +121,27 @@ fun FinalScreen(dbRef: DatabaseReference, gameID: String) {
 
 @Composable
 fun GameRecapButton(context: Context, gameID: String, dbRef: DatabaseReference){
+
+    val displayButton = remember { mutableStateOf(false) }
+
+    Firebase.database.reference
+        .child(context.getString(R.string.games_path))
+        .child(gameID)
+        .child("recap_created")
+        .addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    if (snapshot.getValue<Boolean>()!!) {
+                        displayButton.value = true
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+
     ElevatedButton(
+        enabled = displayButton.value,
         onClick = {
             val intent = Intent(context, ShareRecapActivity::class.java)
             intent.putExtra(context.getString(R.string.gameId_extra), gameID)
@@ -234,7 +262,8 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
                             text = name,
                             color = Color.White,
                             style = MaterialTheme.typography.body1,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier
+                                .weight(1f)
                                 .padding(horizontal = 20.dp, vertical = 10.dp)
                                 .testTag("end$name")
                         )

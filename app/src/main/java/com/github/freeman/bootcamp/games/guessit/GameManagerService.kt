@@ -88,6 +88,9 @@ class GameManagerService : Service() {
                                                     getString(R.string.state_gameover) -> {
                                                         gameOver(gameID)
                                                     }
+                                                    getString(R.string.state_playturn) -> {
+                                                        setTimerInProgress(gameDBRef)
+                                                    }
                                                 }
                                             }
                                         }
@@ -138,6 +141,10 @@ class GameManagerService : Service() {
     // Override required to extend Service
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    private fun setTimerInProgress(gameDBRef: DatabaseReference) {
+        gameDBRef.child(getString(R.string.current_timer_path)).setValue(getString(R.string.timer_inprogress))
     }
 
     private fun initializeGame(gameDBRef: DatabaseReference) {
@@ -243,6 +250,6 @@ class GameManagerService : Service() {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(getString(R.string.gameId_extra), gameID)
         startActivity(intent)
-        stopSelf()
+//        stopSelf()
     }
 }

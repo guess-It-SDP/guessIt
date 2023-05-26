@@ -431,10 +431,8 @@ lifecycleOwner: LifecycleOwner) {
                     )
                 }
 
-                if (timer != context.getString(R.string.timer_unused)
-                    && timer != context.getString(R.string.timer_over)) {
-                    val dbRefTimer = dbrefGame.child(context.getString(R.string.current_timer_path))
-                    TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.DarkGray)
+                if (timer == context.getString(R.string.timer_inprogress)) {
+                    TimerScreen(dbrefTimer, 60L, fontSize = 30.sp, textColor = Color.DarkGray)
                 }
 
                 ScoreScreen(dbrefGame)

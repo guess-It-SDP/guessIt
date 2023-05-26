@@ -132,8 +132,6 @@ fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, gameI
         .setValue(roundNb)
     dbref.child(context.getString(R.string.current_turn_path))
         .setValue(turnNb)
-    dbref.child(context.getString(R.string.current_timer_path))
-        .setValue(context.getString(R.string.timer_inprogress))
     dbref.child(context.getString(R.string.current_state_path))
         .setValue(context.getString(R.string.state_playturn))
 
