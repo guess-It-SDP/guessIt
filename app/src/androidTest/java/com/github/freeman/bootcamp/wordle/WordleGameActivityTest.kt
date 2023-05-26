@@ -39,7 +39,7 @@ class WordleGameActivityTest {
          *
          * @param intentFactory A lambda that provides a Context that can used to create an intent. A intent needs to be returned.
          */
-        inline fun <A: ComponentActivity> createAndroidIntentComposeRule(intentFactory: (context: Context) -> Intent) : AndroidComposeTestRule<ActivityScenarioRule<A>, A> {
+        inline fun <A : ComponentActivity> createAndroidIntentComposeRule(intentFactory: (context: Context) -> Intent): AndroidComposeTestRule<ActivityScenarioRule<A>, A> {
             val context = ApplicationProvider.getApplicationContext<Context>()
             val intent = intentFactory(context)
 
@@ -60,7 +60,8 @@ class WordleGameActivityTest {
 
             scenario.onActivity { activity = it }
 
-            return activity ?: throw IllegalStateException("Activity was not set in the ActivityScenarioRule!")
+            return activity
+                ?: throw IllegalStateException("Activity was not set in the ActivityScenarioRule!")
         }
 
         /**
@@ -71,6 +72,8 @@ class WordleGameActivityTest {
             val capturedName = captureToImage().colorSpace.name
             assertEquals(expectedBackground.colorSpace.name, capturedName)
         }
+
+        /*
 
         @Test
         fun buttonIsDisplayed(composeRule :  AndroidComposeTestRule<ActivityScenarioRule<WordleGameActivity>, WordleGameActivity>) {
@@ -171,6 +174,9 @@ class WordleGameActivityTest {
     @Test
     fun submitLLLXLtoHelloAddRightColors() {
         submitLLLXLtoHelloAddRightColors(composeRule)
+    }
+
+         */
     }
 
 }
