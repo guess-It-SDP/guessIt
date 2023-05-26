@@ -73,5 +73,5 @@ class ScoreActivity2Test {
     fun videoExist() {
         composeRule.onNodeWithTag("agora_video_view").assertExists()
     }
-    
+
 }
