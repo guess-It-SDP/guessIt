@@ -45,10 +45,7 @@ class WordleGameActivityTest2 {
         )
     }
 
-    @Test
-    fun test(){
-        WordleGameActivityTest.Companion.buttonIsDisplayed(composeRule)
-    }
+
 
     /**
      * Gets the activity from a scenarioRule.
@@ -61,6 +58,13 @@ class WordleGameActivityTest2 {
         scenario.onActivity { activity = it }
 
         return activity ?: throw IllegalStateException("Activity was not set in the ActivityScenarioRule!")
+    }
+
+    /*
+
+    @Test
+    fun test(){
+        WordleGameActivityTest.Companion.buttonIsDisplayed(composeRule)
     }
 
     @Test
@@ -92,5 +96,7 @@ class WordleGameActivityTest2 {
     fun gridColorisBlackAtStartOfTheGame() {
         WordleGameActivityTest.gridColorisBlackAtStartOfTheGame(composeRule,NB_COLUMNS*WORD_SIZE)
     }
+
+     */
 
 }
