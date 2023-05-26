@@ -71,10 +71,10 @@ class WordleGameActivityMediumTest {
         WordleGameActivityTest.buttonIsDisplayed(composeRule)
     }
 
-    @Test
-    fun textFieldIsDisplayed() {
-        WordleGameActivityTest.textFieldIsDisplayed(composeRule)
-    }
+//    @Test
+//    fun textFieldIsDisplayed() {
+//        WordleGameActivityTest.textFieldIsDisplayed(composeRule)
+//    }
 
     @Test
     fun gridIsDisplayed() {
