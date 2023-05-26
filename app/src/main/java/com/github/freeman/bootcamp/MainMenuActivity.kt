@@ -98,7 +98,8 @@ class MainMenuActivity : ComponentActivity() {
 @Composable
 fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String, icon: ImageVector = Icons.Default.Add, enabled: Boolean = true) {
     ElevatedButton(
-        modifier= Modifier
+        enabled = enabled,
+        modifier = Modifier
             .testTag(testTag)
             .padding(16.dp),
         onClick = onClick,
