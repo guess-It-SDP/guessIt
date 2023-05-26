@@ -1,8 +1,10 @@
 package com.github.freeman.bootcamp.games.guessit.lobbies
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,6 +22,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity.Companion.CREATE_GAME_BUTTON_TEXT
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity.Companion.JOINING_GAME_BUTTON_TEXT
@@ -32,7 +36,10 @@ import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 class CreateJoinActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 200)
+        }
         setContent {
             BootcampComposeTheme {
                 TopAppbarCreateJoin()
