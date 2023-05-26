@@ -30,7 +30,6 @@ class SettingsActivityTest {
 
     @Test
     fun settingsTitleIsDisplayed() {
-        startBackgroundMusicService()
         setDisplay()
         composeRule.onNode(hasTestTag(SETTINGS_TITLE)).assertExists()
     }
