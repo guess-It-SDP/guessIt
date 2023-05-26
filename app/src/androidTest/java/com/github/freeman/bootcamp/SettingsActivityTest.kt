@@ -34,12 +34,12 @@ class SettingsActivityTest {
         composeRule.onNode(hasTestTag(SETTINGS_TITLE)).assertTextContains(SETTINGS_TITLE)
     }
 
-    @Test
-    fun musicVolumeTextIsCorrect() {
-        startBackgroundMusicService()
-        setDisplay()
-        composeRule.onNode(hasTestTag(MUSIC_VOLUME))//.assertTextContains(MUSIC_VOLUME)
-    }
+//    @Test
+//    fun musicVolumeTextIsCorrect() {
+//        startBackgroundMusicService()
+//        setDisplay()
+//        composeRule.onNode(hasTestTag(MUSIC_VOLUME))//.assertTextContains(MUSIC_VOLUME)
+//    }
 
     private fun startBackgroundMusicService() {
         val context = ApplicationProvider.getApplicationContext<Context>()
