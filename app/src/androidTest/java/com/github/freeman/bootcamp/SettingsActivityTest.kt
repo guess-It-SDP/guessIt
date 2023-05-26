@@ -36,7 +36,6 @@ class SettingsActivityTest {
 
     @Test
     fun musicVolumeTextIsCorrect() {
-        startBackgroundMusicService()
         setDisplay()
         composeRule.onNode(hasTestTag(MUSIC_VOLUME)).assertExists()//.assertTextContains(MUSIC_VOLUME)
     }
