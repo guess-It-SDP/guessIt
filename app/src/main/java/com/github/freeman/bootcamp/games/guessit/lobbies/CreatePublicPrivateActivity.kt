@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +27,15 @@ import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActi
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.PUBLIC_TYPE_TEXT
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreatePublicPrivateActivity.Companion.TOPBAR_TEXT
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.unit.sp
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import com.github.freeman.bootcamp.MainMenuButton
 
 /**
  * Shows a screen where you can either choose to create a public or a private lobby
@@ -36,9 +46,10 @@ class CreatePublicPrivateActivity: ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                TopAppbarPublicPrivate()
-
-                MainScreen()
+                Surface {
+                    TopAppbarPublicPrivate()
+                    PublicPrivateLobbyScreen()
+                }
             }
         }
     }
@@ -52,8 +63,6 @@ class CreatePublicPrivateActivity: ComponentActivity() {
     }
 }
 
-
-
 @Composable
 fun TopAppbarPublicPrivate(context: Context = LocalContext.current) {
 
@@ -61,23 +70,29 @@ fun TopAppbarPublicPrivate(context: Context = LocalContext.current) {
         modifier = Modifier.testTag("topAppbarPublicPrivate"),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarPublicPrivateTitle"),
                 text = TOPBAR_TEXT,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 20.sp
             )
         },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
             IconButton(
-                modifier = Modifier.testTag("topAppbarPublicPrivateButton"),
+                modifier = Modifier
+                    .testTag("topAppbarPublicPrivateButton"),
                 onClick = {
-                val activity = (context as? Activity)
-                activity?.finish()
+                    val activity = (context as? Activity)
+                    activity?.finish()
             }) {
                 Icon(
-                    Icons.Filled.ArrowBack,
+                    imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
         }
@@ -85,7 +100,7 @@ fun TopAppbarPublicPrivate(context: Context = LocalContext.current) {
 }
 
 @Composable
-fun MainScreen() {
+fun PublicPrivateLobbyScreen() {
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -102,31 +117,31 @@ fun MainScreen() {
 @Composable
 private fun PublicLobbyButton() {
     val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("publicLobbyButton"),
+    MainMenuButton(
+        testTag = "publicLobbyButton",
         onClick = {
             context.startActivity(
                 Intent(context, GameOptionsActivity::class.java)
                     .putExtra(context.getString(R.string.type_extra), PUBLIC_TYPE_TEXT)
             )
-        }
-    ) {
-        Text(PUBLIC_BUTTON_TEXT)
-    }
+        },
+        text = PUBLIC_BUTTON_TEXT,
+        icon = ImageVector.vectorResource(R.drawable.publiclobby)
+    )
 }
 
 @Composable
 private fun PrivateLobbyButton() {
     val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("privateLobbyButton"),
+    MainMenuButton(
+        testTag = "privateLobbyButton",
         onClick = {
             context.startActivity(
                 Intent(context, GameOptionsActivity::class.java)
-                    .putExtra(context.getString(R.string.type_extra), PRIVATE_TYPE_TEXT)
+                    .putExtra(context.getString(R.string.type_extra), PUBLIC_TYPE_TEXT)
             )
-        }
-    ) {
-        Text(PRIVATE_BUTTON_TEXT)
-    }
+        },
+        text = PRIVATE_BUTTON_TEXT,
+        icon = Icons.Filled.Lock
+    )
 }

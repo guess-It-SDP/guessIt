@@ -50,6 +50,12 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.util.*
+import androidx.compose.material3.Surface
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.sp
+import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.TOPBAR_GAMEOPTIONS_TEXT
 
 
 /**
@@ -66,7 +72,10 @@ class GameOptionsActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                GameOptionsScreen(dbRef, lobbyType)
+                Surface {
+                    TopAppbarGameOptions()
+                    GameOptionsScreen(dbRef, lobbyType)
+                }
             }
         }
     }
@@ -79,6 +88,7 @@ class GameOptionsActivity : ComponentActivity() {
         const val DEFAULT_CATEGORY_SIZE = 0
         const val TOAST_TEXT = "Please first select a category"
         const val PASSWORD_PLACEHOLDER = "Enter a password"
+        const val TOPBAR_GAMEOPTIONS_TEXT = "Game Options"
 
         val categories = listOf("Animals", "People", "Objects")
         var selectedCategory = categories[0]
@@ -105,7 +115,7 @@ fun RoundsDisplay() {
  * Create the radio buttons in order to chose a different number of rounds to be played during the
  * Game.
  *
- * @param mItems list of possible number of rounds a player can chose
+ * @param mItems The list of possible number of rounds a player can chose
  * @param selected corresponds to the value inside the MutableState object currently chosen by the
  * player(has a default value)
  * @param setSelected corresponds to the function that can be used to update the value inside the
@@ -130,7 +140,8 @@ fun RoundsRadioButtons(mItems: List<String>, selected: String, setSelected: (sel
                         },
                         enabled = true,
                         colors = RadioButtonDefaults.colors(
-                            selectedColor = Color.Blue
+                            unselectedColor = MaterialTheme.colorScheme.primary,
+                            selectedColor = MaterialTheme.colorScheme.primary
                         )
                     )
                     Text(
@@ -204,20 +215,20 @@ fun CategoriesRadioButtons(selectedIndex: Int, setSelected: (selected: Int) -> U
                 },
                 border = BorderStroke(
                     1.dp, if (selectedIndex == index) {
-                        Color.Blue
+                        MaterialTheme.colorScheme.primary
                     } else {
-                        Color.Blue.copy(alpha = 0.75f)
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.75f)
                     }
                 ),
                 colors = if (selectedIndex == index) {
                     ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color.Blue.copy(alpha = 0.15f),
-                        contentColor = Color.Blue
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                        contentColor = MaterialTheme.colorScheme.primary
                     )
                 } else {
                     ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color.Blue.copy(alpha = 0.02f),
-                        contentColor = Color.Blue
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.02f),
+                        contentColor = MaterialTheme.colorScheme.primary
                     )
                 }
             ) {
@@ -237,7 +248,8 @@ fun NextButton(dbRef: DatabaseReference, lobbyType: String, password: String) {
         modifier = Modifier.testTag("nextButton"),
         onClick = {
             next(context, dbRef,lobbyType, password)
-        }
+        },
+        colors = ButtonDefaults.buttonColors()
     ) {
         Text(NEXT)
     }
@@ -328,22 +340,6 @@ fun fetchFromDB(context: Context, setSize: (topics: Int) -> Unit) {
     })
 }
 
-@Composable
-fun GameOptionsBackButton() {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("gameOptionsBackButton"),
-        onClick = {
-            backToMainMenu(context)
-        }
-    ) {
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Back arrow icon"
-        )
-    }
-}
-
 /**
  * It first checks if the context passed to the function is an instance of an Activity.
  * If it is, it calls the finish() method on the activity, which finishes the current
@@ -378,11 +374,6 @@ private fun PasswordInput(password: MutableState<String>) {
 
 }
 
-fun backToMainMenu(context: Context) {
-    val activity = (context as? Activity)
-    activity?.finish()
-}
-
 /**
  * Display the screen containing the different parameters the player can chose from to create
  * a new game.
@@ -411,19 +402,49 @@ fun GameOptionsScreen(dbRef: DatabaseReference, lobbyType: String) {
             text = ROUNDS_SELECTION
         )
         RoundsDisplay()
+        Spacer(modifier = Modifier.size(20.dp))
 
         if (lobbyType == PRIVATE_TYPE_TEXT) {
             PasswordInput(password)
+            Spacer(modifier = Modifier.size(20.dp))
         }
         NextButton(dbRef, lobbyType, password.value)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
-    ) {
-        GameOptionsBackButton()
-    }
+}
+
+@Composable
+fun TopAppbarGameOptions(context: Context = LocalContext.current) {
+
+    androidx.compose.material.TopAppBar(
+        modifier = Modifier.testTag("topBarGameOptions"),
+        title = {
+            Text(
+                modifier = Modifier.testTag("topBarGameOptionsTitle"),
+                text = TOPBAR_GAMEOPTIONS_TEXT,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 20.sp
+            )
+        },
+        backgroundColor = MaterialTheme.colorScheme.background,
+        elevation = 4.dp,
+        navigationIcon = {
+            IconButton(
+                modifier = Modifier
+                    .testTag("appBarBack"),
+                onClick = {
+                    val activity = (context as? Activity)
+                    activity?.finish()
+                }) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
+        }
+    )
 }

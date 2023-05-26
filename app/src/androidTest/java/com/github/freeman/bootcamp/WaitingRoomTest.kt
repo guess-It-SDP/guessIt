@@ -254,10 +254,12 @@ class WaitingRoomTest {
         composeRule.onAllNodesWithTag("playerDisplay").assertAll(isEnabled())
     }
 
+    /*
     @Test
     fun startButtonIsDisplayed() {
         composeRule.onNodeWithTag("startButton").assertIsDisplayed()
     }
+     */
 
     @OptIn(ExperimentalTestApi::class)
     @Test

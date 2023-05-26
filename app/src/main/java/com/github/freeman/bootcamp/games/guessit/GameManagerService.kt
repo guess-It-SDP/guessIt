@@ -88,6 +88,9 @@ class GameManagerService : Service() {
                                                     getString(R.string.state_gameover) -> {
                                                         gameOver(gameID)
                                                     }
+                                                    getString(R.string.state_playturn) -> {
+                                                        setTimerInProgress(gameDBRef)
+                                                    }
                                                 }
                                             }
                                         }
@@ -138,6 +141,10 @@ class GameManagerService : Service() {
     // Override required to extend Service
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    private fun setTimerInProgress(gameDBRef: DatabaseReference) {
+        gameDBRef.child(getString(R.string.current_timer_path)).setValue(getString(R.string.timer_inprogress))
     }
 
     private fun initializeGame(gameDBRef: DatabaseReference) {
@@ -213,14 +220,13 @@ class GameManagerService : Service() {
             turnNb += 1
         }
         if (isHost) {
-//            setNewArtist(gameDBRef)
             // Set the number of correct guesses to 0
             gameDBRef.child(getString(R.string.current_correct_guesses_path)).setValue(0)
             // Delete all the guesses
             gameDBRef.child(getString(R.string.guesses_path)).removeValue()
             // Change game state to start new turn
             // (wait 10 seconds so that players have time to see their scores)
-            Timer().schedule(10000) {
+            Timer().schedule(20000) {
                 gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_setartist))
                 Log.d("GameManagerD", "New turn state set")
             }
@@ -243,6 +249,6 @@ class GameManagerService : Service() {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(getString(R.string.gameId_extra), gameID)
         startActivity(intent)
-        stopSelf()
+//        stopSelf()
     }
 }

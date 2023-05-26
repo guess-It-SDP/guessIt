@@ -252,16 +252,8 @@ fun GuessingBar(
 
 @Composable
 fun GuessingScreen(dbrefGame: DatabaseReference, context: Context, storageGameRef: StorageReference,
-lifecycleOwner: LifecycleOwner) {
-    val imeState = rememberImeState()
+                   lifecycleOwner: LifecycleOwner) {
     val scrollState = rememberScrollState()
-
-    LaunchedEffect(key1 = imeState.value) {
-        if (imeState.value){
-            scrollState.animateScrollTo(scrollState.maxValue)
-        }
-    }
-
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
     var timer by remember { mutableStateOf("") }
@@ -283,17 +275,17 @@ lifecycleOwner: LifecycleOwner) {
     //the guesses made by the guessers
     dbrefGame.child(context.getString(R.string.guesses_path))
         .addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            if (snapshot.exists()) {
-                val guessesList = snapshot.getValue<ArrayList<Guess>>()!!
-                guesses = guessesList.toTypedArray()
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val guessesList = snapshot.getValue<ArrayList<Guess>>()!!
+                    guesses = guessesList.toTypedArray()
+                }
             }
-        }
 
-        override fun onCancelled(error: DatabaseError) {
-            // do nothing
-        }
-    })
+            override fun onCancelled(error: DatabaseError) {
+                // do nothing
+            }
+        })
 
     //the current round and turn (in the round)
     FirebaseUtilities.databaseGet(dbrefGame.child(context.getString(R.string.current_round_path)))
@@ -399,20 +391,20 @@ lifecycleOwner: LifecycleOwner) {
                 .testTag("guessingScreen")
         ) {
             Text(
-                    text = SCREEN_TEXT,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .testTag("guessText"),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
+                text = SCREEN_TEXT,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .testTag("guessText"),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
             )
 
             Box(
-                    modifier = Modifier
-                        .height(400.dp)
-                        .fillMaxWidth()
-                        .background(Color.White)
+                modifier = Modifier
+                    .height(400.dp)
+                    .fillMaxWidth()
+                    .background(Color.White)
             ) {
                 if (topicSelection) {
                     Text(
@@ -431,10 +423,8 @@ lifecycleOwner: LifecycleOwner) {
                     )
                 }
 
-                if (timer != context.getString(R.string.timer_unused)
-                    && timer != context.getString(R.string.timer_over)) {
-                    val dbRefTimer = dbrefGame.child(context.getString(R.string.current_timer_path))
-                    TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.DarkGray)
+                if (timer == context.getString(R.string.timer_inprogress)) {
+                    TimerScreen(dbrefTimer, 60L, fontSize = 30.sp)
                 }
 
                 ScoreScreen(dbrefGame)

@@ -95,4 +95,5 @@ class GuessingTest {
         composeRule.onNode(hasSetTextAction()).performTextInput("House")
         composeRule.onNodeWithTag("guessButton").performClick()
     }
+
 }

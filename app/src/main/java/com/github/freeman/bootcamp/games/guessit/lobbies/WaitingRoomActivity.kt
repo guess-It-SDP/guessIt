@@ -20,18 +20,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -41,8 +43,10 @@ import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.GameManagerService
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.CATEGORY_INFO
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.KICKED
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.NB_ROUNDS_INFO
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.START_GAME
 import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.TOPBAR_TEXT
+import com.github.freeman.bootcamp.games.guessit.lobbies.WaitingRoomActivity.Companion.WAITING_FOR_START_GAME
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.databaseGet
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
@@ -159,33 +163,34 @@ class WaitingRoomActivity: ComponentActivity() {
 
 
             BootcampComposeTheme {
+                Surface {
+                    Column{
+                        TopAppbarWaitingRoom(
+                            dbRef = dbRef,
+                            hostId = hostId,
+                            players = players,
+                            dbListener = dbListener,
+                            playersListener = playersListener
+                        )
 
-                Column{
-                    TopAppbarWaitingRoom(
-                        dbRef = dbRef,
-                        hostId = hostId,
-                        players = players,
-                        dbListener = dbListener,
-                        playersListener = playersListener
-                    )
+                        RoomInfo(
+                            dbRef = dbRef
+                        )
 
-                    RoomInfo(
-                        dbRef = dbRef
-                    )
+                        PlayerList(
+                            modifier = Modifier.weight(1f),
+                            dbRef = database,
+                            storageRef = storage,
+                            players = players,
+                            hostId = hostId.value,
+                            gameId = gameId
+                        )
 
-                    PlayerList(
-                        modifier = Modifier.weight(1f),
-                        dbRef = database,
-                        storageRef = storage,
-                        players = players,
-                        hostId = hostId.value,
-                        gameId = gameId
-                    )
-
-                    StartButton(
-                        dbRef = dbRef,
-                        players = players
-                    )
+                        StartButton(
+                            dbRef = dbRef,
+                            players = players
+                        )
+                    }
                 }
             }
 
@@ -213,8 +218,10 @@ class WaitingRoomActivity: ComponentActivity() {
     companion object {
         const val TOPBAR_TEXT = "Waiting Room"
         const val CATEGORY_INFO = "Category :"
+        const val NB_ROUNDS_INFO = "Number of rounds :"
         const val START_GAME = "Start"
         const val KICKED = "You have been kicked by host"
+        const val WAITING_FOR_START_GAME = "Waiting for the host to start"
     }
 }
 
@@ -244,11 +251,14 @@ fun TopAppbarWaitingRoom(
         title = {
             Text(
                 text = TOPBAR_TEXT,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 20.sp
             )
         },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
             IconButton(
@@ -272,6 +282,7 @@ fun TopAppbarWaitingRoom(
                 Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -310,7 +321,7 @@ fun RoomInfo(
             .testTag("roomInfo")
             .padding(8.dp)
             .clip(RoundedCornerShape(5.dp))
-            .background(Color.LightGray)
+            .background(MaterialTheme.colorScheme.primaryContainer)
     ) {
         Column(
             modifier = modifier
@@ -323,7 +334,9 @@ fun RoomInfo(
             Text(
                 text = lobbyName.value,
                 fontWeight = FontWeight.Bold,
-                fontSize = 25.sp
+                fontSize = 25.sp,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
 
             Column (
@@ -343,13 +356,17 @@ fun RoomInfo(
                     Text(
                         text = CATEGORY_INFO,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
 
                     Text(
                         text = category.value,
                         fontWeight = FontWeight.Normal,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
 
@@ -361,15 +378,19 @@ fun RoomInfo(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Number of rounds :",
+                        text = NB_ROUNDS_INFO,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
 
                     Text(
                         text = nbRounds.value.toString(),
                         fontWeight = FontWeight.Normal,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
@@ -514,9 +535,9 @@ fun PlayerDisplay(player: PlayerData, hostId: String, dbRef: DatabaseReference, 
             ) {
                 Text(
                     text = player.name,
-                    style = TextStyle(
-                        fontSize = 22.sp,
-                    ),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 22.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -534,7 +555,9 @@ fun PlayerDisplay(player: PlayerData, hostId: String, dbRef: DatabaseReference, 
                     enabled = currentPlayerIsHost, // Only enable the button for the host
                     onClick = {
                         kickedRef.setValue(true)
-                    }) {
+                    },
+                    colors = ButtonDefaults.buttonColors()
+                ) {
                     Image(
                         painterResource(id = R.drawable.kick_player_boot),
                         contentDescription = "Kick button icon",
@@ -589,9 +612,14 @@ fun StartButton(
                     .setValue(context.getString(R.string.state_initialize))
                 val activity = (context as? Activity)
                 activity?.finish()
-            }
+            },
+            colors = ButtonDefaults.buttonColors()
         ) {
-            Text(START_GAME)
+            if (userId == hostId.value) {
+                Text(START_GAME)
+            } else {
+                Text(WAITING_FOR_START_GAME)
+            }
         }
     }
 

@@ -2,32 +2,31 @@ package com.github.freeman.bootcamp
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.foundation.Image
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter.Companion.tint
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,7 +38,6 @@ import com.github.freeman.bootcamp.games.guessit.DisplayRecapsActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
-import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity
 import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.createProfile
@@ -91,19 +89,21 @@ class MainMenuActivity : ComponentActivity() {
 
     companion object {
         const val SETTINGS = "Settings"
-        const val PLAY = "Play game"
+        const val PLAY = "Play Game"
         const val CHAT = "Chat"
         const val RECAPS = "Recaps"
     }
 }
 
 @Composable
-fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String, icon: ImageVector = Icons.Default.Add) {
+fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String, icon: ImageVector = Icons.Default.Add, enabled: Boolean = true) {
     ElevatedButton(
-        modifier= Modifier
+        enabled = enabled,
+        modifier = Modifier
             .testTag(testTag)
             .padding(16.dp),
         onClick = onClick,
+        colors = ButtonDefaults.buttonColors()
     ) {
         Row (
             modifier = Modifier
@@ -111,7 +111,8 @@ fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String, icon: Ima
         ){
             Icon(
                 imageVector = icon,
-                contentDescription = "menu button"
+                contentDescription = "menu button",
+                modifier = Modifier.size(23.dp)
             )
             Spacer(modifier = Modifier.size(5.dp))
             Text(text)
@@ -122,7 +123,7 @@ fun MainMenuButton(testTag: String, onClick: () -> Unit, text: String, icon: Ima
 }
 
 fun play(context: Context) {
-    context.startActivity(Intent(context, CreateJoinActivity::class.java))
+    context.startActivity(Intent(context, GamesMenuActivity::class.java))
 }
 
 @Composable
@@ -161,6 +162,7 @@ fun SettingsButton() {
         icon = Icons.Filled.Settings
     )
 }
+
 
 fun chatTest(context: Context) {
     context.startActivity(Intent(context, ChatActivity::class.java).apply {
@@ -231,64 +233,50 @@ fun AppTitle() {
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.secondary,
                 textAlign = TextAlign.Center
-
             )
         }
     }
 }
 
 @Composable
-fun TopAppbarMainMenu() {
-
-    TopAppBar(
-        modifier = Modifier.testTag("topAppBarMainMenu"),
-        title = {
-            Text(
-                text = "Main Menu",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontSize = 20.sp
-            )
-        },
-        backgroundColor = MaterialTheme.colorScheme.background,
-        elevation = 4.dp,
-    )
-}
-
-
-@Composable
 fun MainMenuScreen() {
+
     Surface {
-        Column {
-            TopAppbarMainMenu()
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            val options = BitmapFactory.Options().apply {
+                inSampleSize = 4 // Reduce the image size by half
+            }
+            val bitmap = BitmapFactory.decodeResource(LocalContext.current.resources, R.drawable.backgroundlight, options)
+
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = "My Background Image",
+                contentScale = ContentScale.FillBounds,
+                colorFilter = tint(MaterialTheme.colorScheme.primaryContainer)
+            )
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .testTag("mainMenuScreen"),
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
+
             ) {
                 AppTitle()
-            }
-        }
 
-        Column (
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                Spacer(Modifier.size(50.dp))
 
-        ){
-            PlayButton()
-            Row {
-                SettingsButton()
-                ChatButton()
-            }
-            Row {
+                PlayButton()
+                Row {
+                    SettingsButton()
+                    ChatButton()
+                }
                 DisplayRecapsButton()
+
             }
         }
     }

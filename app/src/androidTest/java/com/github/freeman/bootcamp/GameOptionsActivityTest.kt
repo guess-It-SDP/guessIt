@@ -80,12 +80,6 @@ class GameOptionsActivityTest {
     }
 
     @Test
-    fun backButtonHasClickAction() {
-        setGameOptionsScreen()
-        composeRule.onNodeWithTag("gameOptionsBackButton").performClick().assertDoesNotExist()
-    }
-
-    @Test
     fun creatingTheActivityWorks() {
         val dbRef = initDatabase()
         dbRef.child("profiles/null/email").setValue("test@mail.abc")

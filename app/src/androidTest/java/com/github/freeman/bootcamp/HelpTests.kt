@@ -56,7 +56,7 @@ class HelpTests {
     fun creditsScreenIsDisplayed() {
         composeRule.onNodeWithTag("creditsButton").performClick()
 
-        composeRule.onNodeWithTag("topAppbarCreditsRules").assertIsDisplayed()
+        composeRule.onNodeWithTag("topAppbarCredits").assertIsDisplayed()
         composeRule.onNodeWithTag("creditsScreen").assertIsDisplayed()
     }
 
@@ -64,21 +64,16 @@ class HelpTests {
     fun creditsScreenContainsCorrectTexts() {
         composeRule.onNodeWithTag("creditsButton").performClick()
 
-        composeRule.onNodeWithTag("topBarCreditsTitle").assertTextContains(TOPBAR_CREDITS_TEXT)
+        composeRule.onNodeWithTag("topAppbarCreditsTitle").assertTextContains(TOPBAR_CREDITS_TEXT)
         composeRule.onNodeWithTag("creditsScreen").assertIsDisplayed()
 
         composeRule.onNodeWithTag("This ").assertTextContains("This ", substring = true)
         composeRule.onNodeWithTag("Devel").assertTextContains("Devel", substring = true)
         composeRule.onNodeWithTag("Micha").assertTextContains("Micha", substring = true)
-        composeRule.onNodeWithTag("Danny").assertTextContains("Danny", substring = true)
-        composeRule.onNodeWithTag("Clara").assertTextContains("Clara", substring = true)
-        composeRule.onNodeWithTag("David").assertTextContains("David", substring = true)
-        composeRule.onNodeWithTag("Paul ").assertTextContains("Paul ", substring = true)
         composeRule.onNodeWithTag("Profe").assertTextContains("Profe", substring = true)
         composeRule.onNodeWithTag("Georg").assertTextContains("Georg", substring = true)
         composeRule.onNodeWithTag("Super").assertTextContains("Super", substring = true)
         composeRule.onNodeWithTag("Can C").assertTextContains("Can C", substring = true)
-        composeRule.onNodeWithTag("Mathi").assertTextContains("Mathi", substring = true)
     }
 
     @Test

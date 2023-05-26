@@ -3,7 +3,6 @@ package com.github.freeman.bootcamp.recorder
 import android.content.Context
 import android.media.MediaRecorder
 import android.os.Build
-import android.provider.MediaStore.Audio.Media
 import androidx.core.net.toUri
 import com.github.freeman.bootcamp.utilities.firebase.References
 import java.io.File
@@ -45,16 +44,14 @@ class AndroidAudioRecorder(
     }
 
     /**
-     * Select the cached audio file and sends it to the database to the reffered id.
-     * @param audioFile the file where the audio is chached
-     * @param id the id where the file will be refered in the storage Database
+     * Select the cached audio file and sends it to the database to the referred id.
+     * @param audioFile the file where the audio is cached
+     * @param id the id where the file will be referred in the storage Database
      */
     override fun stop(audioFile: File, id : String) {
         recorder?.stop()
         recorder?.reset()
         recorder = null
-        if(audioFile!= null) {
-            References.voiceNotesStorageRef.child(id).putFile(audioFile!!.toUri())
-        }
+        References.voiceNotesStorageRef.child(id).putFile(audioFile.toUri())
     }
 }

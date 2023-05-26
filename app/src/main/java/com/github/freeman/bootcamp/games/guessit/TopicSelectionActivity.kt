@@ -8,13 +8,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -52,7 +49,9 @@ class TopicSelectionActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                TopicSelectionScreen(dbref, gameId)
+                Surface {
+                    TopicSelectionScreen(dbref, gameId)
+                }
             }
         }
     }
@@ -87,36 +86,14 @@ private fun refreshTopics(context: Context, dbref: DatabaseReference, topicList:
 }
 
 @Composable
-fun TopicSelectionBackButton(dbref: DatabaseReference) {
-    val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag("topicSelectionBackButton"),
-        onClick = {
-            backToWaitingRoom(dbref, context)
-        }
-    ) {
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Back arrow icon"
-        )
-    }
-}
-
-fun backToWaitingRoom(dbref: DatabaseReference, context: Context) {
-    dbref.child(context.getString(R.string.current_state_path))
-        .setValue(context.getString(R.string.state_waitingforplayers))
-    val activity = (context as? Activity)
-    activity?.finish()
-}
-
-@Composable
 fun TopicButton(dbref: DatabaseReference, topic: MutableState<String>, id: Int, gameId: String) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("topicButton$id"),
         onClick = {
             selectTopic(context, dbref, topic.value, gameId)
-        }
+        },
+        colors = ButtonDefaults.buttonColors()
     ) {
         Text(topic.value)
     }
@@ -132,8 +109,6 @@ fun selectTopic(context: Context, dbref: DatabaseReference, topic: String, gameI
         .setValue(roundNb)
     dbref.child(context.getString(R.string.current_turn_path))
         .setValue(turnNb)
-    dbref.child(context.getString(R.string.current_timer_path))
-        .setValue(context.getString(R.string.timer_inprogress))
     dbref.child(context.getString(R.string.current_state_path))
         .setValue(context.getString(R.string.state_playturn))
 
@@ -173,7 +148,8 @@ fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
     ) {
         Text(
             modifier = Modifier.testTag("topicSelection"),
-            text = SELECT_TOPIC
+            text = SELECT_TOPIC,
+            color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.size(40.dp))
         TopicButton(dbref, topic0, 1, gameId)
@@ -190,21 +166,12 @@ fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
             onClick = {
                 refreshTopics(context, dbref, topicList)
             }) {
-            androidx.compose.material.Icon(
+            Icon(
                 modifier = Modifier.size(24.dp),
                 imageVector = Icons.Outlined.Refresh,
                 contentDescription = "Edit Details",
-                tint = MaterialTheme.colors.primary
+                tint = MaterialTheme.colorScheme.primary
             )
         }
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
-    ) {
-        TopicSelectionBackButton(dbref)
     }
 }
