@@ -44,6 +44,10 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class ScoreActivity2 : ComponentActivity() {
+
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameID = intent.getStringExtra(getString(R.string.gameId_extra))
@@ -64,17 +68,21 @@ class ScoreActivity2 : ComponentActivity() {
 
                 val scores = turnIntoPairs(playersToScores)
                 val usernames = fetchUserNames(scores)
-                val usersToScores = usernamesToScores(scores, usernames).sortedWith(compareByDescending { it.second })
+                val usersToScores = usernamesToScores(
+                    scores, usernames
+                ).sortedWith(compareByDescending { it.second })
 
-                    Column() {
-                        CurrentScoreboard(usersToScores = usersToScores)
-                        VideoScreen(roomName = gameID ?: "1", testing = false)
-                    }
+                Column() {
+                    CurrentScoreboard(usersToScores = usersToScores)
+                    VideoScreen(roomName = gameID ?: "1", testing = false)
+                }
             }
         }
     }
+
     companion object {
         const val size = 200
+        const  val SCORES_RECAP_TITLE = "Scores, next round coming soon"
     }
 }
 
@@ -87,20 +95,18 @@ fun CurrentScoreboard(usersToScores: List<Pair<String?, Int>>) {
             .padding(8.dp)
             .border(
                 BorderStroke(
-                    width = 4.dp,
-                    brush = Brush.linearGradient(
+                    width = 4.dp, brush = Brush.linearGradient(
                         colors = FinalActivity.BLUES
                     )
                 ),
                 shape = RoundedCornerShape(16.dp),
             )
             .shadow(
-                elevation = 2.dp,
-                shape = RoundedCornerShape(16.dp)
+                elevation = 2.dp, shape = RoundedCornerShape(16.dp)
             )
             .testTag("endScoreboard")
     ) {
-        Column (
+        Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
