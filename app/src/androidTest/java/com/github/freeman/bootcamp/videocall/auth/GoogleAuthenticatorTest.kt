@@ -1,9 +1,10 @@
-package com.github.freeman.bootcamp.auth
+package com.github.freeman.bootcamp.videocall.auth
 
 import android.app.Activity
 import com.firebase.ui.auth.IdpResponse
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.firebase.ui.auth.data.model.User
+import com.github.freeman.bootcamp.auth.GoogleAuthenticator
 import com.github.freeman.bootcamp.auth.GoogleAuthenticator.Companion.CANCEL_ERROR
 import com.github.freeman.bootcamp.auth.GoogleAuthenticator.Companion.NULL_USER_ERROR
 import com.github.freeman.bootcamp.auth.GoogleAuthenticator.Companion.OTHER_ERROR

@@ -1,4 +1,4 @@
-package com.github.freeman.bootcamp.auth
+package com.github.freeman.bootcamp.videocall.auth
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -10,8 +10,10 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import com.github.freeman.bootcamp.MainMenuScreen
+import com.github.freeman.bootcamp.auth.FirebaseAuthActivity
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.CANCEL_BUTTON
 import com.github.freeman.bootcamp.auth.FirebaseAuthActivity.Companion.DELETE_BUTTON
+import com.github.freeman.bootcamp.auth.WarningDeletion
 import com.google.firebase.auth.FirebaseAuth
 import org.junit.Before
 import org.junit.Rule

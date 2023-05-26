@@ -1,10 +1,14 @@
 package com.github.freeman.bootcamp.games.guessit
 
+import android.Manifest
 import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,26 +26,34 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity2.Companion.SCORES_RECAP_BOARD_TAG
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
+import com.github.freeman.bootcamp.videocall.APP_ID
 import com.github.freeman.bootcamp.videocall.VideoScreen
+import com.github.freeman.bootcamp.videocall.VideoViewModel
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
+import io.agora.agorauikit_android.AgoraConnectionData
+import io.agora.agorauikit_android.AgoraVideoViewer
 
 class ScoreActivity2 : ComponentActivity() {
+    var agoraView  : AgoraVideoViewer? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameID = intent.getStringExtra(getString(R.string.gameId_extra))!!
         val dbRef = getGameDBRef(this, gameID.toString())
+
         setContent {
             BootcampComposeTheme {
                 val context = LocalContext.current
-
+                var viewModel: VideoViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
                 // Get the Ids of all players in this game
                 val playerIds = remember { mutableStateOf(mapOf<String, Map<String, Int>>()) }
                 FirebaseUtilities.databaseGetMap(dbRef.child(context.getString(R.string.players_path)))
@@ -81,7 +93,44 @@ class ScoreActivity2 : ComponentActivity() {
                     Column {
                         CurrentScoreboard(usersToScores = usersToScores, gameID)
                         if(inScoreRecap) {
-                            VideoScreen(roomName = gameID ?: "1", testing = false)
+                            val permissionLauncher = rememberLauncherForActivityResult(
+                                contract = ActivityResultContracts.RequestMultiplePermissions(),
+                                onResult = { perms ->
+                                    viewModel.onPermissionsResult(
+                                        acceptedAudioPermission = perms[Manifest.permission.RECORD_AUDIO] == true,
+                                        acceptedCameraPermission = perms[Manifest.permission.CAMERA] == true,
+                                    )
+                                }
+                            )
+                            LaunchedEffect(key1 = true) {
+                                permissionLauncher.launch(
+                                    arrayOf(
+                                        Manifest.permission.RECORD_AUDIO,
+                                        Manifest.permission.CAMERA,
+                                    )
+                                )
+                            }
+                            BackHandler {
+                                agoraView?.leaveChannel()
+                                onNavigateUp()
+                            }
+                            if(viewModel.hasAudioPermission.value && viewModel.hasCameraPermission.value) {
+                                AndroidView(
+                                    factory = {
+                                        AgoraVideoViewer(
+                                            it, connectionData = AgoraConnectionData(
+                                                appId = APP_ID
+                                            ), style= AgoraVideoViewer.Style.GRID
+                                        ).also {
+                                            it.join(gameID)
+                                            agoraView = it
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxSize().testTag("agora_video_view")
+                                )
+                            }
+                        } else {
+                            agoraView?.leaveChannel()
                         }
                     }
                 }
