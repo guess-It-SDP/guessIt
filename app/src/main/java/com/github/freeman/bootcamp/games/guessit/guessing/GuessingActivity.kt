@@ -253,15 +253,7 @@ fun GuessingBar(
 @Composable
 fun GuessingScreen(dbrefGame: DatabaseReference, context: Context, storageGameRef: StorageReference,
                    lifecycleOwner: LifecycleOwner) {
-    val imeState = rememberImeState()
     val scrollState = rememberScrollState()
-
-    LaunchedEffect(key1 = imeState.value) {
-        if (imeState.value){
-            scrollState.animateScrollTo(scrollState.maxValue)
-        }
-    }
-
     var guesses by remember { mutableStateOf(arrayOf<Guess>()) }
     var guess by remember { mutableStateOf("") }
     var timer by remember { mutableStateOf("") }
