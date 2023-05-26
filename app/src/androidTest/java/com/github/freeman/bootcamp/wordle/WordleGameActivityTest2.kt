@@ -20,7 +20,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class WordleGameActivityTest2 {
-    /*
+
     @get:Rule
     val composeRule = createAndroidIntentComposeRule<WordleGameActivity> {
         Intent(it, WordleGameActivity::class.java).apply {
@@ -94,6 +94,6 @@ class WordleGameActivityTest2 {
         WordleGameActivityTest.gridColorisBlackAtStartOfTheGame(composeRule,NB_COLUMNS*WORD_SIZE)
     }
 
-*/
+
 
 }

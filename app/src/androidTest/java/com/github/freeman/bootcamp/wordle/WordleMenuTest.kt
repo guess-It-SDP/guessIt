@@ -17,7 +17,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class WordleMenuTest {
-/*
+
     /*
     @get:Rule
     val composeRule = createAndroidIntentComposeRule<WordleMenu> {
@@ -95,5 +95,5 @@ class WordleMenuTest {
             composeRule
         )
     }
-*/
+
 }

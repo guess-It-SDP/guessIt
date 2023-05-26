@@ -8,11 +8,12 @@ import androidx.compose.ui.test.onNodeWithText
 import com.github.freeman.bootcamp.games.help.WordleRulesActivity
 import com.github.freeman.bootcamp.games.help.WordleRulesActivity.Companion.TOPBAR_WORDLE_RULES_TEXT
 import com.github.freeman.bootcamp.games.help.WordleRulesActivity.Companion.WORDLE_RULES_TITLE
+import com.github.freeman.bootcamp.wordle.WordleGameActivityTest.Companion.createAndroidIntentComposeRule
 import org.junit.Rule
 import org.junit.Test
 
 class WordleRulseActivityTest {
-    /*
+
     @get:Rule
     val composeRule = createAndroidIntentComposeRule<WordleRulesActivity> {
         Intent(it, WordleRulesActivity::class.java).apply {
@@ -37,6 +38,4 @@ class WordleRulseActivityTest {
         composeRule.onNodeWithTag("how_to_play").assertTextContains(WORDLE_RULES_TITLE)
     }
 
-
-     */
 }
