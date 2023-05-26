@@ -2,6 +2,7 @@ package com.github.freeman.bootcamp.games.guessit
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -57,10 +58,31 @@ class ScoreActivity2 : ComponentActivity() {
                     scores, usernames
                 ).sortedWith(compareByDescending { it.second })
 
+                var inScoreRecap by remember { mutableStateOf(true) }
+                val gamDBRef = getGameDBRef(context, gameID).child(context.getString(R.string.current_state_path))
+                gamDBRef.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists()) {
+                            val gameState = snapshot.getValue<String>()!!
+                            if (gameState != context.getString(R.string.state_scorerecap)) {
+                                Log.d("VideoCall", "State scorerecap changed")
+                                inScoreRecap = false
+                                val activity = context as? Activity
+                                activity?.finish()
+                            }
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        // do nothing
+                    }
+                })
+
                 Surface {
                     Column {
                         CurrentScoreboard(usersToScores = usersToScores, gameID)
-                        VideoScreen(roomName = gameID ?: "1", testing = false)
+                        if(inScoreRecap) {
+                            VideoScreen(roomName = gameID ?: "1", testing = false)
+                        }
                     }
                 }
             }
@@ -75,22 +97,6 @@ class ScoreActivity2 : ComponentActivity() {
 
 @Composable
 fun CurrentScoreboard(usersToScores: List<Pair<String?, Int>>, gameID: String) {
-    val context = LocalContext.current
-    val gamDBRef = getGameDBRef(context, gameID).child(context.getString(R.string.current_state_path))
-    gamDBRef.addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            if (snapshot.exists()) {
-                val gameState = snapshot.getValue<String>()!!
-                if (gameState != context.getString(R.string.state_scorerecap)) {
-                    val activity = context as? Activity
-                    activity?.finish()
-                }
-            }
-        }
-        override fun onCancelled(error: DatabaseError) {
-            // do nothing
-        }
-    })
 
     Box(
         modifier = Modifier
