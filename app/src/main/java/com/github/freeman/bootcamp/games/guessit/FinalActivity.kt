@@ -103,7 +103,7 @@ fun FinalScreen(dbRef: DatabaseReference, gameID: String) {
     }
 }
 
-
+@Composable
 fun GameRecapButton(context: Context, gameID: String){
     MainMenuButton(
         testTag = "gameRecapButton",

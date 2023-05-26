@@ -6,11 +6,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
-import android.view.ViewTreeObserver
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.camera.core.CameraSelector
@@ -26,26 +23,23 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
-import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
-import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.GUESSING_BOTTOMBAR_BUTTON_TEXT
-import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.GUESSING_BOTTOMBAR_TEXT
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.GUESSING_BOTTOM_BAR_BUTTON_TEXT
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.GUESSING_BOTTOM_BAR_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.NO_ARTIST
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.SCREEN_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.WAITING_TEXT
@@ -103,8 +97,8 @@ class GuessingActivity : ComponentActivity() {
     }
 
     companion object {
-        const val GUESSING_BOTTOMBAR_TEXT = "Type a guess..."
-        const val GUESSING_BOTTOMBAR_BUTTON_TEXT = "OK"
+        const val GUESSING_BOTTOM_BAR_TEXT = "Type a guess..."
+        const val GUESSING_BOTTOM_BAR_BUTTON_TEXT = "OK"
         const val NO_ARTIST = "No artist"
         const val WAITING_TEXT = "Please wait while the artist selects a word to draw."
         const val SCREEN_TEXT = "Your turn to guess!"
@@ -203,7 +197,7 @@ private fun takeSelfie(
  * Displays all guesses that have been made in the game
  */
 @Composable
-fun GuessesList(guesses: Array<Guess>, dbrefGame: DatabaseReference, artistId: String, storageGameRef: StorageReference) {
+fun GuessesList(guesses: Array<Guess>, storageGameRef: StorageReference) {
     LazyColumn (
         modifier = Modifier
             .fillMaxWidth()
@@ -217,7 +211,7 @@ fun GuessesList(guesses: Array<Guess>, dbrefGame: DatabaseReference, artistId: S
 /**
  * The writing bar where guessers can enter their guesses
  */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GuessingBar(
     guess: String,
@@ -225,7 +219,6 @@ fun GuessingBar(
     onSendClick: () -> Unit
 ) {
     Surface(
-        //color = MaterialTheme.colorScheme.primaryContainer,
         modifier = Modifier
             .fillMaxWidth()
             .testTag("guessingBar")
@@ -238,7 +231,7 @@ fun GuessingBar(
                 value = guess,
                 onValueChange = onGuessChange,
                 modifier = Modifier.weight(1f),
-                placeholder = { Text(GUESSING_BOTTOMBAR_TEXT) },
+                placeholder = { Text(GUESSING_BOTTOM_BAR_TEXT) },
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
@@ -251,7 +244,7 @@ fun GuessingBar(
                 onClick = onSendClick,
                 colors = ButtonDefaults.buttonColors()
             ) {
-                Text(text = GUESSING_BOTTOMBAR_BUTTON_TEXT)
+                Text(text = GUESSING_BOTTOM_BAR_BUTTON_TEXT)
             }
         }
     }
@@ -438,7 +431,7 @@ lifecycleOwner: LifecycleOwner) {
               if (timer != context.getString(R.string.timer_unused)
                   && timer != context.getString(R.string.timer_over)) {
                   val dbRefTimer = dbrefGame.child(context.getString(R.string.current_timer_path))
-                  TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.DarkGray)
+                  TimerScreen(dbRefTimer, 60L, fontSize = 30.sp)
               }
 
               ScoreScreen(dbrefGame)
@@ -452,8 +445,7 @@ lifecycleOwner: LifecycleOwner) {
                   .align(Alignment.End)
                   .testTag("guessesList")
           ) {
-              GuessesList(guesses = guesses, dbrefGame = dbrefGame,
-                  artistId = currentArtist.value, storageGameRef = storageGameRef)
+              GuessesList(guesses = guesses, storageGameRef = storageGameRef)
           }
 
           if (timer == context.getString(R.string.timer_over)) {
@@ -525,7 +517,6 @@ lifecycleOwner: LifecycleOwner) {
 
                       guess = ""
                   },
-                  scrollState,
               )
           }
 

@@ -28,6 +28,7 @@ import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.turnNb
+import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef

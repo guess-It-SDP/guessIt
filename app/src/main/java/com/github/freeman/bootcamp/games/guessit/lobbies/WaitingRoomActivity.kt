@@ -218,6 +218,7 @@ class WaitingRoomActivity: ComponentActivity() {
     companion object {
         const val TOPBAR_TEXT = "Waiting Room"
         const val CATEGORY_INFO = "Category :"
+        const val NB_ROUNDS_INFO = "Number of rounds :"
         const val START_GAME = "Start"
         const val KICKED = "You have been kicked by host"
         const val WAITING_FOR_START_GAME = "Waiting for the host to start"
