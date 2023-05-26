@@ -115,7 +115,7 @@ fun ChatScreen(
     val context = LocalContext.current
 
     //the username of the current user
-    var username by remember { mutableStateOf("") }
+    var username = "" //var username by remember { mutableStateOf("") }
     val uid = FirebaseAuth.getInstance().currentUser?.uid
     val dbrefUsername = Firebase.database.reference
         .child(context.getString(R.string.profiles_path))

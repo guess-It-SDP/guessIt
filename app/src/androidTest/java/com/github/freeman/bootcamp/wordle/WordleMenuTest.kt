@@ -45,7 +45,7 @@ class WordleMenuTest {
         }
     }
 
-    /*
+
     @Test
     fun easyButtonIsDisplayedHasClickActionAndCorrectTextAndSendIntent() {
         TestCompanion.testButton(
@@ -95,5 +95,5 @@ class WordleMenuTest {
             composeRule
         )
     }
-    */
+
 }
