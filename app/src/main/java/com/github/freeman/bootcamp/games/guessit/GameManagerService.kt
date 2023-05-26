@@ -89,7 +89,7 @@ class GameManagerService : Service() {
                                                         gameOver(gameID)
                                                     }
                                                     getString(R.string.state_playturn) -> {
-                                                        setTimerInProgress()
+                                                        setTimerInProgress(gameDBRef)
                                                     }
                                                 }
                                             }
