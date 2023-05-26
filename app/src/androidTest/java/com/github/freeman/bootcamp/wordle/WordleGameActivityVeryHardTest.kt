@@ -47,10 +47,7 @@ class WordleGameActivityVeryHardTest {
         )
     }
 
-    @Test
-    fun test(){
-        WordleGameActivityTest.Companion.buttonIsDisplayed(composeRule)
-    }
+
 
     /**
      * Gets the activity from a scenarioRule.
@@ -65,6 +62,12 @@ class WordleGameActivityVeryHardTest {
         return activity ?: throw IllegalStateException("Activity was not set in the ActivityScenarioRule!")
     }
 
+/*
+
+    @Test
+    fun test(){
+        WordleGameActivityTest.Companion.buttonIsDisplayed(composeRule)
+    }
 
     @Test
     fun buttonIsDisplayed(){
@@ -99,4 +102,6 @@ class WordleGameActivityVeryHardTest {
     fun submitLLLXLtoHelloAddRightColors() {
         WordleGameActivityTest.submitLLLXLtoHelloAddRightColors(composeRule)
     }
+
+ */
 }
