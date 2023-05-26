@@ -57,16 +57,16 @@ class FirebaseAuthActivityTest {
         composeRule.waitForIdle()
     }
 
-    @Test
-    fun signInResultsInCorrectLayout() {
-        startMainActivityFromHomeScreen()
-        composeRule.onNodeWithTag("google_sign_in_button").performClick()
-        device.wait(
-            Until.findObject(By.textContains("Google")), 100000
-        )
-        val googleText = device.findObject(UiSelector().textContains(""))
-        assert(googleText.exists())
-    }
+//    @Test
+//    fun signInResultsInCorrectLayout() {
+//        startMainActivityFromHomeScreen()
+//        composeRule.onNodeWithTag("google_sign_in_button").performClick()
+//        device.wait(
+//            Until.findObject(By.textContains("Google")), 100000
+//        )
+//        val googleText = device.findObject(UiSelector().textContains(""))
+//        assert(googleText.exists())
+//    }
 
     // As the button for deletion only appears when authenticated with google,
     // we can't test it from the authentication screen

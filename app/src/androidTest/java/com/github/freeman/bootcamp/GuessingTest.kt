@@ -89,11 +89,12 @@ class GuessingTest {
         composeRule.onNodeWithTag("guessesList").assertIsDisplayed()
         composeRule.onNodeWithTag("guessingBar").assertIsDisplayed()
     }
-
+    
     @Test
     fun guessIsDisplayedInGuessingList() {
         composeRule.onNode(hasSetTextAction()).performTextInput("House")
         composeRule.onNodeWithTag("guessButton").performClick()
+        composeRule.onNodeWithTag("guessItem").assertIsDisplayed()
     }
 
 }
