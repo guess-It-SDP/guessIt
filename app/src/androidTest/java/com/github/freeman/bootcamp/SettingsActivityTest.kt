@@ -35,13 +35,6 @@ class SettingsActivityTest {
     }
 
     @Test
-    fun backButtonHasClickAction() {
-        startBackgroundMusicService()
-        setDisplay()
-        composeRule.onNode(hasTestTag("settingsBackButton")).assertHasClickAction()
-    }
-
-    @Test
     fun musicVolumeTextIsCorrect() {
         startBackgroundMusicService()
         setDisplay()

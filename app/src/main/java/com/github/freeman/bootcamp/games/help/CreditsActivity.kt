@@ -123,6 +123,7 @@ fun TopAppbarCredits(context: Context = LocalContext.current) {
         modifier = Modifier.testTag("topAppbarCredits"),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarCreditsTitle"),
                 text = TOPBAR_CREDITS_TEXT,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
