@@ -64,34 +64,6 @@ fun PopUpScreen(
 }
 
 /**
- * The pop-up when a user guesses the correct answer
- * @param gs: The Guess containing the guesser's name and the guesser's proposition
- */
-@Composable
-fun CorrectAnswerPopUp(gs: Guess) {
-    val context = LocalContext.current
-
-    val currentUser = FirebaseAuth.getInstance().currentUser?.uid
-    val guesser = Firebase.database.reference
-        .child(context.getString(R.string.profiles_path))
-        .child(gs.guesser.toString())
-        .child(context.getString(R.string.uid_path)).get().toString()
-
-    val sb = StringBuilder()
-    if (currentUser.equals(guesser)) {
-        sb.append("You")
-    } else {
-        sb.append(gs.guesser)
-    }
-
-    sb.append(" made a correct guess: \n\nThe word was \"")
-        .append(gs.message)
-        .append("\"!")
-
-    PopUpScreen(text = sb.toString())
-}
-
-/**
  * The pop-up when the timer is over
  */
 @Composable

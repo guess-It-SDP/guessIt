@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp.games.guessit
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -103,20 +104,22 @@ fun FinalScreen(dbRef: DatabaseReference, gameID: String) {
             horizontalAlignment = Alignment.Start
         ) {
             Row() {
-                BackToMenuButton(context)
-                GameRecapButton(context, gameID)
+                BackToMenuButton(context, dbRef)
+                GameRecapButton(context, gameID, dbRef)
             }
         }
     }
 }
 
 @Composable
-fun GameRecapButton(context: Context, gameID: String){
+fun GameRecapButton(context: Context, gameID: String, dbRef: DatabaseReference){
     ElevatedButton(
         onClick = {
             val intent = Intent(context, ShareRecapActivity::class.java)
             intent.putExtra(context.getString(R.string.gameId_extra), gameID)
             context.startActivity(intent)
+            val activity = (context as? Activity)
+            activity?.finish()
         },
         modifier = Modifier.testTag("gameRecapButton")
     ) {
@@ -128,10 +131,12 @@ fun GameRecapButton(context: Context, gameID: String){
 }
 
 @Composable
-fun BackToMenuButton(context: Context) {
+fun BackToMenuButton(context: Context, dbRef: DatabaseReference) {
     ElevatedButton(
         onClick = {
             context.startActivity(Intent(context, MainMenuActivity::class.java))
+            val activity = (context as? Activity)
+            activity?.finish()
         },
         modifier = Modifier.testTag("backToMenuButton")
     ) {

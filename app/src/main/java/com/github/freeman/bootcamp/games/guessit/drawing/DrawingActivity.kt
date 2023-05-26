@@ -24,11 +24,9 @@ import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.roundNb
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity.Companion.turnNb
-import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
-import com.github.freeman.bootcamp.videocall.VideoScreen2
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -57,7 +55,7 @@ class DrawingActivity : ComponentActivity() {
         val dbref = getGameDBRef(this, gameId)
 
         setContent {
-            DrawingScreen(dbref,gameId)
+            DrawingScreen(dbref)
         }
     }
 
@@ -72,7 +70,6 @@ class DrawingActivity : ComponentActivity() {
 @Composable
 fun DrawingScreen(
     dbref: DatabaseReference,
-    gameId: String
 ) {
     val context = LocalContext.current
 
@@ -86,7 +83,7 @@ fun DrawingScreen(
             }
         }
         override fun onCancelled(error: DatabaseError) {
-            TODO("Not yet implemented")
+            // do nothing
         }
     })
 
@@ -309,5 +306,5 @@ fun RowScope.MenuItems(
 fun DrawingScreenPreview() {
     val context = LocalContext.current
     val dbref = getGameDBRef(context)
-    DrawingScreen(dbref,"127")
+    DrawingScreen(dbref)
 }
