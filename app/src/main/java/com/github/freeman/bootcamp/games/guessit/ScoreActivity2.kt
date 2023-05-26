@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp.games.guessit
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,11 +27,15 @@ import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.github.freeman.bootcamp.videocall.VideoScreen
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.getValue
 
 class ScoreActivity2 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val gameID = intent.getStringExtra(getString(R.string.gameId_extra))
+        val gameID = intent.getStringExtra(getString(R.string.gameId_extra))!!
         val dbRef = getGameDBRef(this, gameID.toString())
         setContent {
             BootcampComposeTheme {
@@ -54,7 +59,7 @@ class ScoreActivity2 : ComponentActivity() {
 
                 Surface {
                     Column {
-                        CurrentScoreboard(usersToScores = usersToScores)
+                        CurrentScoreboard(usersToScores = usersToScores, gameID)
                         VideoScreen(roomName = gameID ?: "1", testing = false)
                     }
                 }
@@ -69,7 +74,24 @@ class ScoreActivity2 : ComponentActivity() {
 }
 
 @Composable
-fun CurrentScoreboard(usersToScores: List<Pair<String?, Int>>) {
+fun CurrentScoreboard(usersToScores: List<Pair<String?, Int>>, gameID: String) {
+    val context = LocalContext.current
+    val gamDBRef = getGameDBRef(context, gameID)
+    gamDBRef.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                val gameState = snapshot.getValue<String>()!!
+                if (gameState != context.getString(R.string.state_scorerecap)) {
+                    val activity = context as? Activity
+                    activity?.finish()
+                }
+            }
+        }
+        override fun onCancelled(error: DatabaseError) {
+            // do nothing
+        }
+    })
+
     Box(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(16.dp))
