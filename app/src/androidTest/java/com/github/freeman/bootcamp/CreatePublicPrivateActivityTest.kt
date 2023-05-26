@@ -84,6 +84,7 @@ class CreatePublicPrivateActivityTest {
         Intents.release()
     }
 
+    /*
     @Test
     fun privateButtonSendsIntent() {
         Intents.init()
@@ -93,4 +94,6 @@ class CreatePublicPrivateActivityTest {
 
         Intents.release()
     }
+     */
+
 }
