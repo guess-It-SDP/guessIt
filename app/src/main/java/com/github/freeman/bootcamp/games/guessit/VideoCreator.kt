@@ -48,23 +48,23 @@ class VideoCreator {
                 videoDir.mkdirs()
             }
 
-            val dbRef = FirebaseUtilities.getGameDBRef(context, gameId)
-
-            // Get all the user IDs
-            val playerIds = mutableStateOf(mapOf<String, Map<String, Int>>())
-            FirebaseUtilities.databaseGetMap(dbRef.child(context.getString(R.string.players_path)))
-                .thenAccept {
-                    playerIds.value = it as HashMap<String, Map<String, Int>>
-                }
-            val userIds = playerIds.value.keys
-
-            // Fetch the user profile storage references to get their corresponding hats
-            val profileIdRefList = mutableListOf<StorageReference>()
-            for (userId in userIds) {
-                val profileIdRef = storageRef.child(context.getString(R.string.profiles_path))
-                    .child(userId).child(context.getString(R.string.hat))
-                profileIdRefList.add(profileIdRef)
-            }
+//            val dbRef = FirebaseUtilities.getGameDBRef(context, gameId)
+//
+//            // Get all the user IDs
+//            val playerIds = mutableStateOf(mapOf<String, Map<String, Int>>())
+//            FirebaseUtilities.databaseGetMap(dbRef.child(context.getString(R.string.players_path)))
+//                .thenAccept {
+//                    playerIds.value = it as HashMap<String, Map<String, Int>>
+//                }
+//            val userIds = playerIds.value.keys
+//
+//            // Fetch the user profile storage references to get their corresponding hats
+//            val profileIdRefList = mutableListOf<StorageReference>()
+//            for (userId in userIds) {
+//                val profileIdRef = storageRef.child(context.getString(R.string.profiles_path))
+//                    .child(userId).child(context.getString(R.string.hat))
+//                profileIdRefList.add(profileIdRef)
+//            }
 
             val userIdRefList = mutableListOf<StorageReference>()
 
@@ -104,16 +104,16 @@ class VideoCreator {
                                             for (file in selfiesFileList) {
                                                 val maxDownloadSize = 5 * 1024 * 1024.toLong()
 
-                                                // Fetch each user's hat
-                                                val hat = mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
-                                                FirebaseUtilities.storageGet(profileIdRefList[i])
-                                                    .thenAccept {
-                                                        hat.value = it
-                                                    }
+//                                                // Fetch each user's hat
+//                                                val hat = mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
+//                                                FirebaseUtilities.storageGet(profileIdRefList[i])
+//                                                    .thenAccept {
+//                                                        hat.value = it
+//                                                    }
 
                                                 file.getBytes(maxDownloadSize).addOnSuccessListener { bytes ->
                                                     val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                                                    transformBitmapToDrawOnFaces(bitmap, context, hat)
+                                                    transformBitmapToDrawOnFaces(bitmap, context)//, hat)
                                                 }
                                             }
 
