@@ -243,6 +243,6 @@ class GameManagerService : Service() {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(getString(R.string.gameId_extra), gameID)
         startActivity(intent)
-        stopSelf()
+//        stopSelf()
     }
 }

@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp.games.guessit
 
+import android.app.Service
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -141,9 +142,12 @@ class VideoCreator {
                 val storageRef = Firebase.storage.reference.child(context.getString(R.string.game_recaps_path))
                     .child(gameID).child(videoFileName)
                 storageRef.putFile(videoFile.toUri())
+                val ctx = context as Service
+                ctx.stopSelf()
             } else {
                 // error creating video
                 Toast.makeText(context, "error $rc : video not created", Toast.LENGTH_SHORT).show()
+                createRecap(context, gameID)
             }
         }
     }
