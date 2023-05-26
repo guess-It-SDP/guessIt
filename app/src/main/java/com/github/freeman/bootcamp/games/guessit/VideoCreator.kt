@@ -9,6 +9,7 @@ import androidx.core.net.toUri
 import com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.github.freeman.bootcamp.R
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -142,6 +143,13 @@ class VideoCreator {
                 val storageRef = Firebase.storage.reference.child(context.getString(R.string.game_recaps_path))
                     .child(gameID).child(videoFileName)
                 storageRef.putFile(videoFile.toUri())
+
+                Firebase.database.reference
+                    .child(context.getString(R.string.games_path))
+                    .child(gameID)
+                    .child("recap_created")
+                    .setValue(true)
+
                 val ctx = context as Service
                 ctx.stopSelf()
             } else {
