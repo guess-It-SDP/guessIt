@@ -73,7 +73,7 @@ fun DrawingScreen(
     val context = LocalContext.current
 
     // timer of the artist
-    var timer by remember { mutableStateOf("") }
+    var timer by remember { mutableStateOf(context.getString(R.string.timer_inprogress)) }
     val dbrefTimer = dbref.child(context.getString(R.string.current_timer_path))
     dbrefTimer.setValue(context.getString(R.string.timer_inprogress))
     dbrefTimer.addValueEventListener(object : ValueEventListener {
