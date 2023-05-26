@@ -274,10 +274,8 @@ fun MainMenuScreen() {
                     SettingsButton()
                     ChatButton()
                 }
-
-            }
-            Row {
                 DisplayRecapsButton()
+
             }
         }
     }
