@@ -11,10 +11,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
-import androidx.compose.material3.Surface
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
@@ -310,12 +309,4 @@ fun RowScope.MenuItems(
             ) else modifier
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DrawingScreenPreview() {
-    val context = LocalContext.current
-    val dbref = getGameDBRef(context)
-    DrawingScreen(dbref)
 }
