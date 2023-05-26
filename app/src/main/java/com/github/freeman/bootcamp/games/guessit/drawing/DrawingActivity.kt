@@ -3,6 +3,7 @@ package com.github.freeman.bootcamp.games.guessit.drawing
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
@@ -75,7 +76,7 @@ fun DrawingScreen(
     // timer of the artist
     var timer by remember { mutableStateOf(context.getString(R.string.timer_inprogress)) }
     val dbrefTimer = dbref.child(context.getString(R.string.current_timer_path))
-    dbrefTimer.setValue(context.getString(R.string.timer_inprogress))
+    Log.d("DrawingActivityD", "DrawingScreen called")
     dbrefTimer.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
@@ -209,6 +210,7 @@ fun DrawingScreen(
                     if (currentState != context.getString(R.string.state_newturn)
                         && currentState != context.getString(R.string.state_topicselection)
                         && currentState != context.getString(R.string.state_playturn)) {
+                        Log.d("DrawingActivityD", "DrawingActivity finished")
                         val activity = context as? Activity
                         activity?.finish()
                     }

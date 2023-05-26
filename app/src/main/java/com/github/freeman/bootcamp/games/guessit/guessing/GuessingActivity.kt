@@ -431,7 +431,7 @@ lifecycleOwner: LifecycleOwner) {
                     )
                 }
 
-                if (timer != context.getString(R.string.timer_inprogress)) {
+                if (timer == context.getString(R.string.timer_inprogress)) {
                     TimerScreen(dbrefTimer, 60L, fontSize = 30.sp, textColor = Color.DarkGray)
                 }
 
