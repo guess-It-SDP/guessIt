@@ -73,6 +73,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.util.concurrent.Executors
 
 /**
@@ -184,14 +185,20 @@ private fun takeSelfie(
         val cameraExecutor = Executors.newSingleThreadExecutor()
         val onImageSavedCallback = object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                storageSelfieRef.putFile(tempFile.toUri())
-
                 // Draw a hat and mustache over the selfie
                 CoroutineScope(Dispatchers.Main).launch {
                     val maxDownloadSize = 5 * 1024 * 1024.toLong()
                     storageSelfieRef.getBytes(maxDownloadSize).addOnSuccessListener { bytes ->
                             val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                             FaceDetectionActivity.transformBitmapToDrawOnFaces(bitmap, context)
+                            val b = ByteArrayOutputStream()
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 0, b)
+                            val bitmapdata = b.toByteArray()
+                            val fos = FileOutputStream(tempFile)
+                            fos.write(bitmapdata)
+                            fos.flush()
+                            fos.close()
+                            storageSelfieRef.putFile(tempFile.toUri())
                         }
                         Log.i("Selfie", "Image saved")
                 }
