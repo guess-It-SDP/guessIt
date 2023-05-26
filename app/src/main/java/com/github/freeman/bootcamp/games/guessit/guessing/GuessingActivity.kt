@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleOwner
 import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.facedetection.FaceDetectionActivity
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
@@ -66,6 +68,9 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.concurrent.Executors
@@ -180,7 +185,16 @@ private fun takeSelfie(
         val onImageSavedCallback = object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 storageSelfieRef.putFile(tempFile.toUri())
-                Log.i("Selfie", "Image saved")
+
+                // Draw a hat and mustache over the selfie
+                CoroutineScope(Dispatchers.Main).launch {
+                    val maxDownloadSize = 5 * 1024 * 1024.toLong()
+                    storageSelfieRef.getBytes(maxDownloadSize).addOnSuccessListener { bytes ->
+                            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                            FaceDetectionActivity.transformBitmapToDrawOnFaces(bitmap, context)
+                        }
+                        Log.i("Selfie", "Image saved")
+                }
             }
 
             override fun onError(exception: ImageCaptureException) {

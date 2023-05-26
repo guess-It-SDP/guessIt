@@ -100,22 +100,22 @@ class VideoCreator {
                                         // create the video only when all images are fetched
                                         if (i == userIdRefList.size - 1) {
 
-                                            // download all selfies files and draw a hat and mustache over them
-                                            for (file in selfiesFileList) {
-                                                val maxDownloadSize = 5 * 1024 * 1024.toLong()
-
-//                                                // Fetch each user's hat
-//                                                val hat = mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
-//                                                FirebaseUtilities.storageGet(profileIdRefList[i])
-//                                                    .thenAccept {
-//                                                        hat.value = it
-//                                                    }
-
-                                                file.getBytes(maxDownloadSize).addOnSuccessListener { bytes ->
-                                                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                                                    transformBitmapToDrawOnFaces(bitmap, context)//, hat)
-                                                }
-                                            }
+//                                            // download all selfies files and draw a hat and mustache over them
+//                                            for (file in selfiesFileList) {
+//                                                val maxDownloadSize = 5 * 1024 * 1024.toLong()
+//
+////                                                // Fetch each user's hat
+////                                                val hat = mutableStateOf<Bitmap?>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
+////                                                FirebaseUtilities.storageGet(profileIdRefList[i])
+////                                                    .thenAccept {
+////                                                        hat.value = it
+////                                                    }
+//
+//                                                file.getBytes(maxDownloadSize).addOnSuccessListener { bytes ->
+//                                                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+//                                                    transformBitmapToDrawOnFaces(bitmap, context)//, hat)
+//                                                }
+//                                            }
 
                                             combinedFileList = drawingsFileList.zip(selfiesFileList).flatMap { listOf(it.first, it.second) }
 
