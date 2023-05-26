@@ -30,6 +30,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.SCORES_TITLE
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.size
+import com.github.freeman.bootcamp.games.guessit.ScoreActivity2.Companion.SCORES_RECAP_BOARD_TAG
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
@@ -44,10 +45,6 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class ScoreActivity2 : ComponentActivity() {
-
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameID = intent.getStringExtra(getString(R.string.gameId_extra))
@@ -83,6 +80,7 @@ class ScoreActivity2 : ComponentActivity() {
     companion object {
         const val size = 200
         const  val SCORES_RECAP_TITLE = "Scores, next round coming soon"
+        const  val SCORES_RECAP_BOARD_TAG = "Scores, next round coming soon"
     }
 }
 
@@ -117,7 +115,7 @@ fun CurrentScoreboard(usersToScores: List<Pair<String?, Int>>) {
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(horizontal = 20.dp, vertical = 10.dp)
-                    .testTag("endScoresTitle")
+                    .testTag(SCORES_RECAP_BOARD_TAG)
             )
 
             Spacer(modifier = Modifier.height(2.dp))
