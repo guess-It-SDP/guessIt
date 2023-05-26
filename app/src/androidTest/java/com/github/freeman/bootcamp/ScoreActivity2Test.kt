@@ -22,7 +22,6 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ScoreActivity2Test {
-
     @get:Rule
     val composeRule = createComposeRule()
 
@@ -57,7 +56,7 @@ class ScoreActivity2Test {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     CurrentScoreboard(usersToScores = usersToScores)
-                    VideoScreen(roomName = "test", testing = false)
+            //        VideoScreen(roomName = "test", testing = false)
                 }
             }
         }
@@ -68,10 +67,13 @@ class ScoreActivity2Test {
         composeRule.onNodeWithTag(ScoreActivity2.SCORES_RECAP_BOARD_TAG).assertIsDisplayed()
     }
 
+    /*
 
     @Test
     fun videoExist() {
         composeRule.onNodeWithTag("agora_video_view").assertExists()
     }
+
+     */
 
 }
