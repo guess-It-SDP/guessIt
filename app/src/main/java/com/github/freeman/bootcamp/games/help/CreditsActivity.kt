@@ -11,13 +11,20 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,9 +37,11 @@ class CreditsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
-                Column {
-                    TopAppbarCredits()
-                    CreditsDisplay()
+                Surface {
+                    Column {
+                        TopAppbarCredits()
+                        CreditsDisplay()
+                    }
                 }
             }
 
@@ -40,21 +49,16 @@ class CreditsActivity : ComponentActivity() {
     }
 
     companion object {
-        const val TOPBAR_CREDITS_TEXT = "GUESS IT! CREDITS"
+        const val TOPBAR_CREDITS_TEXT = "Guess It! Credits"
 
         val CREDITS = listOf(
-            "i16s This game was developed in 2023 as part of the “Software Development Project” course at EPFL.\n",
-            "n30s Developers",
-            "n16n Michael Freeman",
-            "n16n Danny Seel",
-            "n16n Clara Tavernier",
-            "n16n David Lacour",
-            "n16n Paul Guillon",
-            "n30s Professor",
-            "n16n George Canda",
-            "n30s Supervisors",
-            "n16n Can Cebedi",
-            "n16n Mathieu Marchand")
+            "ni16s This game was developed in 2023 as part of the “Software Development Project” course at EPFL.\n",
+            "tn30s Developers",
+            "nn16n Michael Freeman\nDanny Seel\nClara Tavernier\nDavid Lacour\nPaul Guillon",
+            "tn30s Professor",
+            "nn16n George Canda",
+            "tn30s Supervisors",
+            "nn16n Can Cebedi\nMathieu Marchand")
     }
 }
 
@@ -76,9 +80,14 @@ fun CreditsDisplay() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             items(CREDITS) { text ->
-                val fontStyle = text.first()
-                val fontSize = text.substring(1, 3).toInt()
-                val space = text[3]
+                val isTitle = (text.first() == 't')
+                val fontStyle = text[1]
+                val fontSize = text.substring(2, 4).toInt()
+                val space = text[4]
+
+                val color: Color =
+                    if (isTitle) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.tertiary
 
                 val style: FontStyle =
                     if (fontStyle == 'n') FontStyle.Normal
@@ -94,12 +103,13 @@ fun CreditsDisplay() {
 
                 Text(
                     modifier = Modifier
-                        .testTag(text.drop(5).take(5))
-                        .align(Alignment.CenterHorizontally),
-                    text = text.drop(5),
+                        .testTag(text.drop(6).take(5)),
+                    text = text.drop(6),
                     fontSize = fontSize.sp,
                     fontStyle = style,
                     fontWeight = weight,
+                    textAlign = TextAlign.Center,
+                    color = color
                 )
             }
         }
@@ -110,16 +120,19 @@ fun CreditsDisplay() {
 fun TopAppbarCredits(context: Context = LocalContext.current) {
 
     TopAppBar(
-        modifier = Modifier.testTag("topAppbarCreditsRules"),
+        modifier = Modifier.testTag("topAppbarCredits"),
         title = {
             Text(
-                modifier = Modifier.testTag("topBarCreditsTitle"),
+                modifier = Modifier.testTag("topAppbarCreditsTitle"),
                 text = TOPBAR_CREDITS_TEXT,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 20.sp
             )
         },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
             IconButton(onClick = {
@@ -127,8 +140,9 @@ fun TopAppbarCredits(context: Context = LocalContext.current) {
                 activity?.finish()
             }) {
                 Icon(
-                    Icons.Filled.ArrowBack,
+                    imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }

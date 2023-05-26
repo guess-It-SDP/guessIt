@@ -17,6 +17,11 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,33 +72,40 @@ class LobbyListActivity: ComponentActivity() {
                 val enterPassword = remember { mutableStateOf(false) }
                 val lobby = remember { mutableStateOf(Lobby("", "", 0, 0, "", "")) }
 
-                Column {
-                    TopAppbarLobbies()
+                Surface {
+                    Column {
+                        TopAppbarLobbies(enterPassword = enterPassword)
 
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = Color(0xFFF1F1F1)
-                    ) {
                         if (!enterPassword.value) {
                             LobbyList(dbRef, enterPassword, lobby)
-                        }
-                    }
-
-                    // Shows the dialog when a private lobby is clicked
-                    if (enterPassword.value) {
-                        val context = LocalContext.current
-                        val userId = Firebase.auth.uid
-                        EditDialog(
-                            text = password,
-                            setValue = ENTER_PASSWORD_TEXT,
-                            enterValue = PASSWORD_TEXT,
-                            show = enterPassword,
-                            keyboardType = KeyboardType.NumberPassword
-                        ) {
-                            if (lobby.value.password == it) {
-                                joinLobby(context, dbRef.child(context.getString(R.string.games_path)), userId.toString(), lobby.value)
-                            } else {
-                                Toast.makeText(context, WRONG_PASSWORD_TEXT, Toast.LENGTH_SHORT).show()
+                        } else {
+                            // Shows the dialog when a private lobby is clicked
+                            val context = LocalContext.current
+                            val userId = Firebase.auth.uid
+                            Box (Modifier.fillMaxSize()) {
+                                EditDialog(
+                                    text = password,
+                                    setValue = ENTER_PASSWORD_TEXT,
+                                    enterValue = PASSWORD_TEXT,
+                                    show = enterPassword,
+                                    keyboardType = KeyboardType.NumberPassword
+                                ) {
+                                    if (lobby.value.password == it) {
+                                        joinLobby(
+                                            context,
+                                            dbRef.child(context.getString(R.string.games_path)),
+                                            userId.toString(),
+                                            lobby.value
+                                        )
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            WRONG_PASSWORD_TEXT,
+                                            Toast.LENGTH_SHORT
+                                        )
+                                            .show()
+                                    }
+                                }
                             }
                         }
                     }
@@ -119,27 +131,39 @@ class LobbyListActivity: ComponentActivity() {
 }
 
 @Composable
-fun TopAppbarLobbies(context: Context = LocalContext.current) {
+fun TopAppbarLobbies(context: Context = LocalContext.current, enterPassword: MutableState<Boolean>) {
 
     TopAppBar(
         modifier = Modifier.testTag("topAppbarLobbies"),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarLobbiesTitle"),
                 text = TOPBAR_TEXT,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 20.sp
             )
         },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
-            IconButton(onClick = {
-                val activity = (context as? Activity)
-                activity?.finish()
-            }) {
+            IconButton(
+                modifier = Modifier.testTag("appBarBack"),
+                onClick = {
+                    if (enterPassword.value) {
+                        enterPassword.value = false
+                    } else {
+                        val activity = (context as? Activity)
+                        activity?.finish()
+                    }
+                }
+            ) {
                 Icon(
-                    Icons.Filled.ArrowBack,
+                    imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
         }
@@ -192,13 +216,16 @@ fun ListItem(
                 Text(
                     text = lobby.name,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "${lobby.nbRounds} rounds",
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Light
+                    fontWeight = FontWeight.Light,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -208,7 +235,8 @@ fun ListItem(
                 if(lobby.type == PRIVATE_TYPE_TEXT) {
                     Icon(
                         Icons.Filled.Lock,
-                        contentDescription = PRIVATE_TYPE_TEXT
+                        contentDescription = PRIVATE_TYPE_TEXT,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
                 } else {
                     // This empty text is to place the "players" text on the bottom
@@ -222,7 +250,8 @@ fun ListItem(
                 Text(
                     text = "players : ${nbPlayer.value}",
                     fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
             }
 
@@ -289,7 +318,7 @@ fun LobbyList(database: DatabaseReference, enterPassword: MutableState<Boolean>,
             items(lobbies.toList()) { lobby ->
                 ListItem(
                     lobby = lobby,
-                    backgroundColor = Color.White,
+                    backgroundColor = MaterialTheme.colorScheme.primaryContainer,
                     onItemClick = {
                         if (lobby.type == PRIVATE_TYPE_TEXT) {
                             defaultLobby.value = lobby

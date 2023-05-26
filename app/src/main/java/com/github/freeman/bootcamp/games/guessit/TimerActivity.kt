@@ -6,7 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
-import com.github.freeman.bootcamp.ui.theme.md_theme_light_primary
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import com.google.firebase.database.DatabaseReference
@@ -37,15 +38,16 @@ class TimerActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                TimerScreen(dbrefTimer, 100L)
+                Surface {
+                    TimerScreen(dbrefTimer, 100L)
+                }
             }
         }
     }
 }
 
 @Composable
-fun TimerScreen(dbrefTimer: DatabaseReference, time: Long, size: Int = 70, fontSize: TextUnit = 30.sp,
-                color: Color= md_theme_light_primary, textColor: Color = Color.DarkGray) {
+fun TimerScreen(dbrefTimer: DatabaseReference, time: Long, size: Int = 70, fontSize: TextUnit = 30.sp) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -55,8 +57,8 @@ fun TimerScreen(dbrefTimer: DatabaseReference, time: Long, size: Int = 70, fontS
         Timer(
             dbrefTimer = dbrefTimer,
             totalTime = time * 1000L,
-            activeBarColor = color,
-            textColor = textColor,
+            firstColor = MaterialTheme.colorScheme.primary,
+            secondColor = MaterialTheme.colorScheme.primaryContainer,
             fontSize = fontSize,
             modifier = Modifier
                 .size((0.8*size).dp)
@@ -69,8 +71,8 @@ fun TimerScreen(dbrefTimer: DatabaseReference, time: Long, size: Int = 70, fontS
 fun Timer(
     dbrefTimer: DatabaseReference,
     totalTime: Long,
-    activeBarColor: Color,
-    textColor: Color,
+    firstColor: Color,
+    secondColor: Color,
     fontSize: TextUnit,
     modifier: Modifier = Modifier
 ) {
@@ -97,9 +99,9 @@ fun Timer(
         modifier = modifier
             .onSizeChanged { size = it }
     ) {
-        TimerCircles(modifier, activeBarColor, strokeWidth, value)
+        TimerCircles(modifier, firstColor, secondColor, strokeWidth, value)
 
-        TimerText(currentTime, fontSize, textColor)
+        TimerText(currentTime, fontSize, secondColor)
     }
 }
 
@@ -114,12 +116,12 @@ fun TimerText(currentTime: Long, fontSize: TextUnit, textColor: Color) {
 }
 
 @Composable
-fun TimerCircles(modifier: Modifier, activeBarColor: Color, strokeWidth: Dp, value: Float) {
+fun TimerCircles(modifier: Modifier, activeBarColor: Color, inactiveBarColor: Color, strokeWidth: Dp, value: Float) {
     Canvas(
         modifier = modifier.testTag("timerCanvas")) {
 
         drawArc(
-            color = Color.DarkGray,
+            color = inactiveBarColor,
             startAngle = 90f,
             sweepAngle = 360f,
             useCenter = false,

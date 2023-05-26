@@ -1,6 +1,7 @@
 package com.github.freeman.bootcamp.games.wordle
 
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -14,16 +15,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.github.freeman.bootcamp.games.wordle.WordleGameActivity.Companion.WORDLE_GAME_TITLE
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
 import androidx.compose.runtime.remember as remember1
 
@@ -46,7 +56,6 @@ class WordleGameActivity : ComponentActivity() {
         private const val SOLUTIONS_FILE = "wordle_common.txt"
         private const val EASY_WORDS_FILE = "wordle_easy.txt"
 
-        private const val SUBMISSION_BUTTON = "Submit word"
         const val SUBMISSION_TEXTFIELD = "Enter a 5 letters word to submit"
 
         private const val NB_ROW_EASY = 9
@@ -54,6 +63,8 @@ class WordleGameActivity : ComponentActivity() {
         private const val NB_ROW_HARD = 6
         private const val NOT_5_LETTERS_PLEASE = "You need to enter 5 letters."
         private const val NOT_WRONG_WORDS_PLEASE = "Please enter a valid word."
+
+        const val WORDLE_GAME_TITLE = "Wordle"
 
         val difficultyIsWordOnly = mapOf(
             WordleMenu.Companion.Difficulty.EASY to false,
@@ -88,14 +99,7 @@ class WordleGameActivity : ComponentActivity() {
         val tiles = wordle.getTiles()
 
         setContent {
-            Column {
-                BootcampComposeTheme {
-                    TileRoof(
-                        tiles
-                    )
-                    WordleButton()
-                }
-            }
+            WordleGameScreen(tiles)
         }
     }
 
@@ -110,16 +114,6 @@ class WordleGameActivity : ComponentActivity() {
             WordleMenu.Companion.Difficulty.VERY_HARD.name -> WordleGameState.startGame(difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.VERY_HARD,false), solutions, validWords, NB_ROW_MEDIUM)
             WordleMenu.Companion.Difficulty.VERY_VERY_HARD.name -> WordleGameState.startGame(difficultyIsWordOnly.getOrDefault(WordleMenu.Companion.Difficulty.VERY_VERY_HARD,false), solutions, validWords, NB_ROW_HARD)
             else -> WordleGameState.startGame(false, solutions, easyWords, NB_ROW_EASY)
-        }
-    }
-
-    /**
-     * used in testing to get hardcoded word hello
-     */
-    private fun testingSetUp() {
-        val testing = intent.getBooleanExtra("testing", false)
-        if (testing) {
-            wordle = wordle.withSetWordToGuess("hello")
         }
     }
 
@@ -143,22 +137,14 @@ class WordleGameActivity : ComponentActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
-            } else {
+            }
 
-                wordle = wordle.withSubmittedWord(
-                    text
-                )
-                val tiles = wordle.getTiles()
-                setContent {
-                    Column {
-                        BootcampComposeTheme {
-                            TileRoof(
-                                tiles
-                            )
-                            WordleButton()
-                        }
-                    }
-                }
+            wordle = wordle.withSubmittedWord(
+                text
+            )
+            val tiles = wordle.getTiles()
+            setContent {
+                WordleGameScreen(tiles)
             }
             return true
         } else {
@@ -195,6 +181,7 @@ class WordleGameActivity : ComponentActivity() {
                 Icon(
                     imageVector = Icons.Filled.CheckCircle,
                     contentDescription = "Submit word",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -208,6 +195,7 @@ class WordleGameActivity : ComponentActivity() {
     @Composable
     private fun TileRoof(tiles: MutableList<WordleGameState.Tile>) {
         var id = 0
+
         LazyVerticalGrid(
             columns = GridCells.Fixed(5),
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -291,12 +279,70 @@ class WordleGameActivity : ComponentActivity() {
             singleLine = true
         )
     }
+
+    @Composable
+    private fun WordleGameScreen(tiles: MutableList<WordleGameState.Tile>) {
+        BootcampComposeTheme {
+            Surface {
+                Column (
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    TopAppbarWordleGame()
+                    Box (
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
+                    ) {
+                        TileRoof(tiles)
+                    }
+                    WordleButton()
+                }
+            }
+        }
+    }
 }
 
 // this class is to store the value of the text field
 // in order to use it in other Composable
 private class TextFieldState {
     var text: String by mutableStateOf("")
+}
+
+@Composable
+fun TopAppbarWordleGame() {
+    val context = LocalContext.current
+
+    TopAppBar(
+        modifier = Modifier.testTag("topAppbarWordleGame"),
+        title = {
+            Text(
+                modifier = Modifier.testTag("topAppbarWordleGameTitle"),
+                text = WORDLE_GAME_TITLE,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 20.sp
+            )
+        },
+        backgroundColor = MaterialTheme.colorScheme.background,
+        elevation = 4.dp,
+        navigationIcon = {
+            androidx.compose.material3.IconButton(
+                modifier = Modifier
+                    .testTag("appBarBack"),
+                onClick = {
+                    val activity = (context as? Activity)
+                    activity?.finish()
+                },
+            ) {
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
+        }
+    )
 }
 
 

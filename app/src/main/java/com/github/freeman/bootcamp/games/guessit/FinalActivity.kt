@@ -15,7 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,13 +23,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.freeman.bootcamp.MainMenuActivity
+import com.github.freeman.bootcamp.MainMenuButton
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.BACK_TO_MENU
 import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.BLUES
@@ -57,18 +60,18 @@ class FinalActivity : ComponentActivity() {
         val dbRef = getGameDBRef(this, gameId)
         setContent {
             BootcampComposeTheme {
-                FinalScreen(dbRef, gameId)
+                Surface {
+                    FinalScreen(dbRef, gameId)
+                }
             }
         }
     }
 
     companion object {
-        const val GAME_OVER = "Game over!"
+        const val GAME_OVER = "Game's over!"
         const val BACK_TO_MENU = "Back to menu"
         const val GAME_RECAP = "Game recap"
         const val WINNER_TITLE = "And the winner is… "
-        val BLUES = listOf(Color(0xFF4C74C7), Color(0xFF2196F3),
-            Color(0xFF03A9F4), Color(0xFF00BCD4))
     }
 }
 
@@ -90,38 +93,30 @@ fun FinalScreen(dbRef: DatabaseReference, gameID: String) {
     val usernames = fetchUserNames(scores)
     val usersToScores = usernamesToScores(scores, usernames).sortedWith(compareByDescending { it.second })
 
-    BootcampComposeTheme {
-        Column (
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = GAME_OVER,
-                fontSize = 44.sp,
-                style = MaterialTheme.typography.h5,
-                modifier = Modifier.testTag(GAME_OVER)
-            )
-            Spacer(modifier = Modifier.size(30.dp))
-            EndScoreboard(usersToScores)
-        }
+    Column (
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = GAME_OVER,
+            fontSize = 44.sp,
+            modifier = Modifier.testTag(GAME_OVER),
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.size(50.dp))
+        EndScoreboard(usersToScores)
+        Spacer(modifier = Modifier.size(50.dp))
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.Start
-        ) {
-            Row() {
-                BackToMenuButton(context, dbRef)
-                GameRecapButton(context, gameID, dbRef)
-            }
-        }
+        GameRecapButton(context, gameID)
+        BackToMenuButton(context)
     }
 }
 
 @Composable
-fun GameRecapButton(context: Context, gameID: String, dbRef: DatabaseReference){
-
+fun GameRecapButton(context: Context, gameID: String){
     val displayButton = remember { mutableStateOf(false) }
 
     Firebase.database.reference
@@ -140,39 +135,35 @@ fun GameRecapButton(context: Context, gameID: String, dbRef: DatabaseReference){
             override fun onCancelled(error: DatabaseError) {}
         })
 
-    ElevatedButton(
-        enabled = displayButton.value,
-        onClick = {
-            val intent = Intent(context, ShareRecapActivity::class.java)
-            intent.putExtra(context.getString(R.string.gameId_extra), gameID)
-            context.startActivity(intent)
-            val activity = (context as? Activity)
-            activity?.finish()
-        },
-        modifier = Modifier.testTag("gameRecapButton")
-    ) {
-        Text(
+    if (displayButton.value) {
+        MainMenuButton(
+            testTag = "gameRecapButton",
+            onClick = {
+                val intent = Intent(context, ShareRecapActivity::class.java)
+                intent.putExtra(context.getString(R.string.gameId_extra), gameID)
+                context.startActivity(intent)
+                val activity = (context as? Activity)
+                activity?.finish()
+            },
             text = GAME_RECAP,
-            modifier = Modifier.testTag(GAME_RECAP)
+            icon = ImageVector.vectorResource(R.drawable.video)
         )
     }
+
 }
 
 @Composable
-fun BackToMenuButton(context: Context, dbRef: DatabaseReference) {
-    ElevatedButton(
+fun BackToMenuButton(context: Context) {
+    MainMenuButton(
+        testTag = "backToMenuButton",
         onClick = {
             context.startActivity(Intent(context, MainMenuActivity::class.java))
             val activity = (context as? Activity)
             activity?.finish()
         },
-        modifier = Modifier.testTag("backToMenuButton")
-    ) {
-        Text(
-            text = BACK_TO_MENU,
-            modifier = Modifier.testTag(BACK_TO_MENU)
-        )
-    }
+        text = BACK_TO_MENU,
+        icon = ImageVector.vectorResource(R.drawable.menu)
+    )
 }
 
 @Composable
@@ -181,13 +172,16 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
 
     Box(
         modifier = Modifier
-            .background(Color.Blue, RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(16.dp))
             .padding(8.dp)
             .border(
                 BorderStroke(
                     width = 4.dp,
                     brush = Brush.linearGradient(
-                        colors = BLUES
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     )
                 ),
                 shape = RoundedCornerShape(16.dp),
@@ -203,29 +197,28 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = ScoreActivity.FINAL_SCORES_TITLE,
-                color = Color.White,
-                style = MaterialTheme.typography.h4,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(horizontal = 20.dp, vertical = 10.dp)
-                    .testTag("endScoresTitle")
+                    .testTag("endScoresTitle"),
+                text = ScoreActivity.FINAL_SCORES_TITLE,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                fontSize = 20.sp,
             )
 
             Spacer(modifier = Modifier.height(2.dp))
-            Divider(color = BLUES[1], thickness = 4.dp)
+            Divider(color = MaterialTheme.colorScheme.primary, thickness = 4.dp)
 
             val winner = if (usersToScores.isNotEmpty()) usersToScores[0].first else "???"
             Spacer(modifier = Modifier.height(30.dp))
 
             // Display the winner alongside celebration and trophy images
             Row {
-                Image(
-                    painter = rememberAsyncImagePainter(R.drawable.celebration),
-                    contentDescription = context.getString(R.string.celebration),
-                    modifier = Modifier
-                        .testTag("celebration")
-                        .size(40.dp)
+                Icon(
+                    modifier = Modifier.testTag("celebration1").size(40.dp),
+                    imageVector = ImageVector.vectorResource(R.drawable.guessitvictory),
+                    contentDescription = context.getString(R.string.trophy),
+                    tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(10.dp))
 
@@ -235,19 +228,18 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
                     modifier = Modifier.height(32.dp)
                 ) {
                     Text(
-                        text = "${WINNER_TITLE}$winner!",
-                        style = MaterialTheme.typography.body1,
-                        color = Color.White,
-                        modifier = Modifier.testTag("winnerDeclaration")
+                        text = "${WINNER_TITLE}\n$winner!",
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.testTag("winnerDeclaration"),
+                        textAlign = TextAlign.Center
                     )
                 }
                 Spacer(modifier = Modifier.width(10.dp))
-                Image(
-                    painter = rememberAsyncImagePainter(R.drawable.trophy),
+                Icon(
+                    modifier = Modifier.testTag("celebration2").size(40.dp),
+                    imageVector = ImageVector.vectorResource(R.drawable.guessitvictory),
                     contentDescription = context.getString(R.string.trophy),
-                    modifier = Modifier
-                        .testTag("trophy")
-                        .size(40.dp)
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -260,8 +252,7 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
                     if (name != null) {
                         Text(
                             text = name,
-                            color = Color.White,
-                            style = MaterialTheme.typography.body1,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(horizontal = 20.dp, vertical = 10.dp)
@@ -270,15 +261,14 @@ fun EndScoreboard(usersToScores: List<Pair<String?, Int>>) {
 
                         Text(
                             text = score.toString(),
-                            color = Color.White,
-                            style = MaterialTheme.typography.body1,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier
                                 .padding(horizontal = 20.dp, vertical = 10.dp)
                                 .testTag("endScore")
                         )
                     }
                 }
-                Divider(color = Color.White, thickness = 1.dp)
+                Divider(color = MaterialTheme.colorScheme.primary, thickness = 1.dp)
             }
         }
     }

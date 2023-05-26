@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,6 +31,15 @@ import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity.Comp
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity.Companion.JOINING_GAME_BUTTON_TEXT
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreateJoinActivity.Companion.TOPBAR_TEXT
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import com.github.freeman.bootcamp.MainMenuButton
+
 
 /**
  * Shows a screen where you can either join or create a Guess It game
@@ -42,34 +53,40 @@ class CreateJoinActivity: ComponentActivity() {
         }
         setContent {
             BootcampComposeTheme {
-                TopAppbarCreateJoin()
+                Surface {
+                    TopAppbarCreateJoin()
 
-                Column (
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .testTag(getString(R.string.createjoin_screen)),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .testTag(getString(R.string.createjoin_screen)),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
 
-                    Text(
-                        modifier = Modifier
-                            .testTag(getString(R.string.createjoin_text1)),
-                        text = SCREEN_TEXT_1,
-                        fontSize = 30.sp,
-                        fontStyle = FontStyle.Italic
-                    )
-                    Spacer(modifier = Modifier.size(60.dp))
-                    Text(
-                        modifier = Modifier
-                            .testTag(getString(R.string.createjoin_text2)),
-                        fontSize = 20.sp,
-                        text = SCREEN_TEXT_2,
-                    )
-                    Spacer(modifier = Modifier.size(15.dp))
-                    CreateGameButton()
-                    Spacer(modifier = Modifier.size(6.dp))
-                    JoinGameButton()
+                        Text(
+                            modifier = Modifier
+                                .testTag(getString(R.string.createjoin_text1)),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            text = SCREEN_TEXT_1,
+                            fontSize = 30.sp,
+                            fontStyle = FontStyle.Italic
+                        )
+                        Spacer(modifier = Modifier.size(60.dp))
+                        Text(
+                            modifier = Modifier
+                                .testTag(getString(R.string.createjoin_text2)),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.secondary,
+                            fontSize = 20.sp,
+                            text = SCREEN_TEXT_2,
+                        )
+                        Spacer(modifier = Modifier.size(15.dp))
+                        CreateGameButton()
+                        Spacer(modifier = Modifier.size(6.dp))
+                        JoinGameButton()
+                    }
                 }
             }
         }
@@ -91,21 +108,29 @@ fun TopAppbarCreateJoin(context: Context = LocalContext.current) {
         modifier = Modifier.testTag(context.getString(R.string.createjoin_topbar)),
         title = {
             Text(
+                modifier = Modifier.testTag("topAppbarCreateJoinTitle"),
                 text = TOPBAR_TEXT,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 20.sp
             )
         },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
-            IconButton(onClick = {
-                val activity = (context as? Activity)
-                activity?.finish()
+            IconButton(
+                modifier = Modifier
+                    .testTag("appBarBack"),
+                onClick = {
+                    val activity = (context as? Activity)
+                    activity?.finish()
             }) {
                 Icon(
-                    Icons.Filled.ArrowBack,
-                    contentDescription = context.getString(R.string.createjoin_topbar_icon),
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
         }
@@ -119,21 +144,22 @@ fun TopAppbarCreateJoin(context: Context = LocalContext.current) {
 @Composable
 fun CreateGameButton() {
     val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag(context.getString(R.string.createjoin_creategame)),
-        onClick = { context.startActivity(Intent(context, CreatePublicPrivateActivity::class.java)) }
-    ) {
-        Text(CREATE_GAME_BUTTON_TEXT)
-    }
+    MainMenuButton(
+        testTag = "createGameButton",
+        onClick = { context.startActivity(Intent(context, CreatePublicPrivateActivity::class.java)) },
+        text = CREATE_GAME_BUTTON_TEXT,
+        icon = Icons.Default.Edit
+    )
+
 }
 
 @Composable
 fun JoinGameButton() {
     val context = LocalContext.current
-    ElevatedButton(
-        modifier = Modifier.testTag(context.getString(R.string.createjoin_joininggame)),
-        onClick = { context.startActivity(Intent(context, LobbyListActivity::class.java)) }
-    ) {
-        Text(JOINING_GAME_BUTTON_TEXT)
-    }
+    MainMenuButton(
+        testTag = "joinGameButton",
+        onClick = { context.startActivity(Intent(context, LobbyListActivity::class.java)) },
+        text = JOINING_GAME_BUTTON_TEXT,
+        icon = ImageVector.vectorResource(R.drawable.join)
+    )
 }

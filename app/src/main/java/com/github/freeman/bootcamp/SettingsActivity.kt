@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +28,12 @@ class SettingsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BootcampComposeTheme {
-                SettingsScreen()
+                Surface {
+                    Column {
+                        TopAppBarSettings()
+                        SettingsScreen()
+                    }
+                }
             }
         }
     }
@@ -49,59 +52,65 @@ fun back(context: Context) {
 
 @Composable
 fun SettingsScreen() {
-    MaterialTheme {
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start
-        ) {
-            val context = LocalContext.current
-            TopAppBar(
-                modifier = Modifier.testTag("topAppbarSettings"),
-                title = {
-                    androidx.compose.material.Text(
-                        text = PARAMETERS_TITLE,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                backgroundColor = androidx.compose.material.MaterialTheme.colors.background,
-                elevation = 4.dp,
-                navigationIcon = {
-                    androidx.compose.material.IconButton(
-                        onClick = {
-                            val activity = (context as? Activity)
-                            activity?.finish()
-                        },
-                        modifier = Modifier.testTag("settingsBackButton")
-                    ) {
-                        androidx.compose.material.Icon(
-                            Icons.Filled.ArrowBack,
-                            contentDescription = "Go back",
-                        )
-                    }
-                }
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .testTag("settingsScreen"),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                modifier = Modifier.testTag(SETTINGS_TITLE),
-                text = SETTINGS_TITLE,
-                fontSize = 30.sp
-            )
-            Spacer(modifier = Modifier.size(150.dp))
-            Text(text = MUSIC_VOLUME,
-                 modifier = Modifier.testTag(MUSIC_VOLUME))
-            MusicSlider()
-        }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("settingsScreen"),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            modifier = Modifier.testTag(SETTINGS_TITLE),
+            text = SETTINGS_TITLE,
+            fontSize = 30.sp,
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(modifier = Modifier.size(150.dp))
+        Text(
+            text = MUSIC_VOLUME,
+            modifier = Modifier.testTag(MUSIC_VOLUME),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.tertiary,
+            fontSize = 15.sp
+        )
+        MusicSlider()
     }
+}
+
+@Composable
+fun TopAppBarSettings(context: Context = LocalContext.current) {
+    TopAppBar(
+        modifier = Modifier.testTag("topAppbarSettings"),
+        title = {
+            Text(
+                modifier = Modifier.testTag("topAppbarSettingsTitle"),
+                text = PARAMETERS_TITLE,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 20.sp
+            )
+        },
+        backgroundColor = MaterialTheme.colorScheme.background,
+        elevation = 4.dp,
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    val activity = (context as? Activity)
+                    activity?.finish()
+                },
+                modifier = Modifier.testTag("appBarBack")
+            ) {
+                Icon(
+                    Icons.Filled.ArrowBack,
+                    contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
+        }
+    )
 }
 
 @Composable

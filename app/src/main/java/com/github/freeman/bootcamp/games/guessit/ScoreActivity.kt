@@ -1,6 +1,5 @@
 package com.github.freeman.bootcamp.games.guessit
 
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,8 +8,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.SCORES_TITLE
 import com.github.freeman.bootcamp.games.guessit.ScoreActivity.Companion.size
@@ -30,7 +31,6 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
@@ -43,7 +43,9 @@ class ScoreActivity : ComponentActivity() {
         val dbRef = getGameDBRef(this, gameID.toString())
         setContent {
             BootcampComposeTheme {
-                ScoreScreen(dbRef)
+                Surface {
+                    ScoreScreen(dbRef)
+                }
             }
         }
     }
@@ -203,7 +205,7 @@ fun ScoreScreen(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(size.dp),
+            .height(200.dp),
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.Top
     ) {
@@ -229,7 +231,7 @@ fun Scoreboard(playerScores: List<Pair<String?, Int>>, modifier: Modifier) {
         modifier = modifier
             .padding(2.dp)
             .fillMaxHeight()
-            .background(Color.LightGray, RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(10.dp))
             .onSizeChanged { size = it }
     ) {
         Column(
@@ -239,10 +241,11 @@ fun Scoreboard(playerScores: List<Pair<String?, Int>>, modifier: Modifier) {
         ) {
             Text(
                 text = SCORES_TITLE,
-                style = MaterialTheme.typography.subtitle1,
+                fontSize = 20.sp,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .testTag("scoresTitle")
+                    .testTag("scoresTitle"),
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
             Spacer(modifier = Modifier.height(2.dp))
             playerScores.forEach { (name, score) ->
@@ -252,20 +255,26 @@ fun Scoreboard(playerScores: List<Pair<String?, Int>>, modifier: Modifier) {
                     if (name != null) {
                         Text(
                             text = name,
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .weight(1f)
-                                .testTag(name)
+                                .testTag(name),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            maxLines = 1,
+                            minLines = 1
                         )
 
                         Text(
                             text = score.toString(),
-                            style = MaterialTheme.typography.body2,
-                            modifier = Modifier.testTag("score")
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.testTag("score"),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                 }
-                Divider(color = Color.Black, thickness = 1.dp)
+                Divider(
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer)
             }
         }
     }
