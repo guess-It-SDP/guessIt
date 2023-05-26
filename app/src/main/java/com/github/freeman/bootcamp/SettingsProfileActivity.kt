@@ -138,10 +138,13 @@ fun TopAppbarSettings(context: Context = LocalContext.current) {
         backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp,
         navigationIcon = {
-            IconButton(onClick = {
-                val activity = (context as? Activity)
-                activity?.finish()
-            }) {
+            IconButton(
+                modifier = Modifier.testTag("appBarBack"),
+                onClick = {
+                    val activity = (context as? Activity)
+                    activity?.finish()
+                }
+            ) {
                 Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = "Go back",

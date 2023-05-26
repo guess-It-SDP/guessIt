@@ -36,7 +36,7 @@ class SettingsProfileActivityTest {
             val email = remember { mutableStateOf("em@il.com") }
 
 
-            BootcampComposeTheme() {
+            BootcampComposeTheme {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally

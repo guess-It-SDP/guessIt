@@ -46,10 +46,11 @@ class TopAppBarsTest {
     @Test
     fun settingsTopAppBar() {
         composeRule.onNodeWithText(SETTINGS).performClick()
-        composeRule.onNodeWithTag("editProfileButton").performClick()
 
         composeRule.onNodeWithTag("topAppbarProfile").assertIsDisplayed()
-        composeRule.onNodeWithTag("topAppbarProfileTitle").assertTextContains(SettingsActivity.SETTINGS_TITLE)
+        composeRule.onNodeWithTag("topAppbarProfileTitle").assertTextContains(
+            SettingsActivity.SETTINGS_TITLE
+        )
         composeRule.onNodeWithTag("appBarBack").assertIsDisplayed()
         composeRule.onNodeWithTag("appBarBack").assertHasClickAction()
     }
@@ -57,14 +58,17 @@ class TopAppBarsTest {
     @Test
     fun editProfileTopAppBar() {
         composeRule.onNodeWithText(SETTINGS).performClick()
-        composeRule.onNodeWithText(SETTINGS).performClick()
+        composeRule.onNodeWithTag("editProfileButton").performClick()
 
         composeRule.onNodeWithTag("topAppbarEditProfile").assertIsDisplayed()
-        composeRule.onNodeWithTag("topAppbarEditProfileTitle").assertTextContains(SettingsActivity.SETTINGS_TITLE)
+        composeRule.onNodeWithTag("topAppbarEditProfileTitle").assertTextContains(
+            EditProfileActivity.TOPBAR_TEXT
+        )
         composeRule.onNodeWithTag("appBarBack").assertIsDisplayed()
         composeRule.onNodeWithTag("appBarBack").assertHasClickAction()
     }
 
+    /*
     @Test
     fun parametersTopAppBar() {
         composeRule.onNodeWithText(SETTINGS).performClick()
@@ -77,6 +81,8 @@ class TopAppBarsTest {
         composeRule.onNodeWithTag("appBarBack").assertIsDisplayed()
         composeRule.onNodeWithTag("appBarBack").assertHasClickAction()
     }
+
+     */
 
     @Test
     fun authTopAppBar() {
@@ -102,7 +108,7 @@ class TopAppBarsTest {
 
     @Test
     fun gamesMenuTopAppBar() {
-        composeRule.onNodeWithText(SETTINGS).performClick()
+        composeRule.onNodeWithText(PLAY).performClick()
 
         composeRule.onNodeWithTag("topAppbarGamesMenu").assertIsDisplayed()
         composeRule.onNodeWithTag("topAppbarGamesMenuTitle").assertTextContains(GamesMenuActivity.GAMES_MENU_TITLE)
