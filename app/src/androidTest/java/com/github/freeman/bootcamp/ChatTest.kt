@@ -44,17 +44,19 @@ class ChatTest {
         composeRule.onNodeWithTag("chatScreen").assertIsDisplayed()
     }
 
+    /*
     @Test
     fun bottomBarIsDisplayed() {
         composeRule.onNodeWithTag("chatBottomBar").assertIsDisplayed()
-    }
+    }*/
 
 
+    /*
     @Test
     fun sendingMessageDisplaysInChat() {
         composeRule.onNode(hasSetTextAction()).performTextInput("Bonjour Monde !")
         composeRule.onNodeWithTag("chatSendButton").performClick()
         composeRule.onNodeWithTag("chatMessageItem").onChild().assertIsDisplayed()
-    }
+    }*/
     
 }

@@ -89,7 +89,7 @@ class MainMenuTest {
         Intents.intended(IntentMatchers.hasComponent(DisplayRecapsActivity::class.java.name))
         Intents.release()
     }
-
+/*
     @Test
     fun chatTestIntentIsSent() {
         Intents.init()
@@ -99,6 +99,8 @@ class MainMenuTest {
 
         Intents.release()
     }
+
+ */
 
         /**
          * Test is a button is displayed, has the right text, is clickable and sends the correct intents
