@@ -1,6 +1,8 @@
 package com.github.freeman.bootcamp
 
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.IBinder
@@ -41,6 +43,16 @@ class BackgroundMusicService : Service() {
     companion object {
         lateinit var BGMService: BackgroundMusicService
         var isRunning = false
+        const val ACTION_STOP_BACKGROUND_MUSIC = "com.example.app.STOP_BACKGROUND_MUSIC"
+    }
+
+    private val stopBackgroundMusicReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == ACTION_STOP_BACKGROUND_MUSIC) {
+                // Stop the background music service
+                stopSelf()
+            }
+        }
     }
 
     fun changeVolume(leftVolume: Float, rightVolume: Float) {
