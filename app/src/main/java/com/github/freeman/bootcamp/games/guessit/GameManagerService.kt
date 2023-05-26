@@ -185,7 +185,7 @@ class GameManagerService : Service() {
     }
 
     private fun scoreRecap(gameID: String) {
-        val intent = Intent(this, ScoreActivity::class.java)
+        val intent = Intent(this, ScoreActivity2::class.java)
         intent.putExtra(getString(R.string.gameId_extra), gameID)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
