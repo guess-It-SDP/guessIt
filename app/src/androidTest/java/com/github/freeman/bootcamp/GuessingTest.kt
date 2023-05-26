@@ -1,8 +1,10 @@
 package com.github.freeman.bootcamp
 
+import android.view.KeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.SCREEN_TEXT
@@ -54,7 +56,7 @@ class GuessingTest {
                 .child(context.getString(R.string.test_game_id))
 
             BootcampComposeTheme {
-                GuessingScreen(database, context = context,guessGameId, storageGamRef)
+                GuessingScreen(database, context = context, storageGamRef)
             }
         }
     }
@@ -99,4 +101,5 @@ class GuessingTest {
         composeRule.onNodeWithTag("guessButton").performClick()
         composeRule.onNodeWithTag("popUpScreen").assertIsDisplayed()
     }
+
 }

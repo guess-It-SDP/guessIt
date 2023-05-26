@@ -50,7 +50,7 @@ const val DEFAULT_WIDTH = 15f
 const val DEFAULT_ERASE_WIDTH = 90f
 
 class DrawingActivity : ComponentActivity() {
-
+    override fun onBackPressed() {} // prevent going back by sliding left or pressing back button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
@@ -170,35 +170,26 @@ fun DrawingScreen(
             if (timer == context.getString(R.string.timer_over)) {
                 TimerOverPopUp()
             } else {
-                Row() {
-                    // Video calls deactivated for now because of camera conflict
-//                    BootcampComposeTheme { // Video conversation zone
-//                        VideoScreen2(
-//                            roomName = gameId,
-//                            testing = false
-//                        )
-//                    }
-                    // Drawing zone
-                    DrawBox(
-                        drawController = drawController,
-                        backgroundColor = Color.White,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f, fill = false),
-                        bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
-                            imageBitmap?.let {
-                                dbref.child(context.getString(R.string.topics_path))
-                                    .child(roundNb.toString())
-                                    .child(turnNb.toString())
-                                    .child(context.getString(R.string.drawing_path))
-                                    .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
-                            }
+                // Drawing zone
+                DrawBox(
+                    drawController = drawController,
+                    backgroundColor = Color.White,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f, fill = false),
+                    bitmapCallback = { imageBitmap, _ -> // Tells the drawController what to do when drawController.saveBitmap() is called
+                        imageBitmap?.let {
+                            dbref.child(context.getString(R.string.topics_path))
+                                .child(roundNb.toString())
+                                .child(turnNb.toString())
+                                .child(context.getString(R.string.drawing_path))
+                                .setValue(BitmapHandler.bitmapToString(it.asAndroidBitmap()))
                         }
-                    ) { undoCount, redoCount ->
-                        colorBarVisibility.value = false
-                        undoVisibility.value = undoCount != 0
-                        redoVisibility.value = redoCount != 0
                     }
+                ) { undoCount, redoCount ->
+                    colorBarVisibility.value = false
+                    undoVisibility.value = undoCount != 0
+                    redoVisibility.value = redoCount != 0
                 }
             }
         }

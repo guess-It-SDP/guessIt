@@ -5,7 +5,6 @@ package com.github.freeman.bootcamp.games.guessit.guessing
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager.FEATURE_CAMERA_FRONT
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
@@ -24,7 +23,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -57,7 +55,6 @@ import com.github.freeman.bootcamp.utilities.BitmapHandler
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities.getGameDBRef
 import com.github.freeman.bootcamp.utilities.rememberImeState
-import com.github.freeman.bootcamp.videocall.VideoScreen2
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -79,7 +76,7 @@ import java.util.concurrent.Executors
  */
 class GuessingActivity : ComponentActivity() {
     private lateinit var dbrefGame: DatabaseReference
-
+    override fun onBackPressed() {} // prevent going back by sliding left or pressing back button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -89,7 +86,7 @@ class GuessingActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                GuessingScreen(dbrefGame, this, gameId, storageGameRef)
+                GuessingScreen(dbrefGame, this, storageGameRef)
             }
         }
     }
@@ -144,8 +141,7 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
                     // If the artist hasn't yet received points for this drawing, grant them
                     if (nbGuesses.toInt() == 0) {
                         FirebaseUtilities.databaseGetLong(dbArtistScoreRef)
-                            .thenAccept {
-                                val artistsPoints = it
+                            .thenAccept { artistsPoints ->
                                 dbArtistScoreRef.setValue(artistsPoints + 1)
                             }
                     }
@@ -158,10 +154,9 @@ fun GuessItem(guess: Guess, answer: String, dbrefGame: DatabaseReference, artist
 
                     // Give the points to the player who guessed correctly
                     FirebaseUtilities.databaseGetLong(dbGuesserScoreRef)
-                        .thenAccept {
+                        .thenAccept { score ->
                             // Increase current player's points
                             if (!pointsReceived) {
-                                val score = it
                                 dbGuesserScoreRef.setValue(score + 1)
                                 pointsReceived = true
                             }
@@ -306,9 +301,8 @@ fun GuessingBar(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String, storageGameRef: StorageReference) {
+fun GuessingScreen(dbrefGame: DatabaseReference, context: Context, storageGameRef: StorageReference) {
     val imeState = rememberImeState()
     val scrollState = rememberScrollState()
 
@@ -332,7 +326,7 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String
             }
         }
         override fun onCancelled(error: DatabaseError) {
-            TODO("Not yet implemented")
+            // do nothing
         }
     })
 
@@ -478,25 +472,17 @@ fun GuessingScreen(dbrefGame: DatabaseReference, context: Context,gameId: String
                         color = Color.DarkGray
                     )
                 } else {
-                    Row() {
-                        // Video calls deactivated for now because of camera conflict
-//                        BootcampComposeTheme { // Video conversation zone
-//                            VideoScreen2(
-//                                roomName = gameId,
-//                                testing = false
-//                            )
-//                        }
-                        Image(
-                            bitmap = displayedBitmap,
-                            contentDescription = "drawn image",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                              //  .align(Alignment.Center)
-                        )
-                    }
+                    Image(
+                        bitmap = displayedBitmap,
+                        contentDescription = "drawn image",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                    )
                 }
 
-                if (timer != context.getString(R.string.timer_unused)) {
+                if (timer != context.getString(R.string.timer_unused)
+                    && timer != context.getString(R.string.timer_over)) {
                     val dbRefTimer = dbrefGame.child(context.getString(R.string.current_timer_path))
                     TimerScreen(dbRefTimer, 60L, fontSize = 30.sp, textColor = Color.DarkGray)
                 }

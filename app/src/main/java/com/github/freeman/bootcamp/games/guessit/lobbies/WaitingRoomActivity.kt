@@ -59,7 +59,7 @@ import com.google.firebase.storage.ktx.storage
 /**
  *  A screen where players wait until the host starts the game.
  *  When the activity is created, it retrieves the user's ID and the game ID from the intent that
- *  started it. It also initializes a list of all topics that will be used in the game.
+ *  started it.
  *  It displays a top app bar with information about the room, a list of players currently in the
  *  room, and a "Start" button. The activity listens to changes in the game state and updates the
  *  UI accordingly. When the game state changes to "play game", the activity starts the appropriate
@@ -75,17 +75,10 @@ class WaitingRoomActivity: ComponentActivity() {
 
         val gameId = intent.getStringExtra(getString(R.string.gameId_extra)).toString()
 
-        val allTopics = ArrayList<String>()
-
         val database = Firebase.database.reference
         val dbRef = getGameDBRef(this, gameId)
 
         val storage = Firebase.storage.reference
-
-
-        for (i in 0 until GameOptionsActivity.NB_TOPICS) {
-            allTopics.add(intent.getStringExtra("topic$i").toString())
-        }
 
         setContent {
             val context = LocalContext.current
@@ -108,9 +101,6 @@ class WaitingRoomActivity: ComponentActivity() {
                             val intent = Intent(context, GameManagerService::class.java)
                             intent.apply {
                                 putExtra(getString(R.string.gameId_extra), gameId)
-                                for (i in allTopics.indices) {
-                                    putExtra("topic$i", allTopics[i])
-                                }
                             }
                             context.startService(intent)
                         } else if (gameState == getString(R.string.state_lobbyclosed)) {

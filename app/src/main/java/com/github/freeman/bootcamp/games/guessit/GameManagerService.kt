@@ -4,7 +4,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import androidx.compose.ui.platform.LocalContext
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
 import com.github.freeman.bootcamp.utilities.firebase.FirebaseUtilities
@@ -16,7 +15,6 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.tasks.await
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -41,7 +39,7 @@ class GameManagerService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (firstStart) {
-            Log.d("GameManager Order", "Game Manager Started")
+            Log.d("GameManagerD", "Game Manager Started")
             val gameID = intent!!.getStringExtra(getString(R.string.gameId_extra)).toString()
             val gameDBRef = getGameDBRef(this, gameID)
             var playersOrder = listOf<String>()
@@ -78,7 +76,7 @@ class GameManagerService : Service() {
                                                         prepareNewTurn(gameDBRef, playersOrder)
                                                     }
                                                     getString(R.string.state_gameover) -> {
-                                                        gameOver(gameDBRef, gameID)
+                                                        gameOver(gameID)
                                                     }
                                                 }
                                             }
@@ -89,13 +87,13 @@ class GameManagerService : Service() {
                                     })
 
                                     // Change game state to score recap or game over if the timer is over
-                                    val timerStateRef = gameDBRef.child(getString(R.string.current_timer_path))
-                                    timerStateRef.addValueEventListener(object : ValueEventListener {
+                                    val currentTimerRef = gameDBRef.child(getString(R.string.current_timer_path))
+                                    currentTimerRef.addValueEventListener(object : ValueEventListener {
                                         override fun onDataChange(snapshot: DataSnapshot) {
                                             if (snapshot.exists()) {
                                                 val timerState = snapshot.getValue<String>()!!
                                                 if (timerState == getString(R.string.timer_over)) {
-                                                    endTurn(currentStateRef)
+                                                    endTurn(currentStateRef, currentTimerRef)
                                                 }
                                             }
                                         }
@@ -111,7 +109,7 @@ class GameManagerService : Service() {
                                             if (snapshot.exists()) {
                                                 val correctGuesses = snapshot.getValue<Long>()!!.toInt()
                                                 if (correctGuesses == nbPlayers - 1) {
-                                                    endTurn(currentStateRef)
+                                                    endTurn(currentStateRef, currentTimerRef)
                                                 }
                                             }
                                         }
@@ -128,11 +126,12 @@ class GameManagerService : Service() {
                                             .thenAccept {
                                                 // Randomly shuffle the player IDs
                                                 playersOrder = it.keys.toList().shuffled() as List<String>
+                                                Log.d("GameManagerD", "Players order: $playersOrder")
                                                 // Set first player to draw
                                                 setNewArtist(gameDBRef, 0, playersOrder)
                                                 // Change game state to start the game
                                                 gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_newturn))
-                                                Log.d("GameManager Order", "New turn state set (initialization)")
+                                                Log.d("GameManagerD", "New turn state set (initialization)")
                                             }
                                     }
                                 }
@@ -154,6 +153,7 @@ class GameManagerService : Service() {
         FirebaseUtilities.databaseGet(gameDBRef.child(getString(R.string.current_artist_path)))
             .thenAccept {
                 val currentArtistID = it
+                Log.d("GameManagerD", "Current Artist: $it")
                 val intent : Intent
                 if (localPlayerID == currentArtistID) {
                     // Launch the topic selection activity
@@ -163,14 +163,15 @@ class GameManagerService : Service() {
                             putExtra("topic$i", topics[i])
                         }
                     }
+                    Log.d("GameManagerD", "Topic selection launched")
                 } else {
                     // Launch the guessing activity
                     intent = Intent(this, GuessingActivity::class.java)
+                    Log.d("GameManagerD", "Guessing Activity launched")
                 }
                 intent.putExtra(getString(R.string.gameId_extra), gameID)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
-                Log.d("GameManager Order", "Topic selection launched")
             }
     }
 
@@ -181,8 +182,9 @@ class GameManagerService : Service() {
         startActivity(intent)
     }
 
-    private fun endTurn(currentStateRef : DatabaseReference) {
-        Log.d("GameManager Order", "Round number : $roundNb, Turn number : $turnNb")
+    private fun endTurn(currentStateRef: DatabaseReference, currentTimerRef: DatabaseReference) {
+        Log.d("GameManagerD", "Round number : $roundNb, Turn number : $turnNb")
+        currentTimerRef.setValue(getString(R.string.timer_unused))
         if (roundNb == nbRounds - 1 && turnNb == nbPlayers - 1) {
             Timer().schedule(2000) {
                 currentStateRef.setValue(getString(R.string.state_gameover))
@@ -211,17 +213,17 @@ class GameManagerService : Service() {
             // (wait 10 seconds so that players have time to see their scores)
             Timer().schedule(10000) {
                 gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_newturn))
-                Log.d("GameManager Order", "New turn state set")
+                Log.d("GameManagerD", "New turn state set")
             }
         }
     }
 
     private fun setNewArtist(gameDBRef : DatabaseReference, playerNumber : Int, playersOrder : List<String>) {
-        Log.d("GameManager Order", "New artist set")
+        Log.d("GameManagerD", "New artist set")
         gameDBRef.child(getString(R.string.current_artist_path)).setValue(playersOrder[playerNumber])
     }
 
-    private fun gameOver(gameDBRef : DatabaseReference, gameID: String) {
+    private fun gameOver(gameID: String) {
         if (isHost) {
             VideoCreator.createRecap(this, gameID)
         }
@@ -229,9 +231,6 @@ class GameManagerService : Service() {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(getString(R.string.gameId_extra), gameID)
         startActivity(intent)
-        Timer().schedule(10000) {
-            gameDBRef.child(getString(R.string.current_state_path)).setValue(getString(R.string.state_lobbyclosed))
-        }
         stopSelf()
     }
 }
