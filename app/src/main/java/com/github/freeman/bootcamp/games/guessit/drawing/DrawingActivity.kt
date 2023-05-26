@@ -75,6 +75,7 @@ fun DrawingScreen(
     // timer of the artist
     var timer by remember { mutableStateOf("") }
     val dbrefTimer = dbref.child(context.getString(R.string.current_timer_path))
+    dbrefTimer.setValue(context.getString(R.string.timer_inprogress))
     dbrefTimer.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
