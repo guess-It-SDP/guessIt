@@ -23,12 +23,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,8 +39,8 @@ import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
-import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.GUESSING_BOTTOM_BAR_BUTTON_TEXT
-import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.GUESSING_BOTTOM_BAR_TEXT
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.GUESSING_BOTTOMBAR_BUTTON_TEXT
+import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.GUESSING_BOTTOMBAR_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.NO_ARTIST
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.SCREEN_TEXT
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity.Companion.WAITING_TEXT
@@ -84,9 +85,7 @@ class GuessingActivity : ComponentActivity() {
 
         setContent {
             BootcampComposeTheme {
-                Surface {
-                    GuessingScreen(dbrefGame, this, storageGameRef, LocalLifecycleOwner.current)
-                }
+                GuessingScreen(dbrefGame, this, storageGameRef, LocalLifecycleOwner.current)
             }
         }
     }
@@ -97,8 +96,8 @@ class GuessingActivity : ComponentActivity() {
     }
 
     companion object {
-        const val GUESSING_BOTTOM_BAR_TEXT = "Type a guess..."
-        const val GUESSING_BOTTOM_BAR_BUTTON_TEXT = "OK"
+        const val GUESSING_BOTTOMBAR_TEXT = "Type a guess..."
+        const val GUESSING_BOTTOMBAR_BUTTON_TEXT = "OK"
         const val NO_ARTIST = "No artist"
         const val WAITING_TEXT = "Please wait while the artist selects a word to draw."
         const val SCREEN_TEXT = "Your turn to guess!"
@@ -126,7 +125,6 @@ fun GuessItem(guess: Guess, storageGameRef: StorageReference) {
             .testTag("guessItem")
     ) {
         val userId = Firebase.auth.currentUser?.uid
-
         if (guess.message?.lowercase() != answer.lowercase()) {
             Text(text = "${guess.guesser} : ${guess.message}")
         } else if (guess.guesserId == userId) {
@@ -197,7 +195,7 @@ private fun takeSelfie(
  * Displays all guesses that have been made in the game
  */
 @Composable
-fun GuessesList(guesses: Array<Guess>, storageGameRef: StorageReference) {
+fun GuessesList(guesses: Array<Guess>, dbrefGame: DatabaseReference, artistId: String, storageGameRef: StorageReference) {
     LazyColumn (
         modifier = Modifier
             .fillMaxWidth()
@@ -216,12 +214,15 @@ fun GuessesList(guesses: Array<Guess>, storageGameRef: StorageReference) {
 fun GuessingBar(
     guess: String,
     onGuessChange: (String) -> Unit,
-    onSendClick: () -> Unit
+    onSendClick: () -> Unit,
+    scrollState: ScrollState
 ) {
     Surface(
+        color = Color.White,
         modifier = Modifier
             .fillMaxWidth()
             .testTag("guessingBar")
+            .verticalScroll(scrollState)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -231,12 +232,11 @@ fun GuessingBar(
                 value = guess,
                 onValueChange = onGuessChange,
                 modifier = Modifier.weight(1f),
-                placeholder = { Text(GUESSING_BOTTOM_BAR_TEXT) },
+                placeholder = { Text(GUESSING_BOTTOMBAR_TEXT) },
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
-                singleLine = true
             )
             Spacer(modifier = Modifier.width(8.dp))
             Button(
@@ -244,7 +244,7 @@ fun GuessingBar(
                 onClick = onSendClick,
                 colors = ButtonDefaults.buttonColors()
             ) {
-                Text(text = GUESSING_BOTTOM_BAR_BUTTON_TEXT)
+                Text(text = GUESSING_BOTTOMBAR_BUTTON_TEXT)
             }
         }
     }
@@ -252,7 +252,7 @@ fun GuessingBar(
 
 @Composable
 fun GuessingScreen(dbrefGame: DatabaseReference, context: Context, storageGameRef: StorageReference,
-lifecycleOwner: LifecycleOwner) {
+                   lifecycleOwner: LifecycleOwner) {
     val imeState = rememberImeState()
     val scrollState = rememberScrollState()
 
@@ -283,17 +283,17 @@ lifecycleOwner: LifecycleOwner) {
     //the guesses made by the guessers
     dbrefGame.child(context.getString(R.string.guesses_path))
         .addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            if (snapshot.exists()) {
-                val guessesList = snapshot.getValue<ArrayList<Guess>>()!!
-                guesses = guessesList.toTypedArray()
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val guessesList = snapshot.getValue<ArrayList<Guess>>()!!
+                    guesses = guessesList.toTypedArray()
+                }
             }
-        }
 
-        override fun onCancelled(error: DatabaseError) {
-            // do nothing
-        }
-    })
+            override fun onCancelled(error: DatabaseError) {
+                // do nothing
+            }
+        })
 
     //the current round and turn (in the round)
     FirebaseUtilities.databaseGet(dbrefGame.child(context.getString(R.string.current_round_path)))
@@ -391,132 +391,137 @@ lifecycleOwner: LifecycleOwner) {
         }
     })
 
-    Column(
-        modifier = Modifier
-            .testTag("guessingScreen")
-    ) {
-        Text(
-            text = SCREEN_TEXT,
+
+    MaterialTheme {
+        Column(
             modifier = Modifier
-                .padding(8.dp)
-                .align(Alignment.CenterHorizontally)
-                .testTag("guessText"),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
+                .background(Color.White)
+                .testTag("guessingScreen")
+        ) {
+            Text(
+                text = SCREEN_TEXT,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .testTag("guessText"),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
 
-        Box(
-            modifier = Modifier
-                .height(400.dp)
-                .fillMaxWidth()
-      ) {
-              if (topicSelection) {
-                  Text(
-                      text = WAITING_TEXT,
-                      modifier = Modifier
-                          .align(Alignment.Center),
-                      color = Color.DarkGray
-                  )
-              } else {
-                  Image(
-                      bitmap = displayedBitmap,
-                      contentDescription = "drawn image",
-                      modifier = Modifier
-                          .fillMaxWidth()
-                          .align(Alignment.Center)
-                  )
-              }
+            Box(
+                modifier = Modifier
+                    .height(400.dp)
+                    .fillMaxWidth()
+                    .background(Color.White)
+            ) {
+                if (topicSelection) {
+                    Text(
+                        text = WAITING_TEXT,
+                        modifier = Modifier
+                            .align(Alignment.Center),
+                        color = Color.DarkGray
+                    )
+                } else {
+                    Image(
+                        bitmap = displayedBitmap,
+                        contentDescription = "drawn image",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                    )
+                }
 
-              if (timer == context.getString(R.string.timer_inprogress)) {
-                  TimerScreen(dbrefTimer, 60L, fontSize = 30.sp)
-              }
+                if (timer == context.getString(R.string.timer_inprogress)) {
+                    TimerScreen(dbrefTimer, 60L, fontSize = 30.sp, textColor = Color.DarkGray)
+                }
 
-              ScoreScreen(dbrefGame)
+                ScoreScreen(dbrefGame)
+            }
 
-          }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(Color.White)
+                    .align(Alignment.End)
+                    .testTag("guessesList")
+            ) {
+                GuessesList(guesses = guesses, dbrefGame = dbrefGame,
+                    artistId = currentArtist.value, storageGameRef = storageGameRef)
+            }
 
-          Box(
-              modifier = Modifier
-                  .weight(1f)
-                  .background(Color.White)
-                  .align(Alignment.End)
-                  .testTag("guessesList")
-          ) {
-              GuessesList(guesses = guesses, storageGameRef = storageGameRef)
-          }
+            if (timer == context.getString(R.string.timer_over)) {
+                TimerOverPopUp()
+            } else {
+                GuessingBar(
+                    guess = guess,
+                    onGuessChange = { guess = it },
+                    onSendClick = {
+                        val gs = Guess(guesser = username, guesserId = uid, message = guess)
+                        val guessId = guesses.size.toString()
+                        dbrefGame
+                            .child(context.getString(R.string.guesses_path))
+                            .child(guessId)
+                            .setValue(gs)
 
-          if (timer == context.getString(R.string.timer_over)) {
-              TimerOverPopUp()
-          } else {
-              GuessingBar(
-                  guess = guess,
-                  onGuessChange = { guess = it },
-                  onSendClick = {
-                      val gs = Guess(guesser = username, guesserId = uid, message = guess)
-                      val guessId = guesses.size.toString()
-                      dbrefGame
-                          .child(context.getString(R.string.guesses_path))
-                          .child(guessId)
-                          .setValue(gs)
+                        val userId = Firebase.auth.currentUser?.uid
+                        if (gs.message?.lowercase() == answer.lowercase()) {
+                            val dbGuesserScoreRef = dbrefGame
+                                .child(context.getString(R.string.players_path))
+                                .child(userId.toString())
+                                .child(context.getString(R.string.score_path))
+                            val dbArtistScoreRef = dbrefGame
+                                .child(context.getString(R.string.players_path))
+                                .child(currentArtist.value)
+                                .child(context.getString(R.string.score_path))
+                            val correctGuessesRef = dbrefGame.child(context.getString(R.string.current_correct_guesses_path))
 
-                      val userId = Firebase.auth.currentUser?.uid
-                      if (gs.message?.lowercase() == answer.lowercase()) {
-                          val dbGuesserScoreRef = dbrefGame
-                              .child(context.getString(R.string.players_path))
-                              .child(userId.toString())
-                              .child(context.getString(R.string.score_path))
-                          val dbArtistScoreRef = dbrefGame
-                              .child(context.getString(R.string.players_path))
-                              .child(currentArtist.value)
-                              .child(context.getString(R.string.score_path))
-                          val correctGuessesRef = dbrefGame.child(context.getString(R.string.current_correct_guesses_path))
+                            // Take Selfie of the guesser for the game recap and save it to Firebase storage
+                            takeSelfie(storageGameRef, userId, context, lifecycleOwner)
+                            // Store drawing for the game recap
+                            storeDrawing(storageGameRef, userId, context)
 
-                          // Take Selfie of the guesser for the game recap and save it to Firebase storage
-                          takeSelfie(storageGameRef, userId, context, lifecycleOwner)
-                          // Store drawing for the game recap
-                          storeDrawing(storageGameRef, userId, context)
+                            // Increase the points of the artist if they haven't already received points this round
+                            FirebaseUtilities.databaseGetLong(correctGuessesRef)
+                                .thenAccept { nbGuesses ->
+                                    // Give the points to the player who guessed correctly
+                                    FirebaseUtilities.databaseGetLong(dbGuesserScoreRef)
+                                        .thenAccept { score ->
+                                            // If the artist hasn't yet received points for this drawing, grant them
+                                            if (nbGuesses.toInt() == 0) {
+                                                FirebaseUtilities.databaseGetLong(dbArtistScoreRef)
+                                                    .thenAccept { artistsPoints ->
+                                                        dbArtistScoreRef.setValue(artistsPoints + 1)
+                                                    }
+                                            }
 
-                          // Increase the points of the artist if they haven't already received points this round
-                          FirebaseUtilities.databaseGetLong(correctGuessesRef)
-                              .thenAccept { nbGuesses ->
-                                  // Give the points to the player who guessed correctly
-                                  FirebaseUtilities.databaseGetLong(dbGuesserScoreRef)
-                                      .thenAccept { score ->
-                                          // If the artist hasn't yet received points for this drawing, grant them
-                                          if (nbGuesses.toInt() == 0) {
-                                              FirebaseUtilities.databaseGetLong(dbArtistScoreRef)
-                                                  .thenAccept { artistsPoints ->
-                                                      dbArtistScoreRef.setValue(artistsPoints + 1)
-                                                  }
-                                          }
+                                            // Increase current player's points
+                                            if (!pointsReceived) {
+                                                Log.d("GuessingD","pointsReceived: $pointsReceived")
+                                                dbGuesserScoreRef.setValue(score + 1)
+                                                correctGuessesRef.setValue(nbGuesses + 1)
+                                                pointsReceived = true
+                                            }
+                                        }
+                                }
 
-                                          // Increase current player's points
-                                          if (!pointsReceived) {
-                                              Log.d("GuessingD","pointsReceived: $pointsReceived")
-                                              dbGuesserScoreRef.setValue(score + 1)
-                                              correctGuessesRef.setValue(nbGuesses + 1)
-                                              pointsReceived = true
-                                          }
-                                      }
-                              }
-
-                          // Take Selfie of the guesser for the game recap and save it to Firebase storage
+                            // Take Selfie of the guesser for the game recap and save it to Firebase storage
 //                            val lifecycleOwner = LocalLifecycleOwner.current
-                          //takeSelfie(storageGameRef, userId, context, lifecycleOwner)
-                          // Store drawing for the game recap
+                            //takeSelfie(storageGameRef, userId, context, lifecycleOwner)
+                            // Store drawing for the game recap
 //                            storeDrawing(storageGameRef, userId, context)
 
-                          val gs = Guess(gs.guesser, gs.guesserId, answer)
-                      }
+                            val gs = Guess(gs.guesser, gs.guesserId, answer)
+                        }
 
 
 
 
-                      guess = ""
-                  },
-              )
-          }
+                        guess = ""
+                    },
+                    scrollState,
+                )
+            }
 
-      }
+        }
+    }
 }
