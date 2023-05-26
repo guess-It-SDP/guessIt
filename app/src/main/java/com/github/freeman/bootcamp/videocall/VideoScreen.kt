@@ -63,7 +63,7 @@ fun VideoScreen(
                 AgoraVideoViewer(
                     it, connectionData = AgoraConnectionData(
                         appId = APP_ID
-                    )
+                    ), style= AgoraVideoViewer.Style.GRID
                 ).also {
                     it.join(roomName)
                     agoraView = it
