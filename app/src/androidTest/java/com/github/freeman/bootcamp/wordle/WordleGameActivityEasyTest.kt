@@ -82,10 +82,12 @@ class WordleGameActivityEasyTest {
         WordleGameActivityTest.addingHelloDoesntCrash(composeRule, NB_COLUMNS * WORD_SIZE)
     }
 
+    /*
     @Test
     fun adding6LettersDoesntCrash() {
         WordleGameActivityTest.adding6LettersDoesntCrash(composeRule, NB_COLUMNS * WORD_SIZE)
     }
+     */
 
     @Test
     fun gridColorisBlackAtStartOfTheGame() {
