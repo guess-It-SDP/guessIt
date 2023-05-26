@@ -13,7 +13,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -35,7 +35,6 @@ import com.github.freeman.bootcamp.MainMenuActivity
 import com.github.freeman.bootcamp.MainMenuButton
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.BACK_TO_MENU
-import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.BLUES
 import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.GAME_OVER
 import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.GAME_RECAP
 import com.github.freeman.bootcamp.games.guessit.FinalActivity.Companion.WINNER_TITLE
