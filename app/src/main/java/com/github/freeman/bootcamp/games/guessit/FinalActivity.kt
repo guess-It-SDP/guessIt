@@ -1,5 +1,6 @@
 package com.github.freeman.bootcamp.games.guessit
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -99,11 +100,10 @@ fun FinalScreen(dbRef: DatabaseReference, gameID: String) {
 
         GameRecapButton(context, gameID)
         BackToMenuButton(context)
-
     }
 }
 
-@Composable
+
 fun GameRecapButton(context: Context, gameID: String){
     MainMenuButton(
         testTag = "gameRecapButton",
@@ -111,6 +111,8 @@ fun GameRecapButton(context: Context, gameID: String){
             val intent = Intent(context, ShareRecapActivity::class.java)
             intent.putExtra(context.getString(R.string.gameId_extra), gameID)
             context.startActivity(intent)
+            val activity = (context as? Activity)
+            activity?.finish()
         },
         text = GAME_RECAP,
         icon = ImageVector.vectorResource(R.drawable.video)
@@ -123,6 +125,8 @@ fun BackToMenuButton(context: Context) {
         testTag = "backToMenuButton",
         onClick = {
             context.startActivity(Intent(context, MainMenuActivity::class.java))
+            val activity = (context as? Activity)
+            activity?.finish()
         },
         text = BACK_TO_MENU,
         icon = ImageVector.vectorResource(R.drawable.menu)

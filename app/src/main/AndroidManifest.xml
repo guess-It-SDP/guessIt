@@ -39,11 +39,18 @@
         <service
             android:name=".games.guessit.GameManagerService"
             android:enabled="true"
-            android:exported="true" />
-
+            android:exported="false"
+            android:permission="TODO" />
         <activity
             android:name=".games.guessit.ShareRecapActivity"
             android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".games.guessit.DisplayRecapsActivity"
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -118,14 +125,16 @@
             android:exported="true" />
         <activity
             android:name=".games.guessit.drawing.DrawingActivity"
-            android:exported="true" >
+            android:screenOrientation="portrait"
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".games.guessit.GameOptionsActivity"
-            android:exported="false" >
+            android:screenOrientation="portrait"
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -153,7 +162,9 @@
         </activity>
         <activity
             android:name=".games.guessit.guessing.GuessingActivity"
-            android:exported="false">
+            android:screenOrientation="portrait"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

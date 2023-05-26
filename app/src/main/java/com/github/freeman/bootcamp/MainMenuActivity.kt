@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.foundation.Image
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -31,7 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.CHAT
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.PLAY
+import com.github.freeman.bootcamp.MainMenuActivity.Companion.RECAPS
 import com.github.freeman.bootcamp.MainMenuActivity.Companion.SETTINGS
+import com.github.freeman.bootcamp.games.guessit.DisplayRecapsActivity
 import com.github.freeman.bootcamp.games.guessit.chat.ChatActivity
 import com.github.freeman.bootcamp.games.guessit.drawing.DrawingActivity
 import com.github.freeman.bootcamp.games.guessit.guessing.GuessingActivity
@@ -88,6 +91,7 @@ class MainMenuActivity : ComponentActivity() {
         const val SETTINGS = "Settings"
         const val PLAY = "Play Game"
         const val CHAT = "Chat"
+        const val RECAPS = "Recaps"
     }
 }
 
@@ -129,6 +133,17 @@ fun PlayButton() {
         onClick = { play(context) },
         text = PLAY,
         icon = Icons.Filled.PlayArrow
+    )
+}
+
+@Composable
+fun DisplayRecapsButton() {
+    val context = LocalContext.current
+    MainMenuButton(
+        testTag = "displayRecapsButton",
+        onClick = { context.startActivity(Intent(context, DisplayRecapsActivity::class.java)) },
+        text = RECAPS,
+        icon = Icons.Filled.List
     )
 }
 
@@ -260,6 +275,9 @@ fun MainMenuScreen() {
                     ChatButton()
                 }
 
+            }
+            Row {
+                DisplayRecapsButton()
             }
         }
     }

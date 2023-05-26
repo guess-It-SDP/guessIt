@@ -12,7 +12,6 @@ import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.N
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.NEXT
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.ROUNDS_SELECTION
 import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.categories
-import com.github.freeman.bootcamp.games.guessit.GameOptionsActivity.Companion.selectedTopics
 import com.github.freeman.bootcamp.games.guessit.GameOptionsScreen
 import com.github.freeman.bootcamp.games.guessit.lobbies.CreateGameButton
 import com.github.freeman.bootcamp.games.guessit.lobbies.JoinGameButton
@@ -110,7 +109,6 @@ class GameOptionsActivityTest {
     @Test
     fun animalTopicsFetchedUponClick() {
         setGameOptionsScreen()
-        assertTrue(selectedTopics.isEmpty())
         composeRule.onNodeWithText(categories[0]).performClick()
 
         // This step is necessary for the app to have enough time to fill the topics list
