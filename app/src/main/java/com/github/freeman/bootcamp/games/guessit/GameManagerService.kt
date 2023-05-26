@@ -220,7 +220,6 @@ class GameManagerService : Service() {
             turnNb += 1
         }
         if (isHost) {
-//            setNewArtist(gameDBRef)
             // Set the number of correct guesses to 0
             gameDBRef.child(getString(R.string.current_correct_guesses_path)).setValue(0)
             // Delete all the guesses

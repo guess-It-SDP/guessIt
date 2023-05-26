@@ -76,7 +76,7 @@ class ScoreActivity2 : ComponentActivity() {
 @Composable
 fun CurrentScoreboard(usersToScores: List<Pair<String?, Int>>, gameID: String) {
     val context = LocalContext.current
-    val gamDBRef = getGameDBRef(context, gameID)
+    val gamDBRef = getGameDBRef(context, gameID).child(context.getString(R.string.current_state_path))
     gamDBRef.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
