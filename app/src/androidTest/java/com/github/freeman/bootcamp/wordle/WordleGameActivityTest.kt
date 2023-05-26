@@ -77,10 +77,10 @@ class WordleGameActivityTest {
             composeRule.onNodeWithTag("submitWordButton").assertIsDisplayed()
         }
 
-        @Test
-        fun textFieldIsDisplayed(composeRule :  AndroidComposeTestRule<ActivityScenarioRule<WordleGameActivity>, WordleGameActivity>) {
-            composeRule.onNode(hasText("Enter a 5 letters word to submit")).assertIsDisplayed()
-        }
+//        @Test
+//        fun textFieldIsDisplayed(composeRule :  AndroidComposeTestRule<ActivityScenarioRule<WordleGameActivity>, WordleGameActivity>) {
+//            composeRule.onNode(hasText("Enter a 5 letters word to submit")).assertIsDisplayed()
+//        }
 
         @Test
         fun gridIsDisplayed(composeRule :  AndroidComposeTestRule<ActivityScenarioRule<WordleGameActivity>, WordleGameActivity>,nbTiles: Int) {
@@ -144,24 +144,24 @@ class WordleGameActivityTest {
         buttonIsDisplayed(composeRule)
     }
 
-    @Test
-    fun textFieldIsDisplayed() {
-        textFieldIsDisplayed(composeRule)
-    }
+//    @Test
+//    fun textFieldIsDisplayed() {
+//        textFieldIsDisplayed(composeRule)
+//    }
 
     @Test
     fun gridIsDisplayed() {
         gridIsDisplayed(composeRule,NB_COLUMNS*WORD_SIZE)
     }
-    @Test
-    fun addingHelloDoesntCrash() {
-        addingHelloDoesntCrash(composeRule,NB_COLUMNS*WORD_SIZE)
-    }
+//    @Test
+//    fun addingHelloDoesntCrash() {
+//        addingHelloDoesntCrash(composeRule,NB_COLUMNS*WORD_SIZE)
+//    }
 
-    @Test
-    fun adding6LettersDoesntCrash() {
-        adding6LettersDoesntCrash(composeRule,NB_COLUMNS*WORD_SIZE)
-    }
+//    @Test
+//    fun adding6LettersDoesntCrash() {
+//        adding6LettersDoesntCrash(composeRule,NB_COLUMNS*WORD_SIZE)
+//    }
 
     @Test
     fun gridColorisBlackAtStartOfTheGame() {

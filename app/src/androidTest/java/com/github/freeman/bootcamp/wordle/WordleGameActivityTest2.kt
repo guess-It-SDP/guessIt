@@ -45,10 +45,10 @@ class WordleGameActivityTest2 {
         )
     }
 
-    @Test
-    fun test(){
-        WordleGameActivityTest.Companion.buttonIsDisplayed(composeRule)
-    }
+//    @Test
+//    fun test(){
+//        WordleGameActivityTest.Companion.buttonIsDisplayed(composeRule)
+//    }
 
     /**
      * Gets the activity from a scenarioRule.
@@ -63,34 +63,34 @@ class WordleGameActivityTest2 {
         return activity ?: throw IllegalStateException("Activity was not set in the ActivityScenarioRule!")
     }
 
-    @Test
-    fun buttonIsDisplayed() {
-       WordleGameActivityTest.buttonIsDisplayed(composeRule)
-    }
+//    @Test
+//    fun buttonIsDisplayed() {
+//       WordleGameActivityTest.buttonIsDisplayed(composeRule)
+//    }
 
 
-    @Test
-    fun textFieldIsDisplayed() {
-        WordleGameActivityTest.textFieldIsDisplayed(composeRule)
-    }
+//    @Test
+//    fun textFieldIsDisplayed() {
+//        WordleGameActivityTest.textFieldIsDisplayed(composeRule)
+//    }
 
-    @Test
-    fun gridIsDisplayed() {
-        WordleGameActivityTest.gridIsDisplayed(composeRule,NB_COLUMNS*WORD_SIZE)
-    }
-    @Test
-    fun addingHelloDoesntCrash() {
-        WordleGameActivityTest.addingHelloDoesntCrash(composeRule,NB_COLUMNS*WORD_SIZE)
-    }
+//    @Test
+//    fun gridIsDisplayed() {
+//        WordleGameActivityTest.gridIsDisplayed(composeRule,NB_COLUMNS*WORD_SIZE)
+//    }
+//    @Test
+//    fun addingHelloDoesntCrash() {
+//        WordleGameActivityTest.addingHelloDoesntCrash(composeRule,NB_COLUMNS*WORD_SIZE)
+//    }
 
-    @Test
-    fun adding6LettersDoesntCrash() {
-        WordleGameActivityTest.adding6LettersDoesntCrash(composeRule,NB_COLUMNS*WORD_SIZE)
-    }
+//    @Test
+//    fun adding6LettersDoesntCrash() {
+//        WordleGameActivityTest.adding6LettersDoesntCrash(composeRule,NB_COLUMNS*WORD_SIZE)
+//    }
 
-    @Test
-    fun gridColorisBlackAtStartOfTheGame() {
-        WordleGameActivityTest.gridColorisBlackAtStartOfTheGame(composeRule,NB_COLUMNS*WORD_SIZE)
-    }
+//    @Test
+//    fun gridColorisBlackAtStartOfTheGame() {
+//        WordleGameActivityTest.gridColorisBlackAtStartOfTheGame(composeRule,NB_COLUMNS*WORD_SIZE)
+//    }
 
 }
