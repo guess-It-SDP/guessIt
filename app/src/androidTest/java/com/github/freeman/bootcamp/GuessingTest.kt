@@ -41,9 +41,7 @@ class GuessingTest {
 
     @Before
     fun initScreenWithDatabase() {
-        FirebaseEmulator.init()
-        val guessGameId = "GameTestGuessesId"
-        val database = FirebaseSingletons.database.get().database.getReference("games/$guessGameId/guesses")
+        //FirebaseEmulator.init()
 
         composeRule.setContent {
             val context = LocalContext.current
