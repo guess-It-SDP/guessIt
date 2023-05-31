@@ -65,37 +65,37 @@ class TopicSelectionActivity : ComponentActivity() {
 }
 
 
-private fun refreshTopics(context: Context, dbref: DatabaseReference, topicList: List<String>) {
-//    databaseGet(dbref.child(context.getString(R.string.param_category_path)))
-//        .thenAccept { category ->
-//
-//            val topicsRef = Firebase.database.reference
-//                .child(context.getString(R.string.topics_path))
-//                .child(category)
-//            databaseGetList(topicsRef)
-//                .thenAccept {
-//                    topics.clear()
-//
-//                    for (topic in topicList) {
-//                        val newTopic = it.random() as String
-//                        topics.add(newTopic)
-//                        topic.value = newTopic
-//                    }
-//                }
-//        }
+private fun refreshTopics(context: Context, dbref: DatabaseReference, topicList: List<MutableState<String>>) {
+    databaseGet(dbref.child(context.getString(R.string.param_category_path)))
+        .thenAccept { category ->
+
+            val topicsRef = Firebase.database.reference
+                .child(context.getString(R.string.topics_path))
+                .child(category)
+            databaseGetList(topicsRef)
+                .thenAccept {
+                    topics.clear()
+
+                    for (topic in topicList) {
+                        val newTopic = it.random() as String
+                        topics.add(newTopic)
+                        topic.value = newTopic
+                    }
+                }
+        }
 }
 
 @Composable
-fun TopicButton(dbref: DatabaseReference, topic: String, id: Int, gameId: String) {
+fun TopicButton(dbref: DatabaseReference, topic: MutableState<String>, id: Int, gameId: String) {
     val context = LocalContext.current
     ElevatedButton(
         modifier = Modifier.testTag("topicButton$id"),
         onClick = {
-            selectTopic(context, dbref, topic, gameId)
+            selectTopic(context, dbref, topic.value, gameId)
         },
         colors = ButtonDefaults.buttonColors()
     ) {
-        Text(topic)
+        Text(topic.value)
     }
 }
 
@@ -133,9 +133,9 @@ fun TopicSelectionScreen(dbref: DatabaseReference, gameId: String) {
             turnNb = it.toInt()
         }
 
-    val topic0 = "bee"
-    val topic1 = "dinosaur"
-    val topic2 = "spider"
+    val topic0 = remember { mutableStateOf(topics[0]) }
+    val topic1 = remember { mutableStateOf(topics[1]) }
+    val topic2 = remember { mutableStateOf(topics[2]) }
     val topicList = listOf(topic0, topic1, topic2)
     refreshTopics(context, dbref, topicList)
 
