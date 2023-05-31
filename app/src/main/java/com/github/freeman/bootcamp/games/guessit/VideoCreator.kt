@@ -100,7 +100,7 @@ class VideoCreator {
 
         private fun createVideoFromImages(context: Context, bitmapList: List<Bitmap>, videoName: String, videoDir: File, gameID: String) {
 
-            val videoFileName = "$videoName.mp4"
+            val videoFileName = "${videoName}_$gameID.mp4"
             val videoFile = File(videoDir, videoFileName)
             val videoFilePath = videoFile.absolutePath
 
