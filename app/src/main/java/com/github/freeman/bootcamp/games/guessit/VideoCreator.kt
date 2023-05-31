@@ -154,7 +154,7 @@ class VideoCreator {
                 ctx.stopSelf()
             } else {
                 // error creating video
-                Toast.makeText(context, "error $rc : video not created", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, "error $rc : video not created", Toast.LENGTH_SHORT).show()
                 createRecap(context, gameID)
             }
         }
