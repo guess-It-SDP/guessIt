@@ -81,7 +81,7 @@ fun ShareRecapScreen(gameId:String) {
     val videoStorageRef = Firebase.storage.reference
         .child(context.getString(R.string.game_recaps_path))
         .child(gameId)
-        .child(context.getString(R.string.recap_path))
+        .child("recap_$gameId.mp4")
 
     val videoUrl = remember { mutableStateOf("") }
 
