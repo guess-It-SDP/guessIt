@@ -30,10 +30,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
 import androidx.media3.common.MediaItem.fromUri
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.github.freeman.bootcamp.MainMenuActivity
 import com.github.freeman.bootcamp.R
 import com.github.freeman.bootcamp.games.guessit.ShareRecapActivity.Companion.SHARE_RECAP_TITLE
 import com.github.freeman.bootcamp.ui.theme.BootcampComposeTheme
@@ -131,6 +133,8 @@ fun ShareRecapBackButton() {
         modifier = Modifier
             .testTag("shareRecapBackButton"),
         onClick = {
+            val intent = Intent(context, MainMenuActivity::class.java)
+            context.startActivity(intent)
             val activity = (context as? Activity)
             activity?.finish()
         },

@@ -114,7 +114,7 @@ class VideoCreator {
                 imageList.add(Pair(i, context.getFileStreamPath("image_$i.png").absolutePath))
             }
 
-            val imageDuration = 5 * imageList.size// in seconds
+            val imageDuration = 5 // in seconds
 
             // Sort the list of image file paths based on the index values in the Pair objects
             imageList.sortBy { it.first }
