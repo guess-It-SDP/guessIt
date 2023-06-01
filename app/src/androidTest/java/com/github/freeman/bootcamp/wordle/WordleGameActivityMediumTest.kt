@@ -21,6 +21,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class WordleGameActivityMediumTest {
+
     private val WORD_SIZE = 5
     private val NB_COLUMNS = 8
 
@@ -99,4 +100,6 @@ class WordleGameActivityMediumTest {
     fun submitLLLXLtoHelloAddRightColors() {
         WordleGameActivityTest.submitLLLXLtoHelloAddRightColors(composeRule)
     }
+
+
 }

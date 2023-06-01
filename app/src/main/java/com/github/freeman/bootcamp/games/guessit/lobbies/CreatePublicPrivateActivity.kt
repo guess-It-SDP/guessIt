@@ -138,7 +138,7 @@ private fun PrivateLobbyButton() {
         onClick = {
             context.startActivity(
                 Intent(context, GameOptionsActivity::class.java)
-                    .putExtra(context.getString(R.string.type_extra), PUBLIC_TYPE_TEXT)
+                    .putExtra(context.getString(R.string.type_extra), PRIVATE_TYPE_TEXT)
             )
         },
         text = PRIVATE_BUTTON_TEXT,

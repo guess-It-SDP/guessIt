@@ -21,6 +21,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class WordleGameActivityVeryHardTest {
+
     private val WORD_SIZE = 5
     private val NB_COLUMNS = 8
 

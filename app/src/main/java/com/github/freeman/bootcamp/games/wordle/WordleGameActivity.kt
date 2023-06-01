@@ -242,7 +242,8 @@ class WordleGameActivity : ComponentActivity() {
                 },
             contentAlignment = Alignment.Center,
         ) {
-            Text(text = tile.letter.toString())
+            Text(text = tile.letter.toString().uppercase(),
+            color = Color.Black)
         }
     }
 
