@@ -17,6 +17,7 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCapture.CAPTURE_MODE_ZERO_SHUTTER_LAG
 import androidx.camera.core.ImageCapture.OutputFileOptions
 import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -69,9 +70,12 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import com.google.mlkit.vision.common.InputImage
+import okhttp3.internal.wait
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.Thread.sleep
 import java.util.concurrent.Executors
 
 /**
@@ -183,8 +187,9 @@ private fun takeSelfie(
         val cameraExecutor = Executors.newSingleThreadExecutor()
         val onImageSavedCallback = object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                val selfieBitmap = BitmapFactory.decodeStream(tempFile.inputStream())
-                FaceDetectionActivity.transformBitmapToDrawOnFaces(selfieBitmap, context)
+                var selfieBitmap = BitmapFactory.decodeStream(tempFile.inputStream()).copy(Bitmap.Config.ARGB_8888, true)
+                selfieBitmap = FaceDetectionActivity.transformBitmapToDrawOnFaces(selfieBitmap, context)
+                sleep(1000)
                 val bos = ByteArrayOutputStream()
                 selfieBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos)
                 val bitmapData = bos.toByteArray()
@@ -194,6 +199,7 @@ private fun takeSelfie(
                 fos.close()
                 storageSelfieRef.putFile(Uri.fromFile(tempFile))
                 Log.i("Selfie", "Image saved")
+                Log.d("Selfie", "Yo")
             }
 
             override fun onError(exception: ImageCaptureException) {
