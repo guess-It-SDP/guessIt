@@ -53,23 +53,24 @@ class FaceDetectionActivity : ComponentActivity() {
 
         fun transformBitmapToDrawOnFaces(
             bitmap: Bitmap?, context : Context
-        ) {
+        ) :Bitmap{
             var overlayPic = BitmapFactory.decodeResource(context.resources, R.drawable.hat)
             var overlayPic2 = BitmapFactory.decodeResource(context.resources, R.drawable.moustache)
-                val image = InputImage.fromBitmap(bitmap!!, 0)
-                val options = options()
-                val detector = FaceDetection.getClient(options)
-                detector.process(image).addOnSuccessListener { faces ->
-                    val canvas = Canvas(bitmap!!)
-                    val paint = paint()
-                    faces.forEach { face ->
+            val image = InputImage.fromBitmap(bitmap!!, 0)
+            val options = options()
+            val detector = FaceDetection.getClient(options)
+            detector.process(image).addOnSuccessListener { faces ->
+                val canvas = Canvas(bitmap)
+                val paint = paint()
+                faces.forEach { face ->
 
-                        if(overlayPic2 != null){     drawHat(face, canvas, overlayPic, paint)
-                            drawMoustache(face, canvas, overlayPic2, paint) }
-                    }
+                    if(overlayPic2 != null){     drawHat(face, canvas, overlayPic, paint)
+                        drawMoustache(face, canvas, overlayPic2, paint) }
+                    else { drawHat(face, canvas, overlayPic, paint)}
                 }
             }
-
+            return  bitmap
+        }
 
 
 

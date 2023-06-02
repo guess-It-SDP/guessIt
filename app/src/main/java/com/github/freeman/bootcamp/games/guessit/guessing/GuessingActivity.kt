@@ -6,6 +6,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -36,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleOwner
 import com.github.freeman.bootcamp.R
+import com.github.freeman.bootcamp.facedetection.FaceDetectionActivity
 import com.github.freeman.bootcamp.games.guessit.ScoreScreen
 import com.github.freeman.bootcamp.games.guessit.TimerOverPopUp
 import com.github.freeman.bootcamp.games.guessit.TimerScreen
@@ -68,6 +71,8 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
+import java.lang.Thread.sleep
 import java.util.concurrent.Executors
 
 /**
@@ -179,8 +184,19 @@ private fun takeSelfie(
         val cameraExecutor = Executors.newSingleThreadExecutor()
         val onImageSavedCallback = object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                storageSelfieRef.putFile(tempFile.toUri())
+                var selfieBitmap = BitmapFactory.decodeStream(tempFile.inputStream()).copy(Bitmap.Config.ARGB_8888, true)
+                selfieBitmap = FaceDetectionActivity.transformBitmapToDrawOnFaces(selfieBitmap, context)
+                sleep(1000)
+                val bos = ByteArrayOutputStream()
+                selfieBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos)
+                val bitmapData = bos.toByteArray()
+                val fos = FileOutputStream(tempFile)
+                fos.write(bitmapData)
+                fos.flush()
+                fos.close()
+                storageSelfieRef.putFile(Uri.fromFile(tempFile))
                 Log.i("Selfie", "Image saved")
+                Log.d("Selfie", "Yo")
             }
 
             override fun onError(exception: ImageCaptureException) {
