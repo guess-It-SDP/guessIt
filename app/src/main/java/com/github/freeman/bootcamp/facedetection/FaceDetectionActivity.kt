@@ -50,25 +50,28 @@ class FaceDetectionActivity : ComponentActivity() {
         private const val MOUSTACHE_RIGHT_HEAD_FACTOR = -0.0
         const val FACE_DETECTION_TAG = "faceDetectionTag"
         const val FACE_DETECTION_TAG2 = "faceDetectionTag2"
-
         fun transformBitmapToDrawOnFaces(
             bitmap: Bitmap?, context : Context
-        ) {
+        ) :Bitmap{
             var overlayPic = BitmapFactory.decodeResource(context.resources, R.drawable.hat)
             var overlayPic2 = BitmapFactory.decodeResource(context.resources, R.drawable.moustache)
-                val image = InputImage.fromBitmap(bitmap!!, 0)
-                val options = options()
-                val detector = FaceDetection.getClient(options)
-                detector.process(image).addOnSuccessListener { faces ->
-                    val canvas = Canvas(bitmap!!)
-                    val paint = paint()
-                    faces.forEach { face ->
+            val image = InputImage.fromBitmap(bitmap!!, 0)
+            val options = options()
+            val detector = FaceDetection.getClient(options)
+            detector.process(image).addOnSuccessListener { faces ->
+                val canvas = Canvas(bitmap)
+                val paint = paint()
+                faces.forEach { face ->
 
-                        if(overlayPic2 != null){     drawHat(face, canvas, overlayPic, paint)
-                            drawMoustache(face, canvas, overlayPic2, paint) }
-                    }
+                    if(overlayPic2 != null){     drawHat(face, canvas, overlayPic, paint)
+                        drawMoustache(face, canvas, overlayPic2, paint) }
+                    else { drawHat(face, canvas, overlayPic, paint)}
                 }
             }
+            return  bitmap
+        }
+
+
 
 
 
@@ -147,7 +150,7 @@ class FaceDetectionActivity : ComponentActivity() {
          */
         private fun options(): FaceDetectorOptions {
             val options = FaceDetectorOptions.Builder()
-                .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+                .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
                 .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
                 .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL).build()
             return options
