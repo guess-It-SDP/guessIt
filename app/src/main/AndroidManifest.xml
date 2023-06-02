@@ -205,13 +205,6 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".recorder.AudioRecordingActivity"
-            android:exported="true" >
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name=".SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
