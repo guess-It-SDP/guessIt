@@ -179,8 +179,19 @@ private fun takeSelfie(
         val cameraExecutor = Executors.newSingleThreadExecutor()
         val onImageSavedCallback = object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                storageSelfieRef.putFile(tempFile.toUri())
+                var selfieBitmap = BitmapFactory.decodeStream(tempFile.inputStream()).copy(Bitmap.Config.ARGB_8888, true)
+                selfieBitmap = FaceDetectionActivity.transformBitmapToDrawOnFaces(selfieBitmap, context)
+                sleep(1000)
+                val bos = ByteArrayOutputStream()
+                selfieBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos)
+                val bitmapData = bos.toByteArray()
+                val fos = FileOutputStream(tempFile)
+                fos.write(bitmapData)
+                fos.flush()
+                fos.close()
+                storageSelfieRef.putFile(Uri.fromFile(tempFile))
                 Log.i("Selfie", "Image saved")
+                Log.d("Selfie", "Yo")
             }
 
             override fun onError(exception: ImageCaptureException) {
