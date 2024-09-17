@@ -2,102 +2,158 @@ package com.github.freeman.bootcamp.wordle
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
+import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
+import com.github.freeman.bootcamp.facedetection.FaceDetectionActivity
 import com.github.freeman.bootcamp.games.wordle.WordleGameActivity
+import com.github.freeman.bootcamp.games.wordle.WordleGameState
 import com.github.freeman.bootcamp.games.wordle.WordleMenu
 import com.github.freeman.bootcamp.games.wordle.WordleMenu.Companion.Difficulty
+import com.github.freeman.bootcamp.wordle.WordleGameActivityTest.Companion.assertBackgroundColor
+import junit.framework.TestCase
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestRule
+import org.junit.runner.Description
 import org.junit.runner.RunWith
+import org.junit.runners.model.Statement
 
 
+@LargeTest
 @RunWith(AndroidJUnit4::class)
 class WordleGameActivityEasyTest {
 
-   private val WORD_SIZE = 5
-   private val NB_COLUMNS = 9
+    private val WORD_SIZE = 5
+    private val NB_COLUMNS = 9
+    private val nbTiles = WORD_SIZE* NB_COLUMNS
+    private lateinit var activityScenario: ActivityScenario<WordleGameActivity>
 
-   @get:Rule
-   val composeRule = createAndroidIntentComposeRule<WordleGameActivity> {
-       Intent(it, WordleGameActivity::class.java).apply {
-           putExtra("testing", true).putExtra(Difficulty::class.simpleName, Difficulty.EASY.name)
-       }
-   }
+    @get:Rule
+    val composeRule = AndroidComposeTestRule(EmptyTestRule()) {
+        var activity: WordleGameActivity? = null
+        activityScenario.onActivity { activity = it }
+        checkNotNull(activity) { "Activity didn't launch" }
+    }
 
-   /**
-    * Factory method to provide android specific implementation of createComposeRule, for a given
-    * activity class type A that needs to be launched via an intent.
-    *
-    * @param intentFactory A lambda that provides a Context that can used to create an intent. A intent needs to be returned.
-    */
-   inline fun <A: ComponentActivity> createAndroidIntentComposeRule(intentFactory: (context: Context) -> Intent) : AndroidComposeTestRule<ActivityScenarioRule<A>, A> {
-       val context = ApplicationProvider.getApplicationContext<Context>()
-       val intent = intentFactory(context)
+    class EmptyTestRule : TestRule {
+        override fun apply(base: Statement, description: Description) = base
+    }
 
-       return AndroidComposeTestRule(
-           activityRule = ActivityScenarioRule(intent),
-           activityProvider = { scenarioRule -> scenarioRule.getActivity() }
-       )
-   }
+    @Test
+    fun test() {
+        setupSomethingFirst()
+        ActivityScenario.launch<WordleGameActivity>(Intent(
+            ApplicationProvider.getApplicationContext(), WordleGameActivity::class.java
+        ).apply {
+            putExtra("testing", true).putExtra(
+                Difficulty::class.simpleName, Difficulty.EASY.name
+            )
+        }).use {
 
-   @Test
-   fun test(){
-       WordleGameActivityTest.buttonIsDisplayed(composeRule)
-   }
+            composeRule.onNodeWithTag("submitWordButton").assertExists()
+            composeRule.onNode(hasText("Enter a 5 letters word to submit")).assertExists()
+            composeRule.onNode(hasTestTag("wordle_tile_grid")).assertExists()
+            for (i in 0 until WORD_SIZE * NB_COLUMNS) {
+                composeRule.onNode(hasTestTag("wordle_tile_id_" + i.toString())).assertExists()
+            }
+            composeRule.onNode(hasText("Enter a 5 letters word to submit"))
+                .performTextInput("hello")
+            Espresso.closeSoftKeyboard()
 
-   /**
-    * Gets the activity from a scenarioRule.
-    *
-    * https://androidx.tech/artifacts/compose.ui/ui-test-junit4/1.0.0-alpha11-source/androidx/compose/ui/test/junit4/AndroidComposeTestRule.kt.html
-    */
-   fun <A : ComponentActivity> ActivityScenarioRule<A>.getActivity(): A {
-       var activity: A? = null
+            composeRule.onNodeWithTag("submitWordButton").performClick()
+            for (i in 0 until WORD_SIZE * NB_COLUMNS) {
+                composeRule.onNode(hasTestTag("wordle_tile_id_" + i.toString())).assertIsDisplayed()
+            }
 
-       scenario.onActivity { activity = it }
+        }
+    }
 
-       return activity ?: throw IllegalStateException("Activity was not set in the ActivityScenarioRule!")
-   }
+    @Test
+    fun test2() {
+        setupSomethingFirst()
+        ActivityScenario.launch<WordleGameActivity>(Intent(
+            ApplicationProvider.getApplicationContext(), WordleGameActivity::class.java
+        ).apply {
+            putExtra("testing", true).putExtra(
+                Difficulty::class.simpleName, Difficulty.EASY.name
+            )
+        }).use {
+
+            composeRule.onNode(hasText("Enter a 5 letters word to submit")).performTextInput("helloo")
+            Espresso.closeSoftKeyboard()
+            composeRule.onNodeWithTag("submitWordButton").performClick()
+            for (i in 0 until nbTiles) {
+                composeRule.onNode(hasTestTag("wordle_tile_id_" + i.toString())).assertIsDisplayed()
+            }
+        }
+    }
+
+    @Test
+    fun test3() {
+        setupSomethingFirst()
+        ActivityScenario.launch<WordleGameActivity>(Intent(
+            ApplicationProvider.getApplicationContext(), WordleGameActivity::class.java
+        ).apply {
+            putExtra("testing", true).putExtra(
+                Difficulty::class.simpleName, Difficulty.EASY.name
+            )
+        }).use {
+
+            composeRule.onNode(hasTestTag("wordle_tile_grid")).assertExists()
+            for (i in 0 until nbTiles) {
+                composeRule.onNode(hasTestTag("wordle_tile_id_" + i.toString()))
+                    .assertBackgroundColor(Color(WordleGameState.TileState.EMPTY.argb))
+            }
+        }
+    }
+
+    @Test
+    fun test4() {
+        setupSomethingFirst()
+        ActivityScenario.launch<WordleGameActivity>(Intent(
+            ApplicationProvider.getApplicationContext(), WordleGameActivity::class.java
+        ).apply {
+            putExtra("testing", true).putExtra(
+                Difficulty::class.simpleName, Difficulty.EASY.name
+            )
+        }).use {
+            composeRule.onNode(hasText("Enter a 5 letters word to submit")).performTextInput("LLLXL")
+            Espresso.closeSoftKeyboard()
+            composeRule.onNodeWithTag("submitWordButton").performClick()
+            composeRule.onNode(hasTestTag("wordle_tile_id_" + 0.toString()))
+                .assertBackgroundColor(Color(WordleGameState.TileState.WRONG_SPOT.argb))
+            composeRule.onNode(hasTestTag("wordle_tile_id_" + 1.toString()))
+                .assertBackgroundColor(Color(WordleGameState.TileState.INCORRECT.argb))
+            composeRule.onNode(hasTestTag("wordle_tile_id_" + 2.toString()))
+                .assertBackgroundColor(Color(WordleGameState.TileState.CORRECT.argb))
+            composeRule.onNode(hasTestTag("wordle_tile_id_" + 3.toString()))
+                .assertBackgroundColor(Color(WordleGameState.TileState.INCORRECT.argb))
+            composeRule.onNode(hasTestTag("wordle_tile_id_" + 4.toString()))
+                .assertBackgroundColor(Color(WordleGameState.TileState.INCORRECT.argb))
+
+        }
+    }
 
 
-   @Test
-   fun buttonIsDisplayed(){
-       WordleGameActivityTest.buttonIsDisplayed(composeRule)
-   }
 
-   @Test
-   fun textFieldIsDisplayed() {
-       WordleGameActivityTest.textFieldIsDisplayed(composeRule)
-   }
+    private fun setupSomethingFirst() {
+    }
+}
 
-   @Test
-   fun gridIsDisplayed() {
-       WordleGameActivityTest.gridIsDisplayed(composeRule, NB_COLUMNS * WORD_SIZE)
-   }
-   @Test
-   fun addingHelloDoesntCrash() {
-       WordleGameActivityTest.addingHelloDoesntCrash(composeRule, NB_COLUMNS * WORD_SIZE)
-   }
-
-   /*
-   @Test
-   fun adding6LettersDoesntCrash() {
-       WordleGameActivityTest.adding6LettersDoesntCrash(composeRule, NB_COLUMNS * WORD_SIZE)
-   }
-    */
-
-   @Test
-   fun gridColorisBlackAtStartOfTheGame() {
-       WordleGameActivityTest.gridColorisBlackAtStartOfTheGame(composeRule, NB_COLUMNS * WORD_SIZE)
-   }
-
-   @Test
-   fun submitLLLXLtoHelloAddRightColors() {
-       WordleGameActivityTest.submitLLLXLtoHelloAddRightColors(composeRule)
-   }
-
+class CustomActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+        }
+    }
 }

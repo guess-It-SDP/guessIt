@@ -95,8 +95,7 @@ class FaceDetectionActivity : ComponentActivity() {
                     val canvas = Canvas(bitmap!!)
                     val paint = paint()
                     faces.forEach { face ->
-
-                      if(overlayPic2 != null){     drawHat(face, canvas, overlayPic, paint)
+                      if(overlayPic2 != null){     drawFunction(face, canvas, overlayPic, paint)
                         drawMoustache(face, canvas, overlayPic2, paint) }
                         else {drawFunction(face, canvas, overlayPic, paint) }
                     }
