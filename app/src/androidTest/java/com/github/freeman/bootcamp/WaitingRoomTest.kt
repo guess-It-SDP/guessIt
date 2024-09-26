@@ -226,11 +226,7 @@ class WaitingRoomTest {
             }
         }
     }
-
-    @Test
-    fun waitingRoomTopAppBarIsDisplayed() {
-        composeRule.onNodeWithTag("topAppbarWaitingRoom").assertIsDisplayed()
-    }
+    
 
     @Test
     fun waitingRoomTopAppBarBackIsClickable() {

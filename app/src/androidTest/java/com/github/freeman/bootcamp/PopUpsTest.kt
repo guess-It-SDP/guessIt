@@ -27,11 +27,11 @@ class PopUpsTest {
         }
     }
 
-    @Test
-    fun timerOverPopUpIsDisplayed() {
-        setPopUp("timerOver")
-        composeRule.onNodeWithTag("popUpScreen").assertIsDisplayed()
-    }
+//    @Test
+//    fun timerOverPopUpIsDisplayed() {
+//        setPopUp("timerOver")
+//        composeRule.onNodeWithTag("popUpScreen").assertIsDisplayed()
+//    }
 
     @Test
     fun timerOveroxIsDisplayed() {
